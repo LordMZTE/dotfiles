@@ -10,6 +10,7 @@ set shell=bash shellquote=\" shellxquote=\"
 set shcf=-c
 tnoremap <Esc> <C-\><C-n>
 set number
+set shiftwidth=4
 
 call plug#begin('~/AppData/Local/nvim/plugged')
 
