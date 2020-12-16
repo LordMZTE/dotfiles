@@ -4,13 +4,14 @@ colorscheme dracula
 
 
 set tabstop=4
+set shiftwidth=4
+set expandtab
 command GoToFile cd %:p:h
 set clipboard^=unnamed
 set shell=bash shellquote=\" shellxquote=\"
 set shcf=-c
 tnoremap <Esc> <C-\><C-n>
 set number
-set shiftwidth=4
 
 call plug#begin('~/AppData/Local/nvim/plugged')
 
