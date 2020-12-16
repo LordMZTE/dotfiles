@@ -9,6 +9,7 @@ set clipboard^=unnamed
 set shell=bash shellquote=\" shellxquote=\"
 set shcf=-c
 tnoremap <Esc> <C-\><C-n>
+set number
 
 call plug#begin('~/AppData/Local/nvim/plugged')
 
