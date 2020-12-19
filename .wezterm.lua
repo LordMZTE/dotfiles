@@ -38,6 +38,8 @@ return {
         }
     },
 
+    font = wezterm.font("Iosevka Nerd Font Complete"),
+
     launch_menu = {
         {
             label = "Arch WSL",

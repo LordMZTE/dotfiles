@@ -1,1 +1,1 @@
-GuiFont Iosevka Slab:h12
+GuiFont Iosevka Nerd Font Complete:h12
