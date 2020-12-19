@@ -38,7 +38,30 @@ return {
         }
     },
 
-    font = wezterm.font("Iosevka Nerd Font Complete"),
+    font_dirs = {"C:\\Windows\\Fonts"},
+
+    font_rules = {
+        {
+            italic = false,
+            bold = false,
+            font = wezterm.font("Iosevka Nerd Font Complete"),
+        },
+        {
+            italic = true,
+            bold = false,
+            font = wezterm.font("Iosevka Italic Nerd Font Complete"),
+        },
+        {
+            italic = false,
+            bold = true,
+            font = wezterm.font("Iosevka Bold Nerd Font Complete"),
+        },
+        {
+            italic = true,
+            bold = true,
+            font = wezterm.font("Iosevka Bold Italic Nerd Font Complete"),
+        },
+    },
 
     launch_menu = {
         {
