@@ -7,9 +7,9 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 command GoToFile cd %:p:h
-set clipboard^=unnamed
+set clipboard^=unnamedplus
 set shell=bash shellquote=\" shellxquote=\"
-set shcf=-c
+set shcf=-i\ -c
 tnoremap <Esc> <C-\><C-n>
 set number
 
@@ -24,6 +24,7 @@ Plug 'SirVer/ultisnips'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'ryanoasis/vim-devicons'
+Plug 'cespare/vim-toml'
 
 call plug#end()
 
