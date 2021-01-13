@@ -55,6 +55,11 @@ nnoremap <silent> fzf :FZF<CR>
 " quick cursor movement while holding ctrl
 nnoremap <C-Up> 5k
 nnoremap <C-Down> 5j
+" quick pasting/yoinking to system register
+nnoremap +y "+y
+nnoremap +p "+p
+nnoremap *y "*y
+nnoremap *p "*p
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
