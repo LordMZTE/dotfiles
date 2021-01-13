@@ -31,7 +31,24 @@ Plug 'tpope/vim-endwise'
 call plug#end()
 
 colorscheme dracula
+
 let g:rainbow_active = 1
+" default rainbow config is not rainbow enough
+let g:rainbow_guifgs = [
+    \ '#e6261f',
+    \ '#eb7532',
+    \ '#f7d038',
+    \ '#a3e048',
+    \ '#49da9a',
+    \ '#34bbe6',
+    \ '#4355db',
+    \ '#d23be7',
+\ ]
+" all files should have all brackets highlighted
+let g:rainbow_load_separately = [
+    \ ['*', [['(', ')'], ['\[', '\]'], ['{', '}'], ['<', '>']]],
+\ ]
+
 let NERDTreeShowHidden=1
 
 nnoremap <silent> fzf :FZF<CR>
