@@ -1,1 +1,2 @@
-GuiFont Iosevka Nerd Font Complete:h12
+GuiFont! Iosevka:h12
+

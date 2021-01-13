@@ -1,7 +1,4 @@
-packadd dracula
 syntax enable
-colorscheme dracula
-
 
 set tabstop=4
 set shiftwidth=4
@@ -9,7 +6,7 @@ set expandtab
 command GoToFile cd %:p:h
 set clipboard^=unnamedplus
 set shell=bash shellquote=\" shellxquote=\"
-set shcf=-i\ -c
+set shcf=-c
 tnoremap <Esc> <C-\><C-n>
 set number
 
@@ -25,8 +22,14 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'ryanoasis/vim-devicons'
 Plug 'cespare/vim-toml'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'airblade/vim-gitgutter'
+Plug 'cespare/vim-toml'
 
 call plug#end()
+
+colorscheme dracula
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
