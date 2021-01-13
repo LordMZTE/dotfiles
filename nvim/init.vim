@@ -26,10 +26,14 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'airblade/vim-gitgutter'
 Plug 'cespare/vim-toml'
+Plug 'frazrepo/vim-rainbow'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-endwise'
 
 call plug#end()
 
 colorscheme dracula
+let g:rainbow_active = 1
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
