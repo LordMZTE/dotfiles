@@ -52,6 +52,10 @@ let NERDTreeShowHidden=1
 
 nnoremap <silent> fzf :FZF<CR>
 
+" quick cursor movement while holding ctrl
+nnoremap <C-Up> 5k
+nnoremap <C-Down> 5j
+
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
