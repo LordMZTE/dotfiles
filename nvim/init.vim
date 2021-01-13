@@ -4,7 +4,6 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 command GoToFile cd %:p:h
-set clipboard^=unnamedplus
 tnoremap <Esc> <C-\><C-n>
 set number
 
