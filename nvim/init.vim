@@ -32,6 +32,9 @@ call plug#end()
 
 colorscheme dracula
 let g:rainbow_active = 1
+let NERDTreeShowHidden=1
+
+nnoremap <silent> fzf :FZF<CR>
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
