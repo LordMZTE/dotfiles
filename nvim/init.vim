@@ -1,5 +1,3 @@
-syntax enable
-
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -26,6 +24,7 @@ Plug 'cespare/vim-toml'
 Plug 'frazrepo/vim-rainbow'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-endwise'
+Plug 'vimwiki/vimwiki'
 
 call plug#end()
 
@@ -85,4 +84,7 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+filetype plugin on
+syntax on
 
