@@ -57,8 +57,11 @@ nnoremap <C-Down> 5j
 " quick pasting/yoinking to system register
 nnoremap +y "+y
 nnoremap +p "+p
+nnoremap +d "+d
+
 nnoremap *y "*y
 nnoremap *p "*p
+nnoremap *d "*d
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
