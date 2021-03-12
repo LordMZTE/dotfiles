@@ -25,6 +25,7 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-endwise'
 Plug 'vimwiki/vimwiki'
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 call plug#end()
 
@@ -89,7 +90,7 @@ endfunction
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && !exists("g:started_by_firenvim") | NERDTree | endif
 
 filetype plugin on
 set nocompatible
