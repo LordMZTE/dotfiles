@@ -1,3 +1,4 @@
+syntax on
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -21,7 +22,6 @@ Plug '~/go/src/github.com/junegunn/fzf'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'airblade/vim-gitgutter'
 Plug 'cespare/vim-toml'
-Plug 'frazrepo/vim-rainbow'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-endwise'
 Plug 'vimwiki/vimwiki'
@@ -30,23 +30,6 @@ Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 call plug#end()
 
 colorscheme dracula
-
-let g:rainbow_active = 1
-" default rainbow config is not rainbow enough
-let g:rainbow_guifgs = [
-    \ '#e6261f',
-    \ '#eb7532',
-    \ '#f7d038',
-    \ '#a3e048',
-    \ '#49da9a',
-    \ '#34bbe6',
-    \ '#4355db',
-    \ '#d23be7',
-\ ]
-" all files should have all brackets highlighted
-let g:rainbow_load_separately = [
-    \ ['*', [['(', ')'], ['\[', '\]'], ['{', '}'], ['<', '>']]],
-\ ]
 
 let NERDTreeShowHidden=1
 
@@ -94,5 +77,6 @@ autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && !exists("g:started_b
 
 filetype plugin on
 set nocompatible
-syntax on
+
+highlight Normal ctermbg=NONE
 
