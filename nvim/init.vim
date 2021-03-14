@@ -78,5 +78,5 @@ autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && !exists("g:started_b
 filetype plugin on
 set nocompatible
 
-highlight Normal ctermbg=NONE
+set termguicolors
 
