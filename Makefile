@@ -2,6 +2,7 @@
 
 RUST_PROGRAMS=\
 	alacritty \
+	bat \
 	cargo-edit \
 	gitui \
 	lsd \
