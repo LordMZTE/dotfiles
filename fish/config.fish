@@ -11,6 +11,11 @@ function rbg
     $argv &>/dev/null&
 end
 
+function rbgd
+    rbg $argv
+    disown
+end
+
 function !! 
     eval $history[1]
 end
