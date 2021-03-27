@@ -1,0 +1,51 @@
+{
+  "wrapping": {
+    "arrayWrap": {
+      "defaultWrap": "onePerLine",
+      "rules": [
+        {
+          "conditions": [
+            {
+              "cond": "totalItemLength <= n",
+              "value": 50
+            }
+          ],
+          "type": "noWrap"
+        }
+      ]
+    },
+    "methodChain": {
+      "rules": [
+        {
+          "conditions": [
+            {
+              "cond": "itemCount >= n",
+              "value": 3
+            }
+          ],
+          "type": "onePerLine"
+        }
+      ]
+    },
+    "callParameter": {
+      "rules": [
+        {
+          "conditions": [
+            {
+              "cond": "itemCount >= n",
+              "value": 3
+            },
+            {
+              "cond": "totalItemLength >= n",
+              "value": 50
+            }
+          ],
+          "type": "onePerLine"
+        }
+      ]
+    }  
+  },
+  "indentation": {
+    "character": "    "
+  }
+}
