@@ -20,16 +20,20 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'cespare/vim-toml'
 Plug '~/go/src/github.com/junegunn/fzf'
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'airblade/vim-gitgutter'
 Plug 'cespare/vim-toml'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-endwise'
 Plug 'vimwiki/vimwiki'
 Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'jreybert/vimagit'
 
 call plug#end()
 
 colorscheme dracula
+
+let g:airline_powerline_fonts = 1
 
 let NERDTreeShowHidden=1
 
