@@ -28,6 +28,7 @@ Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'jreybert/vimagit'
+Plug 'airblade/vim-gitgutter'
 
 call plug#end()
 
