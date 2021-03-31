@@ -9,7 +9,7 @@ RUST_PROGRAMS=\
 	mask \
 	miniserve \
 	onefetch \
-	rg \
+	ripgrep \
 	starship \
 	tiny \
 	tokei \
