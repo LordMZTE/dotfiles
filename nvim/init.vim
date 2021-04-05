@@ -29,20 +29,24 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'jreybert/vimagit'
 Plug 'airblade/vim-gitgutter'
+Plug 'dag/vim-fish'
+Plug 'uiiaoo/java-syntax.vim'
 
 call plug#end()
 
 colorscheme dracula
 
 let g:airline_powerline_fonts = 1
-
+let g:neovide_iso_layout = v:true
 let NERDTreeShowHidden=1
 
+set guifont=Iosevka:12
 nnoremap <silent> fzf :FZF<CR>
 
 " quick cursor movement while holding ctrl
 nnoremap <C-Up> 5k
 nnoremap <C-Down> 5j
+
 " quick pasting/yoinking to system register
 nnoremap +y "+y
 nnoremap +p "+p
@@ -51,6 +55,21 @@ nnoremap +d "+d
 nnoremap *y "*y
 nnoremap *p "*p
 nnoremap *d "*d
+
+" firemvim config
+let g:firenvim_config = {
+    \ 'localSettings': {
+        \ '.*twitch\.tv.*': {
+            \ 'takeover': 'never'
+        \ }
+    \ }
+\ }
+
+" Symbol renaming.
+nmap cn <Plug>(coc-rename)
+
+" Apply AutoFix to problem on the current line.
+nmap cf  <Plug>(coc-fix-current)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
@@ -82,6 +101,6 @@ autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && !exists("g:started_b
 
 filetype plugin on
 set nocompatible
-
+set mouse=a
 set termguicolors
 

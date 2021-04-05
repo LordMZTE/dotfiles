@@ -6,6 +6,7 @@
       "rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
       "filetypes": ["haskell", "lhaskell"]
     }
-  }
+  },
+  "java.home": "/usr/lib/jvm/java-11-graalvm"
 }
 
