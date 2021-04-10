@@ -40,7 +40,7 @@ let g:airline_powerline_fonts = 1
 let g:neovide_iso_layout = v:true
 let NERDTreeShowHidden=1
 
-set guifont=Iosevka:12
+set guifont=Iosevka:h12
 nnoremap <silent> fzf :FZF<CR>
 
 " quick cursor movement while holding ctrl

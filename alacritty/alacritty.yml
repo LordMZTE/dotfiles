@@ -1,7 +1,7 @@
 background_opacity: 0.8
 
 env:
-    TERM: xterm-256color
+    TERM: xterm-kitty
 
 font:
     normal:
