@@ -54,6 +54,6 @@ export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HO
 ifpresent starship 'starship init fish | source'
 ifpresent zoxide 'zoxide init fish | source'
 ifpresent cod 'cod init %self fish | source'
-ifpresent navi 'navi widget fish | source'
 ifpresent opam 'eval (opam env)'
+ifpresent navi 'navi widget fish | source'
 
