@@ -12,6 +12,9 @@
             "filetypes": ["ocaml", "reason"]
         }
     },
-    "java.home": "/usr/lib/jvm/java-11-graalvm"
+    "java.home": "/usr/lib/jvm/java-11-graalvm",
+    "java.format.enabled": true,
+    "java.format.onType.enabled": true,
+    "java.format.settings.url": "/home/lordmzte/.config/coc/extensions/node_modules/redhat.java/https:/raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml"
 }
 
