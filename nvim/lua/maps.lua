@@ -39,3 +39,6 @@ map("n", "<space>o", ":CocList -I symbols<CR>", { silent = true })
 -- format code
 map("n", "cr", ":call CocActionAsync(\'format\')<CR>", { silent = true })
 
+-- Use <c-space> to trigger completion.
+map("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
+
