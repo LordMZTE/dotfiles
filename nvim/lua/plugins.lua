@@ -15,13 +15,18 @@ return require("packer").startup(function(use)
     use "tpope/vim-endwise"
     use "vimwiki/vimwiki"
     use {"glacambre/firenvim", run = function() vim.fn["firenvim#install"](0) end}
-    use "vim-airline/vim-airline"
-    use "vim-airline/vim-airline-themes"
     use "jreybert/vimagit"
     use "airblade/vim-gitgutter"
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
     use "honza/vim-snippets"
     use "sheerun/vim-polyglot"
+    use {
+        "glepnir/galaxyline.nvim",
+        branch = "main",
+        config = function()
+            require("statusline")
+        end
+    }
 end)
 
