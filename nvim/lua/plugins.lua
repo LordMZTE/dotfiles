@@ -5,7 +5,6 @@ return require("packer").startup(function(use)
 
     use {"neoclide/coc.nvim", branch = "release"}
     use "scrooloose/nerdtree"
-    use {"jdonaldson/vaxe", branch = "neovaxe", run = "sh install.sh"}
     use "Xuyuanp/nerdtree-git-plugin"
     use "tiagofumo/vim-nerdtree-syntax-highlight"
     use "ryanoasis/vim-devicons"
@@ -23,5 +22,6 @@ return require("packer").startup(function(use)
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
     use "honza/vim-snippets"
+    use "sheerun/vim-polyglot"
 end)
 
