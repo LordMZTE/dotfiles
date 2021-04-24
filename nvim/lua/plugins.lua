@@ -1,9 +1,17 @@
 vim.cmd  [[packadd packer.nvim]]
 
+local function pconf(plugin)
+    return "require(\"pluginconf." .. plugin .. "\")"
+end
+
 return require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
 
-    use {"neoclide/coc.nvim", branch = "release"}
+    use {
+        "neoclide/coc.nvim",
+        branch = "release",
+        config = pconf("coc")
+    }
     use "scrooloose/nerdtree"
     use "Xuyuanp/nerdtree-git-plugin"
     use "tiagofumo/vim-nerdtree-syntax-highlight"
@@ -17,9 +25,7 @@ return require("packer").startup(function(use)
     use {
         "glacambre/firenvim",
         run = function() vim.fn["firenvim#install"](0) end,
-        config = function()
-            require("pluginconf.firenvim")
-        end
+        config = pconf("firenvim")
     }
     use "jreybert/vimagit"
     use "airblade/vim-gitgutter"
@@ -30,9 +36,7 @@ return require("packer").startup(function(use)
     use {
         "glepnir/galaxyline.nvim",
         branch = "main",
-        config = function()
-            require("pluginconf.galaxyline")
-        end
+        config = pconf("galaxyline")
     }
 end)
 
