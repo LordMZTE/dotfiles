@@ -42,3 +42,6 @@ map("n", "cr", ":call CocActionAsync(\'format\')<CR>", { silent = true })
 -- Use <c-space> to trigger completion.
 map("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
 
+-- Use cd to jump to next diagnostic
+map("n", "cd", "<Plug>(coc-diagnostic-next)", { silent = true })
+

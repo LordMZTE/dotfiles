@@ -322,13 +322,11 @@ gls.right[4] = {
 gls.right[5] = {
     PerCent = {
         provider = "LinePercent",
-        separator = " ",
-        separator_highlight = {colors.darkblue, colors.darkblue},
         highlight = {colors.cyan, colors.darkblue, "bold"}
     }
 }
 
-gls.right[4] = {
+gls.right[6] = {
   ScrollBar = {
     provider = 'ScrollBar',
     highlight = {colors.blue,colors.purple},
