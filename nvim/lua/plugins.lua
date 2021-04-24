@@ -14,7 +14,13 @@ return require("packer").startup(function(use)
     use "jiangmiao/auto-pairs"
     use "tpope/vim-endwise"
     use "vimwiki/vimwiki"
-    use {"glacambre/firenvim", run = function() vim.fn["firenvim#install"](0) end}
+    use {
+        "glacambre/firenvim",
+        run = function() vim.fn["firenvim#install"](0) end,
+        config = function()
+            require("pluginconf.firenvim")
+        end
+    }
     use "jreybert/vimagit"
     use "airblade/vim-gitgutter"
     use "dag/vim-fish"
@@ -25,7 +31,7 @@ return require("packer").startup(function(use)
         "glepnir/galaxyline.nvim",
         branch = "main",
         config = function()
-            require("statusline")
+            require("pluginconf.galaxyline")
         end
     }
 end)

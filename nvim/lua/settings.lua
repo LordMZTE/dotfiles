@@ -19,16 +19,6 @@ g.NERDTreeShowHidden = true
 
 cmd("colorscheme dracula")
 
--- firenvim config
-local localSettings = {}
-localSettings[".*twitch\\.tv.*"] = {
-    takeover = "never"
-}
-
-g.firenvim_config = {
-    localSettings = localSettings
-}
-
 -- Highlight the symbol and its references when holding the cursor.
 cmd("autocmd CursorHold * silent call CocActionAsync('highlight')")
 
