@@ -1,6 +1,10 @@
 local blacklistedSites = {".*twitch\\.tv.*", ".*twitter\\.com.*"}
 
-local localSettings = {}
+local localSettings = {
+    [".*"] = {
+        cmdline = "neovim"
+    }
+}
 for _, site in pairs(blacklistedSites) do
     localSettings[site] = { takeover = "never" }
 end
