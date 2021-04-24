@@ -167,7 +167,7 @@ gls.left[2] = {
             vim.api.nvim_command("hi GalaxyViMode guibg=" .. mode_color[vim_mode])
             return alias[vim_mode] .. "   "
         end,
-        highlight = {colors.fg, colors.line_bg, "bold"}
+        highlight = {colors.line_bg, colors.line_bg, "bold"}
     }
 }
 gls.left[3] = {
@@ -248,11 +248,9 @@ gls.left[10] = {
 gls.left[11] = {
     LeftEnd = {
         provider = function()
-            return ""
+            return ""
         end,
         highlight = {colors.line_bg, colors.bg},
-        separator = "",
-        separator_highlight = {colors.line_bg, colors.bg}
     }
 }
 
@@ -304,6 +302,25 @@ gls.left[17] = {
 }
 
 gls.right[1] = {
+    BufferType = {
+        provider = "FileTypeName",
+        separator = "",
+        condition = has_file_type,
+        separator_highlight = {colors.line_bg, colors.bg},
+        highlight = {colors.fg, colors.line_bg}
+    }
+}
+
+gls.right[2] = {
+    TypeSep = {
+        provider = function()
+            return ""
+        end,
+        highlight = {colors.bg, colors.line_bg}
+    }
+}
+
+gls.right[3] = {
     FileFormat = {
         provider = "FileFormat",
         separator = "",
@@ -311,6 +328,7 @@ gls.right[1] = {
         highlight = {colors.fg, colors.line_bg, "bold"}
     }
 }
+
 gls.right[4] = {
     LineInfo = {
         provider = "LineColumn",
