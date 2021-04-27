@@ -17,7 +17,7 @@ return require("packer").startup(function(use)
     use "tiagofumo/vim-nerdtree-syntax-highlight"
     use "ryanoasis/vim-devicons"
     use "cespare/vim-toml"
-    use "~/go/src/github.com/junegunn/fzf"
+    use "junegunn/fzf"
     use {"dracula/vim", as = "dracula"}
     use "jiangmiao/auto-pairs"
     use "tpope/vim-endwise"
