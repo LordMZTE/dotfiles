@@ -12,6 +12,8 @@ wo.number = true
 o.guifont = "Iosevka:h12"
 o.mouse = "a"
 o.termguicolors = true
+wo.cursorline = true
+wo.cursorcolumn = true
 
 g.airline_powerline_fonts = 1
 g.neovide_iso_layout = true
