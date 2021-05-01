@@ -45,3 +45,6 @@ map("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
 -- Use cd to jump to next diagnostic
 map("n", "cd", "<Plug>(coc-diagnostic-next)", { silent = true })
 
+-- Use co to show outline
+map("n", "co", ":CocList outline<CR>", { silent = true })
+
