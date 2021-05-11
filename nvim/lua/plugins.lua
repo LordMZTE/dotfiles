@@ -18,7 +18,10 @@ return require("packer").startup(function(use)
     use "ryanoasis/vim-devicons"
     use "cespare/vim-toml"
     use "junegunn/fzf"
-    use {"dracula/vim", as = "dracula"}
+    use {
+        "dracula/vim",
+        as = "dracula"
+    }
     use "jiangmiao/auto-pairs"
     use "tpope/vim-endwise"
     use "vimwiki/vimwiki"
@@ -37,6 +40,16 @@ return require("packer").startup(function(use)
         "glepnir/galaxyline.nvim",
         branch = "main",
         config = pconf("galaxyline")
+    }
+    use {
+        "nvim-treesitter/nvim-treesitter",
+        run = ":TSUpdate",
+        config = pconf("treesitter")
+    }
+    use {
+        "euclio/vim-markdown-composer",
+        run = "cargo build --release",
+        config = pconf("markdowncomposer")
     }
 end)
 
