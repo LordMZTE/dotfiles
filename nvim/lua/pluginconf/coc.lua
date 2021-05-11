@@ -1,12 +1,13 @@
 vim.g.coc_global_extensions = {
-    "coc-snippets",
-    "coc-lua",
-    "coc-toml",
-    "coc-rust-analyzer",
-    "coc-json",
-    "coc-java",
-    "coc-haxe",
-    "coc-go",
+    "coc-clangd",
     "coc-fish",
-    "coc-clangd"
+    "coc-go",
+    "coc-haxe",
+    "coc-java",
+    "coc-json",
+    "coc-kotlin",
+    "coc-lua",
+    "coc-rust-analyzer",
+    "coc-snippets",
+    "coc-toml",
 }
