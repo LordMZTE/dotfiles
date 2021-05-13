@@ -18,11 +18,11 @@ map("n", "*p", "\"*p", { noremap = true })
 map("n", "*d", "\"*d", { noremap = true })
 
 -- symbol renaming
-map("n", "cn", "<Plug>(coc-rename)", { silent = true })
+map("n", "-n", "<Plug>(coc-rename)", { silent = true })
 -- apply AutoFix to problem on current line
-map("n", "cf", "<Plug>(coc-fix-current)", { silent = true })
+map("n", "-f", "<Plug>(coc-fix-current)", { silent = true })
 -- open action dialog
-map("n", "ca", ":CocAction<CR>", { silent = true })
+map("n", "-a", ":CocAction<CR>", { silent = true })
 
 -- GoTo code navigation.
 map("n", "gd", "<Plug>(coc-definition)", { silent = true })
@@ -37,14 +37,14 @@ map("n", "K", ":call CocActionAsync(\'doHover\')<CR>", { silent = true })
 map("n", "<space>o", ":CocList -I symbols<CR>", { silent = true })
 
 -- format code
-map("n", "cr", ":call CocActionAsync(\'format\')<CR>", { silent = true })
+map("n", "-r", ":call CocActionAsync(\'format\')<CR>", { silent = true })
 
 -- Use <c-space> to trigger completion.
 map("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
 
--- Use cd to jump to next diagnostic
-map("n", "cd", "<Plug>(coc-diagnostic-next)", { silent = true })
+-- Use -d to jump to next diagnostic
+map("n", "-d", "<Plug>(coc-diagnostic-next)", { silent = true })
 
--- Use co to show outline
-map("n", "co", ":CocList outline<CR>", { silent = true })
+-- Use -o to show outline
+map("n", "-o", ":CocList outline<CR>", { silent = true })
 
