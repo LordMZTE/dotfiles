@@ -207,6 +207,9 @@ bindsym $mod+Shift+z gaps outer current minus 5
 # background
 exec --no-startup-id nitrogen --restore
 
+# transparency
+exec xcompmgr -c -f -n 
+
 # border toggle
 bindsym $mod+b border toggle
 
