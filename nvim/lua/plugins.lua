@@ -22,7 +22,10 @@ return require("packer").startup(function(use)
         "dracula/vim",
         as = "dracula"
     }
-    use "jiangmiao/auto-pairs"
+    use {
+        "jiangmiao/auto-pairs",
+        config = pconf("autopairs")
+    }
     use "tpope/vim-endwise"
     use "vimwiki/vimwiki"
     use {
