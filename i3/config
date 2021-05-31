@@ -210,6 +210,9 @@ exec --no-startup-id nitrogen --restore
 # compositor
 exec picom -f -i 1
 
+# conky
+exec conky
+
 # border toggle
 bindsym $mod+b border toggle
 
