@@ -208,7 +208,7 @@ bindsym $mod+Shift+z gaps outer current minus 5
 exec --no-startup-id nitrogen --restore
 
 # compositor
-exec picom -f -i 1
+exec picom -f -i 1 --backend xrender    
 
 # conky
 exec conky
