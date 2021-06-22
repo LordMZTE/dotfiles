@@ -195,6 +195,9 @@ no_focus [class="plasmashell" window_type="notification"]
 # kill window which covers everything
 for_window [title="Desktop — Plasma"] kill, floating enable, border none
 
+# enable icons (requires git version of i3 at the moment)
+for_window [class=".*"] title_window_icon on
+
 # random settings
 focus_follows_mouse no
 
