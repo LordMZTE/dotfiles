@@ -12,9 +12,6 @@ return require("packer").startup(function(use)
         branch = "release",
         config = pconf("coc")
     }
-    use "scrooloose/nerdtree"
-    use "Xuyuanp/nerdtree-git-plugin"
-    use "tiagofumo/vim-nerdtree-syntax-highlight"
     use "ryanoasis/vim-devicons"
     use "cespare/vim-toml"
     use "junegunn/fzf"
@@ -54,5 +51,10 @@ return require("packer").startup(function(use)
         run = "cargo build --release",
         config = pconf("markdowncomposer")
     }
+
+    use "kassio/neoterm"
+
+    use "kyazdani42/nvim-web-devicons"
+    use "kyazdani42/nvim-tree.lua"
 end)
 

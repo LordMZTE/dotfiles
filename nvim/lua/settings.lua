@@ -16,8 +16,13 @@ wo.cursorline = true
 wo.cursorcolumn = true
 
 g.airline_powerline_fonts = 1
+g.neoterm_default_mod = "tab"
 g.neovide_iso_layout = true
-g.NERDTreeShowHidden = true
+g.nvim_tree_auto_close = 1
+
+if not g.started_by_firenvim then
+    g.nvim_tree_auto_open = 1
+end
 
 cmd("colorscheme dracula")
 
@@ -25,7 +30,6 @@ cmd("colorscheme dracula")
 cmd("autocmd CursorHold * silent call CocActionAsync('highlight')")
 
 cmd("autocmd StdinReadPre * let s:std_in=1")
-cmd("autocmd VimEnter * if argc() == 0 && !exists('s:std_in') && !exists('g:started_by_firenvim') | NERDTree | endif")
 
 cmd("filetype plugin on")
 
