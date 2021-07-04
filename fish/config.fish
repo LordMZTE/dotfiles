@@ -8,7 +8,7 @@ alias la="ll -a"
 alias lt="ll --tree"
 alias clip="xclip -sel clip"
 alias nv="nvim"
-alias nvide="rbg neovide --multiGrid"
+alias nvide="rbg neovide --multiGrid --"
 
 function rbg
     $argv &>/dev/null&
