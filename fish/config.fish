@@ -58,10 +58,12 @@ ifpresent opam 'eval (opam env)'
 ifpresent navi 'navi widget fish | source'
 
 # fw init
-if test -x (command -v fw)
-  if test -x (command -v fzf)
-    fw print-fish-setup -f | source
-  else
-    fw print-fish-setup | source
-  end
+if which fw &> /dev/null
+    if test -x (command -v fw)
+        if test -x (command -v fzf)
+            fw print-fish-setup -f | source
+        else
+            fw print-fish-setup | source
+        end
+    end
 end
