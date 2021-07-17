@@ -56,5 +56,5 @@ return require("packer").startup(function(use)
 
     use "kyazdani42/nvim-web-devicons"
     use "kyazdani42/nvim-tree.lua"
+    use { 'TimUntersberger/neogit', requires = 'nvim-lua/plenary.nvim' }
 end)
-
