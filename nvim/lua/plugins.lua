@@ -30,7 +30,6 @@ return require("packer").startup(function(use)
         run = function() vim.fn["firenvim#install"](0) end,
         config = pconf("firenvim")
     }
-    use "jreybert/vimagit"
     use "airblade/vim-gitgutter"
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
