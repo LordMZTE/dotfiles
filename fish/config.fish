@@ -9,6 +9,7 @@ alias lt="ll --tree"
 alias clip="xclip -sel clip"
 alias nv="nvim"
 alias nvide="rbg neovide --multiGrid --"
+alias diff="nvim -d"
 
 function rbg
     $argv &>/dev/null&
