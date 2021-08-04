@@ -222,6 +222,9 @@ bindsym $mod+b border toggle
 # rofi
 bindsym Mod1+space exec rofi -show combi
 
+# flameshot
+bindsym $mod+c exec flameshot gui
+
 # dracula theme
 # class                 border  bground text    indicator child_border
 client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
