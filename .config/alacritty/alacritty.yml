@@ -1,18 +1,21 @@
 background_opacity: 0.8
 
 env:
-    TERM: xterm-kitty
+  TERM: xterm-kitty
 
 font:
-    normal:
-        family: "Iosevka Nerd Font"
+  normal:
+    family: "Iosevka Nerd Font"
 
 bell:
-    duration: 20
+  duration: 20
 
 shell:
-    program: "tmux"
+  program: "tmux"
 
+key_bindings:
+  - { key: Plus, mods: Control, action: IncreaseFontSize }
+  - { key: Minus, mods: Control, action: DecreaseFontSize }
 
 # DRACULA THEME
 colors:
