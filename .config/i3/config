@@ -239,6 +239,8 @@ bar {
   font pango:Iosevka
   position top
   status_command ~/.config/i3/i3status
+  # spaces around separator
+  separator_symbol  |
   colors {
     background #282A36
     statusline #F8F8F2
