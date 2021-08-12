@@ -125,7 +125,7 @@ pub(crate) async fn battery(bar: Arc<RwLock<Bar>>) {
         let txt;
         if let Some(s) = out {
             if let Some(bat) = s.lines().next() {
-                let percent = bat.split(' ').find(|s| s.contains('%')).unwrap_or("0%");
+                let percent = bat.split(&[' ', ','][..]).find(|s| s.contains('%')).unwrap_or("0%");
                 let state = if bat.contains("Charging") {
                     BatteryState::Charging
                 } else if bat.contains("Discharging") {
