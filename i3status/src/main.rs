@@ -25,6 +25,10 @@ async fn main() {
                 color: colors::CYAN,
             },
             Block {
+                full_text: format!(" {:>6}", &bar.cpu_usage),
+                color: colors::RED,
+            },
+            Block {
                 full_text: format!(" {}", &bar.ram),
                 color: colors::PURPLE,
             },
@@ -51,15 +55,16 @@ async fn spawn_workers(bar: Arc<RwLock<Bar>>) {
     tokio::spawn(workers::ram(Arc::clone(&bar)));
     tokio::spawn(workers::time(Arc::clone(&bar)));
     tokio::spawn(workers::pulseaudio_vol(Arc::clone(&bar)));
-    tokio::spawn(workers::cpu_freq(Arc::clone(&bar)));
+    tokio::spawn(workers::cpu(Arc::clone(&bar)));
     tokio::spawn(workers::battery(Arc::clone(&bar)));
 }
 
 #[derive(Default)]
 struct Bar {
+    battery: String,
+    cpu_freq: String,
+    cpu_usage: String,
     ram: String,
     time: String,
     vol: String,
-    cpu_freq: String,
-    battery: String,
 }

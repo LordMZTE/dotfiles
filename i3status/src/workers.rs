@@ -1,12 +1,12 @@
 use crate::Bar;
 use chrono::Local;
-use heim::units::frequency::megahertz;
-use heim::{memory::os::linux::MemoryExt, units::information::megabyte};
+use heim::{
+    memory::os::linux::MemoryExt,
+    units::{frequency::megahertz, information::megabyte, ratio},
+};
 
-use std::sync::Arc;
-use std::time::Duration;
-use tokio::process::Command;
-use tokio::sync::RwLock;
+use std::{sync::Arc, time::Duration};
+use tokio::{process::Command, sync::RwLock};
 
 pub(crate) async fn ram(bar: Arc<RwLock<Bar>>) {
     let mut int = tokio::time::interval(Duration::from_secs(1));
@@ -80,7 +80,7 @@ pub(crate) async fn pulseaudio_vol(bar: Arc<RwLock<Bar>>) {
                 let symbol = if mute { '遼' } else { '蓼' };
 
                 msg = format!("{} {}%", symbol, avg);
-            }
+            },
             None => msg = String::from("PA Error :("),
         }
 
@@ -89,19 +89,38 @@ pub(crate) async fn pulseaudio_vol(bar: Arc<RwLock<Bar>>) {
     }
 }
 
-pub(crate) async fn cpu_freq(bar: Arc<RwLock<Bar>>) {
+pub(crate) async fn cpu(bar: Arc<RwLock<Bar>>) {
     let mut int = tokio::time::interval(Duration::from_secs(2));
 
     loop {
         let freq = heim::cpu::frequency().await;
-        let txt;
+        // need to take this twice and subtract for... reasons!
+        let usage_1 = heim::cpu::usage().await;
+        tokio::time::sleep(Duration::from_millis(200)).await;
+        let usage_2 = heim::cpu::usage().await;
+
+        let freq_txt;
         if let Ok(freq) = freq {
             let freq = freq.current().get::<megahertz>();
-            txt = format!("{}MHz", freq);
+            freq_txt = format!("{}MHz", freq);
         } else {
-            txt = String::from("Error reading CPU frequency :(");
+            freq_txt = String::from("Error reading CPU frequency :(");
         }
-        bar.write().await.cpu_freq = txt;
+
+        let usage_txt;
+        if let (Ok(usage_1), Ok(usage_2)) = (usage_1, usage_2) {
+            let usage = (usage_2 - usage_1).get::<ratio::percent>() / 10.;
+            usage_txt = format!("{:.1}%", usage);
+        } else {
+            usage_txt = String::from("Error reading CPU usage :(");
+        }
+
+        {
+            let mut bar = bar.write().await;
+            bar.cpu_freq = freq_txt;
+            bar.cpu_usage = usage_txt;
+        }
+
         int.tick().await;
     }
 }
@@ -125,7 +144,10 @@ pub(crate) async fn battery(bar: Arc<RwLock<Bar>>) {
         let txt;
         if let Some(s) = out {
             if let Some(bat) = s.lines().next() {
-                let percent = bat.split(&[' ', ','][..]).find(|s| s.contains('%')).unwrap_or("0%");
+                let percent = bat
+                    .split(&[' ', ','][..])
+                    .find(|s| s.contains('%'))
+                    .unwrap_or("0%");
                 let state = if bat.contains("Charging") {
                     BatteryState::Charging
                 } else if bat.contains("Discharging") {

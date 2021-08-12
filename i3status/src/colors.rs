@@ -8,4 +8,3 @@ pub const PURPLE: &str = "#bd93f9";
 pub const RED: &str = "#ff5555";
 pub const WHITE: &str = "#f8f8f2";
 pub const YELLOW: &str = "#f1fa8c";
-
