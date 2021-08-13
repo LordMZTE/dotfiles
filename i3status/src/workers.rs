@@ -4,6 +4,11 @@ use heim::{
     memory::os::linux::MemoryExt,
     units::{frequency::megahertz, information::megabyte, ratio},
 };
+use std::process::Stdio;
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    process::Child,
+};
 
 use std::{sync::Arc, time::Duration};
 use tokio::{process::Command, sync::RwLock};
@@ -40,7 +45,22 @@ pub(crate) async fn time(bar: Arc<RwLock<Bar>>) {
 }
 
 pub(crate) async fn pulseaudio_vol(bar: Arc<RwLock<Bar>>) {
-    let mut int = tokio::time::interval(Duration::from_secs(2));
+    let child = Command::new("pactl")
+        .arg("subscribe")
+        .stdout(Stdio::piped())
+        .spawn();
+    dbg!(&child);
+    let stdout = match child {
+        Ok(Child {
+            stdout: Some(stdout),
+            ..
+        }) => stdout,
+        _ => {
+            bar.write().await.vol = String::from("failed to spawn pactl :(");
+            return;
+        },
+    };
+    let mut stdout = BufReader::new(stdout);
 
     loop {
         let res = Command::new("pactl")
@@ -85,7 +105,13 @@ pub(crate) async fn pulseaudio_vol(bar: Arc<RwLock<Bar>>) {
         }
 
         bar.write().await.vol = msg;
-        int.tick().await;
+        loop {
+            let mut buf = String::new();
+            let _ = stdout.read_line(&mut buf).await;
+            if buf.contains("change") {
+                break;
+            }
+        }
     }
 }
 
