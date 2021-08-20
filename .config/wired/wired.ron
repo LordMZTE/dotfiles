@@ -11,7 +11,7 @@
         hook: Hook(parent_anchor: TL, self_anchor: TL),
         offset: Vec2(x: 25.0, y: 25.0),
         params: NotificationBlock((
-            background_color: Color(hex: "#282a36"),
+            background_color: Color(hex: "#d0282a36"),
             border_color: Color(hex: "#50fa7b"),
             border_color_critical: Color(hex: "#ff5555"),
             border_color_low: Color(hex: "#6272a4"),
