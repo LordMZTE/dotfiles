@@ -9,7 +9,15 @@ alias lt="ll --tree"
 alias clip="xclip -sel clip"
 alias nv="nvim"
 alias nvide="rbg neovide --multiGrid --"
-alias diff="nvim -d"
+
+# colored man pages
+set -gx LESS_TERMCAP_mb \e'[1;32m'
+set -gx LESS_TERMCAP_md \e'[1;32m'
+set -gx LESS_TERMCAP_me \e'[0m'
+set -gx LESS_TERMCAP_se \e'[0m'
+set -gx LESS_TERMCAP_so \e'[01;33m'
+set -gx LESS_TERMCAP_ue \e'[0m'
+set -gx LESS_TERMCAP_us \e'[1;4;31m'
 
 function rbg
     $argv &>/dev/null&
