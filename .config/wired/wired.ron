@@ -31,7 +31,7 @@
         params: ScrollingTextBlock((
             color: Color(hex: "#8be9fd"),
             ellipsize: End,
-            font: "Iosevka Bold 10",
+            font: "Iosevka Bold 12",
             lhs_dist: 25.0,
             padding: Padding(left: 8.0, right: 8.0, top: 8.0, bottom: 4.0),
             rhs_dist: 25.0,
@@ -51,7 +51,7 @@
             text: "%b",
             color: Color(hex: "#f8f8f2"),
             ellipsize: End,
-            font: "Iosevka Bold 10",
+            font: "Iosevka Bold 12",
             padding: Padding(left: 8.0, right: 8.0, top: 0.0, bottom: 8.0),
             dimensions: (
                 width: (min: 50, max: 500),
