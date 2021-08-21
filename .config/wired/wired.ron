@@ -77,7 +77,7 @@
     ],
 
     shortcuts: ShortcutsConfig (
-        notification_action1: 1,
+        notification_action1_and_close: 1,
         notification_close: 2,
         notification_closeall: 3,
     ),
