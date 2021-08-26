@@ -79,6 +79,7 @@
         parent: "body",
         hook: Hook(parent_anchor: BR, self_anchor: TR),
         offset: Vec2(x: 0.0, y: 0.0),
+        render_criteria: [Progress],
         params: ProgressBlock((
             background_color: Color(hex: "#00000000"),
             border_color: Color(hex: "#ff79c6"),
