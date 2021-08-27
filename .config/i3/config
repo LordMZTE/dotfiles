@@ -213,6 +213,9 @@ exec picom -f -i 1 -c -l -10 -t -10 -r 25
 # conky
 exec conky
 
+# wired notification daemon
+exec wired
+
 # border toggle
 bindsym $mod+b border toggle
 
