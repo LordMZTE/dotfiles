@@ -1,4 +1,41 @@
-local map = vim.api.nvim_set_keymap
+map = vim.api.nvim_set_keymap
+
+function escape_keycode(keycode)
+    return vim.api.nvim_replace_termcodes(keycode, true, true, true)
+end
+
+local function check_back_space()
+  local col = vim.fn.col(".") - 1
+  return col <= 0 or vim.fn.getline("."):sub(col, col):match("%s")
+end
+
+function tab_completion()
+  if vim.fn.pumvisible() > 0 then
+    return escape_keycode("<C-n>")
+  end
+
+  if check_back_space() then
+    return escape_keycode("<TAB>")
+  end
+
+  return vim.fn["coc#refresh"]()
+end
+
+function shift_tab_completion()
+    if vim.fn.pumvisible() > 0 then
+        return escape_keycode("<C-p>")
+    else
+        return escape_keycode("<C-h>")
+    end
+end
+
+function cr_completion()
+    if vim.fn.pumvisible() > 0 then
+        return vim.fn["coc#_select_confirm"]()
+    else
+        return escape_keycode("<CR>")
+    end
+end
 
 -- Getting stuck in ~~vim~~ terminal
 map("t", "<Esc>", "<C-\\><C-n>", {})
@@ -16,6 +53,10 @@ map("n", "+d", "\"+d", { noremap = true })
 map("n", "*y", "\"*y", { noremap = true })
 map("n", "*p", "\"*p", { noremap = true })
 map("n", "*d", "\"*d", { noremap = true })
+
+map("i", "<TAB>", "v:lua.tab_completion()", { expr = true })
+map("i", "<S-TAB>", "v:lua.shift_tab_completion()", { expr = true })
+map("i", "<CR>", "v:lua.cr_completion()", { expr = true })
 
 -- symbol renaming
 map("n", "-n", "<Plug>(coc-rename)", { silent = true })
@@ -47,4 +88,3 @@ map("n", "-d", "<Plug>(coc-diagnostic-next)", { silent = true })
 
 -- Use -o to show outline
 map("n", "-o", ":CocList outline<CR>", { silent = true })
-

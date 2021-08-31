@@ -1,3 +1,5 @@
+coc = {}
+
 vim.g.coc_global_extensions = {
     "coc-clangd",
     "coc-fish",
@@ -18,16 +20,30 @@ local function check_back_space()
   return col <= 0 or vim.fn.getline("."):sub(col, col):match("%s")
 end
 
-function tab_completion()
+function coc.tab_completion()
   if vim.fn.pumvisible() > 0 then
-    return vim.api.nvim_replace_termcodes("<C-n>", true, true, true)
+    return escape_keycode("<C-n>")
   end
 
   if check_back_space() then
-    return vim.api.nvim_replace_termcodes("<TAB>", true, true, true)
+    return escape_keycode("<TAB>")
   end
 
   return vim.fn["coc#refresh"]()
 end
 
-vim.api.nvim_set_keymap("i", "<TAB>", "v:lua.tab_completion()", { expr = true, noremap = false })
+function coc.shift_tab_completion()
+    if vim.fn.pumvisible() > 0 then
+        return escape_keycode("<C-p>")
+    else
+        return escape_keycode("<C-h>")
+    end
+end
+
+function coc.cr_completion()
+    if vim.fn.pumvisible() > 0 then
+        return vim.fn["coc#_select_confirm"]()
+    else
+        return escape_keycode([[\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>]])
+    end
+end
