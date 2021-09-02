@@ -8,7 +8,7 @@ alias la="ll -a"
 alias lt="ll --tree"
 alias clip="xclip -sel clip"
 alias nv="nvim"
-alias nvide="rbg neovide --multiGrid --"
+alias nvide="rbg neovide --multigrid --"
 
 # colored man pages
 set -gx LESS_TERMCAP_mb \e'[1;32m'
