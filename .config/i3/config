@@ -222,8 +222,8 @@ bindsym $mod+b border toggle
 # rofi
 bindsym Mod1+space exec rofi -show combi
 
-# rofimoji
-bindsym $mod+Mod1+space exec rofimoji
+# rofi emoji
+bindsym $mod+Mod1+space exec rofi -show emoji
 
 # flameshot
 bindsym Print exec flameshot gui
