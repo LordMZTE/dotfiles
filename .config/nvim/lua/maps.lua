@@ -39,7 +39,10 @@ end
 
 -- Getting stuck in ~~vim~~ terminal
 map("t", "<Esc>", "<C-\\><C-n>", {})
-map("n", "fzf", ":FZF<CR>", { silent = true })
+
+-- telescope
+map("n", "ff", "<cmd>Telescope find_files<cr>", { silent = true })
+map("n", "fg", "<cmd>Telescope live_grep<cr>", { silent = true })
 
 -- Quick cursor movement
 map("n", "<C-Down>", "5j", { noremap = true })

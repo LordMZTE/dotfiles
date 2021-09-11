@@ -14,7 +14,6 @@ return require("packer").startup(function(use)
     }
     use "ryanoasis/vim-devicons"
     use "cespare/vim-toml"
-    use "junegunn/fzf"
     use {
         "dracula/vim",
         as = "dracula"
@@ -59,4 +58,11 @@ return require("packer").startup(function(use)
         requires = "nvim-lua/plenary.nvim"
     }
     use "ron-rs/ron.vim"
+
+    use {
+      "nvim-telescope/telescope.nvim",
+      requires = "nvim-lua/plenary.nvim",
+      config = pconf("telescope")
+    }
 end)
+
