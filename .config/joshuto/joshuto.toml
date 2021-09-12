@@ -1,0 +1,33 @@
+# currently does not work
+scroll_offset = 6
+
+xdg_open = false
+use_trash = true
+
+[display]
+automatically_count_files = false
+collapse_preview = true
+# ratios for parent view, current view and preview
+column_ratio = [1, 4, 4]
+show_borders = true
+show_hidden = false
+show_icons = true
+show_preview = true
+tilde_in_titlebar = true
+
+[display.sort]
+# lexical, mtime, natural
+method = "lexical"
+case_sensitive = false
+directories_first = true
+reverse = false
+
+# Not fully implemented yet
+#[preview]
+#max_preview_size = 2097152 # 2MB
+#preview_images = true
+#preview_script = "~/.config/joshuto/preview.sh"
+
+[tab]
+# inherit, home, root
+home_page = "inherit"
