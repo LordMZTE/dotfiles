@@ -3,204 +3,207 @@
 
 [[mapcommand]]
 command = "new_tab"
-keys = [ "T" ]
+keys = ["T"]
 
 [[mapcommand]]
 command = "new_tab"
-keys = [ "ctrl+t" ]
+keys = ["ctrl+t"]
 [[mapcommand]]
 command = "close_tab"
-keys = [ "W" ]
+keys = ["W"]
 [[mapcommand]]
 command = "close_tab"
-keys = [ "ctrl+w" ]
+keys = ["ctrl+w"]
 [[mapcommand]]
 command = "close_tab"
-keys = [ "q" ]
+keys = ["q"]
 [[mapcommand]]
 command = "force_quit"
-keys = [ "Q" ]
+keys = ["Q"]
 [[mapcommand]]
 command = "reload_dirlist"
-keys = [ "R" ]
+keys = ["R"]
 [[mapcommand]]
 command = "toggle_hidden"
-keys = [ "z", "h" ]
+keys = ["z", "h"]
 
 [[mapcommand]]
 command = "tab_switch 1"
-keys = [ "\t" ]
+keys = ["\t"]
 [[mapcommand]]
 command = "tab_switch -1"
-keys = [ "backtab" ]
+keys = ["backtab"]
 
 [[mapcommand]]
 command = "cursor_move_up"
-keys = [ "arrow_up" ]
+keys = ["arrow_up"]
 [[mapcommand]]
 command = "cursor_move_up"
-keys = [ "k" ]
+keys = ["k"]
 [[mapcommand]]
 command = "cursor_move_up 10"
-keys = [ "ctrl+u" ]
+keys = ["ctrl+u"]
 [[mapcommand]]
 command = "cursor_move_down 10"
-keys = [ "ctrl+d" ]
+keys = ["ctrl+d"]
 [[mapcommand]]
 command = "cursor_move_down"
-keys = [ "arrow_down" ]
+keys = ["arrow_down"]
 [[mapcommand]]
 command = "cursor_move_down"
-keys = [ "j" ]
+keys = ["j"]
 [[mapcommand]]
 command = "cursor_move_end"
-keys = [ "end" ]
+keys = ["end"]
 [[mapcommand]]
 command = "cursor_move_end"
-keys = [ "G" ]
+keys = ["G"]
 [[mapcommand]]
 command = "cursor_move_home"
-keys = [ "home" ]
+keys = ["home"]
 [[mapcommand]]
 command = "cursor_move_home"
-keys = [ "g", "g" ]
+keys = ["g", "g"]
 [[mapcommand]]
 command = "cursor_move_page_up"
-keys = [ "page_up" ]
+keys = ["page_up"]
 [[mapcommand]]
 command = "cursor_move_page_down"
-keys = [ "page_down" ]
+keys = ["page_down"]
 
 [[mapcommand]]
 command = "parent_cursor_move_up"
-keys = [ "[" ]
+keys = ["["]
 [[mapcommand]]
 command = "parent_cursor_move_down"
-keys = [ "]" ]
+keys = ["]"]
 
 [[mapcommand]]
 command = "open"
-keys = [ "arrow_right" ]
+keys = ["arrow_right"]
 [[mapcommand]]
 command = "open"
-keys = [ "l" ]
+keys = ["l"]
 [[mapcommand]]
 command = "open"
-keys = [ "\n" ]
+keys = ["\n"]
 [[mapcommand]]
 command = "open_with"
-keys = [ "r" ]
+keys = ["r"]
 
 [[mapcommand]]
 command = ":cd "
-keys = [ "c", "d" ]
+keys = ["c", "d"]
 [[mapcommand]]
 command = "cd .."
-keys = [ "arrow_left" ]
+keys = ["arrow_left"]
 [[mapcommand]]
 command = "cd .."
-keys = [ "h" ]
+keys = ["h"]
 
 [[mapcommand]]
 command = "cut_files"
-keys = [ "d", "d" ]
+keys = ["d", "d"]
 [[mapcommand]]
 command = "copy_files"
-keys = [ "y", "y" ]
+keys = ["y", "y"]
 [[mapcommand]]
 command = "copy_filename"
-keys = [ "y", "n" ]
+keys = ["y", "n"]
 [[mapcommand]]
 command = "copy_filename_without_extension"
-keys = [ "y", "." ]
+keys = ["y", "."]
 [[mapcommand]]
 command = "copy_filepath"
-keys = [ "y", "p" ]
+keys = ["y", "p"]
 [[mapcommand]]
 command = "copy_dirname"
-keys = [ "y", "d" ]
+keys = ["y", "d"]
 [[mapcommand]]
 command = "paste_files"
-keys = [ "p", "p" ]
+keys = ["p", "p"]
 [[mapcommand]]
 command = "paste_files --overwrite=true"
-keys = [ "p", "o" ]
+keys = ["p", "o"]
 [[mapcommand]]
 command = "delete_files"
-keys = [ "d", "D" ]
+keys = ["d", "D"]
 [[mapcommand]]
 command = "delete_files"
-keys = [ "delete" ]
+keys = ["delete"]
 
 [[mapcommand]]
 command = "rename_append"
-keys = [ "a" ]
+keys = ["a"]
 [[mapcommand]]
 command = "rename_prepend"
-keys = [ "A" ]
+keys = ["A"]
 
 [[mapcommand]]
 command = "select --toggle=true"
-keys = [ " " ]
+keys = [" "]
 [[mapcommand]]
 command = "select --toggle=true --all=true"
-keys = [ "t" ]
+keys = ["t"]
 
 [[mapcommand]]
+command = "search_skim"
+keys = ["f", "f"]
+[[mapcommand]]
 command = ":search "
-keys = [ "/" ]
+keys = ["/"]
 [[mapcommand]]
 command = ":search_glob "
-keys = [ "\\" ]
+keys = ["\\"]
 [[mapcommand]]
 command = "search_next"
-keys = [ "n" ]
+keys = ["n"]
 [[mapcommand]]
 command = "search_prev"
-keys = [ "N" ]
+keys = ["N"]
 
 [[mapcommand]]
 command = "bulk_rename"
-keys = [ "b", "b" ]
+keys = ["b", "b"]
 [[mapcommand]]
 command = "set_mode"
-keys = [ "=" ]
+keys = ["="]
 
 [[mapcommand]]
 command = ":"
-keys = [ ";" ]
+keys = [";"]
 [[mapcommand]]
 command = ":"
-keys = [ ":" ]
+keys = [":"]
 [[mapcommand]]
 command = ":mkdir "
-keys = [ "m", "k" ]
+keys = ["m", "k"]
 [[mapcommand]]
 command = ":rename "
-keys = [ "c", "w" ]
+keys = ["c", "w"]
 [[mapcommand]]
 command = ":touch"
-keys = [ "f", "t" ]
+keys = ["f", "t"]
 
 [[mapcommand]]
 command = "sort lexical"
-keys = [ "s", "l" ]
+keys = ["s", "l"]
 [[mapcommand]]
 command = "sort mtime"
-keys = [ "s", "m" ]
+keys = ["s", "m"]
 [[mapcommand]]
 command = "sort natural"
-keys = [ "s", "n" ]
+keys = ["s", "n"]
 [[mapcommand]]
 command = "sort ext"
-keys = [ "s", "e" ]
+keys = ["s", "e"]
 [[mapcommand]]
 command = "sort reverse"
-keys = [ "s", "r" ]
+keys = ["s", "r"]
 
 [[mapcommand]]
 command = "cd /"
-keys = [ "g", "/" ]
+keys = ["g", "/"]
 [[mapcommand]]
 command = "cd /etc"
-keys = [ "g", "e" ]
+keys = ["g", "e"]
