@@ -1,0 +1,34 @@
+#!/usr/bin/env lua
+local function run(cmd)
+    -- check if the command exists
+    local pname = cmd:gmatch("%S+")()
+    local handle = io.popen("which " .. pname .. " 2> /dev/null")
+    handle:read("*a")
+    _, _, exit_code = handle:close()
+
+    if exit_code == 0 then
+        print("running \27[32m" .. cmd .. "\27[0m\n")
+        os.execute(cmd)
+    else
+        print("\27[31mCouldn't find process with name " .. pname .. "\27[0m in path.")
+    end
+end
+
+-- commands that require interaction
+local function run_fg()
+    run [[nvim '+:PackerSync' '+:CocUpdate' '+:TSUpdate']]
+end
+
+-- commands that require no interaction
+local function run_bg(args)
+    run [[paru -Syu --noconfirm]]
+    run [[rustup update]]
+end
+
+-- if "bg" was passed as argument, only run uninteractive commands
+if arg[1] ~= "bg" then
+    run_fg()
+end
+
+run_bg()
+
