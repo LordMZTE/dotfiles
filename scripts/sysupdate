@@ -23,6 +23,7 @@ end
 local function run_bg(args)
     run [[paru -Syu --noconfirm]]
     run [[rustup update]]
+    run [[fw sync]]
 end
 
 -- if "bg" was passed as argument, only run uninteractive commands
