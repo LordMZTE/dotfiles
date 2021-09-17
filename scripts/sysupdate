@@ -7,7 +7,19 @@ local function run(cmd)
     _, _, exit_code = handle:close()
 
     if exit_code == 0 then
-        print("running \27[32m" .. cmd .. "\27[0m\n")
+        -- 8 is len of text around "running" prompt
+        local len = #cmd + 8
+        local hr = string.rep("=", len)
+        
+        print(
+            string.format(
+                "%s\nrunning \27[32m%s\27[0m\n%s\n",
+                hr,
+                cmd,
+                hr
+            )
+        )
+        
         os.execute(cmd)
     else
         print("\27[31mCouldn't find process with name " .. pname .. "\27[0m in path.")
