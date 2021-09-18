@@ -13,7 +13,10 @@ return require("packer").startup(function(use)
         config = pconf("coc")
     }
     use "ryanoasis/vim-devicons"
-    use "cespare/vim-toml"
+    use {
+        "cespare/vim-toml",
+        branch = "main"
+    }
     use {
         "dracula/vim",
         as = "dracula"
