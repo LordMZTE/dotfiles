@@ -55,17 +55,24 @@ return require("packer").startup(function(use)
     use "kassio/neoterm"
 
     use "kyazdani42/nvim-web-devicons"
-    use "kyazdani42/nvim-tree.lua"
+
+    use {
+        'kyazdani42/nvim-tree.lua',
+        requires = 'kyazdani42/nvim-web-devicons',
+        config = pconf("nvimtree")
+    }
+
     use {
         "TimUntersberger/neogit",
         requires = "nvim-lua/plenary.nvim"
     }
+
     use "ron-rs/ron.vim"
 
     use {
-      "nvim-telescope/telescope.nvim",
-      requires = "nvim-lua/plenary.nvim",
-      config = pconf("telescope")
+        "nvim-telescope/telescope.nvim",
+        requires = "nvim-lua/plenary.nvim",
+        config = pconf("telescope")
     }
 end)
 
