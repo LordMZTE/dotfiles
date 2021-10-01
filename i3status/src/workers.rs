@@ -23,7 +23,7 @@ pub(crate) async fn ram(bar: Arc<RwLock<Bar>>) {
             ram = format!(
                 "{}MB/{}MB",
                 mem.used().get::<megabyte>(),
-                mem.free().get::<megabyte>()
+                mem.available().get::<megabyte>()
             );
         } else {
             ram = String::from("error reading ram :(");
