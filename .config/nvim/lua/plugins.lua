@@ -74,5 +74,6 @@ return require("packer").startup(function(use)
         requires = "nvim-lua/plenary.nvim",
         config = pconf("telescope")
     }
+    use "gluon-lang/vim-gluon"
 end)
 
