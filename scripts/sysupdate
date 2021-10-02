@@ -27,7 +27,7 @@ let run cmd =
              (String.concat " "
                 [ "Command"; cmd; "exited with code"; string_of_int status ]))
   | _ ->
-      Stdlib.print_endline (String.concat " " [ "Command"; cmd; "not found." ])
+      String.concat " " [ "Command"; cmd; "not found." ] |> Stdlib.print_endline
 
 let () =
   Clap.description "Update the system";

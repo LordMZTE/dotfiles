@@ -1,18 +1,24 @@
-#!/bin/sh
+#!/usr/bin/env scriptisto
 
-# play a twitch stream using streamlink
+(*
+  scriptisto-begin
+  script_src: playtwitch.ml
+  build_cmd: dune build playtwitch.exe
+  target_bin: ./_build/default/playtwitch.exe
+  files:
+   - path: dune
+     content: (executable (name playtwitch) (libraries clap))
+  scriptisto-end
+*)
 
-__usage="
-USAGE:
-    $0 <stream_name> [quality]
+Clap.description "play a twitch stream using streamlink";
+let stream_name = Clap.mandatory_string ~placeholder:"stream_name" () in
+let quality = Clap.default_string ~placeholder:"quality" "best" in
+Clap.close ();
 
-ARGS:
-    <stream_name>   Name of the stream to play
-    [quality]       quality to use [default: best]
-"
+let stream_name = "https://twitch.tv/" ^ stream_name in
 
-if [ -z $1 ] || [ $# -gt 2 ] || [ $1 = "--help" ]; then
-    echo -e "$__usage"
-else
-    streamlink https://twitch.tv/$1 ${2:-best}
-fi
+let exit =
+  String.concat " " [ "streamlink"; stream_name; quality ] |> Sys.command
+in
+if exit != 0 then Stdlib.print_endline "streamlink crashed :("
