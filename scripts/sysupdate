@@ -1,47 +1,42 @@
-#!/usr/bin/env lua
-local function run(cmd)
-    -- check if the command exists
-    local pname = cmd:gmatch("%S+")()
-    local handle = io.popen("which " .. pname .. " 2> /dev/null")
-    handle:read("*a")
-    _, _, exit_code = handle:close()
+#!/usr/bin/env scriptisto
 
-    if exit_code == 0 then
-        -- 8 is len of text around "running" prompt
-        local len = #cmd + 8
-        local hr = string.rep("=", len)
-        
-        print(
-            string.format(
-                "%s\nrunning \27[32m%s\27[0m\n%s\n",
-                hr,
-                cmd,
-                hr
-            )
-        )
-        
-        os.execute(cmd)
-    else
-        print("\27[31mCouldn't find process with name " .. pname .. "\27[0m in path.")
-    end
-end
+(*
+  scriptisto-begin
+  script_src: sysupdate.ml
+  build_cmd: dune build sysupdate.exe
+  target_bin: ./_build/default/sysupdate.exe
+  files:
+   - path: dune
+     content: (executable (name sysupdate) (libraries clap unix))
+  scriptisto-end
+*)
+let run cmd =
+  let splits = String.split_on_char ' ' cmd in
+  let pipe = Unix.open_process_in ("which " ^ (List.nth splits 0)) in
+  let status = Unix.close_process_in pipe in
+  match status with
+  | Unix.WEXITED 0 ->
+      let sep_string = String.make (8 + String.length cmd) '=' in
+      Stdlib.print_endline sep_string;
+      Stdlib.print_endline ("Running \u{001b}[32m" ^ cmd ^ "\u{001b}[0m");
+      Stdlib.print_endline sep_string;
+      let status = Sys.command cmd in
+      if status != 0 then
+        raise
+          (Failure
+             (String.concat " "
+                [ "Command"; cmd; "exited with code"; string_of_int status ]))
+  | _ ->
+      Stdlib.print_endline (String.concat " " [ "Command"; cmd; "not found." ])
 
--- commands that require interaction
-local function run_fg()
-    run [[nvim '+:PackerSync' '+:CocUpdate' '+:TSUpdate']]
-end
+let () =
+  Clap.description "Update the system";
+  let background = Clap.flag ~set_long:"background" ~set_short:'b' false in
+  Clap.close ();
 
--- commands that require no interaction
-local function run_bg(args)
-    run [[paru -Syu --noconfirm]]
-    run [[rustup update]]
-    run [[fw sync]]
-end
+  if not background then
+      run "nvim '+:PackerSync' '+:CocUpdate' '+:TSUpdate'";
 
--- if "bg" was passed as argument, only run uninteractive commands
-if arg[1] ~= "bg" then
-    run_fg()
-end
-
-run_bg()
-
+  run "paru -Syu --noconfirm";
+  run "rustup update";
+  run "fw sync"
