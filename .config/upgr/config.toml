@@ -1,0 +1,15 @@
+[[steps]]
+command = ["nvim", "+:PackerSync", "+:CocUpdate", "+:TSUpdate"]
+interactive = true
+
+[[steps]]
+command = ["paru", "-Syu"]
+unint_alt = ["paru", "-Syu", "--noconfirm"]
+interactive = true
+
+[[steps]]
+command = ["rustup", "update"]
+
+[[steps]]
+command = ["fw", "sync"]
+
