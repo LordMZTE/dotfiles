@@ -1,3 +1,4 @@
 set firefoxmode=always
 set nativenotification=always
+set vimcommand=neovide
 
