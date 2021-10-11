@@ -232,6 +232,11 @@ bindsym Print exec flameshot gui
 bindsym $mod+t exec picom-trans -c -10
 bindsym $mod+Shift+t exec picom-trans -c +10
 
+# wired controls
+bindsym $mod+Ctrl+space exec wired --drop latest
+bindsym $mod+Mod1+Ctrl+space exec wired --drop all
+bindsym $mod+Shift+Ctrl+space exec wired --show 1
+
 # dracula theme
 # class                 border  bground text    indicator child_border
 client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
