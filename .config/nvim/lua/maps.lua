@@ -29,14 +29,6 @@ function shift_tab_completion()
     end
 end
 
-function cr_completion()
-    if vim.fn.pumvisible() > 0 then
-        return vim.fn["coc#_select_confirm"]()
-    else
-        return escape_keycode("<CR>")
-    end
-end
-
 -- Getting stuck in ~~vim~~ terminal
 map("t", "<Esc>", "<C-\\><C-n>", {})
 
@@ -59,7 +51,6 @@ map("n", "*d", "\"*d", { noremap = true })
 
 map("i", "<TAB>", "v:lua.tab_completion()", { expr = true })
 map("i", "<S-TAB>", "v:lua.shift_tab_completion()", { expr = true })
-map("i", "<CR>", "v:lua.cr_completion()", { expr = true })
 
 -- symbol renaming
 map("n", "-n", "<Plug>(coc-rename)", { silent = true })

@@ -21,10 +21,6 @@ return require("packer").startup(function(use)
         "dracula/vim",
         as = "dracula"
     }
-    use {
-        "jiangmiao/auto-pairs",
-        config = pconf("autopairs")
-    }
     use "vimwiki/vimwiki"
     use {
         "glacambre/firenvim",
@@ -75,5 +71,9 @@ return require("packer").startup(function(use)
         config = pconf("telescope")
     }
     use "gluon-lang/vim-gluon"
+    use {
+        "steelsojka/pears.nvim",
+        config = pconf("nvim_pears")
+    }
 end)
 
