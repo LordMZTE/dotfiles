@@ -16,5 +16,5 @@ fn main() {
     aux_prompt.add_module(ReadOnly::<Theme>::new());
     aux_prompt.add_module(Cmd::<Theme>::new());
 
-    println!("{}\n{}", main_prompt, aux_prompt);
+    println!("\n{}\n{}", main_prompt, aux_prompt);
 }
