@@ -45,7 +45,7 @@ impl GitScheme for Theme {
 }
 
 impl ExitCodeScheme for Theme {
-    const EXIT_CODE_BG: Color = c(4);
+    const EXIT_CODE_BG: Color = c(5);
     const EXIT_CODE_FG: Color = c(0);
 }
 
