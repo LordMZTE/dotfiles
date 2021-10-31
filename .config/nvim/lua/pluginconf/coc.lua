@@ -11,7 +11,6 @@ vim.g.coc_global_extensions = {
     "coc-lua",
     "coc-rust-analyzer",
     "coc-snippets",
-    "coc-tabnine",
     "coc-toml",
 }
 
