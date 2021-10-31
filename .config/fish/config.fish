@@ -54,6 +54,11 @@ function todos
     rg -i -H todo
 end
 
+# install custom prompt to ~/.local/bin/prompt (or somewhere else in $PATH)
+function fish_prompt
+    prompt $status
+end
+
 # ENV
 export CXX=clang++
 export EDITOR=nvim
@@ -61,7 +66,6 @@ export EDITOR=nvim
 export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HOME/go/bin"
 
 # initialization stuff
-ifpresent starship 'starship init fish | source'
 ifpresent zoxide 'zoxide init fish | source'
 ifpresent cod 'cod init %self fish | source'
 ifpresent opam 'eval (opam env)'
