@@ -5,16 +5,13 @@ use crate::theme::Theme;
 mod theme;
 
 fn main() {
-    let mut main_prompt = Powerline::new();
+    let mut prompt = Powerline::new();
 
-    main_prompt.add_module(Cwd::<Theme>::new(40, 5, false));
-    main_prompt.add_module(Git::<Theme>::new());
+    prompt.add_module(ReadOnly::<Theme>::new());
+    prompt.add_module(Cwd::<Theme>::new(40, 5, false));
+    prompt.add_module(Git::<Theme>::new());
+    prompt.add_module(ExitCode::<Theme>::new());
+    prompt.add_module(Cmd::<Theme>::new());
 
-    let mut aux_prompt = Powerline::new();
-
-    aux_prompt.add_module(ExitCode::<Theme>::new());
-    aux_prompt.add_module(ReadOnly::<Theme>::new());
-    aux_prompt.add_module(Cmd::<Theme>::new());
-
-    println!("\n{}\n{}", main_prompt, aux_prompt);
+    println!("{}", prompt);
 }
