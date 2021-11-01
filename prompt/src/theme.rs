@@ -1,4 +1,9 @@
-use powerline::{modules::{CmdScheme, CwdScheme, ExitCodeScheme, GitScheme, ReadOnlyScheme}, terminal::Color};
+use powerline::{
+    modules::{CmdScheme, CwdScheme, ExitCodeScheme, GitScheme, ReadOnlyScheme},
+    terminal::Color,
+};
+
+use crate::fish_mode::FishModeScheme;
 
 // convenience alias
 const fn c(color: u8) -> Color {
@@ -52,4 +57,19 @@ impl ExitCodeScheme for Theme {
 impl ReadOnlyScheme for Theme {
     const READONLY_FG: Color = c(1);
     const READONLY_BG: Color = c(0);
+}
+
+impl FishModeScheme for Theme {
+    const FISH_MODE_DEFAULT_BG: Color = c(3);
+    const FISH_MODE_DEFAULT_FG: Color = c(0);
+    const FISH_MODE_INSERT_BG: Color = c(2);
+    const FISH_MODE_INSERT_FG: Color = c(0);
+    const FISH_MODE_REPLACE_ONE_BG: Color = c(5);
+    const FISH_MODE_REPLACE_ONE_FG: Color = c(0);
+    const FISH_MODE_REPLACE_BG: Color = c(4);
+    const FISH_MODE_REPLACE_FG: Color = c(0);
+    const FISH_MODE_VISUAL_BG: Color = c(5);
+    const FISH_MODE_VISUAL_FG: Color = c(0);
+    const FISH_MODE_UNKNOWN_BG: Color = c(1);
+    const FISH_MODE_UNKNOWN_FG: Color = c(0);
 }

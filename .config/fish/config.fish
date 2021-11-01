@@ -57,7 +57,7 @@ end
 # install custom prompt to ~/.local/bin/prompt (or somewhere else in $PATH)
 functions -e fish_mode_prompt
 function fish_prompt
-    prompt $status
+    prompt $status $fish_bind_mode
 end
 
 # ENV
