@@ -172,9 +172,6 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# kill window which covers everything
-for_window [title="Desktop — Plasma"] kill, floating enable, border none
-
 # enable icons (requires git version of i3 at the moment)
 for_window [class=".*"] title_window_icon on
 
