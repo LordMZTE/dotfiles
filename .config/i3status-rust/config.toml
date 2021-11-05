@@ -1,0 +1,45 @@
+theme.file = "dracula"
+icons = "awesome"
+
+[[block]]
+block = "memory"
+display_type = "memory"
+format_mem = "{mem_used_percents} {mem_used}/{mem_avail}"
+format_swap = "{swap_used_percents}"
+
+[[block]]
+block = "cpu"
+interval = 1
+format = "{frequency} {barchart} {utilization}"
+
+[[block]]
+block = "temperature"
+collapsed = false
+interval = 5
+format = "{min} - {average} ~ {max} +"
+chip = "*-isa-*"
+idle = 50
+info = 70
+warning = 85
+
+[[block]]
+block = "music"
+buttons = ["prev", "play", "next"]
+interface_name_exclude = [".*kdeconnect.*", "mpd"]
+hide_when_empty = true
+
+[[block]]
+block = "sound"
+on_click = "pavucontrol"
+
+[[block]]
+block = "battery"
+interval = 10
+format = "{percentage} {power}"
+allow_missing = true
+hide_missing = true
+
+[[block]]
+block = "time"
+interval = 1
+format = "%a %d.%m.%Y %T"
