@@ -27,4 +27,3 @@ cmd("autocmd CursorHold * silent call CocActionAsync('highlight')")
 cmd("autocmd StdinReadPre * let s:std_in=1")
 
 cmd("filetype plugin on")
-

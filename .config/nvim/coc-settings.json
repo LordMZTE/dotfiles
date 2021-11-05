@@ -51,5 +51,6 @@
        }
     },
     "java.format.enabled": true,
-    "java.format.onType.enabled": true
+    "java.format.onType.enabled": true,
+    "sumneko-lua.enableNvimLuaDev": true
 }
