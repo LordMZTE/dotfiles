@@ -1,32 +1,32 @@
 map = vim.api.nvim_set_keymap
 
 function escape_keycode(keycode)
-	return vim.api.nvim_replace_termcodes(keycode, true, true, true)
+    return vim.api.nvim_replace_termcodes(keycode, true, true, true)
 end
 
 local function check_back_space()
-	local col = vim.fn.col(".") - 1
-	return col <= 0 or vim.fn.getline("."):sub(col, col):match("%s")
+    local col = vim.fn.col "." - 1
+    return col <= 0 or vim.fn.getline("."):sub(col, col):match "%s"
 end
 
 function tab_completion()
-	if vim.fn.pumvisible() > 0 then
-		return escape_keycode("<C-n>")
-	end
+    if vim.fn.pumvisible() > 0 then
+        return escape_keycode "<C-n>"
+    end
 
-	if check_back_space() then
-		return escape_keycode("<TAB>")
-	end
+    if check_back_space() then
+        return escape_keycode "<TAB>"
+    end
 
-	return vim.fn["coc#refresh"]()
+    return vim.fn["coc#refresh"]()
 end
 
 function shift_tab_completion()
-	if vim.fn.pumvisible() > 0 then
-		return escape_keycode("<C-p>")
-	else
-		return escape_keycode("<C-h>")
-	end
+    if vim.fn.pumvisible() > 0 then
+        return escape_keycode "<C-p>"
+    else
+        return escape_keycode "<C-h>"
+    end
 end
 
 -- Getting stuck in ~~vim~~ terminal
