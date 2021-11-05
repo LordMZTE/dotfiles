@@ -27,6 +27,8 @@ block = "music"
 buttons = ["prev", "play", "next"]
 interface_name_exclude = [".*kdeconnect.*", "mpd"]
 hide_when_empty = true
+marquee_speed = 0.05
+marquee_interval = 2
 
 [[block]]
 block = "sound"
