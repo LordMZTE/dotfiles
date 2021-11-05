@@ -1,5 +1,12 @@
-theme.file = "dracula"
-icons = "material-nf"
+[theme]
+file = "dracula"
+
+[icons]
+name = "material-nf"
+
+[icons.overrides]
+# this should never show, as the bat block auto hides without a battery
+bat_not_available = "x"
 
 [[block]]
 block = "memory"
