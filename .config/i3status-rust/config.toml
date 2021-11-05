@@ -1,5 +1,5 @@
 theme.file = "dracula"
-icons = "awesome"
+icons = "material-nf"
 
 [[block]]
 block = "memory"
