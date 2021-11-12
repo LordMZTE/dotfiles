@@ -234,7 +234,7 @@ client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
 client.background       #F8F8F2
 
 bar {
-  font pango:Iosevka Nerd Font 12
+  font pango:Iosevka Nerd Font 10
   position top
   status_command i3status-rs
   separator_symbol |
