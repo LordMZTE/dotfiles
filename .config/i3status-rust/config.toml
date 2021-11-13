@@ -12,7 +12,7 @@ bat_not_available = "x"
 block = "memory"
 display_type = "memory"
 format_mem = "{mem_used_percents} {mem_used}/{mem_avail}"
-format_swap = "{swap_used_percents}"
+format_swap = "{swap_used_percents} {swap_used}/{swap_free}"
 
 [[block]]
 block = "cpu"
