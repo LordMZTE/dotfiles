@@ -17,7 +17,6 @@ return require("packer").startup(function(use)
         "dracula/vim",
         as = "dracula",
     }
-    use "vimwiki/vimwiki"
     use {
         "glacambre/firenvim",
         run = function()
