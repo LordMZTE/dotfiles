@@ -223,6 +223,10 @@ bindsym $mod+Ctrl+space exec wired --drop latest
 bindsym $mod+Mod1+Ctrl+space exec wired --drop all
 bindsym $mod+Shift+Ctrl+space exec wired --show 1
 
+# auto clicking
+bindsym $mod+F11 exec xdotool click --delay 10 --repeat 100 1
+bindsym $mod+F12 exec xdotool click --delay 10 --repeat 100 3
+
 # dracula theme
 # class                 border  bground text    indicator child_border
 client.focused          #6272A4 #6272A4 #F8F8F2 #6272A4   #6272A4
@@ -234,7 +238,7 @@ client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
 client.background       #F8F8F2
 
 bar {
-  font pango:Iosevka Nerd Font 10
+  font pango:Iosevka Nerd Font 12
   position top
   status_command i3status-rs
   separator_symbol |
