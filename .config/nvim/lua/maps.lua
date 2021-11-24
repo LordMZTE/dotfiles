@@ -1,4 +1,4 @@
-map = vim.api.nvim_set_keymap
+local map = vim.api.nvim_set_keymap
 
 function escape_keycode(keycode)
     return vim.api.nvim_replace_termcodes(keycode, true, true, true)
