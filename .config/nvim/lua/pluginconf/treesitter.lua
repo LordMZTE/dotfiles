@@ -17,4 +17,18 @@ configs.setup {
     highlight = {
         enable = true,
     },
+
+    rainbow = {
+        enable = true,
+        extended_mode = true,
+
+        colors = {
+            "#ff00be",
+            "#ff7e00",
+            "#64d200",
+            "#00e6b6",
+            "#00e1ff",
+            "#9598ff",
+        }
+    }
 }

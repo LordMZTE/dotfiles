@@ -72,4 +72,8 @@ return require("packer").startup(function(use)
         "steelsojka/pears.nvim",
         config = pconf "nvim_pears",
     }
+    use {
+        "p00f/nvim-ts-rainbow",
+        requires = "nvim-treesitter/nvim-treesitter",
+    }
 end)
