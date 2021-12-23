@@ -11,7 +11,7 @@ bell:
   duration: 20
 
 shell:
-  program: "tmux"
+  program: "zellij"
 
 key_bindings:
   - { key: Plus, mods: Control, action: IncreaseFontSize }
