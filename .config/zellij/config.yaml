@@ -1,7 +1,7 @@
 themes:
   default:
     fg: 15
-    bg: 8
+    bg: [40, 42, 54]
     black: 0
     blue: 6
     cyan: 14
@@ -12,3 +12,8 @@ themes:
     red: 1
     white: 15
     yellow: 3
+
+# https://mzte.de/git/lordmzte/zellij-compact-status
+plugins:
+  - path: compact-status.wasm
+    tag: compact-status
