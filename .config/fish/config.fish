@@ -60,6 +60,12 @@ function fish_prompt
     prompt $status $fish_bind_mode
 end
 
+# custom title
+functions -e fish_title
+function fish_title
+    echo (prompt_pwd) '|' (set -q argv[1] && echo $argv[1] || status current-command)
+end
+
 # ENV
 export CXX=clang++
 export EDITOR=nvim
