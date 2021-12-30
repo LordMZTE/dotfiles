@@ -1,4 +1,4 @@
-// zig build-exe -lc -lX11 -lXinerama randomwallpaper.zig && mv randomwallpaper ~/.local/bin
+// zig build-exe -lc -lX11 -lXinerama randomwallpaper.zig -femit-bin=$HOME/.local/bin/randomwallpaper
 const std = @import("std");
 const mem = std.mem;
 const c = @cImport({
