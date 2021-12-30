@@ -9,8 +9,7 @@ const Display = c.struct__XDisplay;
 
 pub fn main() !void {
     var alloc = std.heap.GeneralPurposeAllocator(.{}){};
-    const maybe_display = c.XOpenDisplay(null);
-    if (maybe_display) |display| {
+    if (c.XOpenDisplay(null)) |display| {
         defer _ = c.XCloseDisplay(display);
 
         var dummy1: c_int = undefined;
@@ -24,8 +23,6 @@ pub fn main() !void {
 }
 
 fn updateWallpapers(display: *Display, alloc: mem.Allocator) !void {
-    const stdout = std.io.getStdOut().writer();
-
     var heads: c_int = 0;
     const info = c.XineramaQueryScreens(display, &heads);
     defer _ = c.XFree(info);
@@ -37,7 +34,7 @@ fn updateWallpapers(display: *Display, alloc: mem.Allocator) !void {
     while (i < heads) {
         const head = info[i];
 
-        try stdout.print("Setting wallpaper for screen {} with size {}x{}\n", .{ i, head.width, head.height });
+        std.log.info("Setting wallpaper for screen {} with size {}x{}\n", .{ i, head.width, head.height });
 
         var buf: [10]u8 = undefined;
 
