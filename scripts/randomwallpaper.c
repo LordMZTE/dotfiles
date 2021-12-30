@@ -40,8 +40,8 @@ void update_wallpapers(Display *d) {
   if (heads > 0) {
     for (int i = 0; i < heads; i++) {
       // works as long as the user doesn't have over 999 monitors :P
-      char command[40];
-      sprintf(command, "nitrogen --random --set-zoom --head=%d", i);
+      char command[42];
+      sprintf(command, "nitrogen --random --set-scaled --head=%d", i);
       printf("Setting wallpaper for screen %d with size %dx%d\n", i,
              info[i].width, info[i].height);
       system(command);
