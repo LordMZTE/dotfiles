@@ -38,7 +38,7 @@ fn updateWallpapers(display: *Display, alloc: mem.Allocator) !void {
 
         var buf: [10]u8 = undefined;
 
-        const args = [_][]const u8{ "nitrogen", "--random", "--set-scaled", try std.fmt.bufPrint(&buf, "--head={}", .{i}) };
+        const args = [_][]const u8{ "nitrogen", "--random", "--set-zoom-fill", try std.fmt.bufPrint(&buf, "--head={}", .{i}) };
         var child = try std.ChildProcess.init(&args, alloc);
         try child.spawn();
 
