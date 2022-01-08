@@ -23,10 +23,10 @@ directories_first = true
 reverse = false
 
 # Not fully implemented yet
-#[preview]
-#max_preview_size = 2097152 # 2MB
-#preview_images = true
-#preview_script = "~/.config/joshuto/preview.sh"
+[preview]
+max_preview_size = 2097152 # 2MB
+preview_images = true
+preview_script = "~/.config/joshuto/preview.sh"
 
 [tab]
 # inherit, home, root
