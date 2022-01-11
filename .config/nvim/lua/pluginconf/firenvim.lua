@@ -1,4 +1,8 @@
-local blacklistedSites = { ".*twitch\\.tv.*", ".*twitter\\.com.*" }
+local blacklistedSites = {
+    [[.*twitch\.tv.*]],
+    [[*twitter\.com.*]],
+    [[*koyu\.space.*]],
+}
 
 local localSettings = {
     [".*"] = {
