@@ -1,56 +1,37 @@
 {
-    "diagnostic.virtualText": true,
-    "diagnostic.virtualTextCurrentLineOnly": false,
-    "languageserver": {
-        "haskell": {
-            "command": "haskell-language-server-wrapper",
-            "args": [
-                "--lsp"
-            ],
-            "rootPatterns": [
-                "*.cabal",
-                "stack.yaml",
-                "cabal.project",
-                "package.yaml",
-                "hie.yaml"
-            ],
-            "filetypes": [
-                "haskell",
-                "lhaskell"
-            ]
-        },
-        "ocaml-lsp": {
-            "command": "opam",
-            "args": [
-                "config",
-                "exec",
-                "--",
-                "ocamllsp"
-            ],
-            "filetypes": [
-                "ocaml",
-                "reason"
-            ]
-        },
-        "mun": {
-            "command": "mun",
-            "rootPatterns": [
-                "mun.toml"
-            ],
-            "trace.server": "verbose",
-            "args": [
-                "language-server"
-            ],
-            "filetypes": [
-                "mun"
-            ]
-        },
-       "zls" : {
-           "command": "zls",
-           "filetypes": ["zig"]
-       }
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "languageserver": {
+    "haskell": {
+      "command": "haskell-language-server-wrapper",
+      "args": ["--lsp"],
+      "rootPatterns": [
+        "*.cabal",
+        "stack.yaml",
+        "cabal.project",
+        "package.yaml",
+        "hie.yaml"
+      ],
+      "filetypes": ["haskell", "lhaskell"]
     },
-    "java.format.enabled": true,
-    "java.format.onType.enabled": true,
-    "sumneko-lua.enableNvimLuaDev": true
+    "ocaml-lsp": {
+      "command": "opam",
+      "args": ["config", "exec", "--", "ocamllsp"],
+      "filetypes": ["ocaml", "reason"]
+    },
+    "mun": {
+      "command": "mun",
+      "rootPatterns": ["mun.toml"],
+      "trace.server": "verbose",
+      "args": ["language-server"],
+      "filetypes": ["mun"]
+    },
+    "zls": {
+      "command": "zls",
+      "filetypes": ["zig"]
+    }
+  },
+  "java.format.enabled": true,
+  "java.format.onType.enabled": true,
+  "sumneko-lua.enableNvimLuaDev": true
 }
