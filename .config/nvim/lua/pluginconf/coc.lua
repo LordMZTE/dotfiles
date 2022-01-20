@@ -8,6 +8,7 @@ vim.g.coc_global_extensions = {
     "coc-java",
     "coc-json",
     "coc-kotlin",
+    "coc-prettier",
     "coc-rust-analyzer",
     "coc-snippets",
     "coc-sumneko-lua",
