@@ -17,9 +17,11 @@ cmp.setup {
     },
 
     sources = cmp.config.sources {
-        { name = "nvim_lsp" },
-        { name = "luasnips" },
+        { name = "buffer" },
         { name = "crates" },
+        { name = "luasnip" },
+        { name = "nvim_lsp" },
+        { name = "path" },
         { name = "rg" },
     },
 }
