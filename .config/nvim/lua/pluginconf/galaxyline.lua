@@ -195,6 +195,28 @@ gls.left[10] = {
     },
 }
 gls.left[11] = {
+    TrailingWhiteSpace = {
+        provider = TrailingWhiteSpace,
+        icon = "  ",
+        highlight = { colors.yellow, colors.line_bg },
+    },
+}
+gls.left[12] = {
+    ShowLspClient = {
+        provider = "GetLspClient",
+        icon = "   ",
+        highlight = { colors.green, colors.line_bg },
+    }
+}
+gls.left[13] = {
+    SpaceBefore = {
+        provider = function()
+            return " "
+        end,
+        highlight = { colors.line_bg, colors.line_bg },
+    },
+}
+gls.left[14] = {
     LeftEnd = {
         provider = function()
             return ""
@@ -202,31 +224,23 @@ gls.left[11] = {
         highlight = { colors.line_bg, colors.bg },
     },
 }
-
-gls.left[12] = {
-    TrailingWhiteSpace = {
-        provider = TrailingWhiteSpace,
-        icon = "  ",
-        highlight = { colors.yellow, colors.bg },
-    },
-}
-
-gls.left[13] = {
-    DiagnosticError = {
-        provider = "DiagnosticError",
-        icon = "  ",
-        highlight = { colors.red, colors.bg },
-    },
-}
-gls.left[14] = {
-    Space = {
+gls.left[15] = {
+    SpaceAfter = {
         provider = function()
             return " "
         end,
         highlight = { colors.bg, colors.bg },
     },
 }
-gls.left[15] = {
+
+gls.left[16] = {
+    DiagnosticError = {
+        provider = "DiagnosticError",
+        icon = "  ",
+        highlight = { colors.red, colors.bg },
+    },
+}
+gls.left[17] = {
     DiagnosticWarn = {
         provider = "DiagnosticWarn",
         icon = "  ",
