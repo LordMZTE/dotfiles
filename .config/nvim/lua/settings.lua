@@ -21,9 +21,6 @@ g.neovide_iso_layout = true
 
 cmd "colorscheme dracula"
 
--- Highlight the symbol and its references when holding the cursor.
-cmd "autocmd CursorHold * silent call CocActionAsync('highlight')"
-
 cmd "autocmd StdinReadPre * let s:std_in=1"
 
 cmd "filetype plugin on"

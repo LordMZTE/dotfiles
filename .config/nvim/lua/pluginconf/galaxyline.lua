@@ -2,7 +2,6 @@
 
 local gl = require "galaxyline"
 local gls = gl.section
-local extension = require "galaxyline.provider_extensions"
 
 gl.short_line_list = {
     "LuaTree",
@@ -40,19 +39,13 @@ local mode_color = {
     v = colors.magenta,
     [""] = colors.blue,
     V = colors.blue,
-    c = colors.red,
     no = colors.magenta,
     s = colors.orange,
     S = colors.orange,
     [""] = colors.orange,
     ic = colors.yellow,
-    R = colors.purple,
-    Rv = colors.purple,
     cv = colors.red,
     ce = colors.red,
-    r = colors.cyan,
-    rm = colors.cyan,
-    ["r?"] = colors.cyan,
     ["!"] = colors.green,
     t = colors.green,
     c = colors.purple,
@@ -63,47 +56,6 @@ local mode_color = {
     Rv = colors.magenta,
 }
 
-local function lsp_status(status)
-    shorter_stat = ""
-    for match in string.gmatch(status, "[^%s]+") do
-        err_warn = string.find(match, "^[WE]%d+", 0)
-        if not err_warn then
-            shorter_stat = shorter_stat .. " " .. match
-        end
-    end
-    return shorter_stat
-end
-
-local function get_coc_lsp()
-    local status = vim.fn["coc#status"]()
-    if not status or status == "" then
-        return ""
-    end
-    return lsp_status(status)
-end
-
-function get_diagnostic_info()
-    if vim.fn.exists "*coc#rpc#start_server" == 1 then
-        return get_coc_lsp()
-    end
-    return ""
-end
-
-local function get_current_func()
-    local has_func, func_name = pcall(vim.fn.nvim_buf_get_var, 0, "coc_current_function")
-    if not has_func then
-        return
-    end
-    return func_name
-end
-
-function get_function_info()
-    if vim.fn.exists "*coc#rpc#start_server" == 1 then
-        return get_current_func()
-    end
-    return ""
-end
-
 local function trailing_whitespace()
     local trail = vim.fn.search("\\s$", "nw")
     if trail ~= 0 then
@@ -113,11 +65,9 @@ local function trailing_whitespace()
     end
 end
 
-CocStatus = get_diagnostic_info
-CocFunc = get_current_func
 TrailingWhiteSpace = trailing_whitespace
 
-function has_file_type()
+local function has_file_type()
     local f_type = vim.bo.filetype
     if not f_type or f_type == "" then
         return false
@@ -147,7 +97,6 @@ gls.left[2] = {
             local alias = {
                 n = "NORMAL",
                 i = "INSERT",
-                c = "COMMAND",
                 V = "VISUAL",
                 [""] = "VISUAL",
                 v = "VISUAL",
@@ -281,22 +230,6 @@ gls.left[15] = {
     DiagnosticWarn = {
         provider = "DiagnosticWarn",
         icon = "  ",
-        highlight = { colors.yellow, colors.bg },
-    },
-}
-
-gls.left[16] = {
-    CocStatus = {
-        provider = CocStatus,
-        highlight = { colors.green, colors.bg },
-        icon = "  🗱",
-    },
-}
-
-gls.left[17] = {
-    CocFunc = {
-        provider = CocFunc,
-        icon = "  λ ",
         highlight = { colors.yellow, colors.bg },
     },
 }

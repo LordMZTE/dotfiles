@@ -4,14 +4,39 @@ local function pconf(plugin)
     return 'require("pluginconf.' .. plugin .. '")'
 end
 
+local function cmp_plugins(use)
+    use {
+        "neovim/nvim-lspconfig",
+        config = pconf "lspconf",
+    }
+    use "hrsh7th/cmp-nvim-lsp"
+    use "hrsh7th/cmp-buffer"
+    use "hrsh7th/cmp-path"
+    use "hrsh7th/cmp-cmdline"
+    use {
+        "hrsh7th/nvim-cmp",
+        config = pconf "nvim_cmp",
+    }
+
+    use "saadparwaiz1/cmp_luasnip"
+    use {
+        "L3MON4D3/LuaSnip",
+        config = pconf "nvim_luasnip",
+        requires = {
+            "rafamadriz/friendly-snippets",
+            "honza/vim-snippets",
+        },
+    }
+
+    use {
+        "simrat39/rust-tools.nvim",
+        config = pconf "rust_tools",
+    }
+end
+
 return require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
 
-    use {
-        "neoclide/coc.nvim",
-        branch = "release",
-        config = pconf "coc",
-    }
     use "ryanoasis/vim-devicons"
     use {
         "dracula/vim",
@@ -27,11 +52,10 @@ return require("packer").startup(function(use)
     use "airblade/vim-gitgutter"
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
-    use "honza/vim-snippets"
     use "sheerun/vim-polyglot"
     use {
-        "glepnir/galaxyline.nvim",
-        branch = "main",
+        "dsych/galaxyline.nvim",
+        branch = "bugfix/diagnostics", -- fork with a fix to not use deprecated API
         config = pconf "galaxyline",
     }
     use {
@@ -69,11 +93,15 @@ return require("packer").startup(function(use)
     }
     use "gluon-lang/vim-gluon"
     use {
-        "steelsojka/pears.nvim",
-        config = pconf "nvim_pears",
+        "windwp/nvim-autopairs",
+        config = pconf "autopairs",
     }
+
+    use "windwp/nvim-ts-autotag"
     use {
         "p00f/nvim-ts-rainbow",
         requires = "nvim-treesitter/nvim-treesitter",
     }
+
+    cmp_plugins(use)
 end)
