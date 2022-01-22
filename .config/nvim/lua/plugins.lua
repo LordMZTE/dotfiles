@@ -112,5 +112,7 @@ return require("packer").startup(function(use)
         requires = "nvim-treesitter/nvim-treesitter",
     }
 
+    use "nvim-telescope/telescope-ui-select.nvim"
+
     cmp_plugins(use)
 end)
