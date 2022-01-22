@@ -20,6 +20,7 @@ cmp.setup {
         { name = "nvim_lsp" },
         { name = "luasnips" },
         { name = "crates" },
+        { name = "rg" },
     },
 }
 

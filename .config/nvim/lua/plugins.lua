@@ -35,8 +35,12 @@ local function cmp_plugins(use)
 
     use {
         "Saecki/crates.nvim",
-        config = pconf "nvim_crates",
+        config = function()
+            require("crates").setup {}
+        end,
     }
+
+    use "lukas-reineke/cmp-rg"
 end
 
 return require("packer").startup(function(use)
