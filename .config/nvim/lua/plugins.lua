@@ -32,6 +32,11 @@ local function cmp_plugins(use)
         "simrat39/rust-tools.nvim",
         config = pconf "rust_tools",
     }
+
+    use {
+        "Saecki/crates.nvim",
+        config = pconf "nvim_crates",
+    }
 end
 
 return require("packer").startup(function(use)
