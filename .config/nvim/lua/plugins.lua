@@ -41,6 +41,7 @@ local function cmp_plugins(use)
     }
 
     use "lukas-reineke/cmp-rg"
+    use "ray-x/cmp-treesitter"
 end
 
 return require("packer").startup(function(use)

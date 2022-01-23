@@ -206,7 +206,7 @@ gls.left[12] = {
         provider = "GetLspClient",
         icon = "   ",
         highlight = { colors.green, colors.line_bg },
-    }
+    },
 }
 gls.left[13] = {
     SpaceBefore = {

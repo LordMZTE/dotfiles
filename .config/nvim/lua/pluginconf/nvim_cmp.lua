@@ -23,6 +23,23 @@ cmp.setup {
         { name = "nvim_lsp" },
         { name = "path" },
         { name = "rg" },
+        { name = "treesitter" },
+    },
+
+    formatting = {
+        format = function(entry, vim_item)
+            vim_item.menu = ({
+                buffer = " ﬘",
+                crates = " ",
+                luasnip = " ",
+                nvim_lsp = " ",
+                path = " ",
+                rg = " ",
+                treesitter = " ",
+            })[entry.source.name]
+
+            return vim_item
+        end,
     },
 }
 
