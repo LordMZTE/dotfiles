@@ -56,3 +56,16 @@ cmp.setup.cmdline(":", {
         { name = "cmdline" },
     }),
 })
+
+-- define signs
+local signs = {
+    Error = " ",
+    Warn = " ",
+    Hint = " ",
+    Info = " ",
+}
+
+for k, v in pairs(signs) do
+    local hl = "DiagnosticSign" .. k
+    vim.fn.sign_define(hl, { text = v, texthl = hl, numhl = hl })
+end

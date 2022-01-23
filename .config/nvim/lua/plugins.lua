@@ -13,10 +13,7 @@ local function cmp_plugins(use)
     use "hrsh7th/cmp-buffer"
     use "hrsh7th/cmp-path"
     use "hrsh7th/cmp-cmdline"
-    use {
-        "hrsh7th/nvim-cmp",
-        config = pconf "nvim_cmp",
-    }
+    use { "hrsh7th/nvim-cmp", config = pconf "nvim_cmp" }
 
     use "saadparwaiz1/cmp_luasnip"
     use {
@@ -47,7 +44,6 @@ end
 return require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
 
-    use "ryanoasis/vim-devicons"
     use {
         "dracula/vim",
         as = "dracula",
@@ -114,6 +110,13 @@ return require("packer").startup(function(use)
     }
 
     use "nvim-telescope/telescope-ui-select.nvim"
+
+    use {
+        "folke/trouble.nvim",
+        config = function()
+            require("trouble").setup {}
+        end,
+    }
 
     cmp_plugins(use)
 end)
