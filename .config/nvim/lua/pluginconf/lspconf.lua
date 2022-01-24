@@ -9,6 +9,8 @@ table.insert(lua_runtime_path, "lua/?/init.lua")
 
 lspc.bashls.setup { capabilities = caps }
 lspc.clangd.setup { capabilities = caps }
+lspc.cssls.setup { capabilities = caps }
+lspc.eslint.setup { capabilities = caps }
 lspc.html.setup { capabilities = caps }
 lspc.jsonls.setup { capabilities = caps }
 lspc.rust_analyzer.setup { capabilities = caps }
@@ -32,8 +34,8 @@ lspc.sumneko_lua.setup { -- paru -S lua-language-server
         },
     },
 }
-lspc.zls.setup { capabilities = caps }
 lspc.taplo.setup { capabilities = caps }
+lspc.zls.setup { capabilities = caps }
 
 -- Mappings.
 local opts = { noremap = true, silent = true }
