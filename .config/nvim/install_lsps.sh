@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-sudo npm i -g bash-language-server
 paru -S --needed --noconfirm \
-    vscode-langservers-extracted \
-    rust-analyzer \
+    bash-language-server \
     lua-language-server \
-    taplo-lsp
+    rust-analyzer \
+    taplo-lsp \
+    vscode-langservers-extracted
