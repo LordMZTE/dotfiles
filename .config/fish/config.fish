@@ -71,6 +71,7 @@ export CXX=clang++
 export EDITOR=nvim
 
 export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HOME/go/bin"
+export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
 
 # initialization stuff
 ifpresent zoxide 'zoxide init fish | source'
