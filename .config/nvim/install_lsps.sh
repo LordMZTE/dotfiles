@@ -6,4 +6,5 @@ paru -S --needed --noconfirm \
     lua-language-server \
     rust-analyzer \
     taplo-lsp \
-    vscode-langservers-extracted
+    vscode-langservers-extracted \
+    yaml-language-server

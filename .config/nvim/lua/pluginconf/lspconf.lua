@@ -35,6 +35,7 @@ lspc.sumneko_lua.setup { -- paru -S lua-language-server
     },
 }
 lspc.taplo.setup { capabilities = caps }
+lspc.yamlls.setup { capabilities = caps }
 lspc.zls.setup { capabilities = caps }
 
 -- Mappings.
