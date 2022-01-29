@@ -1,1 +1,2 @@
+require "cmds"
 require "usersettings"
