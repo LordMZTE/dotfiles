@@ -60,9 +60,9 @@ return require("packer").startup(function(use)
     use "uiiaoo/java-syntax.vim"
     use "sheerun/vim-polyglot"
     use {
-        "dsych/galaxyline.nvim",
-        branch = "bugfix/diagnostics", -- fork with a fix to not use deprecated API
-        config = pconf "galaxyline",
+        "nvim-lualine/lualine.nvim",
+        requires = "arkav/lualine-lsp-progress",
+        config = pconf "line",
     }
     use {
         "nvim-treesitter/nvim-treesitter",
