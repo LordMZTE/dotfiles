@@ -2,8 +2,9 @@ local settings = require "settings"
 
 settings.application.prefer_dark_mode = true
 
-settings.webview.javascript_can_access_clipboard = true
 settings.webview.enable_accelerated_2d_canvas = true
+settings.webview.enable_webgl = true
+settings.webview.javascript_can_access_clipboard = true
 
 settings.webview.default_font_family = "Iosevka"
 settings.webview.monospace_font_family = "Iosevka"
