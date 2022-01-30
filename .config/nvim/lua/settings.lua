@@ -3,12 +3,14 @@ local cmd = vim.cmd
 local o = vim.o
 local wo = vim.wo
 local g = vim.g
+local opt = vim.opt
 
 cmd "syntax on"
 o.tabstop = 4
 o.shiftwidth = 4
 o.expandtab = true
-wo.number = true
+opt.number = true
+opt.relativenumber = true
 o.guifont = "Iosevka:h10"
 o.mouse = "a"
 o.termguicolors = true
