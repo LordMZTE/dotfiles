@@ -13,8 +13,9 @@ lspc.cssls.setup { capabilities = caps }
 lspc.eslint.setup { capabilities = caps }
 lspc.html.setup { capabilities = caps }
 lspc.jsonls.setup { capabilities = caps }
+lspc.ocamllsp.setup { capabilities = caps }
 lspc.rust_analyzer.setup { capabilities = caps }
-lspc.sumneko_lua.setup { -- paru -S lua-language-server
+lspc.sumneko_lua.setup {
     capabilities = caps,
     settings = {
         Lua = {

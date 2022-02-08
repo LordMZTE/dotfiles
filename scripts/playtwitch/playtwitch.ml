@@ -1,16 +1,3 @@
-#!/usr/bin/env scriptisto
-
-(*
-  scriptisto-begin
-  script_src: playtwitch.ml
-  build_cmd: dune build playtwitch.exe
-  target_bin: ./_build/default/playtwitch.exe
-  files:
-   - path: dune
-     content: (executable (name playtwitch) (libraries clap))
-  scriptisto-end
-*)
-
 Clap.description "play a twitch stream using streamlink";
 let stream_name = Clap.mandatory_string ~placeholder:"stream_name" () in
 let quality = Clap.default_string ~placeholder:"quality" "best" in
