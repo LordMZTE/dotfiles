@@ -30,3 +30,9 @@ install-lsps-paru:
             ocaml-lsp-server \
             ocamlformat
     fi
+
+install-prompt:
+    RUSTFLAGS="-C target-cpu=native" cargo build --release \
+        --manifest-path prompt/Cargo.toml
+    strip prompt/target/release/prompt
+    cp prompt/target/release/prompt ~/.local/bin
