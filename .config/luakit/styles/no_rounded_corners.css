@@ -1,0 +1,5 @@
+@-moz-document regexp(".*") {
+    :root * {
+        border-radius: 0 !important;
+    }
+}

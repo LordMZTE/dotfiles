@@ -14,4 +14,4 @@ settings.webview.serif_font_family = "Iosevka"
 settings.window.default_search_engine = "duckduckgo"
 settings.window.home_page = "luakit://newtab"
 
-require "editor".editor_cmd = "neovide --nofork {file}"
+require("editor").editor_cmd = "neovide --nofork {file}"
