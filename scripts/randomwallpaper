@@ -1,8 +1,0 @@
-#!/bin/sh
-mons=$(xrandr --listactivemonitors | wc -l)
-mons=$((mons-1))
-
-feh --bg-fill $(
-    fd -L '\.(png|jpg)' /usr/share/backgrounds/ ~/.local/share/backgrounds/ \
-    | shuf | head -n 2
-)
