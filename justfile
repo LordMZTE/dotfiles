@@ -8,17 +8,13 @@ yaml-language-server
 "
 
 install-scripts target=(`echo $HOME` + "/.local/bin"):
-    cd scripts && zig build-exe \
-        -lc -lX11 -lXinerama \
-        randomwallpaper.zig \
-        -femit-bin={{target}}/randomwallpaper
-
     opam install --yes clap
     cd scripts/playtwitch && dune build
+    chmod -R +w scripts/playtwitch
     cp scripts/playtwitch/_build/default/playtwitch.exe {{target}}/playtwitch
 
     ln -sf \
-        `pwd`/scripts/{start-joshuto,withjava} \
+        `pwd`/scripts/{start-joshuto,withjava,randomwallpaper} \
         {{target}}
 
 install-lsps-paru:
