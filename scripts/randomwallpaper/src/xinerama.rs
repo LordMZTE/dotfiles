@@ -1,14 +1,18 @@
 use std::mem::MaybeUninit;
 
-use anyhow::bail;
+use anyhow::{bail, Context};
 use x11::{
     xinerama::{XineramaIsActive, XineramaQueryScreens},
     xlib::{XCloseDisplay, XFree, XOpenDisplay},
 };
 
 pub fn head_count() -> anyhow::Result<i32> {
+    let display = std::env::var("DISPLAY").context("Couldn't get display")?;
+    let mut display = display.into_bytes();
+    display.push(0);
+
     unsafe {
-        let display = XOpenDisplay(b":0\0".as_ptr() as _);
+        let display = XOpenDisplay(display.as_ptr() as _);
         if display.is_null() {
             bail!("Couldn't open display");
         }
