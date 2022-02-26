@@ -39,6 +39,20 @@ local function cmp_plugins(use)
 
     use "lukas-reineke/cmp-rg"
     use "ray-x/cmp-treesitter"
+
+    use {
+        "jose-elias-alvarez/null-ls.nvim",
+        config = pconf "nullls",
+    }
+
+    use {
+        "LhKipp/nvim-nu",
+        config = function()
+            require("nu").setup {
+                complete_cmd_names = true,
+            }
+        end,
+    }
 end
 
 return require("packer").startup(function(use)

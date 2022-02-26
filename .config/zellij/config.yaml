@@ -17,3 +17,5 @@ themes:
 plugins:
   - path: compact-status.wasm
     tag: compact-status
+
+default_shell: nu
