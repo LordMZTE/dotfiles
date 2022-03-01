@@ -18,4 +18,4 @@ plugins:
   - path: compact-status.wasm
     tag: compact-status
 
-default_shell: nu
+default_shell: fish
