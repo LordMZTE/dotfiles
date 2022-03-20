@@ -132,5 +132,10 @@ return require("packer").startup(function(use)
         end,
     }
 
+    use {
+        "nvim-neorg/neorg",
+        config = pconf "norg",
+    }
+
     cmp_plugins(use)
 end)

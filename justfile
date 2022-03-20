@@ -24,6 +24,8 @@ install-lsps-paru:
     #!/bin/sh
     paru -S --needed --noconfirm {{replace(lsps, "\n", " ")}}
 
+    cargo install prosemd-lsp
+
     if which opam &> /dev/null; then
         opam install --yes \
             ocaml-lsp-server \

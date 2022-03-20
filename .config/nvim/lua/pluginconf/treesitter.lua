@@ -12,8 +12,24 @@ parser_config.haxe = {
     filetype = "haxe",
 }
 
+parser_config.norg_meta = {
+    install_info = {
+        url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+        files = { "src/parser.c" },
+        branch = "main",
+    },
+}
+
+parser_config.norg_table = {
+    install_info = {
+        url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
+        files = { "src/parser.c" },
+        branch = "main",
+    },
+}
+
 configs.setup {
-    ensure_installed = { "haxe" },
+    ensure_installed = { "haxe", "norg", "norg_meta", "norg_table" },
     highlight = {
         enable = true,
     },
