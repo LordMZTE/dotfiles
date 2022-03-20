@@ -135,6 +135,7 @@ return require("packer").startup(function(use)
     use {
         "nvim-neorg/neorg",
         config = pconf "norg",
+        after = "nvim-treesitter",
     }
 
     cmp_plugins(use)
