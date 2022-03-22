@@ -20,6 +20,8 @@ wo.cursorcolumn = true
 g.neoterm_default_mod = "tab"
 g.neovide_iso_layout = true
 
+o.conceallevel = 2
+
 -- disable garbage providers
 g.loaded_python_provider = false
 g.loaded_python3_provider = false
