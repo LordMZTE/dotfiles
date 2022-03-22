@@ -7,6 +7,7 @@
 (("for" @keyword) (#set! conceal "ﳁ"))
 (("impl" @keyword) (#set! conceal ""))
 (("in" @keyword) (#set! conceal "ﲒ"))
+(("let" @keyword) (#set! conceal ""))
 (("loop" @keyword) (#set! conceal "ﯩ"))
 (("match" @keyword) (#set! conceal ""))
 (("pub" @keyword) (#set! conceal ""))
