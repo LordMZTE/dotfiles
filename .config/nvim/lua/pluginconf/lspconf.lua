@@ -15,7 +15,16 @@ lspc.html.setup { capabilities = caps }
 lspc.jsonls.setup { capabilities = caps }
 lspc.ocamllsp.setup { capabilities = caps }
 lspc.prosemd_lsp.setup { capabilities = caps }
-lspc.rust_analyzer.setup { capabilities = caps }
+lspc.rust_analyzer.setup {
+    capabilities = caps,
+    settings = {
+        ["rust-analyzer"] = {
+            checkOnSave = {
+                command = "clippy",
+            },
+        },
+    },
+}
 lspc.sumneko_lua.setup {
     capabilities = caps,
     settings = {
