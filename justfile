@@ -9,9 +9,7 @@ yaml-language-server
 
 install-scripts target=(`echo $HOME` + "/.local/bin"):
     cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
-    cargo build --release --manifest-path scripts/i3man/Cargo.toml
     cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
-    cp scripts/i3man/target/release/i3man {{target}}/i3man
 
     opam install --yes clap
     cd scripts/playtwitch && dune build
