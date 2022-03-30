@@ -9,12 +9,9 @@ yaml-language-server
 
 install-scripts target=(`echo $HOME` + "/.local/bin"):
     cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
+    cargo build --release --manifest-path scripts/playtwitch/Cargo.toml
     cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
-
-    opam install --yes clap
-    cd scripts/playtwitch && dune build
-    chmod -R +w scripts/playtwitch
-    cp scripts/playtwitch/_build/default/playtwitch.exe {{target}}/playtwitch
+    cp scripts/playtwitch/target/release/playtwitch {{target}}/playtwitch
 
     ln -sf \
         `pwd`/scripts/{start-joshuto,withjava} \
