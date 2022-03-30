@@ -1,2 +1,2 @@
-_build/
-*.exe
+target/
+Cargo.lock
