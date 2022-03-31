@@ -18,13 +18,17 @@ struct Opt {
     /// Quality of the stream. See streamlink docs.
     #[clap(default_value = "best")]
     quality: String,
+
+    /// Start chatty with the given channel
+    #[clap(short, long)]
+    chatty: bool,
 }
 
 fn main() -> anyhow::Result<()> {
     let opt = Opt::parse();
 
     if let Some(channel) = opt.channel {
-        start_streamlink(&channel, &opt.quality)?;
+        start_streamlink(&channel, &opt.quality, opt.chatty)?;
     } else {
         let channels_path = dirs::config_dir()
             .context("Couldn't get config path")?
@@ -36,6 +40,7 @@ fn main() -> anyhow::Result<()> {
 
         gui::run_gui(GuiInitData {
             quality: opt.quality,
+            chatty: opt.chatty,
             channels,
         });
     }
@@ -43,17 +48,31 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn start_streamlink(channel: &str, quality: &str) -> anyhow::Result<()> {
+fn start_streamlink(channel: &str, quality: &str, chatty: bool) -> anyhow::Result<()> {
     println!(
         "Starting streamlink with channel {} and quality {}",
         channel, quality
     );
 
-    Command::new("streamlink")
+    let mut streamlink = Command::new("streamlink")
         .arg(format!("https://twitch.tv/{}", channel))
         .arg(quality)
-        .spawn()?
-        .wait()?;
+        .spawn()?;
+
+    let chatty = if chatty {
+        Some(
+            Command::new("chatty")
+                .args(["-connect", "-channel", channel])
+                .spawn()?,
+        )
+    } else {
+        None
+    };
+
+    streamlink.wait()?;
+    if let Some(mut chatty) = chatty {
+        chatty.wait()?;
+    }
 
     Ok(())
 }

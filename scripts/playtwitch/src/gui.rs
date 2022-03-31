@@ -7,6 +7,7 @@ use crate::start_streamlink;
 #[derive(Clone)]
 pub struct GuiInitData {
     pub quality: String,
+    pub chatty: bool,
     pub channels: Vec<String>,
 }
 
@@ -35,14 +36,21 @@ fn build_ui(
     let vbox = gtk4::Box::new(gtk4::Orientation::Vertical, 5);
     win.set_child(Some(&vbox));
 
-    let quality_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 5);
-    vbox.append(&quality_box);
-    quality_box.append(&gtk4::Label::new(Some("Quality")));
+    let hbox = gtk4::Box::new(gtk4::Orientation::Horizontal, 5);
+    vbox.append(&hbox);
+    hbox.append(&gtk4::Label::new(Some("Quality")));
 
     let quality_entry = gtk4::Entry::new();
-    quality_box.append(&quality_entry);
+    hbox.append(&quality_entry);
     quality_entry.set_hexpand(true);
     quality_entry.set_text(&init.quality);
+
+    let chatty_switch = gtk4::Switch::builder()
+        .state(init.chatty)
+        .tooltip_text("Start Chatty with the given channel")
+        .build();
+    hbox.append(&chatty_switch);
+    hbox.append(&gtk4::Label::new(Some("Start Chatty")));
 
     let other_channel = gtk4::Entry::builder()
         .placeholder_text("Other Channel...")
@@ -53,20 +61,22 @@ fn build_ui(
     // focus other channel initially
     vbox.set_focus_child(Some(&other_channel));
 
-    let app_ = app.clone();
+    let win_ = win.clone();
     let quality_entry_ = quality_entry.clone();
     let streamlink_handle_out_ = streamlink_handle_out.clone();
+    let chatty_switch_ = chatty_switch.clone();
     other_channel.connect_activate(move |this| {
         let channel = this.text().to_string();
         let quality = quality_entry_.text().to_string();
+        let chatty = chatty_switch_.state();
 
         streamlink_handle_out_.set(Some(std::thread::spawn(move || {
-            if let Err(e) = start_streamlink(&channel, &quality) {
+            if let Err(e) = start_streamlink(&channel, &quality, chatty) {
                 eprintln!("Streamlink Error: {:?}", e);
             }
         })));
 
-        app_.quit();
+        win_.close();
     });
 
     let list = gtk4::ListBox::new();
@@ -96,19 +106,20 @@ fn build_ui(
         list.append(&entry);
     }
 
-    let app_ = app.clone();
+    let win_ = win.clone();
     list.connect_row_activated(move |_, row| {
         let label = row.child().unwrap().downcast::<gtk4::Label>().unwrap();
         let quality = quality_entry.text().to_string();
         let channel = label.text().to_string();
+        let chatty = chatty_switch.state();
 
         streamlink_handle_out.set(Some(std::thread::spawn(move || {
-            if let Err(e) = start_streamlink(&channel, &quality) {
+            if let Err(e) = start_streamlink(&channel, &quality, chatty) {
                 eprintln!("Streamlink Error: {:?}", e);
             }
         })));
 
-        app_.quit();
+        win_.close();
     });
 
     win.show();
