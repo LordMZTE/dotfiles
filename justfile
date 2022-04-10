@@ -2,7 +2,7 @@ lsps := "
 bash-language-server
 lua-language-server
 rust-analyzer
-taplo-lsp
+taplo-cli
 vscode-langservers-extracted
 yaml-language-server
 "
