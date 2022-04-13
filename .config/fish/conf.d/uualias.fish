@@ -6,7 +6,8 @@ end
 
 function uualias
     set -l cmd "$argv[1]"
-    alias "$cmd"=uu-"$cmd"
+    alias "$cmd"="uu-$cmd"
+    complete -c "$cmd" --wraps "uu-$cmd"
 end
 
 uualias arch
