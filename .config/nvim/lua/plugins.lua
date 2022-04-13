@@ -21,7 +21,8 @@ local function cmp_plugins(use)
         config = pconf "nvim_luasnip",
         requires = {
             "rafamadriz/friendly-snippets",
-            "honza/vim-snippets",
+            -- temporarily removed due to syntax error in recent commit
+            --"honza/vim-snippets",
         },
     }
 
