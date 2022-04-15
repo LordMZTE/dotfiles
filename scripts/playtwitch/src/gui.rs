@@ -36,12 +36,16 @@ fn build_ui(
     let vbox = gtk4::Box::new(gtk4::Orientation::Vertical, 5);
     win.set_child(Some(&vbox));
 
-    let hbox = gtk4::Box::new(gtk4::Orientation::Horizontal, 5);
-    vbox.append(&hbox);
-    hbox.append(&gtk4::Label::new(Some("Quality")));
+    let quality_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 5);
+    let chatty_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 5);
+    let titlebar = gtk4::HeaderBar::new();
+    titlebar.pack_start(&quality_box);
+    titlebar.pack_end(&chatty_box);
+    win.set_titlebar(Some(&titlebar));
+    quality_box.append(&gtk4::Label::new(Some("Quality")));
 
     let quality_entry = gtk4::Entry::new();
-    hbox.append(&quality_entry);
+    quality_box.append(&quality_entry);
     quality_entry.set_hexpand(true);
     quality_entry.set_text(&init.quality);
 
@@ -49,8 +53,8 @@ fn build_ui(
         .state(init.chatty)
         .tooltip_text("Start Chatty with the given channel")
         .build();
-    hbox.append(&chatty_switch);
-    hbox.append(&gtk4::Label::new(Some("Start Chatty")));
+    chatty_box.append(&chatty_switch);
+    chatty_box.append(&gtk4::Label::new(Some("Start Chatty")));
 
     let other_channel = gtk4::Entry::builder()
         .placeholder_text("Other Channel...")
