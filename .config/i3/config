@@ -245,6 +245,7 @@ client.background       #F8F8F2
 
 bar {
   font pango:Iosevka Nerd Font 12
+  mode hide
   position top
   status_command i3status-rs
   separator_symbol |
