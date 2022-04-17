@@ -4,6 +4,9 @@
     // 60 Hz
     poll_interval: 16,
 
+    monitor: -1,
+    focus_follows: Window,
+
     layout_blocks: [
     (
         name: "root",
