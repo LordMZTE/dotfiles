@@ -7,15 +7,20 @@ vscode-langservers-extracted
 yaml-language-server
 "
 
-install-scripts target=(`echo $HOME` + "/.local/bin"):
-    cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
-    cargo build --release --manifest-path scripts/playtwitch/Cargo.toml
+install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
     cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
     cp scripts/playtwitch/target/release/playtwitch {{target}}/playtwitch
+    cp scripts/gpower/target/release/gpower {{target}}/gpower
 
     ln -sf \
         `pwd`/scripts/{start-joshuto,withjava} \
         {{target}}
+
+
+build-scripts:
+    cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
+    cargo build --release --manifest-path scripts/playtwitch/Cargo.toml
+    cargo build --release --manifest-path scripts/gpower/Cargo.toml
 
 install-lsps-paru:
     #!/bin/sh
