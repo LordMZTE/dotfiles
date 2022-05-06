@@ -1,7 +1,9 @@
 lsps := "
-bash-language-server
+gitlint
 lua-language-server
 rust-analyzer
+shellcheck
+shfmt
 taplo-cli
 vscode-langservers-extracted
 yaml-language-server

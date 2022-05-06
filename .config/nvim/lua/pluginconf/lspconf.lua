@@ -7,7 +7,6 @@ local lua_runtime_path = vim.split(package.path, ";")
 table.insert(lua_runtime_path, "lua/?.lua")
 table.insert(lua_runtime_path, "lua/?/init.lua")
 
-lspc.bashls.setup { capabilities = caps }
 lspc.clangd.setup { capabilities = caps }
 lspc.cssls.setup { capabilities = caps }
 lspc.eslint.setup { capabilities = caps }
@@ -61,4 +60,4 @@ map("n", "-a", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
 map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
 map("n", "<space>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 map("n", "-d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
-map("n", "-r", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+map("n", "-r", "<cmd>lua vim.lsp.buf.format { asnyc = true }<CR>", opts)
