@@ -5,7 +5,7 @@ nullls.setup {
         nullls.builtins.code_actions.shellcheck,
         nullls.builtins.diagnostics.fish,
         nullls.builtins.diagnostics.gitlint.with {
-            filetypes = { "sh", "NeogitCommitMessage" },
+            filetypes = { "gitcommit", "NeogitCommitMessage" },
         },
         nullls.builtins.diagnostics.shellcheck,
         nullls.builtins.formatting.fish_indent,
