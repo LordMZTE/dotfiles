@@ -70,7 +70,12 @@ return require("packer").startup(function(use)
         end,
         config = pconf "firenvim",
     }
-    use "airblade/vim-gitgutter"
+    use {
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require("gitsigns").setup {}
+        end,
+    }
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
     use "sheerun/vim-polyglot"
