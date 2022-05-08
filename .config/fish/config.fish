@@ -21,7 +21,7 @@ set -gx LESS_TERMCAP_ue \e'[0m'
 set -gx LESS_TERMCAP_us \e'[1;4;31m'
 
 function rbg
-    $argv &>/dev/null&
+    $argv &>/dev/null &
 end
 
 function rbgd
@@ -35,7 +35,7 @@ function foreachdir
     end
 end
 
-function !! 
+function !!
     eval $history[1]
 end
 
@@ -45,7 +45,7 @@ function mkdircd
 end
 
 function ifpresent
-    if which $argv[1] &> /dev/null
+    if which $argv[1] &>/dev/null
         eval $argv[2..-1]
     end
 end
@@ -80,7 +80,7 @@ ifpresent opam 'eval (opam env)'
 ifpresent navi 'navi widget fish | source'
 
 # fw init
-if which fw &> /dev/null
+if which fw &>/dev/null
     if test -x (command -v fw)
         if test -x (command -v fzf)
             fw print-fish-setup -f | source
