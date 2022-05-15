@@ -54,8 +54,8 @@ bindsym $mod+Return exec TERMINAL=alacritty i3-sensible-terminal
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# open gpower
-bindsym $mod+Shift+p exec gpower
+# open gpower2
+bindsym $mod+Shift+p exec gpower2
 
 # change focus
 bindsym $mod+h focus left

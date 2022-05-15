@@ -12,7 +12,7 @@ yaml-language-server
 install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
     cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
     cp scripts/playtwitch/target/release/playtwitch {{target}}/playtwitch
-    cp scripts/gpower/target/release/gpower {{target}}/gpower
+    cp scripts/gpower2/zig-out/bin/gpower2 {{target}}/gpower2
 
     ln -sf \
         `pwd`/scripts/{start-joshuto,withjava} \
@@ -22,7 +22,7 @@ install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
 build-scripts:
     cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
     cargo build --release --manifest-path scripts/playtwitch/Cargo.toml
-    cargo build --release --manifest-path scripts/gpower/Cargo.toml
+    cd scripts/gpower2 && zig build -Drelease-fast
 
 install-lsps-paru:
     #!/bin/sh
