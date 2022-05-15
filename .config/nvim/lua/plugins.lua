@@ -95,8 +95,6 @@ return require("packer").startup(function(use)
         config = pconf "markdowncomposer",
     }
 
-    use "kassio/neoterm"
-
     use "kyazdani42/nvim-web-devicons"
 
     use {
@@ -142,6 +140,11 @@ return require("packer").startup(function(use)
         "nvim-neorg/neorg",
         config = pconf "norg",
         after = "nvim-treesitter",
+    }
+
+    use {
+        "itmecho/neoterm.nvim",
+        config = pconf "nterm",
     }
 
     cmp_plugins(use)
