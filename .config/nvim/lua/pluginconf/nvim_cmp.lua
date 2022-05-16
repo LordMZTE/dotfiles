@@ -36,7 +36,6 @@ cmp.setup {
         { name = "buffer" },
         { name = "crates" },
         { name = "luasnip" },
-        { name = "neorg" },
         { name = "nvim_lsp" },
         { name = "path" },
         { name = "rg", option = { additional_arguments = "--max-depth 4" } },

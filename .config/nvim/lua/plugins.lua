@@ -137,12 +137,6 @@ return require("packer").startup(function(use)
     }
 
     use {
-        "nvim-neorg/neorg",
-        config = pconf "norg",
-        after = "nvim-treesitter",
-    }
-
-    use {
         "itmecho/neoterm.nvim",
         config = pconf "nterm",
     }
