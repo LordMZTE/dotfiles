@@ -14,8 +14,6 @@ pub const GuiState = struct {
 };
 
 pub fn activate(app: *c.GtkApplication, state: *GuiState) callconv(.C) void {
-    _ = state;
-
     const win = c.gtk_application_window_new(app);
     c.gtk_window_set_title(u.c(*c.GtkWindow, win), "gpower2");
     c.gtk_window_set_modal(u.c(*c.GtkWindow, win), 1);
