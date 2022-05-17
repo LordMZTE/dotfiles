@@ -56,7 +56,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     ffi.connectSignal(
         other_stream_entry,
         "activate",
-        @ptrCast(c.GCallback, on_other_stream_activate),
+        @ptrCast(c.GCallback, onOtherStreamActivate),
         other_act_data,
     );
 
@@ -85,10 +85,10 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
         .chatty_switch = @ptrCast(*c.GtkSwitch, chatty_switch),
     };
 
-    ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, on_row_activate), act_data);
+    ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, onRowActivate), act_data);
 
     channels: {
-        const channels_data = read_channels(state.alloc) catch |e| {
+        const channels_data = readChannels(state.alloc) catch |e| {
             std.log.err("Failed to read channels: {}", .{e});
             break :channels;
         };
@@ -113,7 +113,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     c.gtk_widget_show(win);
 }
 
-fn read_channels(alloc: std.mem.Allocator) ![]u8 {
+fn readChannels(alloc: std.mem.Allocator) ![]u8 {
     const home = try std.os.getenv("HOME") orelse error.HomeNotSet;
     const fname = try std.fmt.allocPrint(alloc, "{s}/.config/playtwitch/channels", .{home});
     defer alloc.free(fname);
@@ -127,7 +127,7 @@ const RowActivateData = struct {
     chatty_switch: *c.GtkSwitch,
 };
 
-fn on_row_activate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateData) void {
+fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateData) void {
     _ = list;
     const label = c.gtk_list_box_row_get_child(row);
     const channel_name = c.gtk_label_get_text(@ptrCast(*c.GtkLabel, label));
@@ -148,7 +148,7 @@ const OtherStreamActivateData = struct {
     chatty_switch: *c.GtkSwitch,
 };
 
-fn on_other_stream_activate(entry: *c.GtkEntry, data: *OtherStreamActivateData) void {
+fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) void {
     _ = entry;
     start(
         data.state,
