@@ -11,7 +11,7 @@ yaml-language-server
 
 install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
     cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
-    cp scripts/playtwitch/target/release/playtwitch {{target}}/playtwitch
+    cp scripts/playtwitch/zig-out/bin/playtwitch {{target}}/playtwitch
 
     ln -sf \
         `pwd`/scripts/{start-joshuto,withjava} \
@@ -20,7 +20,7 @@ install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
 
 build-scripts:
     cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
-    cargo build --release --manifest-path scripts/playtwitch/Cargo.toml
+    cd scripts/playtwitch && zig build -Drelease-fast
 
 install-lsps-paru:
     #!/bin/sh
