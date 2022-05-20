@@ -51,6 +51,9 @@ floating_modifier $mod
 # start a terminal
 bindsym $mod+Return exec TERMINAL=alacritty i3-sensible-terminal
 
+# open thunar
+bindsym $mod+Ctrl+e exec thunar
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
