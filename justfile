@@ -10,7 +10,7 @@ yaml-language-server
 "
 
 install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
-    cp scripts/randomwallpaper/target/release/randomwallpaper {{target}}/randomwallpaper
+    cp scripts/randomwallpaper/zig-out/bin/randomwallpaper {{target}}/randomwallpaper
     cp scripts/playtwitch/zig-out/bin/playtwitch {{target}}/playtwitch
 
     ln -sf \
@@ -19,7 +19,7 @@ install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
 
 
 build-scripts:
-    cargo build --release --manifest-path scripts/randomwallpaper/Cargo.toml
+    cd scripts/randomwallpaper && zig build -Drelease-fast
     cd scripts/playtwitch && zig build -Drelease-fast
 
 install-lsps-paru:
