@@ -19,6 +19,8 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkSystemLibrary("x11");
     exe.linkSystemLibrary("xinerama");
 
+    exe.strip = mode != .Debug;
+
     exe.install();
 
     const run_cmd = exe.run();
