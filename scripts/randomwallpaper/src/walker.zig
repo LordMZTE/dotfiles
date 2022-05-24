@@ -2,18 +2,20 @@ const std = @import("std");
 
 pub const Walker = struct {
     files: std.ArrayList([]u8),
+    filename_arena: std.heap.ArenaAllocator,
     buf: [64]u8 = undefined,
 
     pub const open_opts = std.fs.Dir.OpenDirOptions{ .iterate = true };
 
     pub fn init(alloc: std.mem.Allocator) Walker {
-        return Walker{ .files = std.ArrayList([]u8).init(alloc) };
+        return Walker{
+            .files = std.ArrayList([]u8).init(alloc),
+            .filename_arena = std.heap.ArenaAllocator.init(alloc),
+        };
     }
 
     pub fn deinit(self: *Walker) void {
-        for (self.files.items) |file| {
-            self.files.allocator.free(file);
-        }
+        self.filename_arena.deinit();
         self.files.deinit();
     }
 
@@ -22,7 +24,7 @@ pub const Walker = struct {
         while (try iter.next()) |e| {
             switch (e.kind) {
                 .File => {
-                    const path = try dir.realpathAlloc(self.files.allocator, e.name);
+                    const path = try dir.realpathAlloc(self.filename_arena.allocator(), e.name);
                     try self.files.append(path);
                 },
                 .Directory => {
@@ -35,7 +37,8 @@ pub const Walker = struct {
                     var subdir = dir.openDir(p, open_opts) catch |err| {
                         switch (err) {
                             std.fs.Dir.OpenError.NotDir => {
-                                try self.files.append(p);
+                                const fpath = try self.filename_arena.allocator().dupe(u8, p);
+                                try self.files.append(fpath);
                                 continue;
                             },
                             else => {
