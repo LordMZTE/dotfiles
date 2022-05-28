@@ -1,0 +1,2 @@
+suspend_command = ["sh", "-c", "i3lock -c 660000 && systemctl suspend"]
+hibernate_command = ["sh", "-c", "i3lock -c 660000 && systemctl hibernate"]
