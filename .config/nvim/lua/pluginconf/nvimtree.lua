@@ -7,4 +7,7 @@ require("nvim-tree").setup {
     git = {
         ignore = false,
     },
+    renderer = {
+        indent_markers = { enable = true },
+    },
 }
