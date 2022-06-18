@@ -35,7 +35,5 @@ install-lsps-paru:
     fi
 
 install-prompt:
-    RUSTFLAGS="-C target-cpu=native" cargo build --release \
-        --manifest-path prompt/Cargo.toml
-    strip prompt/target/release/prompt
-    cp prompt/target/release/prompt ~/.local/bin
+    cd prompt/ && gyro build -Drelease-fast
+    cp prompt/zig-out/bin/prompt ~/.local/bin

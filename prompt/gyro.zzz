@@ -1,0 +1,11 @@
+deps:
+  ansi-term:
+    git:
+      url: "https://github.com/ziglibs/ansi-term.git"
+      ref: 1c4b9aa23e159b297e4008181ff649c246dc8abe
+      root: src/main.zig
+  known-folders:
+    git:
+      url: "https://github.com/ziglibs/known-folders.git"
+      ref: 9db1b99219c767d5e24994b1525273fe4031e464
+      root: known-folders.zig
