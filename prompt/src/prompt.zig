@@ -15,6 +15,8 @@ const symbols = struct {
     const top_end = "";
     const staged = "";
     const unstaged = "";
+    const home = "";
+    const root = "";
 };
 
 pub fn render(writer: anytype, status: i16, mode: FishMode) !void {
@@ -52,7 +54,7 @@ fn Renderer(comptime Writer: type) type {
             try self.renderCwd();
             self.renderGit() catch |err| {
                 switch (err) {
-                    error.GitError => {},
+                    error.GitError => {}, // git error will be printed
                     else => return err,
                 }
             };
@@ -86,7 +88,6 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{});
         }
 
-        // TODO: fancify (using symbols.path_separator) + some formatting
         fn renderCwd(self: *Self) !void {
             const pwd = std.fs.cwd();
             const realpath = try pwd.realpathAlloc(std.heap.c_allocator, ".");
@@ -102,28 +103,52 @@ fn Renderer(comptime Writer: type) type {
                     try self.setStyle(.{
                         .background = .{ .Yellow = {} },
                         .foreground = .{ .Magenta = {} },
-                        .font_style = .{ .bold = true },
                     });
-                    try self.writer.writeAll(" ~/");
+                    try self.writer.writeAll(" " ++ symbols.home);
                     if (home.len != realpath.len) {
-                        try self.setStyle(.{
-                            .background = .{ .Yellow = {} },
-                            .foreground = .{ .Black = {} },
-                        });
-                        try self.writer.writeAll(realpath[(home.len + 1)..]);
+                        try self.renderPathSep();
+                        try self.renderPath(realpath[(home.len + 1)..]);
                     }
                     written_path = true;
                 }
             }
 
+            // write root-relative path
             if (!written_path) {
                 try self.setStyle(.{
                     .background = .{ .Yellow = {} },
-                    .foreground = .{ .Black = {} },
+                    .foreground = .{ .Red = {} },
                 });
-                try self.writer.writeAll(" ");
-                try self.writer.writeAll(realpath);
+                try self.writer.writeAll(" " ++ symbols.root);
+
+                // don't render separators when we're in /
+                if (realpath.len > 1) {
+                    try self.renderPathSep();
+                    try self.renderPath(realpath[1..]);
+                }
             }
+        }
+
+        fn renderPath(self: *Self, path: []const u8) !void {
+            for (path) |byte|
+                if (byte == '/')
+                    try self.renderPathSep()
+                else
+                    try self.writer.writeByte(byte);
+        }
+
+        fn renderPathSep(self: *Self) !void {
+            try self.setStyle(.{
+                .background = self.last_style.?.background,
+                .foreground = .{ .Blue = {} },
+            });
+
+            try self.writer.writeAll(" " ++ symbols.path_separator ++ " ");
+
+            try self.setStyle(.{
+                .background = self.last_style.?.background,
+                .foreground = .{ .Black = {} },
+            });
         }
 
         fn renderGit(self: *Self) !void {
