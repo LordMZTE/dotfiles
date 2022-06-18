@@ -167,7 +167,22 @@ fn Renderer(comptime Writer: type) type {
             defer c.git_repository_free(repo);
 
             var head: ?*c.git_reference = null;
-            try checkGitError(c.git_repository_head(&head, repo));
+            const head_err = c.git_repository_head(&head, repo);
+
+            // branch with no commits
+            if (head_err == c.GIT_EUNBORNBRANCH) {
+                const bg = at.Color{ .Grey = 200 };
+                try self.drawLeftSep(bg);
+                try self.setStyle(.{
+                    .background = bg,
+                    .foreground = .{ .Black = {} },
+                    .font_style = .{ .bold = true },
+                });
+                try self.writer.writeAll(" <new branch>");
+
+                return;
+            }
+
             defer c.git_reference_free(head);
             const name = c.git_reference_shorthand(head);
 
