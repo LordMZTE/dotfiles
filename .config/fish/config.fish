@@ -54,6 +54,13 @@ function todos
     rg -i -H todo
 end
 
+# ENV
+export CXX=clang++
+export EDITOR=nvim
+
+export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HOME/go/bin"
+export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
+#
 # install custom prompt to ~/.local/bin/prompt (or somewhere else in $PATH)
 prompt printfish | source
 
@@ -63,12 +70,6 @@ function fish_title
     echo (prompt_pwd) '|' (set -q argv[1] && echo $argv[1] || status current-command)
 end
 
-# ENV
-export CXX=clang++
-export EDITOR=nvim
-
-export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HOME/go/bin"
-export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
 
 # initialization stuff
 ifpresent zoxide 'zoxide init fish | source'
