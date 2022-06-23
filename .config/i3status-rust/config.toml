@@ -11,19 +11,19 @@ bat_not_available = "x"
 [[block]]
 block = "memory"
 display_type = "memory"
-format_mem = "{mem_used_percents} {mem_used}/{mem_avail}"
-format_swap = "{swap_used_percents} {swap_used}/{swap_free}"
+format_mem = "$mem_used_percents $mem_used/$mem_avail"
+format_swap = "$swap_used_percents $swap_used/$swap_free"
 
 [[block]]
 block = "cpu"
 interval = 1
-format = "{frequency} {barchart} {utilization}"
+format = "$frequency $barchart $utilization"
 
 [[block]]
 block = "temperature"
 collapsed = false
 interval = 5
-format = "{min} - {average} ~ {max} +"
+format = "$min - $average ~ $max +"
 chip = "*-isa-*"
 idle = 50
 info = 70
@@ -31,20 +31,18 @@ warning = 85
 
 [[block]]
 block = "music"
-buttons = ["prev", "play", "next"]
 interface_name_exclude = [".*kdeconnect.*", "mpd"]
 hide_when_empty = true
-marquee_speed = 0.05
-marquee_interval = 2
+format = "$combo.rot-str(20, 0.1) $prev $play $next"
 
 [[block]]
 block = "sound"
-on_click = "pavucontrol"
+format = "$output_description $volume"
 
 [[block]]
 block = "battery"
 interval = 10
-format = "{percentage} {power}"
+format = "$percentage $power"
 hide_missing = true
 
 [[block]]
