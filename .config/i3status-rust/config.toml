@@ -33,7 +33,7 @@ warning = 85
 block = "music"
 interface_name_exclude = [".*kdeconnect.*", "mpd"]
 hide_when_empty = true
-format = "$combo.rot-str(20, 0.1) $prev $play $next"
+format = "{$combo.rot-str(20, 0.1)|} $prev $play $next"
 
 [[block]]
 block = "sound"
