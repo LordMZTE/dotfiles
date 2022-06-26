@@ -7,8 +7,8 @@ pub const GuiState = struct {
     /// An arena allocator used to store userdata for widgets of the UI
     udata_arena: std.mem.Allocator,
 
-    streamlink_child: ?*std.ChildProcess = null,
-    chatty_child: ?*std.ChildProcess = null,
+    streamlink_child: ?std.ChildProcess = null,
+    chatty_child: ?std.ChildProcess = null,
 };
 
 pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
@@ -166,13 +166,13 @@ fn start(state: *GuiState, chatty: bool, channel: []const u8) !void {
 
     const url = try std.fmt.allocPrint(state.alloc, "https://twitch.tv/{s}", .{channel});
     const streamlink_argv = [_][]const u8{ "streamlink", url };
-    const streamlink_child = try std.ChildProcess.init(&streamlink_argv, state.alloc);
+    var streamlink_child = std.ChildProcess.init(&streamlink_argv, state.alloc);
     try streamlink_child.spawn();
     state.streamlink_child = streamlink_child;
 
     if (chatty) {
         const chatty_argv = [_][]const u8{ "chatty", "-connect", "-channel", channel };
-        const chatty_child = try std.ChildProcess.init(&chatty_argv, state.alloc);
+        var chatty_child = std.ChildProcess.init(&chatty_argv, state.alloc);
         try chatty_child.spawn();
         state.chatty_child = chatty_child;
     }

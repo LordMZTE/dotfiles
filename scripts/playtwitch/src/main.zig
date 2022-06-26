@@ -63,13 +63,11 @@ pub fn main() !u8 {
         @ptrCast([*c][*c]u8, std.os.argv.ptr),
     );
 
-    if (state.streamlink_child) |ch| {
-        defer ch.deinit();
+    if (state.streamlink_child) |*ch| {
         _ = try ch.wait();
     }
 
-    if (state.chatty_child) |ch| {
-        defer ch.deinit();
+    if (state.chatty_child) |*ch| {
         _ = try ch.wait();
     }
 

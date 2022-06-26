@@ -34,9 +34,7 @@ pub fn main() !u8 {
         feh_argv[2 + i] = walker.files.items[idx];
     }
 
-    var child = try std.ChildProcess.init(feh_argv, alloc);
-    defer child.deinit();
-    const term = try child.spawnAndWait();
+    const term = try std.ChildProcess.init(feh_argv, alloc).spawnAndWait();
 
     const exit = switch (term) {
         .Exited => |n| n,

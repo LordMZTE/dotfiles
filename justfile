@@ -7,6 +7,7 @@ shfmt
 taplo-cli
 vscode-langservers-extracted
 yaml-language-server
+zls-bin
 "
 
 install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
