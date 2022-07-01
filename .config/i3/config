@@ -45,6 +45,10 @@ bindsym XF86AudioStop exec playerctl stop
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
+# other fancy keys
+bindsym XF86Mail exec thunderbird
+bindsym XF86Calculator exec qalculate-gtk
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
