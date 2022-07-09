@@ -6,6 +6,7 @@ rust-analyzer
 shellcheck
 shfmt
 taplo-cli
+tidy
 vscode-langservers-extracted
 yaml-language-server
 zls-bin
