@@ -117,6 +117,7 @@ fn readChannels(alloc: std.mem.Allocator) ![]u8 {
     const home = try std.os.getenv("HOME") orelse error.HomeNotSet;
     const fname = try std.fmt.allocPrint(alloc, "{s}/.config/playtwitch/channels", .{home});
     defer alloc.free(fname);
+    std.log.info("Reading channels from {s}", .{fname});
     const file = try std.fs.cwd().openFile(fname, .{});
     return try file.readToEndAlloc(alloc, 1024 * 1024 * 5);
 }
@@ -161,10 +162,13 @@ fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) voi
 
 fn start(state: *GuiState, chatty: bool, channel: []const u8) !void {
     if (channel.len == 0) {
+        std.log.warn("Exiting due to attempt to start empty channel", .{});
         return;
     }
 
+    std.log.info("Starting for channel {s} (chatty: {})", .{ channel, chatty });
     const url = try std.fmt.allocPrint(state.alloc, "https://twitch.tv/{s}", .{channel});
+    defer state.alloc.free(url);
     const streamlink_argv = [_][]const u8{ "streamlink", url };
     var streamlink_child = std.ChildProcess.init(&streamlink_argv, state.alloc);
     try streamlink_child.spawn();

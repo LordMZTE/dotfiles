@@ -9,6 +9,10 @@ pub fn log(
     comptime format: []const u8,
     args: anytype,
 ) void {
+    const Buf = struct {
+        pub threadlocal var fmt_buf: [512]u8 = undefined;
+    };
+
     const g_level = switch (level) {
         .err => c.G_LOG_LEVEL_ERROR,
         .warn => c.G_LOG_LEVEL_WARNING,
@@ -16,12 +20,11 @@ pub fn log(
         .debug => c.G_LOG_LEVEL_DEBUG,
     };
 
-    const s = std.fmt.allocPrintZ(
-        std.heap.c_allocator,
+    const s = std.fmt.bufPrintZ(
+        &Buf.fmt_buf,
         format,
         args,
     ) catch return;
-    defer std.heap.c_allocator.free(s);
 
     var fields = [_]c.GLogField{
         c.GLogField{
