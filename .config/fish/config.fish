@@ -54,16 +54,6 @@ function todos
     rg -i -H todo
 end
 
-# ENV
-export CXX=clang++
-export EDITOR=nvim
-
-export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/bin:/var/lib/snapd/snap/bin:$HOME/go/bin"
-export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
-#
-# install custom prompt to ~/.local/bin/prompt (or somewhere else in $PATH)
-prompt printfish | source
-
 # custom title
 functions -e fish_title
 function fish_title
