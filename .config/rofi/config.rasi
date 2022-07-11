@@ -1,9 +1,9 @@
 configuration {
     /* requires rofi-emoji */
-	modi: "window,drun,ssh,combi,emoji";
+	modi: "window,drun,combi,emoji,nheko";
 	font: "Iosevka 12";
 	show-icons: true;
 	icon-theme: "candy-icons";
-	combi-modi: "window,drun,run";
+	combi-modi: "drun,nheko,window,run";
 }
 @theme "/home/lordmzte/.local/share/rofi/themes/dracula.rasi"
