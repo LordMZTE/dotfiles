@@ -78,7 +78,9 @@ listview {
 }
 element-text {
     background-color: inherit;
-    text-color:       inherit;
+    text-color: inherit;
+    vertical-align: 0.5;
+    font: "Iosevka 24px";
 }
 element selected  normal {
     background-color: @blue;
@@ -96,6 +98,9 @@ element alternate active {
 }
 element alternate urgent {
     text-color: @lightred;
+}
+element-icon {
+    size: 50;
 }
 element selected active {
     background-color: @lightblue;
