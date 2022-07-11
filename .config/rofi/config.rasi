@@ -6,4 +6,4 @@ configuration {
 	icon-theme: "candy-icons";
 	combi-modi: "drun,nheko,window,run";
 }
-@theme "/home/lordmzte/.local/share/rofi/themes/dracula.rasi"
+@theme "dracula-sidebar.rasi"
