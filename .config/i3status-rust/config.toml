@@ -37,7 +37,7 @@ format = "{$combo.rot-str(20, 0.1)|} $prev $play $next"
 
 [[block]]
 block = "sound"
-format = "$output_description $volume"
+format = "$output_description{ $volume|}"
 
 [[block]]
 block = "battery"
