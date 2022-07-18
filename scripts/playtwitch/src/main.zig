@@ -4,6 +4,8 @@ const c = ffi.c;
 const gui = @import("gui.zig");
 
 pub const log = @import("glib-log").log(c, "playtwitch", 512);
+// glib handles level filtering
+pub const log_level = .debug;
 
 pub fn main() !u8 {
     var udata_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
