@@ -1,4 +1,5 @@
 const std = @import("std");
+const pkgs = @import("deps.zig").pkgs;
 
 pub fn build(b: *std.build.Builder) void {
     // Standard target options allows the person running `zig build` to choose
@@ -17,6 +18,7 @@ pub fn build(b: *std.build.Builder) void {
 
     exe.linkLibC();
     exe.linkSystemLibrary("gtk4");
+    pkgs.addAllTo(exe);
 
     exe.strip = mode != .Debug;
 

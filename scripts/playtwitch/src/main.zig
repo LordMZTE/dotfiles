@@ -3,48 +3,7 @@ const ffi = @import("ffi.zig");
 const c = ffi.c;
 const gui = @import("gui.zig");
 
-pub fn log(
-    comptime level: std.log.Level,
-    comptime scope: @TypeOf(.EnumLiteral),
-    comptime format: []const u8,
-    args: anytype,
-) void {
-    const Buf = struct {
-        pub threadlocal var fmt_buf: [512]u8 = undefined;
-    };
-
-    const g_level = switch (level) {
-        .err => c.G_LOG_LEVEL_ERROR,
-        .warn => c.G_LOG_LEVEL_WARNING,
-        .info => c.G_LOG_LEVEL_INFO,
-        .debug => c.G_LOG_LEVEL_DEBUG,
-    };
-
-    const s = std.fmt.bufPrintZ(
-        &Buf.fmt_buf,
-        format,
-        args,
-    ) catch return;
-
-    var fields = [_]c.GLogField{
-        c.GLogField{
-            .key = "GLIB_DOMAIN",
-            .value = "playtwitch-" ++ @tagName(scope),
-            .length = -1,
-        },
-        c.GLogField{
-            .key = "MESSAGE",
-            .value = @ptrCast(*const anyopaque, s),
-            .length = -1,
-        },
-    };
-
-    c.g_log_structured_array(
-        g_level,
-        &fields,
-        fields.len,
-    );
-}
+pub const log = @import("glib-log").log(c, "playtwitch", 512);
 
 pub fn main() !u8 {
     var udata_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);

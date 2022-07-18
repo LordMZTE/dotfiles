@@ -23,7 +23,7 @@ install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
 
 build-scripts:
     cd scripts/randomwallpaper && zig build -Drelease-fast
-    cd scripts/playtwitch && zig build -Drelease-fast
+    cd scripts/playtwitch && gyro build -Drelease-fast
 
 install-lsps-paru:
     #!/bin/sh
