@@ -1,6 +1,6 @@
 const std = @import("std");
 const xinerama = @import("xinerama.zig");
-const Walker = @import("walker.zig").Walker;
+const Walker = @import("Walker.zig");
 const c = @import("ffi.zig").c;
 
 pub fn main() !u8 {
@@ -12,9 +12,9 @@ pub fn main() !u8 {
     defer walker.deinit();
 
     try walker.walk(
-        try std.fs.openDirAbsolute(
+        try std.fs.openIterableDirAbsolute(
             "/usr/share/backgrounds/",
-            Walker.open_opts,
+            .{},
         ),
     );
 
@@ -52,6 +52,6 @@ pub fn main() !u8 {
 
 fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
     const home = std.fs.cwd().openDir(home_s, .{}) catch return;
-    const local_wp = home.openDir(".local/share/backgrounds/", Walker.open_opts) catch return;
+    const local_wp = home.openIterableDir(".local/share/backgrounds/", .{}) catch return;
     try walker.walk(local_wp);
 }
