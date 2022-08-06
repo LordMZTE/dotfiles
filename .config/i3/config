@@ -210,7 +210,7 @@ bindsym $mod+u gaps inner current plus 5
 bindsym $mod+Shift+u gaps inner current minus 5
 
 # background
-exec --no-startup-id ~/.fehbg
+exec --no-startup-id randomwallpaper
 
 # compositor
 exec picom -f -i 1 -c

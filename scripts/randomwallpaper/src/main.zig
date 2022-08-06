@@ -20,20 +20,28 @@ pub fn main() !u8 {
 
     try walkLocalWps(&walker, home_s);
 
-    var feh_argv = try alloc.alloc([]const u8, @intCast(usize, 2 + screens));
-    defer alloc.free(feh_argv);
+    const feh_baseargs = [_][]const u8{
+        "feh",
+        "--no-fehbg",
+        "--bg-fill",
+    };
 
-    feh_argv[0] = "feh";
-    feh_argv[1] = "--bg-fill";
+    var feh_argv = try alloc.alloc(
+        []const u8,
+        feh_baseargs.len + @intCast(usize, screens),
+    );
+    defer alloc.free(feh_argv);
+    std.mem.copy([]const u8, feh_argv, &feh_baseargs);
 
     const rand = std.rand.DefaultPrng.init(std.crypto.random.int(u64)).random();
 
     var i: u31 = 0;
     while (i < screens) : (i += 1) {
         const idx = rand.uintAtMost(usize, walker.files.items.len - 1);
-        feh_argv[2 + i] = walker.files.items[idx];
+        feh_argv[feh_baseargs.len + i] = walker.files.items[idx];
     }
 
+    std.log.info("feh argv: {s}", .{feh_argv});
     const term = try std.ChildProcess.init(feh_argv, alloc).spawnAndWait();
 
     const exit = switch (term) {
