@@ -202,21 +202,76 @@ fn start(
         return;
     }
 
+    const channel_d = try state.udata_arena.dupe(u8, channel);
+    const quality_d = try state.udata_arena.dupe(u8, quality);
+
     std.log.info(
         "Starting for channel {s} with quality {s} (chatty: {})",
-        .{ channel, quality, chatty },
+        .{ channel_d, quality_d, chatty },
     );
-    const url = try std.fmt.allocPrint(state.alloc, "https://twitch.tv/{s}", .{channel});
-    defer state.alloc.free(url);
-    const streamlink_argv = [_][]const u8{ "streamlink", url, quality };
-    var streamlink_child = std.ChildProcess.init(&streamlink_argv, state.alloc);
-    try streamlink_child.spawn();
-    state.streamlink_child = streamlink_child;
+    const url = try std.fmt.allocPrint(state.udata_arena, "https://twitch.tv/{s}", .{channel_d});
+    const streamlink_argv = [_][]const u8{ "streamlink", url, quality_d };
+    state.streamlink_child = std.ChildProcess.init(
+        try state.udata_arena.dupe([]const u8, &streamlink_argv),
+        state.alloc,
+    );
 
     if (chatty) {
-        const chatty_argv = [_][]const u8{ "chatty", "-connect", "-channel", channel };
-        var chatty_child = std.ChildProcess.init(&chatty_argv, state.alloc);
-        try chatty_child.spawn();
-        state.chatty_child = chatty_child;
+        const chatty_argv = [_][]const u8{ "chatty", "-connect", "-channel", channel_d };
+        state.chatty_child = std.ChildProcess.init(
+            try state.udata_arena.dupe([]const u8, &chatty_argv),
+            state.alloc,
+        );
     }
+}
+
+pub fn showStreamlinkErrorDialog(output: []const u8) void {
+    // TODO: instead of creating a new main loop, reuse the one used for the rest of the GUI
+    const main_loop = c.g_main_loop_new(null, 0);
+    defer c.g_main_loop_unref(main_loop);
+
+    const dialog = c.gtk_dialog_new_with_buttons(
+        "Streamlink Crashed!",
+        null,
+        c.GTK_DIALOG_MODAL,
+        "_Close",
+        c.GTK_RESPONSE_CLOSE,
+        @as(?*anyopaque, null),
+    );
+
+    ffi.connectSignal(
+        dialog,
+        "response",
+        @ptrCast(c.GCallback, onErrorDialogResponse),
+        main_loop,
+    );
+
+    const content = c.gtk_dialog_get_content_area(@ptrCast(*c.GtkDialog, dialog));
+    c.gtk_box_set_spacing(@ptrCast(*c.GtkBox, content), 5);
+    c.gtk_widget_set_margin_top(content, 5);
+    c.gtk_widget_set_margin_bottom(content, 5);
+    c.gtk_widget_set_margin_start(content, 5);
+    c.gtk_widget_set_margin_end(content, 5);
+    c.gtk_box_append(
+        @ptrCast(*c.GtkBox, content),
+        c.gtk_label_new("Streamlink Crashed! This is the output."),
+    );
+
+    const output_buf = c.gtk_text_buffer_new(null);
+    var start_iter: c.GtkTextIter = undefined;
+    c.gtk_text_buffer_get_start_iter(output_buf, &start_iter);
+    c.gtk_text_buffer_insert(output_buf, &start_iter, output.ptr, @intCast(c_int, output.len));
+
+    const output_view = c.gtk_text_view_new_with_buffer(output_buf);
+    c.gtk_widget_set_hexpand(output_view, 1);
+    c.gtk_text_view_set_editable(@ptrCast(*c.GtkTextView, output_view), 0);
+    c.gtk_box_append(@ptrCast(*c.GtkBox, content), output_view);
+
+    c.gtk_widget_show(dialog);
+
+    c.g_main_loop_run(main_loop);
+}
+
+fn onErrorDialogResponse(_: *c.GtkDialog, _: c_int, loop: *c.GMainLoop) void {
+    c.g_main_loop_quit(loop);
 }
