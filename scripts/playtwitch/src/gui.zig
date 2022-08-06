@@ -51,6 +51,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
         .buf = other_stream_buffer,
         .win = @ptrCast(*c.GtkWindow, win),
         .chatty_switch = @ptrCast(*c.GtkSwitch, chatty_switch),
+        .quality_buffer = quality_buffer,
     };
 
     ffi.connectSignal(
@@ -83,6 +84,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
         .state = state,
         .win = @ptrCast(*c.GtkWindow, win),
         .chatty_switch = @ptrCast(*c.GtkSwitch, chatty_switch),
+        .quality_buffer = quality_buffer,
     };
 
     ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, onRowActivate), act_data);
@@ -126,6 +128,7 @@ const RowActivateData = struct {
     state: *GuiState,
     win: *c.GtkWindow,
     chatty_switch: *c.GtkSwitch,
+    quality_buffer: *c.GtkEntryBuffer,
 };
 
 fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateData) void {
@@ -137,6 +140,7 @@ fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateD
         data.state,
         if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
         std.mem.sliceTo(channel_name, 0),
+        ffi.getEntryBufferText(data.quality_buffer),
     ) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_window_close(data.win);
@@ -147,6 +151,7 @@ const OtherStreamActivateData = struct {
     buf: *c.GtkEntryBuffer,
     win: *c.GtkWindow,
     chatty_switch: *c.GtkSwitch,
+    quality_buffer: *c.GtkEntryBuffer,
 };
 
 fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) void {
@@ -154,22 +159,31 @@ fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) voi
     start(
         data.state,
         if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
-        c.gtk_entry_buffer_get_text(data.buf)[0..c.gtk_entry_buffer_get_length(data.buf)],
+        ffi.getEntryBufferText(data.buf),
+        ffi.getEntryBufferText(data.quality_buffer),
     ) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_window_close(data.win);
 }
 
-fn start(state: *GuiState, chatty: bool, channel: []const u8) !void {
+fn start(
+    state: *GuiState,
+    chatty: bool,
+    channel: []const u8,
+    quality: []const u8,
+) !void {
     if (channel.len == 0) {
         std.log.warn("Exiting due to attempt to start empty channel", .{});
         return;
     }
 
-    std.log.info("Starting for channel {s} (chatty: {})", .{ channel, chatty });
+    std.log.info(
+        "Starting for channel {s} with quality {s} (chatty: {})",
+        .{ channel, quality, chatty },
+    );
     const url = try std.fmt.allocPrint(state.alloc, "https://twitch.tv/{s}", .{channel});
     defer state.alloc.free(url);
-    const streamlink_argv = [_][]const u8{ "streamlink", url };
+    const streamlink_argv = [_][]const u8{ "streamlink", url, quality };
     var streamlink_child = std.ChildProcess.init(&streamlink_argv, state.alloc);
     try streamlink_child.spawn();
     state.streamlink_child = streamlink_child;
