@@ -28,6 +28,10 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
 
     const preset_qualities = [_][:0]const u8{
         "best",
+        "1080p",
+        "720p",
+        "480p",
+        "360p",
         "worst",
         "audio_only",
     };
