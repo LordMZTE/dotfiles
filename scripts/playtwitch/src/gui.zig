@@ -23,9 +23,22 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
 
     c.gtk_box_append(@ptrCast(*c.GtkBox, left_titlebar), c.gtk_label_new("Quality"));
 
-    const quality_buffer = c.gtk_entry_buffer_new("best", -1);
-    const quality_entry = c.gtk_entry_new_with_buffer(quality_buffer);
-    c.gtk_box_append(@ptrCast(*c.GtkBox, left_titlebar), quality_entry);
+    const quality_box = c.gtk_combo_box_text_new_with_entry();
+    c.gtk_box_append(@ptrCast(*c.GtkBox, left_titlebar), quality_box);
+
+    const preset_qualities = [_][:0]const u8{
+        "best",
+        "worst",
+        "audio_only",
+    };
+    for (&preset_qualities) |quality| {
+        c.gtk_combo_box_text_append(
+            @ptrCast(*c.GtkComboBoxText, quality_box),
+            quality, // ID
+            quality, // Text
+        );
+    }
+    _ = c.gtk_combo_box_set_active_id(@ptrCast(*c.GtkComboBox, quality_box), "best");
 
     const right_titlebar = c.gtk_box_new(c.GTK_ORIENTATION_HORIZONTAL, 5);
     c.gtk_header_bar_pack_end(@ptrCast(*c.GtkHeaderBar, titlebar), right_titlebar);
@@ -44,14 +57,17 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     const other_stream_entry = c.gtk_entry_new_with_buffer(other_stream_buffer);
     c.gtk_box_append(@ptrCast(*c.GtkBox, content), other_stream_entry);
 
-    c.gtk_entry_set_placeholder_text(@ptrCast(*c.GtkEntry, other_stream_entry), "Other Channel...");
+    c.gtk_entry_set_placeholder_text(
+        @ptrCast(*c.GtkEntry, other_stream_entry),
+        "Other Channel...",
+    );
     const other_act_data = state.udata_arena.create(OtherStreamActivateData) catch return;
     other_act_data.* = OtherStreamActivateData{
         .state = state,
         .buf = other_stream_buffer,
         .win = @ptrCast(*c.GtkWindow, win),
         .chatty_switch = @ptrCast(*c.GtkSwitch, chatty_switch),
-        .quality_buffer = quality_buffer,
+        .quality_box = @ptrCast(*c.GtkComboBoxText, quality_box),
     };
 
     ffi.connectSignal(
@@ -84,7 +100,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
         .state = state,
         .win = @ptrCast(*c.GtkWindow, win),
         .chatty_switch = @ptrCast(*c.GtkSwitch, chatty_switch),
-        .quality_buffer = quality_buffer,
+        .quality_box = @ptrCast(*c.GtkComboBoxText, quality_box),
     };
 
     ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, onRowActivate), act_data);
@@ -128,19 +144,21 @@ const RowActivateData = struct {
     state: *GuiState,
     win: *c.GtkWindow,
     chatty_switch: *c.GtkSwitch,
-    quality_buffer: *c.GtkEntryBuffer,
+    quality_box: *c.GtkComboBoxText,
 };
 
 fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateData) void {
     _ = list;
     const label = c.gtk_list_box_row_get_child(row);
     const channel_name = c.gtk_label_get_text(@ptrCast(*c.GtkLabel, label));
+    const quality = c.gtk_combo_box_text_get_active_text(data.quality_box);
+    defer c.g_free(quality);
 
     start(
         data.state,
         if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
-        std.mem.sliceTo(channel_name, 0),
-        ffi.getEntryBufferText(data.quality_buffer),
+        std.mem.span(channel_name),
+        std.mem.span(quality),
     ) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_window_close(data.win);
@@ -151,16 +169,19 @@ const OtherStreamActivateData = struct {
     buf: *c.GtkEntryBuffer,
     win: *c.GtkWindow,
     chatty_switch: *c.GtkSwitch,
-    quality_buffer: *c.GtkEntryBuffer,
+    quality_box: *c.GtkComboBoxText,
 };
 
 fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) void {
     _ = entry;
+    const quality = c.gtk_combo_box_text_get_active_text(data.quality_box);
+    defer c.g_free(quality);
+
     start(
         data.state,
         if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
         ffi.getEntryBufferText(data.buf),
-        ffi.getEntryBufferText(data.quality_buffer),
+        std.mem.span(quality),
     ) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_window_close(data.win);
