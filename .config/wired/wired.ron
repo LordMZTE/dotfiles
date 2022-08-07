@@ -1,4 +1,5 @@
 (
+    notifications_spawn_paused: false,
     max_notifications: 0,
     timeout: 8000,
     // 60 Hz
