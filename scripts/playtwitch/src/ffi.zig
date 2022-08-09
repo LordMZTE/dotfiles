@@ -1,4 +1,5 @@
 // partially yoinked from https://github.com/Swoogan/ziggtk
+const std = @import("std");
 pub const c = @cImport({
     @cInclude("gtk/gtk.h");
 });
@@ -17,4 +18,13 @@ pub fn connectSignal(
 
 pub fn getEntryBufferText(buf: *c.GtkEntryBuffer) []const u8 {
     return c.gtk_entry_buffer_get_text(buf)[0..c.gtk_entry_buffer_get_length(buf)];
+}
+
+pub fn handleGError(err: *?*c.GError) !void {
+    if (err.*) |e| {
+        std.log.err("glib error: {s}", .{e.message});
+        c.g_error_free(e);
+        err.* = null;
+        return error.GError;
+    }
 }
