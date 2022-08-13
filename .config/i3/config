@@ -64,6 +64,9 @@ bindsym $mod+Shift+q kill
 # open gpower2
 bindsym $mod+Shift+p exec gpower2
 
+# randomize wallpaper
+bindsym $mod+Shift+w exec randomwallpaper
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
