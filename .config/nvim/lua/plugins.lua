@@ -138,8 +138,8 @@ return require("packer").startup(function(use)
     }
 
     use {
-        "itmecho/neoterm.nvim",
-        config = pconf "nterm",
+        "akinsho/toggleterm.nvim",
+        config = pconf "tterm",
     }
 
     cmp_plugins(use)
