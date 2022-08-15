@@ -142,5 +142,10 @@ return require("packer").startup(function(use)
         config = pconf "tterm",
     }
 
+    use {
+        "NTBBloodbath/zig-tools.nvim",
+        config = pconf "zigtools",
+    }
+
     cmp_plugins(use)
 end)
