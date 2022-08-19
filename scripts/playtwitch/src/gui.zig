@@ -363,13 +363,30 @@ fn streamlinkCommunicateCb(
     };
     defer c.g_bytes_unref(stdout);
 
-    if (c.g_subprocess_get_exit_status(@ptrCast(*c.GSubprocess, source_object)) == 0) {
+    const exit_code = c.g_subprocess_get_exit_status(@ptrCast(*c.GSubprocess, source_object));
+
+    if (exit_code == 0) {
+        std.log.info("Streamlink exited with code 0.", .{});
         c.gtk_window_close(data.window);
         return;
     }
 
     var len: usize = 0;
     const stdout_data = @ptrCast([*c]const u8, c.g_bytes_get_data(stdout, &len));
+
+    // Streamlink exits with a nonzero code if the stream ends, but we don't
+    // want to count this as a crash.
+    if (std.mem.containsAtLeast(u8, stdout_data[0..len], 1, "Stream ended")) {
+        std.log.warn(
+            \\Streamlink exited with code {d}, but output contained
+            \\"Stream ended", not showing popup. Full output:
+            \\{s}
+        ,
+            .{ exit_code, stdout_data[0..len] },
+        );
+        c.gtk_window_close(data.window);
+        return;
+    }
 
     c.gtk_text_buffer_set_text(data.text_buf, stdout_data, @intCast(c_int, len));
     c.gtk_widget_show(data.dialog);

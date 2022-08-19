@@ -3,7 +3,7 @@ const ffi = @import("ffi.zig");
 const c = ffi.c;
 const gui = @import("gui.zig");
 
-pub const log = @import("glib-log").log(c, "playtwitch", 512);
+pub const log = @import("glib-log").log(c, "playtwitch", 1024);
 // glib handles level filtering
 pub const log_level = .debug;
 
