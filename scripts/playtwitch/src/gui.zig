@@ -166,14 +166,14 @@ fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateD
     const quality = c.gtk_combo_box_text_get_active_text(data.quality_box);
     defer c.g_free(quality);
 
-    start(
-        if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
-        std.mem.span(channel_name),
-        std.mem.span(quality),
-        data.dialog,
-        data.text_buf,
-        data.win,
-    ) catch |err| std.log.err("Failed to start children: {}", .{err});
+    start(.{
+        .chatty = c.gtk_switch_get_active(data.chatty_switch) != 0,
+        .channel = std.mem.span(channel_name),
+        .quality = std.mem.span(quality),
+        .crash_dialog = data.dialog,
+        .error_text_buf = data.text_buf,
+        .window = data.win,
+    }) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_widget_hide(@ptrCast(*c.GtkWidget, data.win));
 }
@@ -193,14 +193,16 @@ fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) voi
     const quality = c.gtk_combo_box_text_get_active_text(data.quality_box);
     defer c.g_free(quality);
 
-    start(
-        if (c.gtk_switch_get_active(data.chatty_switch) == 0) false else true,
-        ffi.getEntryBufferText(data.buf),
-        std.mem.span(quality),
-        data.dialog,
-        data.text_buf,
-        data.win,
-    ) catch |err| std.log.err("Failed to start children: {}", .{err});
+    start(.{
+        .chatty = c.gtk_switch_get_active(data.chatty_switch) != 0,
+        .channel = c.gtk_entry_buffer_get_text(
+            data.buf,
+        )[0..c.gtk_entry_buffer_get_length(data.buf)],
+        .quality = std.mem.span(quality),
+        .crash_dialog = data.dialog,
+        .error_text_buf = data.text_buf,
+        .window = data.win,
+    }) catch |err| std.log.err("Failed to start children: {}", .{err});
 
     c.gtk_widget_hide(@ptrCast(*c.GtkWidget, data.win));
 }
@@ -256,15 +258,24 @@ fn onErrorDialogResponse(dialog: *c.GtkDialog, response_id: c_int, window: *c.Gt
     }
 }
 
-fn start(
+const StartOptions = struct {
+    /// if true, start chatty
     chatty: bool,
+    /// name of the channel to launch
     channel: []const u8,
+    /// quality parameter for streamlink
     quality: []const u8,
-    dialog: *c.GtkWidget,
-    text_buf: *c.GtkTextBuffer,
+    /// a pointer to a GTK widget that'll be shown if streamlink crashes
+    crash_dialog: *c.GtkWidget,
+    /// GtkTextBuffer to save streamlink's output in in the case of a crash
+    /// so it can be displayed
+    error_text_buf: *c.GtkTextBuffer,
+    /// the main GTK window
     window: *c.GtkWindow,
-) !void {
-    if (channel.len == 0) {
+};
+
+fn start(options: StartOptions) !void {
+    if (options.channel.len == 0) {
         std.log.warn("Exiting due to attempt to start empty channel", .{});
         return;
     }
@@ -273,11 +284,11 @@ fn start(
 
     std.log.info(
         "Starting for channel {s} with quality {s} (chatty: {})",
-        .{ channel, quality, chatty },
+        .{ options.channel, options.quality, options.chatty },
     );
-    const url = try std.fmt.allocPrintZ(c_allocator, "https://twitch.tv/{s}", .{channel});
+    const url = try std.fmt.allocPrintZ(c_allocator, "https://twitch.tv/{s}", .{options.channel});
     defer c_allocator.free(url);
-    const quality_z = try std.cstr.addNullByte(c_allocator, quality);
+    const quality_z = try std.cstr.addNullByte(c_allocator, options.quality);
     defer c_allocator.free(quality_z);
     const streamlink_argv = [_][*c]const u8{ "streamlink", url, quality_z, null };
     const streamlink_subproc = c.g_subprocess_newv(
@@ -289,9 +300,9 @@ fn start(
 
     const communicate_data = try c_allocator.create(StreamlinkCommunicateData);
     communicate_data.* = StreamlinkCommunicateData{
-        .dialog = dialog,
-        .text_buf = text_buf,
-        .window = window,
+        .dialog = options.crash_dialog,
+        .text_buf = options.error_text_buf,
+        .window = options.window,
     };
 
     c.g_subprocess_communicate_async(
@@ -302,14 +313,14 @@ fn start(
         communicate_data,
     );
 
-    if (chatty) {
+    if (options.chatty) {
         if (@atomicLoad(bool, &chatty_alive, .Unordered)) {
             std.log.warn("Chatty is already running, not starting again.", .{});
             return;
         }
 
         var chatty_arena = std.heap.ArenaAllocator.init(c_allocator);
-        const channel_d = try chatty_arena.allocator().dupe(u8, channel);
+        const channel_d = try chatty_arena.allocator().dupe(u8, options.channel);
         const chatty_argv = [_][]const u8{ "chatty", "-connect", "-channel", channel_d };
         const chatty_argv_dup = try chatty_arena.allocator().dupe([]const u8, &chatty_argv);
         var chatty_child = std.ChildProcess.init(
@@ -372,22 +383,27 @@ fn streamlinkCommunicateCb(
     }
 
     var len: usize = 0;
-    const stdout_data = @ptrCast([*c]const u8, c.g_bytes_get_data(stdout, &len));
+    const stdout_raw = @ptrCast([*c]const u8, c.g_bytes_get_data(stdout, &len));
+    const stdout_data = std.mem.trimRight(u8, stdout_raw[0..len], " \n\r\t");
 
     // Streamlink exits with a nonzero code if the stream ends, but we don't
     // want to count this as a crash.
-    if (std.mem.containsAtLeast(u8, stdout_data[0..len], 1, "Stream ended")) {
+    if (std.mem.containsAtLeast(u8, stdout_data, 1, "Stream ended")) {
         std.log.warn(
             \\Streamlink exited with code {d}, but output contained
             \\"Stream ended", not showing popup. Full output:
             \\{s}
         ,
-            .{ exit_code, stdout_data[0..len] },
+            .{ exit_code, stdout_data },
         );
         c.gtk_window_close(data.window);
         return;
     }
 
-    c.gtk_text_buffer_set_text(data.text_buf, stdout_data, @intCast(c_int, len));
+    c.gtk_text_buffer_set_text(
+        data.text_buf,
+        stdout_data.ptr,
+        @intCast(c_int, stdout_data.len),
+    );
     c.gtk_widget_show(data.dialog);
 }

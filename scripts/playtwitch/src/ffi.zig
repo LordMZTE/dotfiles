@@ -16,10 +16,6 @@ pub fn connectSignal(
     _ = c.g_signal_connect_data(instance, detailed_signal, c_handler, data, null, flags.*);
 }
 
-pub fn getEntryBufferText(buf: *c.GtkEntryBuffer) []const u8 {
-    return c.gtk_entry_buffer_get_text(buf)[0..c.gtk_entry_buffer_get_length(buf)];
-}
-
 pub fn handleGError(err: *?*c.GError) !void {
     if (err.*) |e| {
         std.log.err("glib error: {s}", .{e.message});
