@@ -7,12 +7,6 @@ map("t", "<Esc>", "<C-\\><C-n>", {})
 map("n", "ff", "<cmd>Telescope find_files<cr>", { silent = true })
 map("n", "fg", "<cmd>Telescope live_grep<cr>", { silent = true })
 
--- neoterm.nvim
-map("n", "tt", "<cmd>NeotermToggle<cr>", { silent = true })
-map("n", "tr", ":NeotermRun<space>", {})
-map("n", "te", "<cmd>NeotermExit<cr>", { silent = true })
-map("n", "ta", "<cmd>NeotermRerun<cr>", { silent = true })
-
 -- Quick cursor movement
 map("n", "<C-Down>", "5j", { noremap = true })
 map("n", "<C-Up>", "5k", { noremap = true })
