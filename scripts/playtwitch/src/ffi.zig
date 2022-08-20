@@ -1,6 +1,8 @@
 // partially yoinked from https://github.com/Swoogan/ziggtk
 const std = @import("std");
 pub const c = @cImport({
+    // fix for a strange behavior in stage2 with self-referential definitions in C
+    @cDefine("sched_priority", {});
     @cInclude("gtk/gtk.h");
 });
 

@@ -37,8 +37,8 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     for (&preset_qualities) |quality| {
         c.gtk_combo_box_text_append(
             @ptrCast(*c.GtkComboBoxText, quality_box),
-            quality, // ID
-            quality, // Text
+            quality.ptr, // ID
+            quality.ptr, // Text
         );
     }
     _ = c.gtk_combo_box_set_active_id(@ptrCast(*c.GtkComboBox, quality_box), "best");
@@ -81,7 +81,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     ffi.connectSignal(
         other_stream_entry,
         "activate",
-        @ptrCast(c.GCallback, onOtherStreamActivate),
+        @ptrCast(c.GCallback, &onOtherStreamActivate),
         other_act_data,
     );
 
@@ -113,11 +113,11 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
         .text_buf = dialog_buf,
     };
 
-    ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, onRowActivate), act_data);
+    ffi.connectSignal(list, "row-activated", @ptrCast(c.GCallback, &onRowActivate), act_data);
 
     channels: {
         const channels_data = readChannels() catch |e| {
-            std.log.err("Failed to read channels: {}", .{e});
+            std.log.err("Failed to read channels: {!}", .{e});
             break :channels;
         };
         defer c_allocator.free(channels_data);
@@ -142,7 +142,7 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
 }
 
 fn readChannels() ![]u8 {
-    const home = try std.os.getenv("HOME") orelse error.HomeNotSet;
+    const home = try (std.os.getenv("HOME") orelse error.HomeNotSet);
     const fname = try std.fmt.allocPrint(c_allocator, "{s}/.config/playtwitch/channels", .{home});
     defer c_allocator.free(fname);
     std.log.info("Reading channels from {s}", .{fname});
@@ -173,7 +173,7 @@ fn onRowActivate(list: *c.GtkListBox, row: *c.GtkListBoxRow, data: *RowActivateD
         .crash_dialog = data.dialog,
         .error_text_buf = data.text_buf,
         .window = data.win,
-    }) catch |err| std.log.err("Failed to start children: {}", .{err});
+    }) catch |err| std.log.err("Failed to start children: {!}", .{err});
 
     c.gtk_widget_hide(@ptrCast(*c.GtkWidget, data.win));
 }
@@ -202,7 +202,7 @@ fn onOtherStreamActivate(entry: *c.GtkEntry, data: *OtherStreamActivateData) voi
         .crash_dialog = data.dialog,
         .error_text_buf = data.text_buf,
         .window = data.win,
-    }) catch |err| std.log.err("Failed to start children: {}", .{err});
+    }) catch |err| std.log.err("Failed to start children: {!}", .{err});
 
     c.gtk_widget_hide(@ptrCast(*c.GtkWidget, data.win));
 }
@@ -222,7 +222,7 @@ pub fn streamlinkErrorDialog(parent_window: *c.GtkWindow, output: *c.GtkTextBuff
     ffi.connectSignal(
         dialog,
         "response",
-        @ptrCast(c.GCallback, onErrorDialogResponse),
+        @ptrCast(c.GCallback, &onErrorDialogResponse),
         parent_window,
     );
 
@@ -290,7 +290,7 @@ fn start(options: StartOptions) !void {
     defer c_allocator.free(url);
     const quality_z = try std.cstr.addNullByte(c_allocator, options.quality);
     defer c_allocator.free(quality_z);
-    const streamlink_argv = [_][*c]const u8{ "streamlink", url, quality_z, null };
+    const streamlink_argv = [_][*c]const u8{ "streamlink", url.ptr, quality_z.ptr, null };
     const streamlink_subproc = c.g_subprocess_newv(
         &streamlink_argv,
         c.G_SUBPROCESS_FLAGS_STDOUT_PIPE,
@@ -309,7 +309,7 @@ fn start(options: StartOptions) !void {
         streamlink_subproc,
         null,
         null,
-        @ptrCast(c.GAsyncReadyCallback, streamlinkCommunicateCb),
+        @ptrCast(c.GAsyncReadyCallback, &streamlinkCommunicateCb),
         communicate_data,
     );
 

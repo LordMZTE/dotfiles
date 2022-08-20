@@ -18,7 +18,7 @@ pub fn main() !u8 {
     const app = c.gtk_application_new("de.mzte.playtwitch", c.G_APPLICATION_FLAGS_NONE);
     defer c.g_object_unref(app);
 
-    ffi.connectSignal(app, "activate", @ptrCast(c.GCallback, gui.activate), &state);
+    ffi.connectSignal(app, "activate", @ptrCast(c.GCallback, &gui.activate), &state);
 
     const status = c.g_application_run(
         @ptrCast(*c.GApplication, app),

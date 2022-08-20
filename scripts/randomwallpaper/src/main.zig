@@ -33,7 +33,8 @@ pub fn main() !u8 {
     defer alloc.free(feh_argv);
     std.mem.copy([]const u8, feh_argv, &feh_baseargs);
 
-    const rand = std.rand.DefaultPrng.init(std.crypto.random.int(u64)).random();
+    var prng = std.rand.DefaultPrng.init(std.crypto.random.int(u64));
+    const rand = prng.random();
 
     var i: u31 = 0;
     while (i < screens) : (i += 1) {
@@ -42,7 +43,8 @@ pub fn main() !u8 {
     }
 
     std.log.info("feh argv: {s}", .{feh_argv});
-    const term = try std.ChildProcess.init(feh_argv, alloc).spawnAndWait();
+    var child = std.ChildProcess.init(feh_argv, alloc);
+    const term = try child.spawnAndWait();
 
     const exit = switch (term) {
         .Exited => |n| n,
