@@ -1,8 +1,8 @@
 [theme]
-name = "dracula"
+theme = "dracula"
 
 [icons]
-name = "material-nf"
+icons = "material-nf"
 
 [icons.overrides]
 # this should never show, as the bat block auto hides without a battery
