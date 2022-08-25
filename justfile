@@ -1,6 +1,5 @@
 lsps := "
 eslint
-gitlint
 lua-language-server
 rust-analyzer
 shellcheck
