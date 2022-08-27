@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=ncspot
-Comment=Curses Spotify Client
-Terminal=false
-Exec=alacritty -e env TERM=xterm-256color ncspot
-Icon=audio-player
-Type=Application
