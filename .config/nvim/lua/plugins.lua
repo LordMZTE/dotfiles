@@ -147,5 +147,7 @@ return require("packer").startup(function(use)
         config = pconf "zigtools",
     }
 
+    use "DingDean/wgsl.vim"
+
     cmp_plugins(use)
 end)
