@@ -30,7 +30,7 @@ fn ui() !run.Command {
 
     var style: ?at.style.Style = null;
     for (std.enums.values(run.Command)) |tag| {
-        try updateStyle(w, .{ .foreground = .Blue }, &style);
+        try updateStyle(w, .{ .foreground = .Cyan }, &style);
         try w.print("[{c}] ", .{tag.char()});
         try updateStyle(w, .{ .foreground = .Green }, &style);
         try w.print("{s}\n", .{@tagName(tag)});

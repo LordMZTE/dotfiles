@@ -14,6 +14,7 @@ zls-bin
 install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
     cp scripts/randomwallpaper/zig-out/bin/randomwallpaper {{target}}/randomwallpaper
     cp scripts/playtwitch/zig-out/bin/playtwitch {{target}}/playtwitch
+    rm {{target}}/mzteinit || true
     cp scripts/mzteinit/zig-out/bin/mzteinit {{target}}/mzteinit
 
     ln -sf \
