@@ -12,18 +12,18 @@ const figlet =
 
 pub fn writeFiglet(writer: anytype) !void {
     var style: ?at.style.Style = null;
-    var iter = std.mem.split(u8, figlet, "\n");
-    while (iter.next()) |line| {
-        for (line) |char| {
-            if (char == 'r') {
+    for (figlet) |char| {
+        switch (char) {
+            'r' => {
                 try at.format.updateStyle(writer, .{ .foreground = .Red }, style);
                 style = .{ .foreground = .Red };
-            } else {
-                try writer.writeByte(char);
-            }
+            },
+            '\n' => {
+                try at.format.updateStyle(writer, .{ .foreground = .Default }, style);
+                style = .{ .foreground = .Default };
+                try writer.writeByte('\n');
+            },
+            else => try writer.writeByte(char),
         }
-        try at.format.updateStyle(writer, .{ .foreground = .Default }, style);
-        style = .{ .foreground = .Default };
-        try writer.writeByte('\n');
     }
 }
