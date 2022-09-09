@@ -3,22 +3,24 @@ const at = @import("ansi-term");
 const run = @import("run.zig");
 
 pub fn main() !void {
+    var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
+
+    try stdout.writer().writeAll("\x1b[2J\x1b[1;1H"); // clear
     while (true) {
-        try std.io.getStdOut().writeAll("\x1b[2J\x1b[1;1H"); // clear
-        const cmd = ui() catch |e| {
+        const cmd = ui(&stdout) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             break;
         };
         cmd.run() catch |e| {
-            try std.io.getStdOut().writeAll("\x1b[2J\x1b[1;1H"); // clear
-            std.debug.print("Error running command: {}\n", .{e});
+            try stdout.writer().print("Error running command: {}\n\n", .{e});
+            continue;
         };
+        try stdout.writer().writeAll("\x1b[2J\x1b[1;1H"); // clear
     }
 }
 
-fn ui() !run.Command {
-    var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
-    const w = stdout.writer();
+fn ui(buf_writer: anytype) !run.Command {
+    const w = buf_writer.writer();
 
     try @import("figlet.zig").writeFiglet(w);
     try w.writeAll(
@@ -37,7 +39,7 @@ fn ui() !run.Command {
     }
     try at.format.resetStyle(w);
 
-    try stdout.flush();
+    try buf_writer.flush();
 
     const old_termios = try std.os.tcgetattr(std.os.STDIN_FILENO);
     var new_termios = old_termios;
@@ -52,7 +54,7 @@ fn ui() !run.Command {
         cmd = run.Command.fromChar(c[0]);
         if (cmd == null) {
             try w.print("Unknown command '{s}'\n", .{c});
-            try stdout.flush();
+            try buf_writer.flush();
         }
     }
     try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, old_termios);
