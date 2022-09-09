@@ -14,6 +14,7 @@ pub fn build(b: *std.build.Builder) void {
 
     const exe = b.addExecutable("mzteinit", "src/main.zig");
     exe.setTarget(target);
+    exe.strip = mode != .Debug;
 
     pkgs.addAllTo(exe);
 
