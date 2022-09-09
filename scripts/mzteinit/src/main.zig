@@ -21,16 +21,23 @@ pub fn main() !void {
 
 fn ui(buf_writer: anytype) !run.Command {
     const w = buf_writer.writer();
+    var style: ?at.style.Style = null;
 
     try @import("figlet.zig").writeFiglet(w);
-    try w.writeAll(
-        \\
-        \\What do you want to do?
-        \\
-        \\
+    const uname = std.os.uname();
+    try updateStyle(w, .{ .foreground = .Yellow }, &style);
+    try w.print(
+        "\n {s} {s} {s}\n\n",
+        .{
+            uname.nodename,
+            uname.release,
+            uname.machine,
+        },
     );
 
-    var style: ?at.style.Style = null;
+    try updateStyle(w, .{ .font_style = .{ .bold = true } }, &style);
+    try w.writeAll("     What do you want to do?\n\n");
+
     for (std.enums.values(run.Command)) |tag| {
         try updateStyle(w, .{ .foreground = .Cyan }, &style);
         try w.print("[{c}] ", .{tag.char()});
@@ -38,6 +45,7 @@ fn ui(buf_writer: anytype) !run.Command {
         try w.print("{s}\n", .{@tagName(tag)});
     }
     try at.format.resetStyle(w);
+    style = .{};
 
     try buf_writer.flush();
 
