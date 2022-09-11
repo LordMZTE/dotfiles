@@ -1,5 +1,5 @@
 if set -q MZTEINIT
     exit
 end
-set -x MZTEINIT
+set -gx MZTEINIT
 exec mzteinit
