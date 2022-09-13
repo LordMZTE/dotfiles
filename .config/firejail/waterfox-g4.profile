@@ -1,0 +1,1 @@
+include waterfox.profile
