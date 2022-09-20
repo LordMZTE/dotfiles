@@ -1,3 +1,5 @@
+; extends
+
 ;; Keywords
 (("async" @keyword) (#set! conceal "ﰦ"))
 (("const" @keyword) (#set! conceal ""))

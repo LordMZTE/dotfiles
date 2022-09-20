@@ -1,3 +1,5 @@
+; extends
+
 ;; Keywords
 (("else" @keyword) (#set! conceal ""))
 (("for" @keyword) (#set! conceal "ﳁ"))
