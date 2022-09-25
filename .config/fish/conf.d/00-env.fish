@@ -1,3 +1,8 @@
+if set -q MZTE_ENV_SET
+    exit
+end
+set -gx MZTE_ENV_SET
+
 # use clang compiler
 export CC=clang
 export CXX=clang++
