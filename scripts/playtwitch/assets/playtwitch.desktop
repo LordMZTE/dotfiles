@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Playtwitch
+Comment=Launch a twitch stream
+Type=Application
+Exec=playtwitch
+Icon=playtwitch

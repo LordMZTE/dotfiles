@@ -11,21 +11,14 @@ yaml-language-server
 zls-bin
 "
 
-install-scripts target=(`echo $HOME` + "/.local/bin"): build-scripts
-    cp scripts/randomwallpaper/zig-out/bin/randomwallpaper {{target}}/randomwallpaper
-    cp scripts/playtwitch/zig-out/bin/playtwitch {{target}}/playtwitch
-    rm {{target}}/mzteinit || true
-    cp scripts/mzteinit/zig-out/bin/mzteinit {{target}}/mzteinit
-
+install-scripts target=(`echo $HOME` + "/.local"):
     ln -sf \
         `pwd`/scripts/{start-joshuto,withjava} \
-        {{target}}
+        {{target}}/bin
 
-
-build-scripts:
-    cd scripts/randomwallpaper && zig build -Drelease-fast
-    cd scripts/playtwitch && gyro build -Drelease-fast
-    cd scripts/mzteinit && gyro build -Drelease-fast
+    cd scripts/randomwallpaper && zig build -Drelease-fast -p {{target}}
+    cd scripts/playtwitch && gyro build -Drelease-fast -p {{target}}
+    cd scripts/mzteinit && gyro build -Drelease-fast -p {{target}}
 
 install-lsps-paru:
     #!/bin/sh

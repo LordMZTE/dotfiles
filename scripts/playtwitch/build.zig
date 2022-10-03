@@ -24,6 +24,18 @@ pub fn build(b: *std.build.Builder) void {
 
     exe.install();
 
+    var logo_install_step = b.addInstallFile(
+        .{ .path = "assets/playtwitch.svg" },
+        "share/icons/hicolor/scalable/apps/playtwitch.svg",
+    );
+    b.getInstallStep().dependOn(&logo_install_step.step);
+
+    var desktop_entry_install_step = b.addInstallFile(
+        .{ .path = "assets/playtwitch.desktop" },
+        "share/applications/playtwitch.desktop",
+    );
+    b.getInstallStep().dependOn(&desktop_entry_install_step.step);
+
     const run_cmd = exe.run();
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {

@@ -13,6 +13,7 @@ pub const GuiState = struct {
 pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
     const win = c.gtk_application_window_new(app);
     c.gtk_window_set_title(@ptrCast(*c.GtkWindow, win), "Pick a stream!");
+    c.gtk_window_set_icon_name(@ptrCast(*c.GtkWindow, win), "playtwitch");
 
     const titlebar = c.gtk_header_bar_new();
     c.gtk_window_set_titlebar(@ptrCast(*c.GtkWindow, win), titlebar);
