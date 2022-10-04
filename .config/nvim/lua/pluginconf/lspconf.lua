@@ -1,22 +1,29 @@
-local map = vim.api.nvim_set_keymap
 local lspc = require "lspconfig"
+local navic = require "nvim-navic"
 
 local caps = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+local function on_attach(client, bufnr)
+    if client.server_capabilities.documentSymbolProvider then
+        navic.attach(client, bufnr)
+    end
+end
 
 local lua_runtime_path = vim.split(package.path, ";")
 table.insert(lua_runtime_path, "lua/?.lua")
 table.insert(lua_runtime_path, "lua/?/init.lua")
 
-lspc.clangd.setup { capabilities = caps }
-lspc.cssls.setup { capabilities = caps }
-lspc.eslint.setup { capabilities = caps }
-lspc.haxe_language_server.setup { capabilities = caps }
-lspc.html.setup { capabilities = caps }
-lspc.jsonls.setup { capabilities = caps }
-lspc.ocamllsp.setup { capabilities = caps }
-lspc.prosemd_lsp.setup { capabilities = caps }
+lspc.clangd.setup { capabilities = caps, on_attach = on_attach }
+lspc.cssls.setup { capabilities = caps, on_attach = on_attach }
+lspc.eslint.setup { capabilities = caps, on_attach = on_attach }
+lspc.haxe_language_server.setup { capabilities = caps, on_attach = on_attach }
+lspc.html.setup { capabilities = caps, on_attach = on_attach }
+lspc.jsonls.setup { capabilities = caps, on_attach = on_attach }
+lspc.ocamllsp.setup { capabilities = caps, on_attach = on_attach }
+lspc.prosemd_lsp.setup { capabilities = caps, on_attach = on_attach }
 lspc.rust_analyzer.setup {
     capabilities = caps,
+    on_attach = on_attach,
     settings = {
         ["rust-analyzer"] = {
             checkOnSave = {
@@ -27,6 +34,7 @@ lspc.rust_analyzer.setup {
 }
 lspc.sumneko_lua.setup {
     capabilities = caps,
+    on_attach = on_attach,
     settings = {
         Lua = {
             runtime = {
@@ -45,13 +53,14 @@ lspc.sumneko_lua.setup {
         },
     },
 }
-lspc.taplo.setup { capabilities = caps }
-lspc.yamlls.setup { capabilities = caps }
-lspc.zls.setup { capabilities = caps }
+lspc.taplo.setup { capabilities = caps, on_attach = on_attach }
+lspc.yamlls.setup { capabilities = caps, on_attach = on_attach }
+lspc.zls.setup { capabilities = caps, on_attach = on_attach }
 
 -- Mappings.
 local opts = { noremap = true, silent = true }
 
+local map = vim.api.nvim_set_keymap
 -- See `:help vim.lsp.*` for documentation on any of the below functions
 map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)

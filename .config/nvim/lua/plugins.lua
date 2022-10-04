@@ -149,5 +149,10 @@ return require("packer").startup(function(use)
 
     use "DingDean/wgsl.vim"
 
+    use {
+        "SmiteshP/nvim-navic",
+        requires = "neovim/nvim-lspconfig",
+    }
+
     cmp_plugins(use)
 end)
