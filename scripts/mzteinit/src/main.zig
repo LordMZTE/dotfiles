@@ -1,21 +1,34 @@
 const std = @import("std");
 const at = @import("ansi-term");
 const run = @import("run.zig");
+const util = @import("util.zig");
 
 pub fn main() !void {
     var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
+    var exit = false;
 
-    try stdout.writer().writeAll("\x1b[2J\x1b[1;1H"); // clear
     while (true) {
+        try util.writeAnsiClear(stdout.writer());
+
         const cmd = ui(&stdout) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             break;
         };
-        cmd.run() catch |e| {
+
+        try util.writeAnsiClear(stdout.writer());
+        try stdout.flush();
+
+        cmd.run(&exit) catch |e| {
             try stdout.writer().print("Error running command: {}\n\n", .{e});
             continue;
         };
-        try stdout.writer().writeAll("\x1b[2J\x1b[1;1H"); // clear
+
+        if (exit) {
+            try stdout.writer().writeAll("Goodbye!");
+            try stdout.flush();
+            std.time.sleep(2 * std.time.ns_per_s);
+            return;
+        }
     }
 }
 
