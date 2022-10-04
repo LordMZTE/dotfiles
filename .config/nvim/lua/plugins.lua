@@ -154,5 +154,26 @@ return require("packer").startup(function(use)
         requires = "neovim/nvim-lspconfig",
     }
 
+    use {
+        "rcarriga/nvim-notify",
+        config = function()
+            vim.notify = require "notify"
+        end
+    }
+
+    use {
+        "stevearc/dressing.nvim",
+        config = function()
+            require("dressing").setup {}
+        end
+    }
+
+    use {
+        "nvim-treesitter/nvim-treesitter-context",
+        config = function()
+            require("treesitter-context").setup {}
+        end
+    }
+
     cmp_plugins(use)
 end)
