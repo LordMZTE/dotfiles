@@ -127,9 +127,14 @@ pub fn activate(app: *c.GtkApplication, state: *GuiState) void {
 
         var channels_iter = std.mem.split(u8, channels_data, "\n");
         while (channels_iter.next()) |s| {
-            if (s.len > 63) {
+            const chan = std.mem.trim(u8, s, " \n\r\t");
+            if (chan.len == 0) {
+                continue;
+            }
+            if (chan.len > 63) {
                 @panic("Can't have channel name >63 chars!");
             }
+
             std.mem.copy(u8, &name_buf, s);
             name_buf[s.len] = 0;
 
@@ -278,6 +283,7 @@ const StartOptions = struct {
 fn start(options: StartOptions) !void {
     if (options.channel.len == 0) {
         std.log.warn("Exiting due to attempt to start empty channel", .{});
+        c.gtk_window_close(options.window);
         return;
     }
 
@@ -343,7 +349,9 @@ fn chattyThread(child: std.ChildProcess, arena: std.heap.ArenaAllocator) !void {
     defer @atomicStore(bool, &chatty_alive, false, .Unordered);
     var ch = child;
     defer arena.deinit();
-    _ = try ch.spawnAndWait();
+    _ = ch.spawnAndWait() catch |e| {
+        std.log.err("spawning chatty: {!}", .{e});
+    };
 }
 
 const StreamlinkCommunicateData = struct {
