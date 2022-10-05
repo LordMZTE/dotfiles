@@ -18,6 +18,7 @@ install-scripts target=(`echo $HOME` + "/.local"):
 
     cd scripts/randomwallpaper && zig build -Drelease-fast -p {{target}}
     cd scripts/playtwitch && gyro build -Drelease-fast -p {{target}}
+    cd scripts/prompt && gyro build -Drelease-fast -p {{target}}
     cd scripts/mzteinit && gyro build -Drelease-fast -p {{target}}
 
 install-lsps-paru:
@@ -32,6 +33,3 @@ install-lsps-paru:
             ocamlformat
     fi
 
-install-prompt:
-    cd prompt/ && gyro build -Drelease-fast
-    cp prompt/zig-out/bin/prompt ~/.local/bin
