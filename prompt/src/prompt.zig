@@ -20,9 +20,6 @@ const symbols = struct {
 };
 
 pub fn render(writer: anytype, status: i16, mode: FishMode) !void {
-    _ = status;
-    _ = mode;
-
     try (Renderer(@TypeOf(writer)){
         .last_style = null,
         .writer = writer,
@@ -152,7 +149,6 @@ fn Renderer(comptime Writer: type) type {
         }
 
         fn renderGit(self: *Self) !void {
-            _ = self;
             try checkGitError(c.git_libgit2_init());
             defer _ = c.git_libgit2_shutdown();
 
