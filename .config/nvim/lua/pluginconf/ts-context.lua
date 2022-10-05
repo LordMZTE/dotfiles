@@ -4,5 +4,9 @@ tsc.setup {
         zig = {
             "TopLevelDecl",
         },
+
+        html = {
+            "element",
+        }
     },
 }
