@@ -23,6 +23,7 @@ set -g fish_color_comment $comment
 set -g fish_color_selection --background=$selection
 set -g fish_color_search_match --background=$selection
 set -g fish_color_operator $green
+set -g fish_color_option $orange
 set -g fish_color_escape $pink
 set -g fish_color_autosuggestion $comment
 
