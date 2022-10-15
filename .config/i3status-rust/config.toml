@@ -21,7 +21,6 @@ format = "$frequency $barchart $utilization"
 
 [[block]]
 block = "temperature"
-collapsed = false
 interval = 5
 format = "$min - $average ~ $max +"
 chip = "*-isa-*"
