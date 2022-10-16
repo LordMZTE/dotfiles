@@ -58,6 +58,9 @@ bindsym $mod+Return exec TERMINAL=alacritty i3-sensible-terminal
 # open thunar
 bindsym $mod+Ctrl+e exec thunar
 
+# open luakit
+bindsym $mod+Ctrl+b exec luakit
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
