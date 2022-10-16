@@ -167,5 +167,8 @@ return require("packer").startup(function(use)
         "nvim-treesitter/nvim-treesitter-context",
         config = pconf "ts-context"
     }
+
+    use "DaeZak/crafttweaker-vim-highlighting"
+
     cmp_plugins(use)
 end)
