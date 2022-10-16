@@ -38,7 +38,7 @@ cmp.setup {
         { name = "luasnip" },
         { name = "nvim_lsp" },
         { name = "path" },
-        { name = "rg", option = { additional_arguments = "--max-depth 4" } },
+        --{ name = "rg", option = { additional_arguments = "--max-depth 4" } },
         { name = "treesitter" },
     },
 
