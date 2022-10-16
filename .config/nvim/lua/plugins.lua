@@ -64,13 +64,6 @@ return require("packer").startup(function(use)
         as = "dracula",
     }
     use {
-        "glacambre/firenvim",
-        run = function()
-            vim.fn["firenvim#install"](0)
-        end,
-        config = pconf "firenvim",
-    }
-    use {
         "lewis6991/gitsigns.nvim",
         config = function()
             require("gitsigns").setup {}

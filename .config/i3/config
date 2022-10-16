@@ -61,6 +61,10 @@ bindsym $mod+Ctrl+e exec thunar
 # open luakit
 bindsym $mod+Ctrl+b exec luakit
 
+# vinput
+bindsym $mod+Ctrl+v exec vinput
+for_window [class="vinput-neovide"] floating enable
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
@@ -200,7 +204,7 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# enable icons (requires git version of i3 at the moment)
+# enable icons
 for_window [class=".*"] title_window_icon on
 
 # random settings
