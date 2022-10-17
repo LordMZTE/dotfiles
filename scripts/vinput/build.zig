@@ -18,6 +18,8 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkLibC();
     exe.linkSystemLibrary("x11");
 
+    exe.strip = mode != .Debug;
+
     exe.install();
 
     const run_cmd = exe.run();
