@@ -134,7 +134,6 @@ pub fn provideClipboard(data: []const u8, alloc: std.mem.Allocator) !void {
                         } else {
                             log.info("sent clipboard to unknown window", .{});
                         }
-                        break;
                     }
                 }
             },
