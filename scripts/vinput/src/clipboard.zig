@@ -5,8 +5,7 @@ const c = ffi.c;
 const log = std.log.scoped(.clipboard);
 
 /// Provides the given data to the X clipboard ONCE
-pub fn provideClipboard(data: []const u8, alloc: std.mem.Allocator) !void {
-    _ = alloc;
+pub fn provideClipboard(data: []const u8) !void {
     const dpy = c.XOpenDisplay(
         c.getenv("DISPLAY") orelse return error.DisplayNotSet,
     ) orelse return error.OpenDisplay;

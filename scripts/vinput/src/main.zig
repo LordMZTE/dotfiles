@@ -7,12 +7,20 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
 
+    if (std.os.argv.len == 1 or std.os.argv.len > 2) {
+        std.log.err(
+            \\ Invalid usage.
+            \\ Usage: {s} FILE_EXTENSION
+        , .{std.os.argv[0]});
+        return error.InvalidCli;
+    }
+
     var alloc = gpa.allocator();
 
     const filename = try std.fmt.allocPrint(
         alloc,
-        "/tmp/vinput{}-{}",
-        .{ std.os.linux.getuid(), std.time.milliTimestamp() },
+        "/tmp/vinput{}-{}.{s}",
+        .{ std.os.linux.getuid(), std.time.milliTimestamp(), std.os.argv[1] },
     );
     defer alloc.free(filename);
 
@@ -20,14 +28,14 @@ pub fn main() !void {
     //    "neovide",
     //    "--nofork",
     //    "--x11-wm-class",
-    //    "vinput-neovide",
+    //    "vinput-editor",
     //    filename,
     //};
 
     const editor_argv = [_][]const u8{
         "alacritty",
         "--class",
-        "vinput-neovide",
+        "vinput-editor",
         "-e",
         "nvim",
         "--cmd",
@@ -66,7 +74,7 @@ pub fn main() !void {
         );
         defer std.os.munmap(fcontent);
 
-        try clipboard.provideClipboard(std.mem.trim(u8, fcontent, " \n\r"), alloc);
+        try clipboard.provideClipboard(std.mem.trim(u8, fcontent, " \n\r"));
     }
     std.log.info("deleting tempfile {s}", .{filename});
     try std.fs.deleteFileAbsolute(filename);

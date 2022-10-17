@@ -62,8 +62,8 @@ bindsym $mod+Ctrl+e exec thunar
 bindsym $mod+Ctrl+b exec luakit
 
 # vinput
-bindsym $mod+Ctrl+v exec vinput
-for_window [class="vinput-neovide"] floating enable
+bindsym $mod+Ctrl+v exec vinput md
+for_window [class="vinput-editor"] floating enable
 
 # kill focused window
 bindsym $mod+Shift+q kill
