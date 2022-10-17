@@ -1,4 +1,5 @@
 const std = @import("std");
+const clipboard = @import("clipboard.zig");
 
 pub const log_level = .debug;
 
@@ -15,17 +16,28 @@ pub fn main() !void {
     );
     defer alloc.free(filename);
 
-    const nvide_argv = [_][]const u8{
-        "neovide",
-        "--nofork",
-        "--x11-wm-class",
+    //const editor_argv = [_][]const u8{
+    //    "neovide",
+    //    "--nofork",
+    //    "--x11-wm-class",
+    //    "vinput-neovide",
+    //    filename,
+    //};
+
+    const editor_argv = [_][]const u8{
+        "alacritty",
+        "--class",
         "vinput-neovide",
+        "-e",
+        "nvim",
+        "--cmd",
+        "let g:started_by_vinput=v:true",
         filename,
     };
 
-    std.log.info("invoking neovide with command {s}", .{&nvide_argv});
+    std.log.info("invoking editor with command {s}", .{&editor_argv});
 
-    var nvide_child = std.ChildProcess.init(&nvide_argv, alloc);
+    var nvide_child = std.ChildProcess.init(&editor_argv, alloc);
     _ = try nvide_child.spawnAndWait();
 
     const stat = std.fs.cwd().statFile(filename) catch |e| {
@@ -41,24 +53,6 @@ pub fn main() !void {
         var tempfile = try std.fs.openFileAbsolute(filename, .{});
         defer tempfile.close();
 
-        const xclip_argv = [_][]const u8{
-            "xclip",
-            "-sel",
-            "clip",
-        };
-
-        std.log.info("invoking xclip with command {s}", .{&xclip_argv});
-
-        var xclip_child = std.ChildProcess.init(&xclip_argv, alloc);
-        xclip_child.stdin_behavior = .Pipe;
-        try xclip_child.spawn();
-        defer _ = xclip_child.wait() catch {};
-        if (xclip_child.stdin == null) {
-            return error.XclipNullStdin;
-        }
-        defer xclip_child.stdin = null;
-        defer xclip_child.stdin.?.close();
-
         std.log.info("mmapping tempfile", .{});
 
         // ooooh memmap, performance!
@@ -72,8 +66,7 @@ pub fn main() !void {
         );
         defer std.os.munmap(fcontent);
 
-        std.log.info("writing trimmed tempfile to xclip stdin", .{});
-        try xclip_child.stdin.?.writeAll(std.mem.trim(u8, fcontent, " \n\r"));
+        try clipboard.provideClipboard(std.mem.trim(u8, fcontent, " \n\r"), alloc);
     }
     std.log.info("deleting tempfile {s}", .{filename});
     try std.fs.deleteFileAbsolute(filename);
