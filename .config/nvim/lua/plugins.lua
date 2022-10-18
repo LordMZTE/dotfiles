@@ -146,22 +146,24 @@ return require("packer").startup(function(use)
         "rcarriga/nvim-notify",
         config = function()
             vim.notify = require "notify"
-        end
+        end,
     }
 
     use {
         "stevearc/dressing.nvim",
         config = function()
             require("dressing").setup {}
-        end
+        end,
     }
 
     use {
         "nvim-treesitter/nvim-treesitter-context",
-        config = pconf "ts-context"
+        config = pconf "ts-context",
     }
 
     use "DaeZak/crafttweaker-vim-highlighting"
+
+    use "mfussenegger/nvim-jdtls"
 
     cmp_plugins(use)
 end)

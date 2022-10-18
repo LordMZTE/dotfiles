@@ -17,8 +17,7 @@ o.termguicolors = true
 wo.cursorline = true
 wo.cursorcolumn = true
 
-g.neoterm_default_mod = "tab"
-g.neovide_iso_layout = true
+g.zig_fmt_autosave = 0
 
 o.conceallevel = 2
 
