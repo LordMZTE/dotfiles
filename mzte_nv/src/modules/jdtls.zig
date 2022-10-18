@@ -32,7 +32,8 @@ const runtime_map = [_]Runtime{
 };
 
 fn lFindRuntimes(l: *c.lua_State) !c_int {
-    const jvmdir = try std.fs.openIterableDirAbsolute("/usr/lib/jvm/", .{});
+    var jvmdir = try std.fs.openIterableDirAbsolute("/usr/lib/jvm/", .{});
+    defer jvmdir.close();
 
     c.lua_newtable(l);
 
@@ -47,7 +48,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
             if (!std.mem.containsAtLeast(u8, jvm.name, 1, rt.version))
                 continue;
 
-            // push a table with a name field (must be a V from runtime_map)
+            // push a table with a name field (must be a name from runtime_map)
             // and a path field (path to the runtime's home)
             c.lua_newtable(l);
 
