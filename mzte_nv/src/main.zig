@@ -1,6 +1,9 @@
 const std = @import("std");
 const ffi = @import("ffi.zig");
+const ser = @import("ser.zig");
 const c = ffi.c;
+
+pub const version = "0.1.0";
 
 const modules = struct {
     const jdtls = @import("modules/jdtls.zig");
@@ -8,8 +11,42 @@ const modules = struct {
 
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
     const l = l_.?;
-    c.lua_newtable(l);
-    modules.jdtls.pushModtable(l);
-    c.lua_setfield(l, -2, "jdtls");
+    ser.luaPushAny(l, .{
+        .onInit = ffi.luaFunc(lOnInit),
+        .jdtls = modules.jdtls,
+    });
     return 1;
+}
+
+fn lOnInit(l: *c.lua_State) !c_int {
+    c.lua_getglobal(l, "vim"); // 1
+    c.lua_getfield(l, 1, "version");
+    c.lua_call(l, 0, 1); // 2
+
+    c.lua_getfield(l, 2, "major");
+    const major = c.lua_tointeger(l, -1);
+
+    c.lua_getfield(l, 2, "minor");
+    const minor = c.lua_tointeger(l, -1);
+
+    c.lua_getfield(l, 2, "patch");
+    const patch = c.lua_tointeger(l, -1);
+
+    c.lua_getfield(l, 2, "prerelease");
+    const prerelease = if (c.lua_toboolean(l, -1) != 0) " (prerelease)" else "";
+
+    c.lua_settop(l, 1);
+
+    var buf: [128]u8 = undefined;
+    const s = try std.fmt.bufPrintZ(
+        &buf,
+        "MZTE-NV v{s} Initialized on NVIM v{}.{}.{}{s}",
+        .{ version, major, minor, patch, prerelease },
+    );
+
+    c.lua_getfield(l, 1, "notify");
+    c.lua_pushstring(l, s.ptr);
+    c.lua_call(l, 1, 0);
+
+    return 0;
 }

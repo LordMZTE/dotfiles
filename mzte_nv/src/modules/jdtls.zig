@@ -1,18 +1,19 @@
 /// Module for the JDTLS java language server, including utilities
 /// for setting up nvim-jdtls
 const std = @import("std");
+const ser = @import("../ser.zig");
 const ffi = @import("../ffi.zig");
 const c = ffi.c;
 
-pub fn pushModtable(l: *c.lua_State) void {
-    c.lua_newtable(l);
-    c.lua_pushcfunction(l, ffi.luaFunc(lFindRuntimes));
-    c.lua_setfield(l, -2, "findRuntimes");
+pub fn luaPush(l: *c.lua_State) void {
+    ser.luaPushAny(l, .{
+        .findRuntimes = ffi.luaFunc(lFindRuntimes),
+    });
 }
 
 const Runtime = struct {
-    version: []const u8,
-    name: []const u8,
+    version: [:0]const u8,
+    name: [:0]const u8,
 };
 const runtime_map = [_]Runtime{
     .{ .version = "18", .name = "JavaSE-18" },
@@ -50,14 +51,10 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
 
             // push a table with a name field (must be a name from runtime_map)
             // and a path field (path to the runtime's home)
-            c.lua_newtable(l);
-
-            c.lua_pushstring(l, rt.name.ptr);
-            c.lua_setfield(l, -2, "name");
-
-            const path = try std.fmt.bufPrintZ(&buf, "/usr/lib/jvm/{s}/", .{jvm.name});
-            c.lua_pushstring(l, path.ptr);
-            c.lua_setfield(l, -2, "path");
+            ser.luaPushAny(l, .{
+                .name = rt.name,
+                .path = try std.fmt.bufPrintZ(&buf, "/usr/lib/jvm/{s}/", .{jvm.name}),
+            });
 
             // append table to list
             c.lua_rawseti(l, -2, idx);

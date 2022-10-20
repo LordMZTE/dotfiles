@@ -5,3 +5,5 @@ local success = pcall(require, "mzte_nv");
 if not success then
     error "Failed to preload mzte_nv. Is it installed?"
 end
+
+require("mzte_nv").onInit()
