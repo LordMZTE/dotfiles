@@ -36,5 +36,4 @@ install-lsps-paru:
 
 
 install-mzte-nv:
-    cd mzte_nv && zig build -Drelease-fast
-    cp mzte_nv/zig-out/lib/libmzte_nv.so ~/.local/share/nvim/mzte_nv.so
+    cd mzte-nv && zig build -Drelease-fast -p ~/.local
