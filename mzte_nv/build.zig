@@ -12,6 +12,7 @@ pub fn build(b: *std.build.Builder) void {
     lib.linkSystemLibrary("luajit");
 
     lib.strip = mode != .Debug;
+    lib.unwind_tables = true;
 
     lib.install();
 
