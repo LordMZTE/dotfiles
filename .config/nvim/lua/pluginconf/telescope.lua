@@ -1,3 +1,5 @@
+local map = vim.api.nvim_set_keymap
+
 require("telescope").setup {
     defaults = {
         vimgrep_arguments = {
@@ -26,3 +28,7 @@ require("telescope").setup {
 }
 
 require("telescope").load_extension "ui-select"
+
+map("n", "ff", "<cmd>Telescope find_files<cr>", { silent = true })
+map("n", "fg", "<cmd>Telescope live_grep<cr>", { silent = true })
+map("n", "gs", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", { silent = true })
