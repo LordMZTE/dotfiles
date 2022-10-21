@@ -3,7 +3,7 @@ const ffi = @import("ffi.zig");
 const ser = @import("ser.zig");
 const c = ffi.c;
 
-pub const version = "0.1.0";
+pub const version = "0.2.0";
 
 const modules = struct {
     const jdtls = @import("modules/jdtls.zig");

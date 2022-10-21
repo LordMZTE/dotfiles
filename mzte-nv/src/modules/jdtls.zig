@@ -8,6 +8,7 @@ const c = ffi.c;
 pub fn luaPush(l: *c.lua_State) void {
     ser.luaPushAny(l, .{
         .findRuntimes = ffi.luaFunc(lFindRuntimes),
+        .getBundleInfo = ffi.luaFunc(lGetBundleInfo),
     });
 }
 
@@ -63,6 +64,73 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
             break;
         }
     }
+
+    return 1;
+}
+
+/// Returns a list of JDTLS bundles (plugins basically) and the preferred content provider
+///
+/// https://github.com/dgileadi/vscode-java-decompiler/tree/master/server
+// TODO: add command to download these maybe?
+fn lGetBundleInfo(l: *c.lua_State) !c_int {
+    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+
+    const bundle_path = try std.fs.path.join(
+        std.heap.c_allocator,
+        // I kinda made this path up, but I think it makes sense.
+        &.{ home, ".eclipse", "jdtls", "bundles" },
+    );
+    defer std.heap.c_allocator.free(bundle_path);
+
+    var dir = std.fs.cwd().openIterableDir(bundle_path, .{}) catch |e| {
+        if (e == error.FileNotFound) {
+            // Just return an empty table if the bundles dir doesn't exist
+            ser.luaPushAny(l, .{
+                .content_provider = .{},
+                .bundles = .{},
+            });
+            return 1;
+        }
+
+        return e;
+    };
+    defer dir.close();
+
+    // return value
+    c.lua_newtable(l);
+
+    // bundles
+    c.lua_newtable(l);
+
+    var has_fernflower = false;
+    var iter = dir.iterate();
+    var idx: c_int = 1;
+    while (try iter.next()) |f| {
+        if (f.kind != .File or !std.mem.endsWith(u8, f.name, ".jar"))
+            continue;
+
+        if (!has_fernflower and std.mem.containsAtLeast(u8, f.name, 1, "fernflower"))
+            has_fernflower = true;
+
+        const path = try std.fs.path.joinZ(std.heap.c_allocator, &.{ bundle_path, f.name });
+        defer std.heap.c_allocator.free(path);
+
+        c.lua_pushstring(l, path.ptr);
+        c.lua_rawseti(l, -2, idx);
+        idx += 1;
+    }
+
+    c.lua_setfield(l, -2, "bundles");
+
+    // content_provider
+    c.lua_newtable(l);
+
+    if (has_fernflower) {
+        c.lua_pushstring(l, "fernflower");
+        c.lua_setfield(l, -2, "preferred");
+    }
+
+    c.lua_setfield(l, -2, "content_provider");
 
     return 1;
 }
