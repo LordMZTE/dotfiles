@@ -38,7 +38,6 @@ local function cmp_plugins(use)
         end,
     }
 
-    use "lukas-reineke/cmp-rg"
     use "ray-x/cmp-treesitter"
 
     use {
