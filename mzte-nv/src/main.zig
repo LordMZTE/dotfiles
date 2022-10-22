@@ -6,6 +6,7 @@ const c = ffi.c;
 pub const version = "0.2.0";
 
 const modules = struct {
+    const cmp = @import("modules/cmp.zig");
     const jdtls = @import("modules/jdtls.zig");
 };
 
@@ -13,6 +14,7 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
     const l = l_.?;
     ser.luaPushAny(l, .{
         .onInit = ffi.luaFunc(lOnInit),
+        .cmp = modules.cmp,
         .jdtls = modules.jdtls,
     });
     return 1;
