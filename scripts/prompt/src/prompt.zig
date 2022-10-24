@@ -86,9 +86,8 @@ fn Renderer(comptime Writer: type) type {
         }
 
         fn renderCwd(self: *Self) !void {
-            const pwd = std.fs.cwd();
-            const realpath = try pwd.realpathAlloc(std.heap.c_allocator, ".");
-            defer std.heap.c_allocator.free(realpath);
+            var cwd_buf: [512]u8 = undefined;
+            const cwd = try std.os.getcwd(&cwd_buf);
 
             const home_path = (try known_folders.getPath(std.heap.c_allocator, .home));
 
@@ -96,15 +95,15 @@ fn Renderer(comptime Writer: type) type {
             var written_path = false;
             if (home_path) |home| {
                 defer std.heap.c_allocator.free(home);
-                if (std.mem.startsWith(u8, realpath, home)) {
+                if (std.mem.startsWith(u8, cwd, home)) {
                     try self.setStyle(.{
                         .background = .{ .Yellow = {} },
                         .foreground = .{ .Magenta = {} },
                     });
                     try self.writer.writeAll(" " ++ symbols.home);
-                    if (home.len != realpath.len) {
+                    if (home.len != cwd.len) {
                         try self.renderPathSep();
-                        try self.renderPath(realpath[(home.len + 1)..]);
+                        try self.renderPath(cwd[(home.len + 1)..]);
                     }
                     written_path = true;
                 }
@@ -119,9 +118,9 @@ fn Renderer(comptime Writer: type) type {
                 try self.writer.writeAll(" " ++ symbols.root);
 
                 // don't render separators when we're in /
-                if (realpath.len > 1) {
+                if (cwd.len > 1) {
                     try self.renderPathSep();
-                    try self.renderPath(realpath[1..]);
+                    try self.renderPath(cwd[1..]);
                 }
             }
         }
