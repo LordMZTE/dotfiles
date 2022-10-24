@@ -1,15 +1,16 @@
 local caps = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-local mztenv = require "mzte_nv"
+local mztenv = require("mzte_nv").jdtls
 
-local bundle_info = mztenv.jdtls.getBundleInfo()
+local bundle_info = mztenv.getBundleInfo()
+local dirs = mztenv.getDirs()
 
 require("jdtls").start_or_attach {
     cmd = {
         "jdtls",
         "-configuration",
-        vim.loop.os_homedir() .. "/.cache/jdtls/config",
+        dirs.config,
         "-data",
-        vim.loop.os_homedir() .. "/.cache/jdtls/workspace",
+        dirs.workspace,
     },
 
     capabilities = caps,
@@ -24,7 +25,7 @@ require("jdtls").start_or_attach {
     settings = {
         java = {
             configuration = {
-                runtimes = mztenv.jdtls.findRuntimes(),
+                runtimes = mztenv.findRuntimes(),
             },
             contentProvider = bundle_info.content_provider,
         },

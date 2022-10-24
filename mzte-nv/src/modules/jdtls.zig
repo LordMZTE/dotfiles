@@ -9,6 +9,7 @@ pub fn luaPush(l: *c.lua_State) void {
     ser.luaPushAny(l, .{
         .findRuntimes = ffi.luaFunc(lFindRuntimes),
         .getBundleInfo = ffi.luaFunc(lGetBundleInfo),
+        .getDirs = ffi.luaFunc(lGetDirs),
     });
 }
 
@@ -132,5 +133,30 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
 
     c.lua_setfield(l, -2, "content_provider");
 
+    return 1;
+}
+
+fn lGetDirs(l: *c.lua_State) !c_int {
+    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+
+    var cwd_buf: [256]u8 = undefined;
+    const cwd_basename = std.fs.path.basename(try std.os.getcwd(&cwd_buf));
+
+    const config_path = try std.fs.path.joinZ(
+        std.heap.c_allocator,
+        &.{ home, ".cache", "jdtls", "config" },
+    );
+    defer std.heap.c_allocator.free(config_path);
+
+    const workspace_path = try std.fs.path.joinZ(
+        std.heap.c_allocator,
+        &.{ home, ".cache", "jdtls", "workspace", cwd_basename },
+    );
+    defer std.heap.c_allocator.free(workspace_path);
+
+    ser.luaPushAny(l, .{
+        .config = config_path,
+        .workspace = workspace_path,
+    });
     return 1;
 }
