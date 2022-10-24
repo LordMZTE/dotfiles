@@ -164,5 +164,12 @@ return require("packer").startup(function(use)
 
     use "mfussenegger/nvim-jdtls"
 
+    use {
+        "kevinhwang91/nvim-ufo",
+        requires = "kevinhwang91/promise-async",
+        after = "nvim-lspconfig",
+        config = pconf "nvim_ufo",
+    }
+
     cmp_plugins(use)
 end)
