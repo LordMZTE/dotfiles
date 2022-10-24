@@ -13,9 +13,10 @@ ufo.setup {
     end,
 }
 
-vim.o.foldcolumn = "1"
 -- https://github.com/neovim/neovim/pull/17446
-vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+--vim.o.foldcolumn = "1"
+--vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+vim.o.foldcolumn = "0"
 vim.o.foldlevel = 256
 vim.o.foldlevelstart = 256
 vim.o.foldenable = true
