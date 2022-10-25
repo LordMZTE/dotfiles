@@ -17,6 +17,10 @@ map("n", "*y", '"*y', opts)
 map("n", "*p", '"*p', opts)
 map("n", "*d", '"*d', opts)
 
+-- Vimgrep
+map("n", "<F4>", "<cmd>:cnext<CR>", opts)
+map("n", "<S-F4>", "<cmd>:cprevious<CR>", opts)
+
 -- See `:help vim.lsp.*` for documentation on any of the below functions
 map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)

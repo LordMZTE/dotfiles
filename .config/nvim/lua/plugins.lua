@@ -81,11 +81,6 @@ return require("packer").startup(function(use)
         run = ":TSUpdateSync",
         config = pconf "treesitter",
     }
-    use {
-        "euclio/vim-markdown-composer",
-        run = "cargo build --release",
-        config = pconf "markdowncomposer",
-    }
 
     use "kyazdani42/nvim-web-devicons"
 
