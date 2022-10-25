@@ -98,6 +98,7 @@ return require("packer").startup(function(use)
     use {
         "TimUntersberger/neogit",
         requires = "nvim-lua/plenary.nvim",
+        config = pconf "nvim_neogit"
     }
 
     use "ron-rs/ron.vim"
