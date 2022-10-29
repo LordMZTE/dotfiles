@@ -1,30 +1,98 @@
 const std = @import("std");
-const ffi = @import("ffi.zig");
-const c = ffi.c;
+const c = @import("ffi.zig").c;
 const gui = @import("gui.zig");
+const State = @import("State.zig");
 
-pub const log = @import("glib-log").log(c, "playtwitch", 1024);
-// glib handles level filtering
-pub const log_level = .debug;
+pub fn main() !void {
+    _ = c.glfwSetErrorCallback(&glfwErrorCb);
+    if (c.glfwInit() == 0) {
+        return error.GlfwInit;
+    }
 
-pub fn main() !u8 {
-    var udata_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
-    defer udata_arena.deinit();
+    c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MAJOR, 3);
+    c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MINOR, 3);
+    c.glfwWindowHint(c.GLFW_TRANSPARENT_FRAMEBUFFER, c.GLFW_TRUE);
 
-    var state = gui.GuiState{
-        .udata_arena = udata_arena.allocator(),
-    };
+    const win = c.glfwCreateWindow(500, 500, "playtwitch", null, null);
+    defer c.glfwTerminate();
 
-    const app = c.gtk_application_new("de.mzte.playtwitch", c.G_APPLICATION_FLAGS_NONE);
-    defer c.g_object_unref(app);
+    c.glfwMakeContextCurrent(win);
+    c.glfwSwapInterval(1);
 
-    ffi.connectSignal(app, "activate", @ptrCast(c.GCallback, &gui.activate), &state);
+    const glew_err = c.glewInit();
+    if (glew_err != c.GLEW_OK) {
+        std.log.err("GLEW init error: {s}", .{c.glewGetErrorString(glew_err)});
+        return error.GlewInit;
+    }
 
-    const status = c.g_application_run(
-        @ptrCast(*c.GApplication, app),
-        @intCast(i32, std.os.argv.len),
-        @ptrCast([*c][*c]u8, std.os.argv.ptr),
-    );
+    const ctx = c.igCreateContext(null);
+    defer c.igDestroyContext(ctx);
 
-    return @intCast(u8, status);
+    const io = c.igGetIO();
+    io.*.ConfigFlags |= c.ImGuiConfigFlags_NavEnableKeyboard;
+    io.*.IniFilename = null;
+    io.*.LogFilename = null;
+
+    _ = c.ImGui_ImplGlfw_InitForOpenGL(win, true);
+    defer c.ImGui_ImplGlfw_Shutdown();
+
+    _ = c.ImGui_ImplOpenGL3_Init("#version 330 core");
+    defer c.ImGui_ImplOpenGL3_Shutdown();
+
+    c.igStyleColorsDark(null);
+    @import("theme.zig").loadTheme(&c.igGetStyle().*.Colors);
+
+    const state = try State.init(win.?);
+    defer state.deinit();
+
+    while (c.glfwWindowShouldClose(win) == 0) {
+        c.glfwPollEvents();
+
+        var win_width: c_int = 0;
+        var win_height: c_int = 0;
+        c.glfwGetWindowSize(win, &win_width, &win_height);
+
+        c.ImGui_ImplOpenGL3_NewFrame();
+        c.ImGui_ImplGlfw_NewFrame();
+        c.igNewFrame();
+
+        const win_visible = c.igBegin(
+            "##",
+            null,
+            c.ImGuiWindowFlags_NoMove |
+                c.ImGuiWindowFlags_NoResize |
+                c.ImGuiWindowFlags_NoDecoration |
+                c.ImGuiWindowFlags_NoBringToFrontOnFocus |
+                c.ImGuiWindowFlags_NoNavFocus,
+        );
+
+        c.igSetWindowPos_Vec2(
+            .{ .x = 0.0, .y = 0.0 },
+            c.ImGuiCond_Always,
+        );
+        c.igSetWindowSize_Vec2(
+            .{ .x = @intToFloat(f32, win_width), .y = @intToFloat(f32, win_height) },
+            c.ImGuiCond_Always,
+        );
+
+        if (win_visible and c.glfwGetWindowAttrib(win, c.GLFW_VISIBLE) != 0) {
+            try gui.winContent(state);
+        }
+
+        c.igEnd();
+
+        c.igEndFrame();
+
+        c.glViewport(0, 0, win_width, win_height);
+        c.glClear(c.GL_COLOR_BUFFER_BIT);
+        c.glClearColor(0.0, 0.0, 0.0, 0.0);
+
+        c.igRender();
+        c.ImGui_ImplOpenGL3_RenderDrawData(c.igGetDrawData());
+        c.glfwSwapBuffers(win);
+    }
+}
+
+fn glfwErrorCb(e: c_int, d: [*c]const u8) callconv(.C) void {
+    std.log.err("GLFW error {d}: {s}", .{ e, d });
 }

@@ -1,6 +1,0 @@
-deps:
-  glib-log:
-    git:
-      url: "https://mzte.de/git/LordMZTE/zig-glib-log.git"
-      ref: master
-      root: src/main.zig
