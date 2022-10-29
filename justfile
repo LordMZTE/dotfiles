@@ -18,7 +18,7 @@ install-scripts target=(`echo $HOME` + "/.local"):
 
     cd scripts/randomwallpaper && zig build -Drelease-fast -p {{target}}
     cd scripts/vinput && zig build -Drelease-fast -p {{target}}
-    cd scripts/playtwitch && gyro build -Drelease-fast -p {{target}}
+    cd scripts/playtwitch && zig build -Drelease-fast -p {{target}}
     cd scripts/prompt && gyro build -Drelease-fast -p {{target}}
     cd scripts/mzteinit && gyro build -Drelease-fast -p {{target}}
 
