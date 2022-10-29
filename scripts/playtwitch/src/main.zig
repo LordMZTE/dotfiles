@@ -46,6 +46,9 @@ pub fn main() !void {
     defer state.deinit();
 
     while (c.glfwWindowShouldClose(win) == 0) {
+        if (c.glfwGetWindowAttrib(win, c.GLFW_VISIBLE) == 0)
+            continue;
+
         c.glfwPollEvents();
 
         var win_width: c_int = 0;
@@ -75,7 +78,7 @@ pub fn main() !void {
             c.ImGuiCond_Always,
         );
 
-        if (win_visible and c.glfwGetWindowAttrib(win, c.GLFW_VISIBLE) != 0) {
+        if (win_visible) {
             try gui.winContent(state);
         }
 
