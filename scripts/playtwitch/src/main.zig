@@ -4,6 +4,8 @@ const gui = @import("gui.zig");
 const State = @import("State.zig");
 const log = std.log.scoped(.main);
 
+pub const log_level = .debug;
+
 pub fn main() !void {
     log.info("initializing GLFW", .{});
     _ = c.glfwSetErrorCallback(&glfwErrorCb);
