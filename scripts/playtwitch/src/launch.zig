@@ -1,10 +1,11 @@
 const std = @import("std");
 const c = @import("ffi.zig").c;
 const State = @import("State.zig");
+const log = std.log.scoped(.launch);
 
 pub fn launchChildren(state: *State, channel: []const u8) !void {
-    std.log.info(
-        "Starting for channel {s} with quality {s} (chatty: {})",
+    log.info(
+        "starting for channel {s} with quality {s} (chatty: {})",
         .{ channel, std.mem.sliceTo(&state.quality_buf, 0), state.chatty },
     );
 
@@ -13,7 +14,7 @@ pub fn launchChildren(state: *State, channel: []const u8) !void {
 
     if (state.chatty and !state.chatty_alive) {
         var chatty_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
-        const channel_d = try chatty_arena.allocator().dupe(u8, channel);
+        const channel_d = try std.ascii.allocLowerString(chatty_arena.allocator(), channel);
         const chatty_argv = try chatty_arena.allocator().dupe(
             []const u8,
             &.{ "chatty", "-connect", "-channel", channel_d },
@@ -56,7 +57,10 @@ fn streamlinkThread(state: *State, channel: []const u8) !void {
         state.mutex.lock();
         defer state.mutex.unlock();
 
-        const url = try std.fmt.allocPrintZ(arg_arena.allocator(), "https://twitch.tv/{s}", .{channel});
+        var ch_buf: [128]u8 = undefined;
+        const lower_channel = std.ascii.lowerString(&ch_buf, channel);
+
+        const url = try std.fmt.allocPrintZ(arg_arena.allocator(), "https://twitch.tv/{s}", .{lower_channel});
         const quality = try std.cstr.addNullByte(arg_arena.allocator(), std.mem.sliceTo(&state.quality_buf, 0));
 
         const streamlink_argv = try arg_arena.allocator().allocSentinel(
@@ -80,31 +84,34 @@ fn streamlinkThread(state: *State, channel: []const u8) !void {
         break :spawn pid;
     };
 
-    const success = std.os.waitpid(pid, 0).status == 0;
+    var success = std.os.waitpid(pid, 0).status == 0;
+
+    var size = (try memfile.stat()).size;
+    if (size == 0) {
+        try memfile.writeAll("<no output>");
+        size = (try memfile.stat()).size;
+    }
+
+    const mem = try std.os.mmap(
+        null,
+        size,
+        std.os.PROT.READ,
+        std.os.MAP.PRIVATE,
+        memfd,
+        0,
+    );
+
+    // If the stream ends, this silly program still exits with a non-zero status.
+    success = success or std.mem.containsAtLeast(u8, mem, 1, "Stream ended");
 
     state.mutex.lock();
     defer state.mutex.unlock();
 
     if (success) {
-        std.log.info("Streamlink exited successfully, closing.", .{});
+        std.os.munmap(mem);
+        log.info("streamlink exited successfully, closing.", .{});
         c.glfwSetWindowShouldClose(state.win, 1);
     } else {
-        var size = (try memfile.stat()).size;
-
-        if (size == 0) {
-            try memfile.writeAll("<no output>");
-            size = (try memfile.stat()).size;
-        }
-
-        const mem = try std.os.mmap(
-            null,
-            size,
-            std.os.PROT.READ,
-            std.os.MAP.PRIVATE,
-            memfd,
-            0,
-        );
-
         state.streamlink_memfd = memfile;
         state.streamlink_out = mem;
         c.glfwShowWindow(state.win);

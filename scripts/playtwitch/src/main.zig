@@ -2,8 +2,10 @@ const std = @import("std");
 const c = @import("ffi.zig").c;
 const gui = @import("gui.zig");
 const State = @import("State.zig");
+const log = std.log.scoped(.main);
 
 pub fn main() !void {
+    log.info("initializing GLFW", .{});
     _ = c.glfwSetErrorCallback(&glfwErrorCb);
     if (c.glfwInit() == 0) {
         return error.GlfwInit;
@@ -13,18 +15,21 @@ pub fn main() !void {
     c.glfwWindowHint(c.GLFW_CONTEXT_VERSION_MINOR, 3);
     c.glfwWindowHint(c.GLFW_TRANSPARENT_FRAMEBUFFER, c.GLFW_TRUE);
 
+    log.info("creating window", .{});
     const win = c.glfwCreateWindow(500, 500, "playtwitch", null, null);
     defer c.glfwTerminate();
 
     c.glfwMakeContextCurrent(win);
     c.glfwSwapInterval(1);
 
+    log.info("initializing GLEW", .{});
     const glew_err = c.glewInit();
     if (glew_err != c.GLEW_OK) {
         std.log.err("GLEW init error: {s}", .{c.glewGetErrorString(glew_err)});
         return error.GlewInit;
     }
 
+    log.info("initializing ImGui", .{});
     const ctx = c.igCreateContext(null);
     defer c.igDestroyContext(ctx);
 
@@ -60,7 +65,7 @@ pub fn main() !void {
         c.igNewFrame();
 
         const win_visible = c.igBegin(
-            "##",
+            "##main_win",
             null,
             c.ImGuiWindowFlags_NoMove |
                 c.ImGuiWindowFlags_NoResize |
@@ -97,5 +102,5 @@ pub fn main() !void {
 }
 
 fn glfwErrorCb(e: c_int, d: [*c]const u8) callconv(.C) void {
-    std.log.err("GLFW error {d}: {s}", .{ e, d });
+    log.err("GLFW error {d}: {s}", .{ e, d });
 }

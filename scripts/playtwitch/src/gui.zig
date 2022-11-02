@@ -103,21 +103,48 @@ pub fn winContent(state: *State) !void {
         true,
         0,
     )) {
-        for (state.channels.?) |ch, i| {
-            if (ch.len >= 128) {
-                std.log.err("name '{s}' too long!", .{ch});
-                return error.ChannelNameTooLong;
-            }
+        _ = c.igBeginTable(
+            "##qp_table",
+            2,
+            c.ImGuiTableFlags_Resizable,
+            .{ .x = 0.0, .y = 0.0 },
+            0.0,
+        );
+        defer c.igEndTable();
 
-            // add null byte
-            var ch_buf: [128]u8 = undefined;
-            std.mem.copy(u8, &ch_buf, ch);
-            ch_buf[ch.len] = 0;
+        c.igTableHeadersRow();
+        _ = c.igTableSetColumnIndex(0);
+        c.igTableHeader("Channel");
+        _ = c.igTableSetColumnIndex(1);
+        c.igTableHeader("Comment");
+
+        for (state.channels.?) |ch, i| {
+            var ch_buf: [256]u8 = undefined;
+            const formatted = try std.fmt.bufPrintZ(
+                &ch_buf,
+                "{s}",
+                .{ch.name},
+            );
 
             c.igPushID_Int(@intCast(c_int, i));
             defer c.igPopID();
-            if (c.igSelectable_Bool(&ch_buf, false, 0, .{ .x = 0.0, .y = 0.0 })) {
+
+            _ = c.igTableNextRow(0, 0.0);
+            _ = c.igTableSetColumnIndex(0);
+
+            if (c.igSelectable_Bool(
+                formatted.ptr,
+                false,
+                c.ImGuiSelectableFlags_SpanAllColumns,
+                .{ .x = 0.0, .y = 0.0 },
+            )) {
                 start = .{ .channels_idx = i };
+            }
+
+            _ = c.igTableSetColumnIndex(1);
+
+            if (ch.comment) |comment| {
+                igu.sliceText(comment);
             }
         }
     }
@@ -167,7 +194,7 @@ pub fn winContent(state: *State) !void {
         },
         .channels_idx => |idx| {
             c.glfwHideWindow(state.win);
-            try launch.launchChildren(state, state.channels.?[idx]);
+            try launch.launchChildren(state, state.channels.?[idx].name);
         },
     }
 }
