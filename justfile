@@ -1,4 +1,5 @@
 lsps := "
+elixir-ls-git
 eslint
 lua-language-server
 rust-analyzer

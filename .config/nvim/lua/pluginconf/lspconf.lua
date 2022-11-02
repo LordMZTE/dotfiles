@@ -12,6 +12,10 @@ table.insert(lua_runtime_path, "lua/?/init.lua")
 
 lspc.clangd.setup { capabilities = caps }
 lspc.cssls.setup { capabilities = caps }
+lspc.elixirls.setup {
+    capabilities = caps,
+    cmd = { "elixir-ls" },
+}
 lspc.eslint.setup { capabilities = caps }
 lspc.haxe_language_server.setup { capabilities = caps }
 lspc.html.setup { capabilities = caps }

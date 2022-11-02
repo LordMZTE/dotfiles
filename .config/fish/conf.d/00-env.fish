@@ -11,5 +11,5 @@ export CXX=clang++
 export EDITOR=nvim
 
 # paths
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.mix/escripts:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
 export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
