@@ -9,6 +9,7 @@ cmd "syntax on"
 o.tabstop = 4
 o.shiftwidth = 4
 o.expandtab = true
+o.ignorecase = true
 opt.number = true
 opt.relativenumber = true
 o.guifont = "Iosevka:h10"
