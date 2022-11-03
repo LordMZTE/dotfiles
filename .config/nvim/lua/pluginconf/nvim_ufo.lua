@@ -2,13 +2,26 @@ local ufo = require "ufo"
 local ts_parsers = require "nvim-treesitter.parsers"
 local map = vim.api.nvim_set_keymap
 
+local function has_lsp_folds(bufnr)
+    local clients = vim.lsp.get_active_clients { bufnr = bufnr }
+    for _, client in ipairs(clients) do
+        if client.server_capabilities.foldingRangeProvider then
+            return true
+        end
+    end
+    return false
+end
+
 ufo.setup {
     open_fold_hl_timeout = 0, -- disable blinky thingy when opening fold
-    provider_selector = function(_, ft, _)
-        if ts_parsers.has_parser(ft) then
-            return { "lsp", "treesitter" }
-        else
+    provider_selector = function(bufnr, ft, _)
+        print "provider_selector"
+        if has_lsp_folds(bufnr) then
             return { "lsp", "indent" }
+        elseif ts_parsers.has_parser(ft) then
+            return { "treesitter", "indent" }
+        else
+            return { "indent" }
         end
     end,
 }
