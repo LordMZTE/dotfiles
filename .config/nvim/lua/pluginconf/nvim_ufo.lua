@@ -15,7 +15,6 @@ end
 ufo.setup {
     open_fold_hl_timeout = 0, -- disable blinky thingy when opening fold
     provider_selector = function(bufnr, ft, _)
-        print "provider_selector"
         if has_lsp_folds(bufnr) then
             return { "lsp", "indent" }
         elseif ts_parsers.has_parser(ft) then
