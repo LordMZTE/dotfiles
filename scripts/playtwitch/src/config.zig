@@ -26,7 +26,7 @@ pub fn configLoaderThread(state: *State) !void {
     defer file.close();
 
     const channels_data = try file.readToEndAlloc(std.heap.c_allocator, std.math.maxInt(usize));
-    var channels = std.ArrayList(*State.ChannelEntry).init(std.heap.c_allocator);
+    var channels = std.ArrayList(State.ChannelEntry).init(std.heap.c_allocator);
 
     var channels_iter = std.mem.split(u8, channels_data, "\n");
     while (channels_iter.next()) |line| {
@@ -49,14 +49,10 @@ pub fn configLoaderThread(state: *State) !void {
             break :blk comment_trimmed;
         };
 
-        const entry = try std.heap.c_allocator.create(State.ChannelEntry);
-
-        entry.* = .{
+        try channels.append(.{
             .name = channel_trimmed,
             .comment = comment_trimmed,
-        };
-
-        try channels.append(entry);
+        });
     }
 
     const end_time = std.time.milliTimestamp();

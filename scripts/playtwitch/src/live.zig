@@ -8,7 +8,7 @@ pub fn reloadLiveThread(s: *State) !void {
         s.mutex.lock();
         defer s.mutex.unlock();
 
-        for (s.channels.?) |chan| {
+        for (s.channels.?) |*chan| {
             chan.live = .loading;
         }
     }
@@ -45,7 +45,7 @@ pub fn fetchChannelsLive(s: *State) !void {
     // we shouldn't need to aquire the mutex here, this data isnt being read and we're
     // only doing atomic writes.
     var fmt_buf: [512]u8 = undefined;
-    for (s.channels.?) |chan| {
+    for (s.channels.?) |*chan| {
         page_buf.clearRetainingCapacity();
 
         log.info("requesting live state for channel {s}", .{chan.name});

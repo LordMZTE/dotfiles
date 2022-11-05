@@ -23,7 +23,7 @@ chatty: bool,
 chatty_alive: bool,
 
 /// an array of channels, composed of slices into `channels_file_data`
-channels: ?[]*ChannelEntry,
+channels: ?[]ChannelEntry,
 
 /// the data of the channels configuration file
 channels_file_data: ?[]u8,
@@ -90,9 +90,6 @@ pub fn deinit(self: *Self) void {
     self.freeStreamlinkMemfd();
 
     if (self.channels) |ch| {
-        for (ch) |e| {
-            std.heap.c_allocator.destroy(e);
-        }
         std.heap.c_allocator.free(ch);
     }
 
