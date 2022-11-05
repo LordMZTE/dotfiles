@@ -66,9 +66,13 @@ pub fn configLoaderThread(state: *State) !void {
         .{ channels.items.len, end_time - start_time },
     );
 
-    state.mutex.lock();
-    defer state.mutex.unlock();
+    {
+        state.mutex.lock();
+        defer state.mutex.unlock();
 
-    state.channels_file_data = channels_data;
-    state.channels = channels.toOwnedSlice();
+        state.channels_file_data = channels_data;
+        state.channels = channels.toOwnedSlice();
+    }
+
+    try @import("live.zig").fetchChannelsLive(state);
 }

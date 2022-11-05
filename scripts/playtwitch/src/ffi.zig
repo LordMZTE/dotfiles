@@ -1,4 +1,6 @@
 pub const c = @cImport({
+    @cInclude("curl/curl.h");
+
     @cInclude("GL/glew.h");
     @cInclude("GLFW/glfw3.h");
 

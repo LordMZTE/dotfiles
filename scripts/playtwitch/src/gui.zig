@@ -97,6 +97,15 @@ pub fn winContent(state: *State) !void {
         start = .channel_bar;
     }
 
+    if (state.channels != null) {
+        c.igBeginDisabled(state.live_status_loading);
+        defer c.igEndDisabled();
+        if (c.igButton("Refresh Status", .{ .x = 0.0, .y = 0.0 })) {
+            (try std.Thread.spawn(.{}, @import("live.zig").reloadLiveThread, .{state}))
+                .detach();
+        }
+    }
+
     if (state.channels != null and c.igBeginChild_Str(
         "Quick Pick",
         .{ .x = 0.0, .y = 0.0 },
@@ -105,18 +114,24 @@ pub fn winContent(state: *State) !void {
     )) {
         _ = c.igBeginTable(
             "##qp_table",
-            2,
+            3,
             c.ImGuiTableFlags_Resizable,
             .{ .x = 0.0, .y = 0.0 },
             0.0,
         );
         defer c.igEndTable();
 
+        c.igTableSetupColumn("Channel", 0, 0.0, 0);
+        c.igTableSetupColumn("Comment", 0, 0.0, 0);
+        c.igTableSetupColumn("Live?", c.ImGuiTableColumnFlags_WidthFixed, 80.0, 0);
+
         c.igTableHeadersRow();
         _ = c.igTableSetColumnIndex(0);
         c.igTableHeader("Channel");
         _ = c.igTableSetColumnIndex(1);
         c.igTableHeader("Comment");
+        _ = c.igTableSetColumnIndex(2);
+        c.igTableHeader("Live?");
 
         for (state.channels.?) |ch, i| {
             var ch_buf: [256]u8 = undefined;
@@ -146,6 +161,16 @@ pub fn winContent(state: *State) !void {
             if (ch.comment) |comment| {
                 igu.sliceText(comment);
             }
+
+            _ = c.igTableSetColumnIndex(2);
+
+            const live_label = switch (ch.live) {
+                .loading => "Loading...",
+                .live => "Live",
+                .offline => "Offline",
+            };
+
+            igu.sliceText(live_label);
         }
     }
 

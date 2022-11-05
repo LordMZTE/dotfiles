@@ -6,6 +6,13 @@ const log = std.log.scoped(.state);
 pub const ChannelEntry = struct {
     name: []const u8,
     comment: ?[]const u8,
+    live: Live = .loading,
+};
+
+pub const Live = enum {
+    live,
+    offline,
+    loading,
 };
 
 mutex: std.Thread.Mutex,
@@ -26,6 +33,9 @@ channel_name_buf: [64]u8,
 
 streamlink_memfd: ?std.fs.File,
 streamlink_out: ?[]align(std.mem.page_size) u8,
+
+/// If the status of the channels is being loaded currently
+live_status_loading: bool,
 
 const Self = @This();
 
@@ -50,6 +60,8 @@ pub fn init(win: *c.GLFWwindow) !*Self {
 
         .streamlink_memfd = null,
         .streamlink_out = null,
+
+        .live_status_loading = true,
     };
 
     std.mem.copy(u8, &self.quality_buf, "best");

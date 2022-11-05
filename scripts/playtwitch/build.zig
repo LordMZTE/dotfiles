@@ -19,6 +19,7 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkSystemLibrary("cimgui");
     exe.linkSystemLibrary("glfw3");
     exe.linkSystemLibrary("glew");
+    exe.linkSystemLibrary("curl");
 
     exe.strip = mode != .Debug;
 
