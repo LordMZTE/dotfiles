@@ -164,13 +164,21 @@ pub fn winContent(state: *State) !void {
 
             _ = c.igTableSetColumnIndex(2);
 
+            const live_color = switch (ch.live) {
+                .loading => c.ImVec4{ .x = 1.0, .y = 1.0, .z = 0.0, .w = 1.0 },
+                .live => c.ImVec4{ .x = 0.0, .y = 1.0, .z = 0.0, .w = 1.0 },
+                .offline => c.ImVec4{ .x = 1.0, .y = 0.0, .z = 0.0, .w = 1.0 },
+            };
             const live_label = switch (ch.live) {
                 .loading => "Loading...",
                 .live => "Live",
                 .offline => "Offline",
             };
 
+            const prev_col = c.igGetStyle().*.Colors[c.ImGuiCol_Text];
+            c.igGetStyle().*.Colors[c.ImGuiCol_Text] = live_color;
             igu.sliceText(live_label);
+            c.igGetStyle().*.Colors[c.ImGuiCol_Text] = prev_col;
         }
     }
 
