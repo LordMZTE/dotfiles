@@ -1,6 +1,7 @@
 lsps := "
 elixir-ls-git
 eslint
+jdtls
 lua-language-server
 rust-analyzer
 shellcheck
