@@ -167,5 +167,10 @@ return require("packer").startup(function(use)
         config = pconf "nvim_ufo",
     }
 
+    use {
+        "stevearc/aerial.nvim",
+        config = pconf "nvim_aerial"
+    }
+
     cmp_plugins(use)
 end)

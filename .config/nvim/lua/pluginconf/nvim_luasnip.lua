@@ -35,4 +35,5 @@ public Packet getDescriptionPacket() {{
             { content = i(1) }
         )
     ),
+    s("markForUpdate", t [[this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);]]),
 })
