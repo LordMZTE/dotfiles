@@ -6,11 +6,18 @@ caps.textDocument.foldingRange = {
     lineFoldingOnly = true,
 }
 
+local function disableFormatter(client, _)
+    client.server_capabilities.documentFormattingProvider = false
+end
+
 local lua_runtime_path = vim.split(package.path, ";")
 table.insert(lua_runtime_path, "lua/?.lua")
 table.insert(lua_runtime_path, "lua/?/init.lua")
 
-lspc.clangd.setup { capabilities = caps }
+lspc.clangd.setup {
+    capabilities = caps,
+    on_attach = disableFormatter,
+}
 lspc.cssls.setup { capabilities = caps }
 lspc.elixirls.setup {
     capabilities = caps,
@@ -55,4 +62,3 @@ lspc.sumneko_lua.setup {
 lspc.taplo.setup { capabilities = caps }
 lspc.yamlls.setup { capabilities = caps }
 lspc.zls.setup { capabilities = caps }
-

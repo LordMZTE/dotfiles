@@ -34,4 +34,9 @@ require("jdtls").start_or_attach {
     init_options = {
         bundles = bundle_info.bundles,
     },
+
+    on_attach = function(client, _)
+        -- formatting is handled by clang-format
+        client.server_capabilities.documentFormattingProvider = false
+    end,
 }

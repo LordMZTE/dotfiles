@@ -5,4 +5,4 @@ aerial.setup {
     backends = { "lsp", "treesitter", "markdown", "man" },
 }
 
-map("n", "-a", "<cmd>AerialToggle<CR>", { noremap = true, silent = true })
+map("n", "-o", "<cmd>AerialToggle<CR>", { noremap = true, silent = true })
