@@ -31,3 +31,8 @@ map("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
 map("n", "<space>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 map("n", "-d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
 map("n", "-r", "<cmd>lua vim.lsp.buf.format { asnyc = true }<CR>", opts)
+
+-- command to stop LSP servers
+vim.api.nvim_create_user_command("StopLsps", function()
+    vim.lsp.stop_client(vim.lsp.get_active_clients())
+end, { nargs = 0 })
