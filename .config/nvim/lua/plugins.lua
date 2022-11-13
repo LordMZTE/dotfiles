@@ -93,7 +93,7 @@ return require("packer").startup(function(use)
     use {
         "TimUntersberger/neogit",
         requires = "nvim-lua/plenary.nvim",
-        config = pconf "nvim_neogit"
+        config = pconf "nvim_neogit",
     }
 
     use "ron-rs/ron.vim"
@@ -169,7 +169,13 @@ return require("packer").startup(function(use)
 
     use {
         "stevearc/aerial.nvim",
-        config = pconf "nvim_aerial"
+        config = pconf "nvim_aerial",
+    }
+
+    use {
+        "mfussenegger/nvim-dap",
+        config = pconf "nvim_dap",
+        requires = "rcarriga/nvim-dap-ui",
     }
 
     cmp_plugins(use)

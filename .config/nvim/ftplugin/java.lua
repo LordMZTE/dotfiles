@@ -1,10 +1,12 @@
-local caps = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+local jdtls = require "jdtls"
 local mztenv = require("mzte_nv").jdtls
+
+local caps = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 local bundle_info = mztenv.getBundleInfo()
 local dirs = mztenv.getDirs()
 
-require("jdtls").start_or_attach {
+jdtls.start_or_attach {
     cmd = {
         "jdtls",
         "-configuration",
@@ -38,5 +40,9 @@ require("jdtls").start_or_attach {
     on_attach = function(client, _)
         -- formatting is handled by clang-format
         client.server_capabilities.documentFormattingProvider = false
+        require("jdtls.setup").add_commands()
+        jdtls.setup_dap {
+            hotcodereplace = "auto",
+        }
     end,
 }
