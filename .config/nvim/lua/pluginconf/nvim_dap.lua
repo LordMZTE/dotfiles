@@ -23,11 +23,7 @@ dap.configurations.c = {
         cwd = "${workspaceFolder}",
         stopOnEntry = false,
         args = function()
-            local parts = {}
-            for p in vim.split(vim.fn.input "Args: ", " ") do
-                table.insert(parts, p)
-            end
-            return parts
+            return vim.split(vim.fn.input "Args: ", " ")
         end,
         runInTerminal = true,
     },
