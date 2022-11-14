@@ -3,11 +3,12 @@ const ffi = @import("ffi.zig");
 const ser = @import("ser.zig");
 const c = ffi.c;
 
-pub const version = "0.2.0";
+pub const version = "0.3.0";
 
 const modules = struct {
     const cmp = @import("modules/cmp.zig");
     const jdtls = @import("modules/jdtls.zig");
+    const utils = @import("modules/utils.zig");
 };
 
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
@@ -16,6 +17,7 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
         .onInit = ffi.luaFunc(lOnInit),
         .cmp = modules.cmp,
         .jdtls = modules.jdtls,
+        .utils = modules.utils,
     });
     return 1;
 }

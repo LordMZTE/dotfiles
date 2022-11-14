@@ -1,4 +1,6 @@
 local map = vim.api.nvim_set_keymap
+local mztenv = require "mzte_nv"
+
 local dap = require "dap"
 local dapui = require "dapui"
 
@@ -6,9 +8,7 @@ dapui.setup {}
 
 dap.adapters.lldb = {
     type = "executable",
-    -- TODO: hardcoding the path here is total dog shit
-    -- I should implement a dap module in mzte-nv that resolves this.
-    command = "/usr/bin/lldb-vscode", -- included in lldb package
+    command = mztenv.utils.findInPath "lldb-vscode", -- included in lldb package
     name = "lldb",
 }
 
