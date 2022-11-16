@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Open Browser
+Comment=Opens the best browser given a link
+Exec=openbrowser %u
+Type=Application
+Categories=Network
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
