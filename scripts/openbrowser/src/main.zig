@@ -11,11 +11,6 @@ const browsers = &[_][]const u8{
 };
 
 pub fn main() !void {
-    if (std.os.argv.len < 2) {
-        std.log.err("need >=1 argument", .{});
-        return error.WrongArgs;
-    }
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
