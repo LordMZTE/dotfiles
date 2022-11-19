@@ -55,7 +55,7 @@ local function cmp_plugins(use)
     }
 end
 
-return require("packer").startup(function(use)
+require("packer").startup(function(use)
     use "wbthomason/packer.nvim"
 
     use {
@@ -180,3 +180,7 @@ return require("packer").startup(function(use)
 
     cmp_plugins(use)
 end)
+
+vim.api.nvim_create_user_command("CompilePlugins", function()
+    require("mzte_nv").compile.compilePath(require("packer").config.package_root)
+end, { nargs = 0 })

@@ -17,6 +17,16 @@ pub fn build(b: *std.build.Builder) !void {
     lib.unwind_tables = true;
 
     b.getInstallStep().dependOn(&(try InstallStep.init(b, lib)).step);
+
+    // this is the install step for the lua config compiler binary
+    const compiler = b.addExecutable("mzte-nv-compile", "src/compiler.zig");
+    compiler.setBuildMode(mode);
+
+    compiler.linkLibC();
+
+    compiler.strip = mode != .Debug;
+
+    compiler.install();
 }
 
 const InstallStep = struct {

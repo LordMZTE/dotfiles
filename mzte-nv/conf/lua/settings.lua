@@ -36,3 +36,7 @@ cmd "colorscheme dracula"
 cmd "autocmd StdinReadPre * let s:std_in=1"
 
 cmd "filetype plugin on"
+
+vim.api.nvim_create_user_command("CompileConfig", function()
+    require("mzte_nv").compile.compilePath(vim.fn.getenv("HOME") .. "/.config/nvim")
+end, { nargs = 0 })

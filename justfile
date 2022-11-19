@@ -40,3 +40,8 @@ install-lsps-paru:
 
 install-mzte-nv:
     cd mzte-nv && zig build -Drelease-fast -p ~/.local
+
+setup-nvim-config: install-mzte-nv
+    rm -rf ~/.config/nvim
+    cp -r mzte-nv/conf ~/.config/nvim
+    mzte-nv-compile ~/.config/nvim
