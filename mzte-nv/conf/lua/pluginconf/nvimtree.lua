@@ -3,6 +3,11 @@ local map = vim.api.nvim_set_keymap
 require("nvim-tree").setup {
     open_on_setup = not vim.g.started_by_vinput,
     open_on_setup_file = false,
+    actions = {
+        change_dir = {
+            global = true,
+        },
+    },
     view = {
         adaptive_size = true,
     },

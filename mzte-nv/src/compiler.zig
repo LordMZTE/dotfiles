@@ -20,15 +20,12 @@ pub fn main() !void {
 
     const input_arg = std.mem.span(std.os.argv[1]);
 
-    try doCompile(input_arg);
-}
-
-pub fn doCompile(path: []const u8) !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
+    try doCompile(input_arg, gpa.allocator());
+}
 
-    const alloc = gpa.allocator();
-
+pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     var dir = try std.fs.cwd().openIterableDir(path, .{});
     defer dir.close();
 
