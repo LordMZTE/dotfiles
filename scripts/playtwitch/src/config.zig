@@ -26,16 +26,16 @@ pub fn configLoaderThread(state: *State) !void {
     defer file.close();
 
     const channels_data = try file.readToEndAlloc(std.heap.c_allocator, std.math.maxInt(usize));
-    var channels = std.ArrayList(State.ChannelEntry).init(std.heap.c_allocator);
+    var channels = std.ArrayList(State.Entry).init(std.heap.c_allocator);
 
-    var channels_iter = std.mem.split(u8, channels_data, "\n");
+    var channels_iter = std.mem.tokenize(u8, channels_data, "\n");
     while (channels_iter.next()) |line| {
-        var line_iter = std.mem.split(u8, line, ":");
+        var line_iter = std.mem.tokenize(u8, line, ":");
 
         const channel = line_iter.next() orelse continue;
         const channel_trimmed = std.mem.trim(u8, channel, " \n\r");
 
-        if (channel_trimmed.len == 0 or channel_trimmed[0] == '#')
+        if (channel_trimmed.len <= 0 or channel_trimmed[0] == '#')
             continue;
 
         const comment_trimmed = blk: {
@@ -49,16 +49,24 @@ pub fn configLoaderThread(state: *State) !void {
             break :blk comment_trimmed;
         };
 
-        try channels.append(.{
+        // dashes act as separator
+        if (std.mem.allEqual(u8, channel_trimmed, '-')) {
+            // separators can have comments to act as headings
+            try channels.append(.{ .separator = comment_trimmed });
+
+            continue;
+        }
+
+        try channels.append(.{ .channel = .{
             .name = channel_trimmed,
             .comment = comment_trimmed,
-        });
+        } });
     }
 
     const end_time = std.time.milliTimestamp();
 
     log.info(
-        "Loaded {d} channels in {d}ms",
+        "Loaded {d} channel items in {d}ms",
         .{ channels.items.len, end_time - start_time },
     );
 

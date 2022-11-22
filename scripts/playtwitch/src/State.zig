@@ -3,6 +3,13 @@ const c = @import("ffi.zig").c;
 const config = @import("config.zig");
 const log = std.log.scoped(.state);
 
+pub const Entry = union(enum) {
+    channel: ChannelEntry,
+
+    /// a seperator in the channel list, the optional string is a heading.
+    separator: ?[]const u8,
+};
+
 pub const ChannelEntry = struct {
     name: []const u8,
     comment: ?[]const u8,
@@ -23,7 +30,7 @@ chatty: bool,
 chatty_alive: bool,
 
 /// an array of channels, composed of slices into `channels_file_data`
-channels: ?[]ChannelEntry,
+channels: ?[]Entry,
 
 /// the data of the channels configuration file
 channels_file_data: ?[]u8,
