@@ -16,10 +16,26 @@ pub fn reloadLiveThread(s: *State) !void {
         }
     }
 
-    try fetchChannelsLive(s);
+    tryFetchChannelsLive(s);
 }
 
-pub fn fetchChannelsLive(s: *State) !void {
+pub fn tryFetchChannelsLive(s: *State) void {
+    fetchChannelsLive(s) catch |e| {
+        log.err("fetching status: {}", .{e});
+
+        s.mutex.lock();
+        defer s.mutex.unlock();
+
+        for (s.channels.?) |*chan| {
+            switch (chan.*) {
+                .channel => |*ch| ch.live = .err,
+                else => {},
+            }
+        }
+    };
+}
+
+fn fetchChannelsLive(s: *State) !void {
     @atomicStore(bool, &s.live_status_loading, true, .Unordered);
     defer @atomicStore(bool, &s.live_status_loading, false, .Unordered);
     log.info("initiaizing cURL", .{});
@@ -51,8 +67,6 @@ pub fn fetchChannelsLive(s: *State) !void {
     for (s.channels.?) |*entry| {
         const chan = if (entry.* == .channel) &entry.channel else continue;
 
-        page_buf.clearRetainingCapacity();
-
         log.info("requesting live state for channel {s}", .{chan.name});
 
         const url = try std.fmt.bufPrintZ(
@@ -61,8 +75,29 @@ pub fn fetchChannelsLive(s: *State) !void {
             .{chan.name},
         );
         try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_URL, url.ptr));
-        try handleCurlErr(c.curl_easy_perform(curl));
 
+        var tries: u8 = 3;
+        while (tries > 0) : (tries -= 1) {
+            page_buf.clearRetainingCapacity();
+
+            try handleCurlErr(c.curl_easy_perform(curl));
+
+            var response: c_long = 0;
+            try handleCurlErr(c.curl_easy_getinfo(curl, c.CURLINFO_RESPONSE_CODE, &response));
+
+            if (response != 200) {
+                log.warn(
+                    "got error response {}, retrying ({} tries left)",
+                    .{ response, tries },
+                );
+                continue;
+            }
+            break;
+        }
+
+        if (tries == 0) {
+            @atomicStore(State.Live, &chan.live, .err, .Unordered);
+        }
         if (std.mem.containsAtLeast(u8, page_buf.items, 1, "live_user")) {
             @atomicStore(State.Live, &chan.live, .live, .Unordered);
         } else {

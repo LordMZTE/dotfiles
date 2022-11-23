@@ -78,5 +78,5 @@ pub fn configLoaderThread(state: *State) !void {
         state.channels = channels.toOwnedSlice();
     }
 
-    try @import("live.zig").fetchChannelsLive(state);
+    @import("live.zig").tryFetchChannelsLive(state);
 }

@@ -48,6 +48,7 @@ pub fn main() !void {
 
     c.igStyleColorsDark(null);
     @import("theme.zig").loadTheme(&c.igGetStyle().*.Colors);
+    const font = try @import("theme.zig").loadFont();
 
     const state = try State.init(win.?);
     defer state.deinit();
@@ -65,6 +66,8 @@ pub fn main() !void {
         c.ImGui_ImplOpenGL3_NewFrame();
         c.ImGui_ImplGlfw_NewFrame();
         c.igNewFrame();
+        if (font) |f|
+            c.igPushFont(f);
 
         const win_visible = c.igBegin(
             "##main_win",
@@ -88,6 +91,9 @@ pub fn main() !void {
         if (win_visible) {
             try gui.winContent(state);
         }
+
+        if (font != null)
+            c.igPopFont();
 
         c.igEnd();
 

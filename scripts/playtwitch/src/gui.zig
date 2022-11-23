@@ -190,11 +190,13 @@ pub fn winContent(state: *State) !void {
                         .loading => c.ImVec4{ .x = 1.0, .y = 1.0, .z = 0.0, .w = 1.0 },
                         .live => c.ImVec4{ .x = 0.0, .y = 1.0, .z = 0.0, .w = 1.0 },
                         .offline => c.ImVec4{ .x = 1.0, .y = 0.0, .z = 0.0, .w = 1.0 },
+                        .err => c.ImVec4{ .x = 0.8, .y = 0.0, .z = 0.0, .w = 1.0 },
                     };
                     const live_label = switch (ch.live) {
                         .loading => "Loading...",
                         .live => "Live",
                         .offline => "Offline",
+                        .err => "Error",
                     };
 
                     const prev_col = c.igGetStyle().*.Colors[c.ImGuiCol_Text];

@@ -15,3 +15,33 @@ pub fn loadTheme(colors: [*]c.ImVec4) void {
     colors[c.ImGuiCol_TitleBgActive] = c.ImVec4{ .x = 0.33, .y = 0.14, .z = 0.51, .w = 1.0 };
     colors[c.ImGuiCol_WindowBg] = c.ImVec4{ .x = 0.12, .y = 0.0, .z = 0.23, .w = 0.8 };
 }
+
+pub fn loadFont() !?*c.ImFont {
+    log.info("loading fonts", .{});
+
+    const fonts = [_][:0]const u8{
+        "/usr/share/fonts/TTF/Iosevka Nerd Font Complete.ttf",
+        "/usr/share/fonts/noto/NotoSans-Regular.ttf",
+    };
+
+    for (fonts) |font| {
+        const found = if (std.fs.accessAbsolute(font, .{})) |_|
+            true
+        else |e| if (e == error.FileNotFound)
+            true
+        else
+            return e;
+
+        if (found) {
+            log.info("using font {s}", .{font});
+            return c.ImFontAtlas_AddFontFromFileTTF(
+                c.igGetIO().*.Fonts,
+                font.ptr,
+                16,
+                null,
+                null,
+            );
+        }
+    }
+    return null;
+}

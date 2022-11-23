@@ -20,6 +20,7 @@ pub const Live = enum {
     live,
     offline,
     loading,
+    err,
 };
 
 mutex: std.Thread.Mutex,
