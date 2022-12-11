@@ -32,6 +32,7 @@ map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
 map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
 map("n", "gp", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
+map("n", "gP", "<cmd>Telescope diagnostics<CR>", opts)
 map("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
 
 -- command to stop LSP servers
