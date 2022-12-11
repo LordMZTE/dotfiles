@@ -5,6 +5,7 @@ export XKB_DEFAULT_OPTIONS="caps:swapescape"
 export XKB_DEFAULT_LAYOUT="de"
 
 # other stuff
+export QT_QPA_PLATFORM="wayland"
 
 # this is necessary for try icons
 export XDG_CURRENT_DESKTOP="Unity"
