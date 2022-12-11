@@ -75,7 +75,7 @@ pub fn configLoaderThread(state: *State) !void {
         defer state.mutex.unlock();
 
         state.channels_file_data = channels_data;
-        state.channels = channels.toOwnedSlice();
+        state.channels = try channels.toOwnedSlice();
     }
 
     @import("live.zig").tryFetchChannelsLive(state);
