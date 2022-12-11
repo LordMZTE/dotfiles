@@ -15,7 +15,7 @@ zls-bin
 
 install-scripts target=(`echo $HOME` + "/.local"):
     ln -sf \
-        `pwd`/scripts/{start-joshuto,withjava} \
+        `pwd`/scripts/{start-joshuto,withjava,startriver} \
         {{target}}/bin
 
     cd scripts/randomwallpaper && zig build -Drelease-fast -p {{target}}
