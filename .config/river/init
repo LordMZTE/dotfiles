@@ -172,4 +172,7 @@ riverctl default-layout rivertile
 
 waybar &
 
+# needed for some dbus stuff to work
+dbus-update-activation-environment DISPLAY XAUTHORITY
+
 exec rivertile -view-padding 6 -outer-padding 6
