@@ -173,6 +173,7 @@ riverctl default-layout rivertile
 waybar &
 
 # needed for some dbus stuff to work
-dbus-update-activation-environment DISPLAY XAUTHORITY
+dbus-update-activation-environment DISPLAY XAUTHORITY WAYLAND_DISPLAY
+systemctl --user import-environment DISPLAY XAUTHORITY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
 exec rivertile -view-padding 6 -outer-padding 6
