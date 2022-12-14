@@ -137,6 +137,9 @@ do
     # Control screen backlight brighness with light (https://github.com/haikarainen/light)
     riverctl map $mode None XF86MonBrightnessUp   spawn 'light -A 5'
     riverctl map $mode None XF86MonBrightnessDown spawn 'light -U 5'
+
+    # screenshot
+    riverctl map $mode None Print spawn 'grim -g "$(slurp -o)" - | wl-copy'
 done
 
 # Set background and border color
