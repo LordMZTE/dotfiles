@@ -178,6 +178,11 @@ require("packer").startup(function(use)
         requires = "rcarriga/nvim-dap-ui",
     }
 
+    use {
+        "ThePrimeagen/harpoon",
+        config = pconf "nvim_harpoon",
+    }
+
     cmp_plugins(use)
 end)
 
