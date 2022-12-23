@@ -119,13 +119,6 @@ require("packer").startup(function(use)
     }
 
     use {
-        "folke/trouble.nvim",
-        config = function()
-            require("trouble").setup {}
-        end,
-    }
-
-    use {
         "akinsho/toggleterm.nvim",
         config = pconf "tterm",
     }

@@ -29,11 +29,6 @@ map("n", "-r", "<cmd>lua vim.lsp.buf.format { asnyc = true }<CR>", opts)
 map("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
 map("n", "<space>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 map("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
-map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-map("n", "gp", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
-map("n", "gP", "<cmd>Telescope diagnostics<CR>", opts)
-map("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
 
 -- command to stop LSP servers
 vim.api.nvim_create_user_command("StopLsps", function()
