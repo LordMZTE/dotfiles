@@ -10,7 +10,7 @@ taplo-cli
 tidy
 vscode-langservers-extracted
 yaml-language-server
-zls-bin
+zls-git
 "
 
 install-scripts target=(`echo $HOME` + "/.local"):
