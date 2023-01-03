@@ -46,32 +46,36 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     // prepare state
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "string");
 
-    var dir = try std.fs.cwd().openIterableDir(path, .{});
-    defer dir.close();
-
-    var walker = try dir.walk(alloc);
-    defer walker.deinit();
-
-    // a list of lua files to compile
-    var files = std.ArrayList([]const u8).init(alloc);
-    defer files.deinit();
-
     // an arena allocator to hold data to be used during the build
     var build_arena = std.heap.ArenaAllocator.init(alloc);
     defer build_arena.deinit();
     const build_alloc = build_arena.allocator();
 
-    while (try walker.next()) |entry| {
-        const entry_path = try std.fs.path.join(build_alloc, &.{ path, entry.path });
+    // a list of lua files to compile
+    var files = std.ArrayList([]const u8).init(alloc);
+    defer files.deinit();
 
-        switch (entry.kind) {
-            .File => {
-                if (std.mem.endsWith(u8, entry.path, ".lua")) {
-                    try files.append(entry_path);
-                }
-            },
-            else => {},
+    if ((try std.fs.cwd().statFile(path)).kind == .Directory) {
+        var dir = try std.fs.cwd().openIterableDir(path, .{});
+        defer dir.close();
+
+        var walker = try dir.walk(alloc);
+        defer walker.deinit();
+
+        while (try walker.next()) |entry| {
+            const entry_path = try std.fs.path.join(build_alloc, &.{ path, entry.path });
+
+            switch (entry.kind) {
+                .File => {
+                    if (std.mem.endsWith(u8, entry.path, ".lua")) {
+                        try files.append(entry_path);
+                    }
+                },
+                else => {},
+            }
         }
+    } else {
+        try files.append(path);
     }
 
     for (files.items) |luafile| {
@@ -80,7 +84,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
 
         c.lua_getfield(l, -1, "dump");
         if (c.luaL_loadfile(l, luafile_z) != 0) {
-            std.log.warn(
+            log.warn(
                 "error compiling lua object {s}: {s}",
                 .{ luafile, c.lua_tolstring(l, -1, null) },
             );

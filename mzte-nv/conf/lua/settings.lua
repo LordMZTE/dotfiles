@@ -40,3 +40,7 @@ cmd "filetype plugin on"
 vim.api.nvim_create_user_command("CompileConfig", function()
     require("mzte_nv").compile.compilePath(vim.fn.getenv("HOME") .. "/.config/nvim")
 end, { nargs = 0 })
+
+vim.api.nvim_create_user_command("CompilePlugins", function()
+    require("mzte_nv").compile.compilePath(require("packer").config.package_root)
+end, { nargs = 0 })

@@ -186,6 +186,11 @@ require("packer").startup(function(use)
     cmp_plugins(use)
 end)
 
-vim.api.nvim_create_user_command("CompilePlugins", function()
-    require("mzte_nv").compile.compilePath(require("packer").config.package_root)
-end, { nargs = 0 })
+-- actually compile packer-generated config after packer's "compile" step
+vim.api.nvim_create_autocmd("User", {
+    pattern = "PackerCompileDone",
+    once = true,
+    callback = function()
+        require("mzte_nv").compile.compilePath(require("packer").config.compile_path)
+    end,
+})
