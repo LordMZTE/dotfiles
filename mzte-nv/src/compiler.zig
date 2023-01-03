@@ -1,4 +1,5 @@
 const std = @import("std");
+const c = @import("ffi.zig").c;
 
 const log = std.log.scoped(.compiler);
 
@@ -9,7 +10,7 @@ pub fn main() !void {
         log.err(
             \\Usage: {s} [dir]
             \\
-            \\`input` is a path to a normal lua neovim configuration
+            \\`dir` is a path to a normal lua neovim configuration
             \\(or any other path containing lua files.)
         ,
             .{std.os.argv[0]},
@@ -26,6 +27,25 @@ pub fn main() !void {
 }
 
 pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
+    const l = c.luaL_newstate();
+    defer c.lua_close(l);
+
+    // load lua libs
+    _ = c.luaopen_string(l);
+    _ = c.luaopen_jit(l);
+
+    // set optimization level
+    c.lua_getfield(l, c.LUA_REGISTRYINDEX, "_LOADED");
+    c.lua_getfield(l, -1, "jit.opt");
+    c.lua_remove(l, -2);
+    c.lua_getfield(l, -1, "start");
+    c.lua_remove(l, -2);
+    c.lua_pushinteger(l, 9);
+    c.lua_call(l, 1, 0);
+
+    // prepare state
+    c.lua_getfield(l, c.LUA_GLOBALSINDEX, "string");
+
     var dir = try std.fs.cwd().openIterableDir(path, .{});
     defer dir.close();
 
@@ -54,49 +74,31 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
         }
     }
 
-    // a buffer containing the content of the currently compiling lua file
-    var content_buf = std.ArrayList(u8).init(alloc);
-    defer content_buf.deinit();
-
     for (files.items) |luafile| {
-        content_buf.clearRetainingCapacity();
+        const luafile_z = try alloc.dupeZ(u8, luafile);
+        defer alloc.free(luafile_z);
 
-        var lfile = try std.fs.cwd().openFile(luafile, .{});
-        defer lfile.close();
-        var lfifo = std.fifo.LinearFifo(u8, .{ .Static = 1024 * 64 }).init();
-        try lfifo.pump(lfile.reader(), content_buf.writer());
-
-        const argv = try build_alloc.allocSentinel(
-            ?[*:0]const u8,
-            5,
-            null,
-        );
-
-        // TODO: maybe try doing this through to luajit C api instead of a process?
-        // not sure if that's possible
-        argv[0] = "luajit";
-        argv[1] = "-O9";
-        argv[2] = "-b";
-        argv[3] = "-";
-        argv[4] = try std.cstr.addNullByte(build_alloc, luafile);
-
-        // Doing it the C way because zig's ChildProcess ain't got this
-        const pipe = try std.os.pipe2(0);
-        const pid = try std.os.fork();
-        if (pid == 0) {
-            std.os.close(pipe[1]);
-            try std.os.dup2(pipe[0], 0);
-            return std.os.execvpeZ(argv[0].?, argv, std.c.environ);
+        c.lua_getfield(l, -1, "dump");
+        if (c.luaL_loadfile(l, luafile_z) != 0) {
+            std.log.warn(
+                "error compiling lua object {s}: {s}",
+                .{ luafile, c.lua_tolstring(l, -1, null) },
+            );
+            c.lua_pop(l, 2);
+            continue;
         }
 
-        std.os.close(pipe[0]);
+        c.lua_pushboolean(l, 1); // strip debug info
+        c.lua_call(l, 2, 1);
 
-        try (std.fs.File{ .handle = pipe[1] }).writeAll(content_buf.items);
+        var outlen: usize = 0;
+        const outptr = c.lua_tolstring(l, -1, &outlen);
 
-        std.os.close(pipe[1]);
-        if (std.os.waitpid(pid, 0).status != 0) {
-            log.warn("luajit crashed compiling {s}, skipping", .{luafile});
-        }
+        var outfile = try std.fs.cwd().createFile(luafile, .{});
+        defer outfile.close();
+        try outfile.writeAll(outptr[0..outlen]);
+
+        c.lua_remove(l, -1);
     }
     log.info("compiled {} lua objects @ {s}", .{ files.items.len, path });
 }

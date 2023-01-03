@@ -23,8 +23,10 @@ pub fn build(b: *std.build.Builder) !void {
     compiler.setBuildMode(mode);
 
     compiler.linkLibC();
+    compiler.linkSystemLibrary("luajit");
 
     compiler.strip = mode != .Debug;
+    compiler.unwind_tables = true;
 
     compiler.install();
 }

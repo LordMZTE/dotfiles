@@ -2,6 +2,7 @@ const std = @import("std");
 
 pub const c = @cImport({
     @cInclude("lua.h");
+    @cInclude("lualib.h");
     @cInclude("lauxlib.h");
 });
 
