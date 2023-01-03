@@ -1,6 +1,6 @@
 # This file creates aliases of normal GNU coreutils to their UUtils version if installed.
 
-if not which "uu-cat" > /dev/null
+if not which "uu-cat" &> /dev/null
     exit
 end
 
