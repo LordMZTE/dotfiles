@@ -13,7 +13,10 @@ local function cmp_plugins(use)
     use "hrsh7th/cmp-buffer"
     use "hrsh7th/cmp-path"
     use "hrsh7th/cmp-cmdline"
-    use { "hrsh7th/nvim-cmp", config = pconf "nvim_cmp" }
+    use {
+        "hrsh7th/nvim-cmp",
+        config = pconf "nvim_cmp",
+    }
 
     use "saadparwaiz1/cmp_luasnip"
     use {
@@ -174,6 +177,11 @@ require("packer").startup(function(use)
     use {
         "ThePrimeagen/harpoon",
         config = pconf "nvim_harpoon",
+    }
+
+    use {
+        "chrisgrieser/nvim-recorder",
+        config = pconf "nvim_recorder",
     }
 
     cmp_plugins(use)
