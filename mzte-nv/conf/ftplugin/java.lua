@@ -40,6 +40,8 @@ jdtls.start_or_attach {
     on_attach = function(client, _)
         -- formatting is handled by clang-format
         client.server_capabilities.documentFormattingProvider = false
+        -- java lsp has shit highlights
+        client.server_capabilities.semanticTokensProvider = false
         require("jdtls.setup").add_commands()
         jdtls.setup_dap {
             hotcodereplace = "auto",

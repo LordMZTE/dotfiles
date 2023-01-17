@@ -30,11 +30,6 @@ local function cmp_plugins(use)
     }
 
     use {
-        "simrat39/rust-tools.nvim",
-        config = pconf "rust_tools",
-    }
-
-    use {
         "Saecki/crates.nvim",
         config = function()
             require("crates").setup {}
@@ -182,6 +177,11 @@ require("packer").startup(function(use)
     use {
         "chrisgrieser/nvim-recorder",
         config = pconf "nvim_recorder",
+    }
+
+    use {
+        "j-hui/fidget.nvim",
+        config = pconf "nvim_fidget",
     }
 
     cmp_plugins(use)

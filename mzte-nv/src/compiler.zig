@@ -3,7 +3,9 @@ const c = @import("ffi.zig").c;
 
 const log = std.log.scoped(.compiler);
 
-pub const log_level = .debug;
+pub const std_options = struct {
+    pub const log_level = .debug;
+};
 
 pub fn main() !void {
     if (std.os.argv.len != 2) {

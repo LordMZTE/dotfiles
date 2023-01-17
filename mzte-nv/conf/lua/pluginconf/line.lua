@@ -5,7 +5,7 @@ lline.setup {
         theme = "dracula",
     },
     sections = {
-        lualine_b = { "branch", "diff", "lsp_progress" },
+        lualine_b = { "branch", "diff" },
         lualine_c = { "filename", "diagnostics" },
     },
 }

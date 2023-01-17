@@ -14,52 +14,54 @@ const modules = struct {
 
 var lua_state: ?*c.lua_State = null;
 
-pub fn log(
-    comptime level: std.log.Level,
-    comptime scope: @TypeOf(.EnumLiteral),
-    comptime format: []const u8,
-    args: anytype,
-) void {
-    // if there's no lua state, we can't invoke nvim notifications.
-    const l = lua_state orelse return;
+pub const std_options = struct {
+    pub fn logFn(
+        comptime level: std.log.Level,
+        comptime scope: @TypeOf(.EnumLiteral),
+        comptime format: []const u8,
+        args: anytype,
+    ) void {
+        // if there's no lua state, we can't invoke nvim notifications.
+        const l = lua_state orelse return;
 
-    const stacktop = c.lua_gettop(l);
-    defer c.lua_settop(l, stacktop);
+        const stacktop = c.lua_gettop(l);
+        defer c.lua_settop(l, stacktop);
 
-    var fmtbuf: [2048]u8 = undefined;
+        var fmtbuf: [2048]u8 = undefined;
 
-    c.lua_getglobal(l, "vim");
-    c.lua_getfield(l, -1, "log");
-    c.lua_getfield(l, -1, "levels");
-    switch (level) {
-        .err => c.lua_getfield(l, -1, "ERROR"),
-        .warn => c.lua_getfield(l, -1, "WARN"),
-        .info => c.lua_getfield(l, -1, "INFO"),
-        .debug => c.lua_getfield(l, -1, "DEBUG"),
+        c.lua_getglobal(l, "vim");
+        c.lua_getfield(l, -1, "log");
+        c.lua_getfield(l, -1, "levels");
+        switch (level) {
+            .err => c.lua_getfield(l, -1, "ERROR"),
+            .warn => c.lua_getfield(l, -1, "WARN"),
+            .info => c.lua_getfield(l, -1, "INFO"),
+            .debug => c.lua_getfield(l, -1, "DEBUG"),
+        }
+
+        const vim_lvl = c.lua_tointeger(l, -1);
+        c.lua_pop(l, 3);
+
+        c.lua_getfield(l, -1, "notify");
+
+        const msg = std.fmt.bufPrintZ(&fmtbuf, format, args) catch return;
+        c.lua_pushstring(l, msg.ptr);
+
+        c.lua_pushinteger(l, vim_lvl);
+
+        const title = std.fmt.bufPrintZ(
+            &fmtbuf,
+            "MZTE-NV ({s})",
+            .{@tagName(scope)},
+        ) catch return;
+        ser.luaPushAny(l, .{
+            .title = title,
+        });
+        c.lua_call(l, 3, 0);
     }
 
-    const vim_lvl = c.lua_tointeger(l, -1);
-    c.lua_pop(l, 3);
-
-    c.lua_getfield(l, -1, "notify");
-
-    const msg = std.fmt.bufPrintZ(&fmtbuf, format, args) catch return;
-    c.lua_pushstring(l, msg.ptr);
-
-    c.lua_pushinteger(l, vim_lvl);
-
-    const title = std.fmt.bufPrintZ(
-        &fmtbuf,
-        "MZTE-NV ({s})",
-        .{@tagName(scope)},
-    ) catch return;
-    ser.luaPushAny(l, .{
-        .title = title,
-    });
-    c.lua_call(l, 3, 0);
-}
-
-pub const log_level = .debug;
+    pub const log_level = .debug;
+};
 
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
     lua_state = l_;
