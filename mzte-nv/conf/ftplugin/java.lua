@@ -35,6 +35,10 @@ jdtls.start_or_attach {
 
     init_options = {
         bundles = bundle_info.bundles,
+        extendedClientCapabilities = {
+            -- better progress indication in fidget.nvim
+            progressReportProvider = false,
+        },
     },
 
     on_attach = function(client, _)
