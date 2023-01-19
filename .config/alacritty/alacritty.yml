@@ -6,7 +6,7 @@ env:
 
 font:
   normal:
-    family: "Iosevka Term"
+    family: "Iosevka Term Nerd Font Mono"
 
 bell:
   duration: 20

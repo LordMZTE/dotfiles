@@ -267,7 +267,7 @@ client.placeholder      #282A36 #282A36 #F8F8F2 #282A36   #282A36
 client.background       #F8F8F2
 
 bar {
-  font pango:Iosevka 12
+  font pango:Iosevka Term Nerd Font Mono 12
   mode hide
   position top
   status_command i3status-rs
