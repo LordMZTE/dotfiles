@@ -1,4 +1,4 @@
-font_family Iosevka Term Nerd Font Mono
+font_family <% opt.term_font %>
 background_opacity 0.8
 
 # https://draculatheme.com/kitty

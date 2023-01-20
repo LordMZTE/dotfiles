@@ -15,7 +15,7 @@ local dracula = {
 local theme = {}
 
 -- Default settings
-theme.font = "12px Iosevka Nerd Font"
+theme.font = "12px <% opt.font %>"
 theme.fg = dracula.fg
 theme.bg = dracula.bg
 
@@ -89,7 +89,7 @@ theme.trust_fg = dracula.green
 theme.notrust_fg = dracula.red
 
 -- Follow mode hints
-theme.hint_font = "12px Iosevka Nerd Font, monospace, courier, sans-serif"
+theme.hint_font = "12px <% opt.font %>, monospace, courier, sans-serif"
 theme.hint_fg = dracula.fg
 theme.hint_bg = dracula.very_bright_bg
 theme.hint_border = "2px dashed " .. dracula.green

@@ -1,7 +1,7 @@
 configuration {
     /* requires rofi-emoji */
 	modi: "window,drun,combi,emoji,nheko";
-	font: "Iosevka Nerd Font 12";
+	font: "<% opt.font %> 12";
 	show-icons: true;
 	icon-theme: "candy-icons";
 	combi-modi: "drun,nheko,window,run";

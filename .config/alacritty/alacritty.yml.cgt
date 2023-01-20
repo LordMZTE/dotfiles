@@ -6,7 +6,7 @@ env:
 
 font:
   normal:
-    family: "Iosevka Term Nerd Font Mono"
+    family: "<% opt.term_font %>"
 
 bell:
   duration: 20

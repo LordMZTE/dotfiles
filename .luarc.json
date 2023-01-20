@@ -3,7 +3,8 @@
     "Lua.diagnostics.globals": [
         "vim",
         "luakit",
-        "lfs"
+        "lfs",
+        "cg"
     ],
     "Lua.workspace.library": [
         "${3rd}/lfs/library"

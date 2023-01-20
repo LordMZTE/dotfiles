@@ -45,3 +45,7 @@ setup-nvim-config: install-mzte-nv
     rm -rf ~/.config/nvim
     cp -r mzte-nv/conf ~/.config/nvim
     mzte-nv-compile ~/.config/nvim
+
+confgen:
+    rm -rf cgout
+    confgen cgout
