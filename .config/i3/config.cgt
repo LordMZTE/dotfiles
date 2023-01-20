@@ -278,3 +278,4 @@ bar {
   }
 }
 
+<% opt.getDeviceConf("i3") %>
