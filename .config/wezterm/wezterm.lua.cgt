@@ -1,0 +1,69 @@
+local wt = require "wezterm"
+
+return {
+    color_scheme = "Dracula (Official)",
+    font = wt.font "<% opt.term_font %>",
+    window_background_opacity = 0.8,
+
+    disable_default_key_bindings = true,
+    leader = { key = "a", mods = "CTRL", timeout_milliseconds = 2000 },
+    keys = {
+        -- splitting
+        {
+            key = "h",
+            mods = "LEADER",
+            action = wt.action.SplitVertical {},
+        },
+        {
+            key = "v",
+            mods = "LEADER",
+            action = wt.action.SplitHorizontal {},
+        },
+
+        -- switching panes
+        {
+            key = "h",
+            mods = "ALT",
+            action = wt.action.ActivatePaneDirection "Left",
+        },
+        {
+            key = "j",
+            mods = "ALT",
+            action = wt.action.ActivatePaneDirection "Down",
+        },
+        {
+            key = "k",
+            mods = "ALT",
+            action = wt.action.ActivatePaneDirection "Up",
+        },
+        {
+            key = "l",
+            mods = "ALT",
+            action = wt.action.ActivatePaneDirection "Right",
+        },
+
+        -- tabs
+        {
+            key = "t",
+            mods = "CTRL|SHIFT",
+            action = wt.action.SpawnTab "CurrentPaneDomain",
+        },
+        {
+            key = "t",
+            mods = "CTRL",
+            action = wt.action.ActivateTabRelative(1),
+        },
+
+        -- font size
+        {
+            key = "+",
+            mods = "CTRL",
+            action = wt.action.IncreaseFontSize,
+        },
+        {
+            key = "-",
+            mods = "CTRL",
+            action = wt.action.DecreaseFontSize,
+        },
+    },
+}

@@ -10,8 +10,8 @@
 
 # Note: the "Super" modifier is also known as Logo, GUI, Windows, Mod4, etc.
 
-# Super+Return to start an instance of alacritty
-riverctl map normal Super+Shift Return spawn alacritty
+# Super+Return to start a terminal
+riverctl map normal Super+Shift Return spawn <% opt.term_command %>
 
 # Super+Q to close the focused view
 riverctl map normal Super Q close
