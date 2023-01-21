@@ -24,15 +24,14 @@ configs.setup {
 
     rainbow = {
         enable = true,
-        extended_mode = true,
 
-        colors = {
-            "#ff00be",
-            "#ff7e00",
-            "#64d200",
-            "#00e6b6",
-            "#00e1ff",
-            "#9598ff",
+        hlgroups = {
+            "TSRainbow1",
+            "TSRainbow2",
+            "TSRainbow3",
+            "TSRainbow4",
+            "TSRainbow5",
+            "TSRainbow6",
         },
     },
 }

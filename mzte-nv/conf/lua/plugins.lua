@@ -111,8 +111,9 @@ require("packer").startup(function(use)
 
     use "windwp/nvim-ts-autotag"
     use {
-        "p00f/nvim-ts-rainbow",
+        "HiPhish/nvim-ts-rainbow2",
         requires = "nvim-treesitter/nvim-treesitter",
+        config = pconf "tsrainbow2",
     }
 
     use {
