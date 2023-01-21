@@ -2,6 +2,7 @@ cg.addPath ".config"
 cg.addPath ".local"
 cg.addPath ".ssh"
 cg.addPath ".cargo"
+cg.addPath "etc"
 
 for k, v in pairs(require "cg_opts") do
     cg.opt[k] = v
@@ -17,4 +18,13 @@ cg.opt.getDeviceConf = function(id)
     end
 
     return file:read "*a"
+end
+
+-- Get the output of a system command
+cg.opt.system = function(cmd)
+    local handle = io.popen(cmd)
+    if handle == nil then
+        error("Failed to spawn process" .. cmd)
+    end
+    return handle:read("*a"):gsub("%s+", "")
 end
