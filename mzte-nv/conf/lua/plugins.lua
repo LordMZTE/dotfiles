@@ -68,7 +68,6 @@ require("packer").startup(function(use)
     }
     use "dag/vim-fish"
     use "uiiaoo/java-syntax.vim"
-    use "sheerun/vim-polyglot"
     use {
         "nvim-lualine/lualine.nvim",
         requires = "arkav/lualine-lsp-progress",
