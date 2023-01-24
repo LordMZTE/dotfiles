@@ -22,6 +22,10 @@ configs.setup {
         enable = true,
     },
 
+    indent = {
+        enable = true,
+    },
+
     rainbow = {
         enable = true,
 

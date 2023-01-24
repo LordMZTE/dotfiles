@@ -99,7 +99,6 @@ require("packer").startup(function(use)
         "nvim-telescope/telescope.nvim",
         requires = {
             "nvim-lua/plenary.nvim",
-            "nvim-telescope/telescope-ui-select.nvim",
         },
         config = pconf "telescope",
     }
@@ -128,12 +127,7 @@ require("packer").startup(function(use)
 
     use "DingDean/wgsl.vim"
 
-    use {
-        "rcarriga/nvim-notify",
-        config = function()
-            vim.notify = require "notify"
-        end,
-    }
+    use "rcarriga/nvim-notify"
 
     use {
         "stevearc/dressing.nvim",
@@ -180,8 +174,9 @@ require("packer").startup(function(use)
     }
 
     use {
-        "j-hui/fidget.nvim",
-        config = pconf "nvim_fidget",
+        "folke/noice.nvim",
+        config = pconf "nvim_noice",
+        requires = "MunifTanjim/nui.nvim",
     }
 
     cmp_plugins(use)

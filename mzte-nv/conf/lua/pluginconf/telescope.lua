@@ -20,15 +20,8 @@ telescope.setup {
             find_command = { "fd", "--type", "f", "--strip-cwd-prefix", "--hidden" },
         },
     },
-
-    extensions = {
-        ["ui-select"] = {
-            require("telescope.themes").get_dropdown {},
-        },
-    },
 }
 
-telescope.load_extension "ui-select"
 telescope.load_extension "harpoon"
 
 -- File finding mappings
