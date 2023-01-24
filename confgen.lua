@@ -28,3 +28,8 @@ cg.opt.system = function(cmd)
     end
     return handle:read("*a"):gsub("%s+", "")
 end
+
+-- Compile the input as lua. Meant to be used as a post-processor.
+cg.opt.luaCompile = function(lua)
+    return string.dump(loadstring(lua), true)
+end

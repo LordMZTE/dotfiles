@@ -1,5 +1,86 @@
 local wt = require "wezterm"
 
+local keys = {
+    -- splitting
+    {
+        key = "h",
+        mods = "LEADER",
+        action = wt.action.SplitVertical {},
+    },
+    {
+        key = "v",
+        mods = "LEADER",
+        action = wt.action.SplitHorizontal {},
+    },
+
+    -- tabs
+    {
+        key = "t",
+        mods = "CTRL|SHIFT",
+        action = wt.action.SpawnTab "CurrentPaneDomain",
+    },
+    {
+        key = "t",
+        mods = "CTRL",
+        action = wt.action.ActivateTabRelative(1),
+    },
+
+    -- font size
+    {
+        key = "+",
+        mods = "CTRL",
+        action = wt.action.IncreaseFontSize,
+    },
+    {
+        key = "-",
+        mods = "CTRL",
+        action = wt.action.DecreaseFontSize,
+    },
+
+    -- moving panes
+    {
+        key = "r",
+        mods = "LEADER",
+        action = wt.action.RotatePanes "Clockwise",
+    },
+    {
+        key = "m",
+        mods = "LEADER",
+        action = wt.action.PaneSelect {
+            mode = "SwapWithActive",
+        },
+    },
+}
+
+local directions = {
+    { "h", "Left" },
+    { "j", "Down" },
+    { "k", "Up" },
+    { "l", "Right" },
+}
+
+for _, dir in pairs(directions) do
+    local dir_key = dir[1]
+    local dir_name = dir[2]
+
+    -- switching panes
+    table.insert(keys, {
+        key = dir_key,
+        mods = "ALT",
+        action = wt.action.ActivatePaneDirection(dir_name),
+    })
+
+    -- resize double in horizontal directions so the absolute amounts are constant
+    local resize_amount = (dir_name == "Up" or dir_name == "Down") and 2 or 4
+
+    -- resizing panes
+    table.insert(keys, {
+        key = dir_key,
+        mods = "ALT|SHIFT",
+        action = wt.action.AdjustPaneSize { dir_name, resize_amount },
+    })
+end
+
 return {
     color_scheme = "Dracula (Official)",
     font = wt.font "<% opt.term_font %>",
@@ -7,63 +88,5 @@ return {
 
     disable_default_key_bindings = true,
     leader = { key = "a", mods = "CTRL", timeout_milliseconds = 2000 },
-    keys = {
-        -- splitting
-        {
-            key = "h",
-            mods = "LEADER",
-            action = wt.action.SplitVertical {},
-        },
-        {
-            key = "v",
-            mods = "LEADER",
-            action = wt.action.SplitHorizontal {},
-        },
-
-        -- switching panes
-        {
-            key = "h",
-            mods = "ALT",
-            action = wt.action.ActivatePaneDirection "Left",
-        },
-        {
-            key = "j",
-            mods = "ALT",
-            action = wt.action.ActivatePaneDirection "Down",
-        },
-        {
-            key = "k",
-            mods = "ALT",
-            action = wt.action.ActivatePaneDirection "Up",
-        },
-        {
-            key = "l",
-            mods = "ALT",
-            action = wt.action.ActivatePaneDirection "Right",
-        },
-
-        -- tabs
-        {
-            key = "t",
-            mods = "CTRL|SHIFT",
-            action = wt.action.SpawnTab "CurrentPaneDomain",
-        },
-        {
-            key = "t",
-            mods = "CTRL",
-            action = wt.action.ActivateTabRelative(1),
-        },
-
-        -- font size
-        {
-            key = "+",
-            mods = "CTRL",
-            action = wt.action.IncreaseFontSize,
-        },
-        {
-            key = "-",
-            mods = "CTRL",
-            action = wt.action.DecreaseFontSize,
-        },
-    },
+    keys = keys,
 }
