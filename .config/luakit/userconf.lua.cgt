@@ -1,3 +1,4 @@
+-- <! tmpl:setPostProcessor(opt.luaCompile) !>
 require "cmds"
 require "usersettings"
 require "load_styles"

@@ -1,3 +1,4 @@
+-- <! tmpl:setPostProcessor(opt.luaCompile) !>
 local lfs = require "lfs"
 local styles = require "styles"
 

@@ -1,3 +1,4 @@
+-- <! tmpl:setPostProcessor(opt.luaCompile) !>
 local dracula = {
     bg = "#282a36",
     fg = "#f8f8f2",

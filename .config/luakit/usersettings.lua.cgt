@@ -1,3 +1,4 @@
+-- <! tmpl:setPostProcessor(opt.luaCompile) !>
 local settings = require "settings"
 
 local font_family = "<% opt.font %>"
