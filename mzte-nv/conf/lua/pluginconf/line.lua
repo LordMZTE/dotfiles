@@ -5,7 +5,17 @@ lline.setup {
         theme = "dracula",
     },
     sections = {
-        lualine_b = { "branch", "diff" },
-        lualine_c = { "filename", "diagnostics" },
+        lualine_b = { "filename", "diff" },
+        lualine_c = { "diagnostics" },
+    },
+    tabline = {
+        lualine_a = {
+            {
+                "tabs",
+                mode = 1, -- show file name
+            },
+        },
+        lualine_x = { "searchcount" },
+        lualine_y = { "branch" },
     },
 }
