@@ -10,7 +10,7 @@
 (("if" @keyword) (#set! conceal ""))
 (("pub" @keyword) (#set! conceal ""))
 (("return" @keyword) (#set! conceal ""))
-(("struct" @keyword) (#set! conceal "📦"))
+(("struct" @keyword) (#set! conceal ""))
 (("switch" @keyword) (#set! conceal ""))
 (("var" @keyword) (#set! conceal ""))
 (("while" @keyword) (#set! conceal "ﯩ"))

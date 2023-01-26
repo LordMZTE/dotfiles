@@ -16,7 +16,7 @@
 (("match" @keyword) (#set! conceal ""))
 (("pub" @keyword) (#set! conceal ""))
 (("return" @keyword) (#set! conceal ""))
-(("struct" @keyword) (#set! conceal "📦"))
+(("struct" @keyword) (#set! conceal ""))
 (("unsafe" @keyword) (#set! conceal "💣"))
 (("use" @keyword) (#set! conceal ""))
 (("while" @keyword) (#set! conceal "ﯩ"))
