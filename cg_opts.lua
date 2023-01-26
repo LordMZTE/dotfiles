@@ -10,4 +10,14 @@ opts.term = {
     icon_name = "org.wezfurlong.wezterm",
 }
 
+opts.cursor_theme = "LyraQ-cursors"
+opts.icon_theme = "candy-icons"
+
+opts.commands = {
+    browser = "openbrowser",
+    email = "claws-mail",
+    calculator = "qalculate-gtk",
+    file_manager = "thunar",
+}
+
 return opts

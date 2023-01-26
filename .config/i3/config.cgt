@@ -39,8 +39,8 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 # other fancy keys
-bindsym XF86Mail exec thunderbird
-bindsym XF86Calculator exec qalculate-gtk
+bindsym XF86Mail exec <% opt.commands.email %>
+bindsym XF86Calculator exec <% opt.commands.calculator %>
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -48,11 +48,11 @@ floating_modifier $mod
 # start a terminal
 bindsym $mod+Return exec TERMINAL=<% opt.term.command %> i3-sensible-terminal
 
-# open thunar
-bindsym $mod+Ctrl+e exec thunar
+# open file manager
+bindsym $mod+Ctrl+e exec <% opt.commands.file_manager %>
 
-# open luakit
-bindsym $mod+Ctrl+b exec luakit
+# open browser
+bindsym $mod+Ctrl+b exec <% opt.commands.browser %>
 
 # vinput
 bindsym $mod+Ctrl+v exec vinput md
@@ -278,4 +278,4 @@ bar {
   }
 }
 
-<% opt.getDeviceConf("i3") %>
+<% opt.getDeviceConf "i3" %>

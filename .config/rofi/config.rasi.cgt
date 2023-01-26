@@ -3,7 +3,7 @@ configuration {
 	modi: "window,drun,combi,emoji,nheko";
 	font: "<% opt.font %> 12";
 	show-icons: true;
-	icon-theme: "candy-icons";
+	icon-theme: "<% opt.icon_theme %>";
 	combi-modi: "drun,nheko,window,run";
 }
 @theme "dracula-sidebar.rasi"
