@@ -46,7 +46,7 @@ bindsym XF86Calculator exec qalculate-gtk
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec TERMINAL=<% opt.term_command %> i3-sensible-terminal
+bindsym $mod+Return exec TERMINAL=<% opt.term.command %> i3-sensible-terminal
 
 # open thunar
 bindsym $mod+Ctrl+e exec thunar

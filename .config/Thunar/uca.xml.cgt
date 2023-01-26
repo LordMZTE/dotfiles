@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
 <action>
-	<icon>Alacritty</icon>
-	<name>Open Alacritty Here</name>
+    <icon><% opt.term.icon_name %></icon>
+    <name>Open <% opt.term.name %> Here</name>
 	<unique-id>1644418824525892-1</unique-id>
-	<command>alacritty --working-directory %f -e fish</command>
+    <command><% opt.term.workdir_command %> %f</command>
 	<description></description>
 	<patterns>*</patterns>
 	<startup-notify/>
