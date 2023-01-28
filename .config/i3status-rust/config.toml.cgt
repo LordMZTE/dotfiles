@@ -23,9 +23,9 @@ block = "temperature"
 interval = 5
 format = " $icon $min - $average ~ $max +"
 chip = "*-isa-*"
-idle = 50
-info = 70
-warning = 85
+idle = <% opt.temperatures.normal %>
+info = <% opt.temperatures.medium %>
+warning = <% opt.temperatures.high %>
 
 [[block]]
 block = "music"

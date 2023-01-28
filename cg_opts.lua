@@ -20,4 +20,11 @@ opts.commands = {
     file_manager = "thunar",
 }
 
+-- Device temperature levels. Used for status bar.
+opts.temperatures = {
+    normal = 40,
+    medium = 65,
+    high = 80,
+}
+
 return opts
