@@ -50,6 +50,18 @@ local keys = {
             mode = "SwapWithActive",
         },
     },
+
+    -- scrolling
+    {
+        key = "PageUp",
+        mods = "ALT",
+        action = wt.action.ScrollByPage(-1),
+    },
+    {
+        key = "PageDown",
+        mods = "ALT",
+        action = wt.action.ScrollByPage(1),
+    },
 }
 
 local directions = {
