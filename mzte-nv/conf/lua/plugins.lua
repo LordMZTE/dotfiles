@@ -182,6 +182,8 @@ require("packer").startup(function(use)
     --    requires = "MunifTanjim/nui.nvim",
     --}
 
+    use "jdonaldson/vaxe"
+
     cmp_plugins(use)
 end)
 
