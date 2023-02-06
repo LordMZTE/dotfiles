@@ -62,6 +62,13 @@ local keys = {
         mods = "ALT",
         action = wt.action.ScrollByPage(1),
     },
+
+    -- copying
+    {
+        key = "C",
+        mods = "CTRL|SHIFT",
+        action = wt.action.CopyTo "ClipboardAndPrimarySelection",
+    }
 }
 
 local directions = {

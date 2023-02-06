@@ -1,0 +1,11 @@
+.{
+    .name = "mzteinit",
+    .version = "0.0.0",
+
+    .dependencies = .{
+        .ansi_term = .{
+            .url = "https://github.com/LordMZTE/ansi-term/archive/feb152d594486e7dce09e0ee8dd168155de7ce7c.tar.gz",
+            .hash = "122054a0aadb65c0b51e0d2b6083272c8ccd59abe83469425c3ea03030e450df4625",
+        },
+    },
+},
