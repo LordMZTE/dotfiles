@@ -29,6 +29,7 @@ lspc.html.setup { capabilities = caps }
 lspc.jsonls.setup { capabilities = caps }
 lspc.ocamllsp.setup { capabilities = caps }
 lspc.prosemd_lsp.setup { capabilities = caps }
+lspc.racket_langserver.setup { capabilities = caps }
 lspc.rust_analyzer.setup {
     capabilities = caps,
     settings = {

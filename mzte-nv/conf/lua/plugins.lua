@@ -79,11 +79,14 @@ require("packer").startup(function(use)
         config = pconf "treesitter",
     }
 
-    use "kyazdani42/nvim-web-devicons"
+    use {
+        "nvim-tree/nvim-web-devicons",
+        config = pconf "web_devicons",
+    }
 
     use {
-        "kyazdani42/nvim-tree.lua",
-        requires = "kyazdani42/nvim-web-devicons",
+        "nvim-tree/nvim-tree.lua",
+        requires = "nvim-tree/nvim-web-devicons",
         config = pconf "nvimtree",
     }
 

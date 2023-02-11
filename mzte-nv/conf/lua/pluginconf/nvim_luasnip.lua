@@ -59,3 +59,16 @@ ls.add_snippets("json", {
         )
     ),
 })
+
+local racket_snippets = {
+    s("lamb", {
+        t [[(λ ]],
+        i(1, "(args)"),
+        t " ",
+        i(2, "body..."),
+        t ")",
+    }),
+}
+
+ls.add_snippets("scheme", racket_snippets)
+ls.add_snippets("racket", racket_snippets)

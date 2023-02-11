@@ -18,6 +18,9 @@ opts.commands = {
     email = "claws-mail",
     calculator = "qalculate-gtk",
     file_manager = "thunar",
+
+    -- zenity-compatible dialoger
+    zenity = "yad",
 }
 
 -- Device temperature levels. Used for status bar.

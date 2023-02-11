@@ -3,11 +3,41 @@
 <action>
     <icon><% opt.term.icon_name %></icon>
     <name>Open <% opt.term.name %> Here</name>
-	<unique-id>1644418824525892-1</unique-id>
     <command><% opt.term.workdir_command %> %f</command>
 	<description></description>
 	<patterns>*</patterns>
+
 	<startup-notify/>
+
 	<directories/>
+</action>
+
+<action>
+    <name>Rsync To...</name>
+    <icon>edit-copy</icon>
+    <command><% opt.commands.zenity %> --entry --text "Rsync Command" --entry-text "rsync -vaP %F " | xargs alacritty --hold --command</command>
+    <description>Open a Dialog on an Rsync destination for the selected files</description>
+    <patterns>*</patterns>
+
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+
+<action>
+    <name>rm -rf</name>
+    <icon>user-trash-full</icon>
+    <command><% opt.commands.zenity %> --text "Delete these files?\n\n%F" &amp;&amp; rm -rf %F</command>
+    <description>force delete stuff</description>
+    <patterns>*</patterns>
+
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+    <directories/>
 </action>
 </actions>

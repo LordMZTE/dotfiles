@@ -30,7 +30,7 @@ warning = <% opt.temperatures.high %>
 [[block]]
 block = "music"
 interface_name_exclude = [".*kdeconnect.*", "mpd"]
-format = " $icon {$combo.rot-str(20, 0.1)|} $prev| $play| $next|"
+format = " $icon {$combo.str(max_w:20, rot_interval:0.1)|} $prev| $play| $next|"
 
 [[block]]
 block = "sound"

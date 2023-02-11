@@ -18,12 +18,12 @@ install-scripts target=(`echo $HOME` + "/.local"):
         `pwd`/scripts/{start-joshuto,withjava,startriver} \
         {{target}}/bin
 
-    cd scripts/randomwallpaper && zig build -Drelease-fast -p {{target}}
-    cd scripts/vinput && zig build -Drelease-fast -p {{target}}
-    cd scripts/playtwitch && zig build -Drelease-fast -p {{target}}
-    cd scripts/openbrowser && zig build -Drelease-fast -p {{target}}
-    cd scripts/prompt && gyro build -Drelease-fast -p {{target}}
-    cd scripts/mzteinit && gyro build -Drelease-fast -p {{target}}
+    cd scripts/randomwallpaper && zig build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/vinput && zig build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/playtwitch && zig build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/openbrowser && zig build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/prompt && gyro build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/mzteinit && gyro build -Doptimize=ReleaseFast -p {{target}}
 
 install-lsps-paru:
     #!/bin/sh
@@ -39,7 +39,7 @@ install-lsps-paru:
 
 
 install-mzte-nv:
-    cd mzte-nv && zig build -Drelease-fast -p ~/.local
+    cd mzte-nv && zig build -Doptimize=ReleaseFast -p ~/.local
 
 setup-nvim-config: install-mzte-nv
     rm -rf ~/.config/nvim

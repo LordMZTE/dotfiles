@@ -1,14 +1,20 @@
 const std = @import("std");
 
 pub fn build(b: *std.build.Builder) !void {
-    if (@import("builtin").os.tag == .windows)
-        @compileError("no lol");
-    // Standard release options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
-    const mode = b.standardReleaseOptions();
+    const target = b.standardTargetOptions(.{});
 
-    const lib = b.addSharedLibrary("mzte-nv", "src/main.zig", .unversioned);
-    lib.setBuildMode(mode);
+    if (target.os_tag orelse @import("builtin").os.tag == .windows)
+        // windows is an error in many ways
+        return error.Windows;
+
+    const mode = b.standardOptimizeOption(.{});
+
+    const lib = b.addSharedLibrary(.{
+        .name = "mzte-nv",
+        .root_source_file = .{ .path = "src/main.zig" },
+        .target = target,
+        .optimize = mode,
+    });
 
     lib.linkLibC();
     lib.linkSystemLibrary("luajit");
@@ -19,8 +25,12 @@ pub fn build(b: *std.build.Builder) !void {
     b.getInstallStep().dependOn(&(try InstallStep.init(b, lib)).step);
 
     // this is the install step for the lua config compiler binary
-    const compiler = b.addExecutable("mzte-nv-compile", "src/compiler.zig");
-    compiler.setBuildMode(mode);
+    const compiler = b.addExecutable(.{
+        .name = "mzte-nv-compile",
+        .root_source_file = .{ .path = "src/compiler.zig" },
+        .target = target,
+        .optimize = mode,
+    });
 
     compiler.linkLibC();
     compiler.linkSystemLibrary("luajit");
