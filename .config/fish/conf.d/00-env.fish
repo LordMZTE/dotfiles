@@ -3,6 +3,9 @@ if set -q MZTE_ENV_SET
 end
 set -gx MZTE_ENV_SET
 
+# mix should respect XDG standard
+export MIX_XDG=1
+
 # use clang compiler
 export CC=clang
 export CXX=clang++
