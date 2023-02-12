@@ -16,3 +16,7 @@ export EDITOR=nvim
 # paths
 export PATH="$HOME/.mix/escripts:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
 export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
+
+if which racket > /dev/null
+    set -ax PATH (racket -e '(require setup/dirs) (display (path->string (find-user-console-bin-dir)))')
+end
