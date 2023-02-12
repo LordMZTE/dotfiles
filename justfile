@@ -15,7 +15,7 @@ zls-git
 
 install-scripts target=(`echo $HOME` + "/.local"):
     ln -sf \
-        `pwd`/scripts/{start-joshuto,withjava,startriver} \
+        `pwd`/scripts/{map-touch-display,start-joshuto,withjava,startriver} \
         {{target}}/bin
 
     cd scripts/randomwallpaper && zig build -Doptimize=ReleaseFast -p {{target}}
