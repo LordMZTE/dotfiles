@@ -5,5 +5,8 @@
   readline/pread)
 
 (current-prompt-function
-  (λ ()
-    (readline-prompt #{prompt show 0 insert |> port->bytes})))
+  (λ (#:last-return-value retval)
+    (unless (void? retval)
+      (display ((current-rash-top-level-print-formatter) retval)))
+
+    (readline-prompt #{prompt show (if (exn:fail? retval) 1 0) insert |> port->bytes})))
