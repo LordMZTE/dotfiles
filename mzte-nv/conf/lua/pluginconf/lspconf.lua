@@ -27,20 +27,7 @@ lspc.eslint.setup { capabilities = caps }
 lspc.haxe_language_server.setup { capabilities = caps }
 lspc.html.setup { capabilities = caps }
 lspc.jsonls.setup { capabilities = caps }
-lspc.ocamllsp.setup { capabilities = caps }
-lspc.prosemd_lsp.setup { capabilities = caps }
-lspc.racket_langserver.setup { capabilities = caps }
-lspc.rust_analyzer.setup {
-    capabilities = caps,
-    settings = {
-        ["rust-analyzer"] = {
-            checkOnSave = {
-                command = "clippy",
-            },
-        },
-    },
-}
-lspc.sumneko_lua.setup {
+lspc.lua_ls.setup {
     capabilities = caps,
     settings = {
         Lua = {
@@ -56,6 +43,19 @@ lspc.sumneko_lua.setup {
             },
             telemetry = {
                 enable = false,
+            },
+        },
+    },
+}
+lspc.ocamllsp.setup { capabilities = caps }
+lspc.prosemd_lsp.setup { capabilities = caps }
+lspc.racket_langserver.setup { capabilities = caps }
+lspc.rust_analyzer.setup {
+    capabilities = caps,
+    settings = {
+        ["rust-analyzer"] = {
+            checkOnSave = {
+                command = "clippy",
             },
         },
     },
