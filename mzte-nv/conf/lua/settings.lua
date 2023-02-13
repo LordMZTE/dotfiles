@@ -22,6 +22,9 @@ wo.cursorcolumn = true
 
 o.conceallevel = 2
 
+-- disable unwanted filetype mappings
+g.no_plugin_maps = true
+
 -- disable garbage providers
 g.loaded_python_provider = false
 g.loaded_python3_provider = false
