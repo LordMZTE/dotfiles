@@ -176,11 +176,11 @@ require("packer").startup(function(use)
         config = pconf "nvim_recorder",
     }
 
-    use {
-        "folke/noice.nvim",
-        config = pconf "nvim_noice",
-        requires = "MunifTanjim/nui.nvim",
-    }
+    --use {
+    --    "folke/noice.nvim",
+    --    config = pconf "nvim_noice",
+    --    requires = "MunifTanjim/nui.nvim",
+    --}
 
     cmp_plugins(use)
 end)
