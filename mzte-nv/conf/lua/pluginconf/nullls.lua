@@ -12,6 +12,7 @@ nullls.setup {
         nullls.builtins.formatting.black,
         nullls.builtins.formatting.clang_format,
         nullls.builtins.formatting.fish_indent,
+        nullls.builtins.formatting.fnlfmt,
         nullls.builtins.formatting.prettier,
         nullls.builtins.formatting.raco_fmt,
         nullls.builtins.formatting.shfmt,

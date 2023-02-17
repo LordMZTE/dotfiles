@@ -69,7 +69,9 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
 
             switch (entry.kind) {
                 .File => {
-                    if (std.mem.endsWith(u8, entry.path, ".lua")) {
+                    if (std.mem.endsWith(u8, entry.path, ".lua") or
+                        std.mem.endsWith(u8, entry.path, ".fnl"))
+                    {
                         try files.append(entry_path);
                     }
                 },
@@ -81,17 +83,51 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     }
 
     for (files.items) |luafile| {
-        const luafile_z = try alloc.dupeZ(u8, luafile);
-        defer alloc.free(luafile_z);
+        var outname = try alloc.dupe(u8, luafile);
+        defer alloc.free(outname);
 
         c.lua_getfield(l, -1, "dump");
-        if (c.luaL_loadfile(l, luafile_z) != 0) {
-            log.warn(
-                "error compiling lua object {s}: {s}",
-                .{ luafile, c.lua_tolstring(l, -1, null) },
-            );
-            c.lua_pop(l, 2);
-            continue;
+
+        if (std.mem.endsWith(u8, luafile, ".fnl")) {
+            // replace file extension
+            std.mem.copy(u8, outname[outname.len - 3 ..], "lua");
+
+            const res = try std.ChildProcess.exec(.{
+                .allocator = alloc,
+                .argv = &.{ "fennel", "-c", luafile },
+            });
+
+            defer alloc.free(res.stdout);
+            defer alloc.free(res.stderr);
+
+            if (!std.meta.eql(res.term, .{ .Exited = 0 })) {
+                log.warn("error compiling fennel object {s}: {s}", .{ luafile, res.stderr });
+                continue;
+            }
+
+            const luafile_z = try alloc.dupeZ(u8, luafile);
+            defer alloc.free(luafile_z);
+
+            if (c.luaL_loadbuffer(l, res.stdout.ptr, res.stdout.len, luafile_z) != 0) {
+                log.warn(
+                    "error compiling fennel lua object {s}: {s}",
+                    .{ luafile, c.lua_tolstring(l, -1, null) },
+                );
+                c.lua_pop(l, 2);
+                continue;
+            }
+        } else {
+            const luafile_z = try alloc.dupeZ(u8, luafile);
+            defer alloc.free(luafile_z);
+
+            if (c.luaL_loadfile(l, luafile_z) != 0) {
+                log.warn(
+                    "error compiling lua object {s}: {s}",
+                    .{ luafile, c.lua_tolstring(l, -1, null) },
+                );
+                c.lua_pop(l, 2);
+                continue;
+            }
         }
 
         c.lua_pushboolean(l, 1); // strip debug info
@@ -100,7 +136,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
         var outlen: usize = 0;
         const outptr = c.lua_tolstring(l, -1, &outlen);
 
-        var outfile = try std.fs.cwd().createFile(luafile, .{});
+        var outfile = try std.fs.cwd().createFile(outname, .{});
         defer outfile.close();
         try outfile.writeAll(outptr[0..outlen]);
 
