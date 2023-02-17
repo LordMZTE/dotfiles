@@ -24,7 +24,7 @@ pub fn parse(s: []const u8) Self {
 }
 
 /// Gets the color for the mode
-pub fn getColor(self: *Self) at.Color {
+pub fn getColor(self: *Self) at.style.Color {
     return switch (self.mode) {
         .default => .{ .Yellow = {} },
         .insert => .{ .Green = {} },

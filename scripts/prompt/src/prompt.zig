@@ -6,6 +6,9 @@ const checkGitError = ffi.checkGitError;
 const c = ffi.c;
 const FishMode = @import("FishMode.zig");
 
+const Style = at.style.Style;
+const Color = at.style.Color;
+
 const symbols = struct {
     const left_separator = "";
     const right_separator = "";
@@ -30,7 +33,7 @@ pub fn render(writer: anytype, status: i16, mode: FishMode) !void {
 
 fn Renderer(comptime Writer: type) type {
     return struct {
-        last_style: ?at.Style,
+        last_style: ?Style,
         writer: Writer,
         status: i16,
         mode: FishMode,
@@ -41,9 +44,9 @@ fn Renderer(comptime Writer: type) type {
             //const alloc = std.heap.c_allocator;
 
             const left_color = if (self.status == 0)
-                at.Color{ .Green = {} }
+                Color{ .Green = {} }
             else
-                at.Color{ .Red = {} };
+                Color{ .Red = {} };
 
             try self.setStyle(.{ .foreground = left_color });
             try self.writer.writeAll(symbols.top_left);
@@ -166,7 +169,7 @@ fn Renderer(comptime Writer: type) type {
 
             // branch with no commits
             if (head_err == c.GIT_EUNBORNBRANCH) {
-                const bg = at.Color{ .Grey = 200 };
+                const bg = Color{ .Grey = 200 };
                 try self.drawLeftSep(bg);
                 try self.setStyle(.{
                     .background = bg,
@@ -239,12 +242,12 @@ fn Renderer(comptime Writer: type) type {
             }
         }
 
-        fn setStyle(self: *Self, style: at.Style) !void {
-            try at.updateStyle(self.writer, style, self.*.last_style);
+        fn setStyle(self: *Self, style: Style) !void {
+            try at.format.updateStyle(self.writer, style, self.*.last_style);
             self.last_style = style;
         }
 
-        fn drawLeftSep(self: *Self, new_bg: at.Color) !void {
+        fn drawLeftSep(self: *Self, new_bg: Color) !void {
             try self.writer.writeAll(" ");
             try self.setStyle(.{
                 .background = self.last_style.?.background,
@@ -292,17 +295,17 @@ const GitStatusCounts = struct {
     staged: c_int = 0,
     unstaged: c_int = 0,
 
-    pub fn getColor(self: *GitStatusCounts) at.Color {
+    pub fn getColor(self: *GitStatusCounts) Color {
         const has_staged = self.staged > 0;
         const has_unstaged = self.unstaged > 0;
 
         return if (!has_staged and !has_unstaged)
-            at.Color{ .Blue = {} }
+            Color{ .Blue = {} }
         else if (has_staged and has_unstaged)
-            at.Color{ .Magenta = {} }
+            Color{ .Magenta = {} }
         else if (has_staged)
-            at.Color{ .Green = {} }
+            Color{ .Green = {} }
         else
-            at.Color{ .Grey = 200 };
+            Color{ .Grey = 200 };
     }
 };
