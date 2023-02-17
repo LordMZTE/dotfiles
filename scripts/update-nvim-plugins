@@ -17,3 +17,6 @@
   (parameterize ([current-directory dir])
     (system* git-path "checkout" "." #:set-pwd? #t)
     (system* git-path "pull" #:set-pwd? #t)))
+
+(displayln "\n====== COMPILING ======\n")
+(system* (find-executable-path "mzte-nv-compile") plugin-dir)
