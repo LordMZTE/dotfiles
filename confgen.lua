@@ -33,3 +33,19 @@ end
 cg.opt.luaCompile = function(lua)
     return string.dump(loadstring(lua), true)
 end
+
+-- Compile the input as fennel. Meant to be used as a post-processor.
+cg.opt.fennelCompile = function(fnl)
+    local handle = io.popen("fennel -c - > /tmp/cgfnl", "w")
+    if handle == nil then
+        error "Failed to spawn fennel"
+    end
+
+    handle:write(fnl)
+    handle:close()
+
+    local f = io.open "/tmp/cgfnl"
+    local res = f:read "*a"
+    f:close()
+    return res
+end

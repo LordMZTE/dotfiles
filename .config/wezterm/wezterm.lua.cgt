@@ -1,111 +1,46 @@
-local wt = require "wezterm"
+;<! tmpl:setPostProcessor(opt.fennelCompile) !>
 
-local keys = {
-    -- splitting
-    {
-        key = "h",
-        mods = "LEADER",
-        action = wt.action.SplitVertical {},
-    },
-    {
-        key = "v",
-        mods = "LEADER",
-        action = wt.action.SplitHorizontal {},
-    },
+(local wt (require :wezterm))
 
-    -- tabs
-    {
-        key = "t",
-        mods = "CTRL|SHIFT",
-        action = wt.action.SpawnTab "CurrentPaneDomain",
-    },
-    {
-        key = "t",
-        mods = "CTRL",
-        action = wt.action.ActivateTabRelative(1),
-    },
+(macro kmap [key mods act args]
+  (if args
+      `{:key ,key :mods ,mods :action ((. wt :action ,act) ,args)}
+      `{:key ,key :mods ,mods :action (. wt :action ,act)}))
 
-    -- font size
-    {
-        key = "+",
-        mods = "CTRL",
-        action = wt.action.IncreaseFontSize,
-    },
-    {
-        key = "-",
-        mods = "CTRL",
-        action = wt.action.DecreaseFontSize,
-    },
+(var keys
+     [;; splitting
+      (kmap :h :LEADER :SplitVertical {})
+      (kmap :v :LEADER :SplitHorizontal {})
+      ;; tabs
+      (kmap :t :CTRL|SHIFT :SpawnTab :CurrentPaneDomain)
+      (kmap :t :CTRL :ActivateTabRelative 1)
+      ;; font size
+      (kmap "+" :CTRL :IncreaseFontSize)
+      (kmap "-" :CTRL :DecreaseFontSize)
+      ;; moving panes
+      (kmap :r :LEADER :RotatePanes :Clockwise)
+      (kmap :m :LEADER :PaneSelect {:mode :SwapWithActive})
+      ;; scrolling
+      (kmap :PageUp :ALT :ScrollByPage -1)
+      (kmap :PageDown :ALT :ScrollByPage 1)
+      ;; copying
+      (kmap :C :CTRL|SHIFT :CopyTo :ClipboardAndPrimarySelection)])
 
-    -- moving panes
-    {
-        key = "r",
-        mods = "LEADER",
-        action = wt.action.RotatePanes "Clockwise",
-    },
-    {
-        key = "m",
-        mods = "LEADER",
-        action = wt.action.PaneSelect {
-            mode = "SwapWithActive",
-        },
-    },
+(local directions [[:h :Left] [:j :Down] [:k :Up] [:l :Right]])
 
-    -- scrolling
-    {
-        key = "PageUp",
-        mods = "ALT",
-        action = wt.action.ScrollByPage(-1),
-    },
-    {
-        key = "PageDown",
-        mods = "ALT",
-        action = wt.action.ScrollByPage(1),
-    },
+(each [_ dir (ipairs directions)]
+  (let [(dir-key dir-name) (table.unpack dir)]
+    ;; switching panes
+    (table.insert keys (kmap dir-key :ALT :ActivatePaneDirection dir-name))
+    ;; resize double in horizontal directions so the absolute amounts are constant
+    (local resize-amt (if (or (= dir-name :Up) (= dir-name :Down)) 2 4))
+    (table.insert keys (kmap dir-key :ALT|SHIFT :AdjustPaneSize
+                             [dir-name resize-amt]))))
 
-    -- copying
-    {
-        key = "C",
-        mods = "CTRL|SHIFT",
-        action = wt.action.CopyTo "ClipboardAndPrimarySelection",
-    }
-}
+{:color_scheme "Dracula (Official)"
+ :font (wt.font "<% opt.term_font %>")
+ :window_background_opacity 0.8
+ :disable_default_key_bindings true
+ :leader {:key :a :mods :CTRL :timeout_milliseconds 2000}
+ : keys}
 
-local directions = {
-    { "h", "Left" },
-    { "j", "Down" },
-    { "k", "Up" },
-    { "l", "Right" },
-}
-
-for _, dir in pairs(directions) do
-    local dir_key = dir[1]
-    local dir_name = dir[2]
-
-    -- switching panes
-    table.insert(keys, {
-        key = dir_key,
-        mods = "ALT",
-        action = wt.action.ActivatePaneDirection(dir_name),
-    })
-
-    -- resize double in horizontal directions so the absolute amounts are constant
-    local resize_amount = (dir_name == "Up" or dir_name == "Down") and 2 or 4
-
-    -- resizing panes
-    table.insert(keys, {
-        key = dir_key,
-        mods = "ALT|SHIFT",
-        action = wt.action.AdjustPaneSize { dir_name, resize_amount },
-    })
-end
-
-return {
-    color_scheme = "Dracula (Official)",
-    font = wt.font "<% opt.term_font %>",
-    window_background_opacity = 0.8,
-
-    disable_default_key_bindings = true,
-    leader = { key = "a", mods = "CTRL", timeout_milliseconds = 2000 },
-    keys = keys,
-}
