@@ -1,7 +1,7 @@
 (vim.cmd "packadd packer.nvim")
 
 (macro pconf [plugin]
-  `#(require ,(.. :pluginconf. plugin)))
+  `#(require ,(.. :pluginconf.p- plugin)))
 
 (macro use/pconf [use plugin conf]
   `(,use {1 ,plugin :config (pconf ,conf)}))
@@ -15,13 +15,13 @@
 
 (fn cmp-plugins [use]
   (use/pconf use :neovim/nvim-lspconfig :lspconf)
-  (use/pconf use :hrsh7th/nvim-cmp :nvim_cmp)
+  (use/pconf use :hrsh7th/nvim-cmp :cmp)
   (use :hrsh7th/cmp-nvim-lsp)
   (use :hrsh7th/cmp-buffer)
   (use :hrsh7th/cmp-path)
   (use :hrsh7th/cmp-cmdline)
   (use :saadparwaiz1/cmp_luasnip)
-  (use/pconf use :L3MON4D3/LuaSnip :nvim_luasnip
+  (use/pconf use :L3MON4D3/LuaSnip :luasnip
              {:requires :rafamadriz/friendly-snippets})
   (use {1 :Saecki/crates.nvim :config #((. (require :crates) :setup) {})})
   (use :ray-x/cmp-treesitter)
@@ -37,10 +37,10 @@
   (use :dag/vim-fish)
   (use/pconf use :nvim-lualine/lualine.nvim :line)
   (use/pconf use :nvim-treesitter/nvim-treesitter :treesitter)
-  (use/pconf use :nvim-tree/nvim-web-devicons :web_devicons)
+  (use/pconf use :nvim-tree/nvim-web-devicons :devicons)
   (use/pconf use :nvim-tree/nvim-tree.lua :nvimtree
              {:requires :nvim-tree/nvim-web-devicons})
-  (use/pconf use :TimUntersberger/neogit :nvim_neogit
+  (use/pconf use :TimUntersberger/neogit :neogit
              {:requires :nvim-lua/plenary.nvim})
   (use/pconf use :nvim-telescope/telescope.nvim :telescope
              {:requires :nvim-lua/plenary.nvim})
@@ -55,14 +55,14 @@
   (use/pconf use :nvim-treesitter/nvim-treesitter-context :ts-context)
   (use :DaeZak/crafttweaker-vim-highlighting)
   (use :mfussenegger/nvim-jdtls)
-  (use/pconf use :kevinhwang91/nvim-ufo :nvim_ufo
+  (use/pconf use :kevinhwang91/nvim-ufo :ufo
              {:requires :kevinhwang91/promise-async :after :nvim-lspconfig})
-  (use/pconf use :stevearc/aerial.nvim :nvim_aerial)
-  (use/pconf use :mfussenegger/nvim-dap :nvim_dap
+  (use/pconf use :stevearc/aerial.nvim :aerial)
+  (use/pconf use :mfussenegger/nvim-dap :dap
              {:requires :rcarriga/nvim-dap-ui})
-  (use/pconf use :ThePrimeagen/harpoon :nvim_harpoon)
-  (use/pconf use :chrisgrieser/nvim-recorder :nvim_recorder)
-  ;(use/pconf use :folke/noice.nvim :nvim_noice {:requires :MunifTajim/nui.nvim})
+  (use/pconf use :ThePrimeagen/harpoon :harpoon)
+  (use/pconf use :chrisgrieser/nvim-recorder :recorder)
+  ;(use/pconf use :folke/noice.nvim :noice {:requires :MunifTajim/nui.nvim})
   (use :jdonaldson/vaxe)
   (cmp-plugins use))
 
