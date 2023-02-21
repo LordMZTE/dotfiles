@@ -29,3 +29,6 @@
 
 ;; Shorthand for deleting the TS node under the cursor
 (vim.keymap.set :n :D delete-node-under-cursor {:noremap true :silent true})
+
+;; Shorthand for deleting the TS node under the cursor and switching to insert mode
+(vim.keymap.set :n :C (fn [] (delete-node-under-cursor) (vim.cmd.startinsert)))
