@@ -20,3 +20,4 @@
 
 (displayln "\n====== COMPILING ======\n")
 (system* (find-executable-path "mzte-nv-compile") plugin-dir)
+(void)
