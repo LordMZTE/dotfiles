@@ -13,4 +13,5 @@
                 :autotag {:enable true}
                 :indent {:enable true}
                 :rainbow {:enable true
-                          :hlgroups (fcollect [i 1 6] (.. :TSRainbow i))}})
+                          :hlgroups (fcollect [i 1 6] (.. :TSRainbow i))}
+                :playground {:enable true}})

@@ -58,12 +58,14 @@
   (use/pconf use :kevinhwang91/nvim-ufo :ufo
              {:requires :kevinhwang91/promise-async :after :nvim-lspconfig})
   (use/pconf use :stevearc/aerial.nvim :aerial)
-  (use/pconf use :mfussenegger/nvim-dap :dap
-             {:requires :rcarriga/nvim-dap-ui})
+  (use/pconf use :mfussenegger/nvim-dap :dap {:requires :rcarriga/nvim-dap-ui})
   (use/pconf use :ThePrimeagen/harpoon :harpoon)
   (use/pconf use :chrisgrieser/nvim-recorder :recorder)
   ;(use/pconf use :folke/noice.nvim :noice {:requires :MunifTajim/nui.nvim})
   (use :jdonaldson/vaxe)
+  (use/pconf use :CKolkey/ts-node-action :tsn-actions
+             {:requires :jose-elias-alvarez/null-ls.nvim})
+  (use :nvim-treesitter/playground)
   (cmp-plugins use))
 
 ((. (require :packer) :startup) init)

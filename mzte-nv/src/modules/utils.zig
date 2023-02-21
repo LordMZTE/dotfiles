@@ -11,8 +11,8 @@ pub fn luaPush(l: *c.lua_State) void {
 
 /// This is basically a reimplementation of `which`.
 fn lFindInPath(l: *c.lua_State) !c_int {
+    const bin = ffi.luaCheckstring(l, 1);
     const path = std.os.getenv("PATH") orelse return error.PathNotSet;
-    const bin = c.luaL_checklstring(l, 1, null);
 
     var splits = std.mem.split(u8, path, ":");
     while (splits.next()) |p| {
@@ -22,7 +22,7 @@ fn lFindInPath(l: *c.lua_State) !c_int {
 
         const joined = try std.fs.path.joinZ(
             std.heap.c_allocator,
-            &.{ trimmed, std.mem.span(bin) },
+            &.{ trimmed, bin },
         );
         defer std.heap.c_allocator.free(joined);
 

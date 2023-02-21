@@ -1,5 +1,5 @@
-/// Module for compiling lua files using luajit
-/// and mzte-nv-compiler.
+//! Module for compiling lua files using luajit
+//! and mzte-nv-compiler.
 const std = @import("std");
 const ser = @import("../ser.zig");
 const ffi = @import("../ffi.zig");
