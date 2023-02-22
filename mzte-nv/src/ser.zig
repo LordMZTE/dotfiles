@@ -27,9 +27,9 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                     } else {
                         c.lua_createtable(l, x.len, 0);
 
-                        for (x) |element, i| {
+                        for (x, 1..) |element, i| {
                             luaPushAny(l, element);
-                            c.lua_rawseti(l, -2, i + 1);
+                            c.lua_rawseti(l, -2, i);
                         }
                     }
                 },
@@ -56,9 +56,9 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
             if (S.is_tuple) {
                 c.lua_createtable(l, S.fields.len, 0);
 
-                inline for (S.fields) |Field, i| {
+                inline for (S.fields, 1..) |Field, i| {
                     luaPushAny(l, @field(x, Field.name));
-                    c.lua_rawseti(l, -2, i + 1);
+                    c.lua_rawseti(l, -2, i);
                 }
             } else {
                 c.lua_createtable(l, 0, S.fields.len);
