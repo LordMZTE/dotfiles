@@ -1,5 +1,6 @@
 const std = @import("std");
-const c = @import("ffi.zig").c;
+const ffi = @import("ffi.zig");
+const c = ffi.c;
 
 const log = std.log.scoped(.compiler);
 
@@ -89,6 +90,15 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
         c.lua_getfield(l, -1, "dump");
 
         if (std.mem.endsWith(u8, luafile, ".fnl")) {
+            // this check is to prevent fennel code in aniseed plugins being unecessarily compiled.
+            if (std.mem.containsAtLeast(u8, luafile, 1, "/fnl/") or
+                // TODO: wonk
+                std.mem.endsWith(u8, luafile, "macros.fnl"))
+            {
+                c.lua_pop(l, 1);
+                continue;
+            }
+
             // replace file extension
             std.mem.copy(u8, outname[outname.len - 3 ..], "lua");
 
@@ -102,6 +112,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
 
             if (!std.meta.eql(res.term, .{ .Exited = 0 })) {
                 log.warn("error compiling fennel object {s}: {s}", .{ luafile, res.stderr });
+                c.lua_pop(l, 1);
                 continue;
             }
 
@@ -111,7 +122,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             if (c.luaL_loadbuffer(l, res.stdout.ptr, res.stdout.len, luafile_z) != 0) {
                 log.warn(
                     "error compiling fennel lua object {s}: {s}",
-                    .{ luafile, c.lua_tolstring(l, -1, null) },
+                    .{ luafile, ffi.luaToString(l, -1) },
                 );
                 c.lua_pop(l, 2);
                 continue;
@@ -123,7 +134,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             if (c.luaL_loadfile(l, luafile_z) != 0) {
                 log.warn(
                     "error compiling lua object {s}: {s}",
-                    .{ luafile, c.lua_tolstring(l, -1, null) },
+                    .{ luafile, ffi.luaToString(l, -1) },
                 );
                 c.lua_pop(l, 2);
                 continue;

@@ -2,6 +2,7 @@
        (values (require :cmp) (require :luasnip) (require :mzte_nv)))
 
 (local sources {:buffer " ﬘"
+                :conjure " "
                 :crates " "
                 :luasnip " "
                 :nvim_lsp " "

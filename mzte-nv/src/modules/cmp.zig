@@ -83,8 +83,7 @@ fn lOnTab(l: *c.lua_State) !c_int {
 
         // get the line
         c.lua_rawgeti(l, -1, 1);
-        var strlen: usize = 0;
-        const line = c.lua_tolstring(l, -1, &strlen)[0..strlen];
+        const line = ffi.luaToString(l, -1);
 
         // char at the cursor is NOT whitespace
         const b = std.mem.indexOfScalar(

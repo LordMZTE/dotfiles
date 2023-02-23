@@ -26,11 +26,16 @@ pub fn luaFunc(comptime func: fn (*c.lua_State) anyerror!c_int) c.lua_CFunction 
 }
 
 /// A thin wrapper around luaL_checklstring that uses the length parameter to return a slice.
-pub fn luaCheckstring(l: *c.lua_State, idx: c_int) []const u8 {
+pub fn luaCheckstring(l: ?*c.lua_State, idx: c_int) []const u8 {
     var len: usize = 0;
     return c.luaL_checklstring(l, idx, &len)[0..len];
 }
 
-pub fn luaPushString(l: *c.lua_State, s: []const u8) void {
+pub fn luaPushString(l: ?*c.lua_State, s: []const u8) void {
     c.lua_pushlstring(l, s.ptr, s.len);
+}
+
+pub fn luaToString(l: ?*c.lua_State, idx: c_int) []const u8 {
+    var len: usize = 0;
+    return c.lua_tolstring(l, idx, &len)[0..len];
 }
