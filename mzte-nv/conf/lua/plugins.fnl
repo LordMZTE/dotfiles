@@ -67,9 +67,7 @@
   (use/pconf use :CKolkey/ts-node-action :tsn-actions
              {:requires :jose-elias-alvarez/null-ls.nvim})
   (use :nvim-treesitter/playground)
-  (use {1 :Olical/conjure
-        ;; TODO: stop LSPs from attaching to conjure log
-        :config #(set vim.g.conjure#mapping#prefix :<F1>)})
+  (use {1 :Olical/conjure :config #(set vim.g.conjure#mapping#prefix :<F1>)})
   (cmp-plugins use))
 
 ((. (require :packer) :startup) init)
