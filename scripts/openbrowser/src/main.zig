@@ -38,7 +38,7 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
     defer alloc.free(argv);
     argv[0] = browser;
 
-    for (std.os.argv[1..]) |arg, i| {
+    for (std.os.argv[1..], 0..) |arg, i| {
         argv[i + 1] = std.mem.span(arg);
     }
 
