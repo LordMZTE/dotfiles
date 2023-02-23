@@ -14,9 +14,9 @@ export CXX=clang++
 export EDITOR=nvim
 
 # paths
-export PATH="$HOME/.mix/escripts:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.mix/escripts:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/go/bin:$PATH:$HOME/.roswell/bin"
 export LUA_CPATH="$HOME/.local/lib/lua/?.so;$HOME/.local/lib/lua/?.lua;;"
 
-if which racket > /dev/null
+if which racket >/dev/null
     set -ax PATH (racket -l racket/base -e '(require setup/dirs) (display (path->string (find-user-console-bin-dir)))')
 end
