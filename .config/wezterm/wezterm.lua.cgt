@@ -7,24 +7,24 @@
       `{:key ,key :mods ,mods :action ((. wt :action ,act) ,args)}
       `{:key ,key :mods ,mods :action (. wt :action ,act)}))
 
-(var keys
-     [;; splitting
-      (kmap :h :LEADER :SplitVertical {})
-      (kmap :v :LEADER :SplitHorizontal {})
-      ;; tabs
-      (kmap :t :CTRL|SHIFT :SpawnTab :CurrentPaneDomain)
-      (kmap :t :CTRL :ActivateTabRelative 1)
-      ;; font size
-      (kmap "+" :CTRL :IncreaseFontSize)
-      (kmap "-" :CTRL :DecreaseFontSize)
-      ;; moving panes
-      (kmap :r :LEADER :RotatePanes :Clockwise)
-      (kmap :m :LEADER :PaneSelect {:mode :SwapWithActive})
-      ;; scrolling
-      (kmap :PageUp :ALT :ScrollByPage -1)
-      (kmap :PageDown :ALT :ScrollByPage 1)
-      ;; copying
-      (kmap :C :CTRL|SHIFT :CopyTo :ClipboardAndPrimarySelection)])
+(var keys [;; splitting
+           (kmap :h :LEADER :SplitVertical {})
+           (kmap :v :LEADER :SplitHorizontal {})
+           ;; tabs
+           (kmap :t :CTRL|SHIFT :SpawnTab :CurrentPaneDomain)
+           (kmap :t :CTRL :ActivateTabRelative 1)
+           ;; font size
+           (kmap "+" :CTRL :IncreaseFontSize)
+           (kmap "-" :CTRL :DecreaseFontSize)
+           ;; moving panes
+           (kmap :r :LEADER :RotatePanes :Clockwise)
+           (kmap :m :LEADER :PaneSelect {:mode :SwapWithActive})
+           ;; scrolling
+           (kmap :PageUp :ALT :ScrollByPage -1)
+           (kmap :PageDown :ALT :ScrollByPage 1)
+           ;; copying
+           (kmap :C :CTRL|SHIFT :CopyTo :ClipboardAndPrimarySelection)
+           (kmap :V :CTRL|SHIFT :PasteFrom :Clipboard)])
 
 (local directions [[:h :Left] [:j :Down] [:k :Up] [:l :Right]])
 
@@ -43,4 +43,3 @@
  :disable_default_key_bindings true
  :leader {:key :a :mods :CTRL :timeout_milliseconds 2000}
  : keys}
-
