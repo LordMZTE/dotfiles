@@ -224,6 +224,11 @@ exec conky
 # wired notification daemon
 exec wired
 
+<! if opt.commands.file_manager_daemon then !>
+# start file manager daemon
+exec <% opt.commands.file_manager_daemon %>
+<! end !>
+
 # border toggle
 bindsym $mod+b border toggle
 

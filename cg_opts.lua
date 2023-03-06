@@ -18,6 +18,7 @@ opts.commands = {
     email = "claws-mail",
     calculator = "qalculate-gtk",
     file_manager = "thunar",
+    file_manager_daemon = "thunar --daemon",
 
     -- zenity-compatible dialoger
     zenity = "yad",
