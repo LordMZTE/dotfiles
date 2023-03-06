@@ -1,16 +1,13 @@
 (local opts {:noremap true :silent true})
 
 (macro nmap [map action]
-  `(vim.api.nvim_set_keymap :n ,map ,action opts))
+  `(vim.keymap.set :n ,map ,action opts))
 
 (macro cmd [c]
   (.. :<cmd> c :<CR>))
 
-(macro lcmd [c]
-  `(cmd ,(.. "lua " c)))
-
 ;; Getting stuck in ~~vim~~ terminal
-(vim.api.nvim_set_keymap :t :<Esc> "<C-\\><C-n>" {})
+(vim.keymap.set :t :<Esc> "<C-\\><C-n>" opts)
 
 ;; Quick cursor movement
 (nmap :<C-Down> :5j)
@@ -26,13 +23,17 @@
 (nmap :<S-F4> (cmd :cprevious))
 
 ;; LSP
-(nmap :-a (lcmd "vim.lsp.buf.code_action()"))
-(nmap :-d (lcmd "vim.diagnostic.goto_next()"))
-(nmap :-n (lcmd "vim.lsp.buf.rename()"))
-(nmap :-r (lcmd "vim.lsp.buf.format { async = true }"))
-(nmap :<C-k> (lcmd "vim.lsp.buf.signature_help()"))
-(nmap :<space>e (lcmd "vim.diagnostic.open_float()"))
-(nmap :K (lcmd "vim.lsp.buf.hover()"))
+(nmap :-a #(vim.lsp.buf.code_action))
+(nmap :-d #(vim.diagnostic.goto_next))
+(nmap :-n #(vim.lsp.buf.rename))
+(nmap :-r #(vim.lsp.buf.format {:async true}))
+(nmap :<C-k> #(vim.lsp.buf.signature_help))
+(nmap :<space>e #(vim.diagnostic.open_float))
+
+(nmap :K (fn []
+           (if ((. (require :conjure.client) :get))
+               ((. (require :conjure.eval) :doc-word))
+               (vim.lsp.buf.hover))))
 
 ;; command to stop LSPs
 (vim.api.nvim_create_user_command :StopLsps
