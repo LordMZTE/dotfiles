@@ -1,5 +1,6 @@
 const std = @import("std");
-const c = @import("ffi.zig").c;
+const ffi = @import("ffi.zig");
+const c = ffi.c;
 
 pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
     const T = @TypeOf(x);
@@ -14,16 +15,17 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                 .One => {
                     if (T == c.lua_CFunction or
                         T == @typeInfo(c.lua_CFunction).Optional.child)
-                        c.lua_pushcfunction(l, x)
-                    else
+                    {
+                        c.lua_pushcfunction(l, x);
+                    } else if (@typeInfo(P.child) == .Array) {
+                        luaPushAny(l, @as([]const std.meta.Elem(P.child), x));
+                    } else {
                         luaPushAny(l, x.*);
+                    }
                 },
                 .Slice => {
                     if (P.child == u8) {
-                        if (P.sentinel == null)
-                            @compileError("luaPushAny doesn't support " ++ @typeName(T));
-
-                        c.lua_pushstring(l, x.ptr);
+                        ffi.luaPushString(l, x);
                     } else {
                         c.lua_createtable(l, x.len, 0);
 

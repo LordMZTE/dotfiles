@@ -1,6 +1,7 @@
 const std = @import("std");
 const ffi = @import("ffi.zig");
 const c = ffi.c;
+const ser = @import("ser.zig");
 
 const log = std.log.scoped(.compiler);
 
@@ -135,7 +136,13 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             // fennel.compile-string
             c.lua_getfield(l, -3, "compile-string");
             ffi.luaPushString(l, data);
-            if (c.lua_pcall(l, 1, 1, 0) != 0) {
+            // push fennel compile options
+            ser.luaPushAny(l.?, .{
+                .filename = luafile,
+                // no need for indenting, this code will likely not be seen by anyone
+                .indent = "",
+            });
+            if (c.lua_pcall(l, 2, 1, 0) != 0) {
                 log.warn(
                     "error compiling fennel object {s}: {s}",
                     .{ luafile, ffi.luaToString(l, -1) },
