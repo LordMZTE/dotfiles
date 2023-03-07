@@ -39,6 +39,7 @@
 
 {:color_scheme "Dracula (Official)"
  :font (wt.font "<% opt.term_font %>")
+ :warn_about_missing_glyphs false
  :window_background_opacity 0.8
  :disable_default_key_bindings true
  :leader {:key :a :mods :CTRL :timeout_milliseconds 2000}
