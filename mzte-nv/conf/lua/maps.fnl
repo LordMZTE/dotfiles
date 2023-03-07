@@ -1,4 +1,4 @@
-(local opts {:noremap true :silent true})
+(local opts (. (require :mzte_nv) :utils :map_opt))
 
 (macro nmap [map action]
   `(vim.keymap.set :n ,map ,action opts))
@@ -23,12 +23,12 @@
 (nmap :<S-F4> (cmd :cprevious))
 
 ;; LSP
-(nmap :-a #(vim.lsp.buf.code_action))
-(nmap :-d #(vim.diagnostic.goto_next))
-(nmap :-n #(vim.lsp.buf.rename))
+(nmap :-a vim.lsp.buf.code_action)
+(nmap :-d vim.diagnostic.goto_next)
+(nmap :-n vim.lsp.buf.rename)
 (nmap :-r #(vim.lsp.buf.format {:async true}))
-(nmap :<C-k> #(vim.lsp.buf.signature_help))
-(nmap :<space>e #(vim.diagnostic.open_float))
+(nmap :<C-k> vim.lsp.buf.signature_help)
+(nmap :<space>e vim.diagnostic.open_float)
 
 (nmap :K (fn []
            (if ((. (require :conjure.client) :get))

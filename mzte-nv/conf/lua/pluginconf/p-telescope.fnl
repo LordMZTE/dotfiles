@@ -18,23 +18,18 @@
 
 (telescope.load_extension :harpoon)
 
-(local mopt {:noremap true :silent true})
-
-(macro nmap [map action]
-  `(vim.keymap.set :n ,map ,action mopt))
-
-;; file finding mappings
-(nmap :ff builtin.find_files)
-(nmap :fg builtin.live_grep)
-
-;; LSP mappings
-(nmap :gd builtin.lsp_definitions)
-(nmap :gi builtin.lsp_implementations)
-(nmap :gr builtin.lsp_references)
-(nmap :gs builtin.lsp_dynamic_workspace_symbols)
-
-(nmap :gp #(builtin.diagnostics {:bufnr 0}))
-(nmap :gP builtin.diagnostics)
-
-;; harpoon
-(nmap :gm ext.harpoon.marks)
+(let [mopt (. (require :mzte_nv) :utils :map_opt)]
+  (macro nmap [map action]
+    `(vim.keymap.set :n ,map ,action mopt))
+  ;; file finding mappings
+  (nmap :ff builtin.find_files)
+  (nmap :fg builtin.live_grep)
+  ;; LSP mappings
+  (nmap :gd builtin.lsp_definitions)
+  (nmap :gi builtin.lsp_implementations)
+  (nmap :gr builtin.lsp_references)
+  (nmap :gs builtin.lsp_dynamic_workspace_symbols)
+  (nmap :gp #(builtin.diagnostics {:bufnr 0}))
+  (nmap :gP builtin.diagnostics)
+  ;; harpoon
+  (nmap :gm ext.harpoon.marks))

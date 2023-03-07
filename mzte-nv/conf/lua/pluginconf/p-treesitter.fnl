@@ -27,8 +27,9 @@
          (vim.treesitter.get_node_range (ts-utils.get_node_at_cursor)))
   (vim.api.nvim_buf_set_text 0 r1 c1 r2 c2 []))
 
-;; Shorthand for deleting the TS node under the cursor
-(vim.keymap.set :n :D delete-node-under-cursor {:noremap true :silent true})
-
-;; Shorthand for deleting the TS node under the cursor and switching to insert mode
-(vim.keymap.set :n :C (fn [] (delete-node-under-cursor) (vim.cmd.startinsert)))
+(let [mopt (. (require :mzte_nv) :utils :map_opt)]
+  ;; Shorthand for deleting the TS node under the cursor
+  (vim.keymap.set :n :D delete-node-under-cursor mopt)
+  ;; Shorthand for deleting the TS node under the cursor and switching to insert mode
+  (vim.keymap.set :n :C
+                  (fn [] (delete-node-under-cursor) (vim.cmd.startinsert)) mopt))

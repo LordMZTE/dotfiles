@@ -19,4 +19,4 @@
 (vim.api.nvim_create_autocmd [:VimEnter] {:callback on-enter})
 
 (vim.keymap.set :n :TT #((. (require :nvim-tree.api) :tree :toggle))
-                {:noremap true :silent true})
+                (. (require :mzte_nv) :utils :map_opt))

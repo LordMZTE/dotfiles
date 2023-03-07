@@ -35,4 +35,5 @@
                   :filetypes [:_all]
                   :generator {:fn (. tsna :available_actions)}})
 
-(vim.keymap.set :n :U (. tsna :node_action) {:noremap true :silent true})
+(vim.keymap.set :n :U (. tsna :node_action)
+                (. (require :mzte_nv) :utils :map_opt))

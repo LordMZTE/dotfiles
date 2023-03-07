@@ -6,6 +6,8 @@ const c = ffi.c;
 pub fn luaPush(l: *c.lua_State) void {
     ser.luaPushAny(l, .{
         .findInPath = ffi.luaFunc(lFindInPath),
+
+        .map_opt = .{ .noremap = true, .silent = true },
     });
 }
 
