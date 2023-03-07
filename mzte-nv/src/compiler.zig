@@ -34,8 +34,16 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     defer c.lua_close(l);
 
     // load lua libs
-    _ = c.luaopen_string(l);
-    _ = c.luaopen_jit(l);
+    c.luaL_openlibs(l);
+
+    // add fennel lib to lua path
+    // fennel is made to run on lua 5.4, but ends up working with LJ too
+    c.lua_getfield(l, c.LUA_GLOBALSINDEX, "package");
+    c.lua_getfield(l, -1, "path");
+    ffi.luaPushString(l, ";" ++ "/usr/share/lua/5.4/fennel.lua");
+    c.lua_concat(l, 2);
+    c.lua_setfield(l, -2, "path");
+    c.lua_pop(l, 1);
 
     // set optimization level
     c.lua_getfield(l, c.LUA_REGISTRYINDEX, "_LOADED");
@@ -47,6 +55,14 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     c.lua_call(l, 1, 0);
 
     // prepare state
+    // load fennel
+    log.info("Loading fennel compiler", .{});
+    c.lua_getfield(l, c.LUA_GLOBALSINDEX, "require");
+    ffi.luaPushString(l, "fennel");
+    if (c.lua_pcall(l, 1, 1, 0) != 0) {
+        log.err("Failed to load fennel compiler: {s}", .{ffi.luaToString(l, -1)});
+        return error.FennelLoad;
+    }
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "string");
 
     // an arena allocator to hold data to be used during the build
@@ -83,50 +99,63 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
         try files.append(path);
     }
 
+    var n_fnl: usize = 0;
+    var n_lua: usize = 0;
+
+    const stacktop = c.lua_gettop(l);
+
     for (files.items) |luafile| {
+        // reset lua stack
+        defer c.lua_settop(l, stacktop);
+
         var outname = try alloc.dupe(u8, luafile);
         defer alloc.free(outname);
 
         c.lua_getfield(l, -1, "dump");
 
-        if (std.mem.endsWith(u8, luafile, ".fnl")) {
+        const is_fennel = std.mem.endsWith(u8, luafile, ".fnl");
+
+        if (is_fennel) {
             // this check is to prevent fennel code in aniseed plugins being unecessarily compiled.
             if (std.mem.containsAtLeast(u8, luafile, 1, "/fnl/") or
                 // TODO: wonk
                 std.mem.endsWith(u8, luafile, "macros.fnl"))
             {
-                c.lua_pop(l, 1);
                 continue;
             }
 
             // replace file extension
             std.mem.copy(u8, outname[outname.len - 3 ..], "lua");
 
-            const res = try std.ChildProcess.exec(.{
-                .allocator = alloc,
-                .argv = &.{ "fennel", "-c", luafile },
-            });
+            var file = try std.fs.cwd().openFile(luafile, .{});
+            defer file.close();
+            // 16 MB better be enough
+            const data = try file.readToEndAlloc(build_alloc, 1024 * 1024 * 16);
 
-            defer alloc.free(res.stdout);
-            defer alloc.free(res.stderr);
-
-            if (!std.meta.eql(res.term, .{ .Exited = 0 })) {
-                log.warn("error compiling fennel object {s}: {s}", .{ luafile, res.stderr });
-                c.lua_pop(l, 1);
+            // fennel.compile-string
+            c.lua_getfield(l, -3, "compile-string");
+            ffi.luaPushString(l, data);
+            if (c.lua_pcall(l, 1, 1, 0) != 0) {
+                log.warn(
+                    "error compiling fennel object {s}: {s}",
+                    .{ luafile, ffi.luaToString(l, -1) },
+                );
                 continue;
             }
 
-            const luafile_z = try alloc.dupeZ(u8, luafile);
-            defer alloc.free(luafile_z);
+            const compiled = ffi.luaToString(l, -1);
+            const luafile_z = try build_alloc.dupeZ(u8, luafile);
 
-            if (c.luaL_loadbuffer(l, res.stdout.ptr, res.stdout.len, luafile_z) != 0) {
+            if (c.luaL_loadbuffer(l, compiled.ptr, compiled.len, luafile_z) != 0) {
                 log.warn(
                     "error compiling fennel lua object {s}: {s}",
                     .{ luafile, ffi.luaToString(l, -1) },
                 );
-                c.lua_pop(l, 2);
                 continue;
             }
+
+            // remove compiled lua code string
+            c.lua_remove(l, -2);
         } else {
             const luafile_z = try alloc.dupeZ(u8, luafile);
             defer alloc.free(luafile_z);
@@ -136,7 +165,6 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
                     "error compiling lua object {s}: {s}",
                     .{ luafile, ffi.luaToString(l, -1) },
                 );
-                c.lua_pop(l, 2);
                 continue;
             }
         }
@@ -144,14 +172,17 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
         c.lua_pushboolean(l, 1); // strip debug info
         c.lua_call(l, 2, 1);
 
-        var outlen: usize = 0;
-        const outptr = c.lua_tolstring(l, -1, &outlen);
+        const outdata = ffi.luaToString(l, -1);
 
         var outfile = try std.fs.cwd().createFile(outname, .{});
         defer outfile.close();
-        try outfile.writeAll(outptr[0..outlen]);
+        try outfile.writeAll(outdata);
 
-        c.lua_remove(l, -1);
+        if (is_fennel) {
+            n_fnl += 1;
+        } else {
+            n_lua += 1;
+        }
     }
-    log.info("compiled {} lua objects @ {s}", .{ files.items.len, path });
+    log.info("compiled {} lua and {} fennel objects @ {s}", .{ n_lua, n_fnl, path });
 }
