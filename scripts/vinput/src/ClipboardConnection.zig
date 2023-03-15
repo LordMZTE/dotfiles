@@ -4,12 +4,16 @@ const c = ffi.c;
 
 const log = std.log.scoped(.clipboard);
 
-/// Provides the given data to the X clipboard ONCE
-pub fn provideClipboard(data: []const u8) !void {
+dpy: *c.Display,
+win: c.Window,
+
+const ClipboardConnection = @This();
+
+pub fn init() !ClipboardConnection {
     const dpy = c.XOpenDisplay(
         c.getenv("DISPLAY") orelse return error.DisplayNotSet,
     ) orelse return error.OpenDisplay;
-    defer _ = c.XCloseDisplay(dpy);
+    errdefer _ = c.XCloseDisplay(dpy);
 
     const screen_n = c.XDefaultScreen(dpy);
     const screen = c.XScreenOfDisplay(dpy, screen_n);
@@ -25,16 +29,28 @@ pub fn provideClipboard(data: []const u8) !void {
         screen.*.white_pixel,
     );
 
-    const selection = c.XInternAtom(dpy, "CLIPBOARD", 0);
-    const targets_atom = c.XInternAtom(dpy, "TARGETS", 0);
-    const text_atom = c.XInternAtom(dpy, "TEXT", 0);
-    var utf8_atom = c.XInternAtom(dpy, "UTF8_STRING", 1);
+    return .{
+        .dpy = dpy,
+        .win = win,
+    };
+}
+
+pub fn deinit(self: ClipboardConnection) void {
+    _ = c.XDestroyWindow(self.dpy, self.win);
+    _ = c.XCloseDisplay(self.dpy);
+}
+
+pub fn provide(self: ClipboardConnection, data: []const u8) !void {
+    const selection = c.XInternAtom(self.dpy, "CLIPBOARD", 0);
+    const targets_atom = c.XInternAtom(self.dpy, "TARGETS", 0);
+    const text_atom = c.XInternAtom(self.dpy, "TEXT", 0);
+    var utf8_atom = c.XInternAtom(self.dpy, "UTF8_STRING", 1);
     if (utf8_atom == c.None) {
         utf8_atom = c.XA_STRING;
     }
 
-    _ = c.XSetSelectionOwner(dpy, selection, win, 0);
-    if (c.XGetSelectionOwner(dpy, selection) != win) {
+    _ = c.XSetSelectionOwner(self.dpy, selection, self.win, 0);
+    if (c.XGetSelectionOwner(self.dpy, selection) != self.win) {
         return error.FailedToAquireSelection;
     }
 
@@ -42,7 +58,7 @@ pub fn provideClipboard(data: []const u8) !void {
 
     var event: c.XEvent = undefined;
     while (true) {
-        try ffi.checkXError(dpy, c.XNextEvent(dpy, &event));
+        try ffi.checkXError(self.dpy, c.XNextEvent(self.dpy, &event));
         switch (event.type) {
             c.SelectionRequest => {
                 if (event.xselectionrequest.selection != selection)
@@ -103,7 +119,7 @@ pub fn provideClipboard(data: []const u8) !void {
                         .send_event = 0,
                     };
 
-                    _ = c.XSendEvent(dpy, ev.requestor, 0, 0, @ptrCast(*c.XEvent, &ev));
+                    _ = c.XSendEvent(self.dpy, ev.requestor, 0, 0, @ptrCast(*c.XEvent, &ev));
                     if (sent_data) {
                         var real: c.Atom = undefined;
                         var format: c_int = 0;
@@ -111,7 +127,7 @@ pub fn provideClipboard(data: []const u8) !void {
                         var extra: c_ulong = 0;
                         var name_cstr: [*c]u8 = undefined;
                         _ = c.XGetWindowProperty(
-                            dpy,
+                            self.dpy,
                             xsr.requestor,
                             c.XA_WM_NAME,
                             0,
@@ -143,4 +159,56 @@ pub fn provideClipboard(data: []const u8) !void {
             else => {},
         }
     }
+}
+
+/// Get the current text in the clipboard. Must be freed using XFree.
+pub fn getText(self: ClipboardConnection) !?[]u8 {
+    const utf8 = c.XInternAtom(self.dpy, "UTF8_STRING", 0);
+    if (try self.getContentForType(utf8)) |data| return data;
+
+    return try self.getContentForType(c.XA_STRING);
+}
+
+fn getContentForType(self: ClipboardConnection, t: c.Atom) !?[]u8 {
+    const selection = c.XInternAtom(self.dpy, "CLIPBOARD", 0);
+    //const utf8_atom = c.XInternAtom(self.dpy, "UTF8_STRING", 1);
+    const xsel_data_atom = c.XInternAtom(self.dpy, "XSEL_DATA", 0);
+
+    _ = c.XConvertSelection(self.dpy, selection, t, xsel_data_atom, self.win, c.CurrentTime);
+    _ = c.XSync(self.dpy, 0);
+
+    var event: c.XEvent = undefined;
+    try ffi.checkXError(self.dpy, c.XNextEvent(self.dpy, &event));
+
+    if (event.type != c.SelectionNotify)
+        return null;
+
+    const xsel = event.xselection;
+
+    // Wrong selection or conversion failed.
+    if (xsel.property == 0)
+        return null;
+
+    var target: c.Atom = undefined;
+    var data: ?[*]u8 = null;
+    var format: c_int = 0;
+    var size: c_ulong = 0;
+    var n: c_ulong = 0;
+    _ = c.XGetWindowProperty(
+        xsel.display,
+        xsel.requestor,
+        xsel.property,
+        0,
+        -1,
+        0,
+        c.AnyPropertyType,
+        &target,
+        &format,
+        &size,
+        &n,
+        &data,
+    );
+    defer _ = c.XDeleteProperty(xsel.display, xsel.requestor, xsel.property);
+
+    return (data orelse return null)[0..@intCast(usize, size)];
 }

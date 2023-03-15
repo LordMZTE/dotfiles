@@ -1,5 +1,6 @@
 const std = @import("std");
-const clipboard = @import("clipboard.zig");
+const c = @import("ffi.zig").c;
+const ClipboardConnection = @import("ClipboardConnection.zig");
 
 pub const log_level = .debug;
 
@@ -23,6 +24,23 @@ pub fn main() !void {
         .{ std.os.linux.getuid(), std.time.milliTimestamp(), std.os.argv[1] },
     );
     defer alloc.free(filename);
+
+    const cp = try ClipboardConnection.init();
+    defer cp.deinit();
+
+    const cp_data = try cp.getText();
+    defer if (cp_data) |d| {
+        _ = c.XFree(d.ptr);
+    };
+
+    {
+        const file = try std.fs.createFileAbsolute(filename, .{});
+        defer file.close();
+
+        if (cp_data) |data| {
+            try file.writeAll(data);
+        }
+    }
 
     //const editor_argv = [_][]const u8{
     //    "neovide",
@@ -57,7 +75,12 @@ pub fn main() !void {
             else => return e,
         }
     };
-    {
+    mmap: {
+        if (stat.size == 0) {
+            std.log.info("empty file", .{});
+            break :mmap;
+        }
+
         var tempfile = try std.fs.openFileAbsolute(filename, .{});
         defer tempfile.close();
 
@@ -74,7 +97,7 @@ pub fn main() !void {
         );
         defer std.os.munmap(fcontent);
 
-        try clipboard.provideClipboard(std.mem.trim(u8, fcontent, " \n\r"));
+        try cp.provide(std.mem.trim(u8, fcontent, " \n\r"));
     }
     std.log.info("deleting tempfile {s}", .{filename});
     try std.fs.deleteFileAbsolute(filename);
