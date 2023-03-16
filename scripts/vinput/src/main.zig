@@ -2,7 +2,9 @@ const std = @import("std");
 const c = @import("ffi.zig").c;
 const ClipboardConnection = @import("ClipboardConnection.zig");
 
-pub const log_level = .debug;
+pub const std_options = struct {
+    pub const log_level = .debug;
+};
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -39,6 +41,8 @@ pub fn main() !void {
 
         if (cp_data) |data| {
             try file.writeAll(data);
+        } else {
+            std.log.info("clipboard empty", .{});
         }
     }
 

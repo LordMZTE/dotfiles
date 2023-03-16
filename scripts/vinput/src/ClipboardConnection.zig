@@ -28,6 +28,7 @@ pub fn init() !ClipboardConnection {
         screen.*.black_pixel,
         screen.*.white_pixel,
     );
+    _ = c.XStoreName(dpy, win, "vinput");
 
     return .{
         .dpy = dpy,
@@ -121,29 +122,8 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
 
                     _ = c.XSendEvent(self.dpy, ev.requestor, 0, 0, @ptrCast(*c.XEvent, &ev));
                     if (sent_data) {
-                        var real: c.Atom = undefined;
-                        var format: c_int = 0;
-                        var n: c_ulong = 0;
-                        var extra: c_ulong = 0;
-                        var name_cstr: [*c]u8 = undefined;
-                        _ = c.XGetWindowProperty(
-                            self.dpy,
-                            xsr.requestor,
-                            c.XA_WM_NAME,
-                            0,
-                            ~@as(c_int, 0),
-                            0,
-                            c.AnyPropertyType,
-                            &real,
-                            &format,
-                            &n,
-                            &extra,
-                            &name_cstr,
-                        );
-                        if (name_cstr != null) {
-                            defer _ = c.XFree(name_cstr);
-
-                            const name = std.mem.span(name_cstr);
+                        if (ffi.xGetWindowName(self.dpy, xsr.requestor)) |name| {
+                            defer _ = c.XFree(name.ptr);
 
                             log.info("sent clipboard to {s}", .{name});
                         } else {
@@ -163,6 +143,7 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
 
 /// Get the current text in the clipboard. Must be freed using XFree.
 pub fn getText(self: ClipboardConnection) !?[]u8 {
+    log.info("reading clipboard", .{});
     const utf8 = c.XInternAtom(self.dpy, "UTF8_STRING", 0);
     if (try self.getContentForType(utf8)) |data| return data;
 
