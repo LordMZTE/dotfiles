@@ -67,7 +67,7 @@
   (use/pconf use :CKolkey/ts-node-action :tsn-actions
              {:requires :jose-elias-alvarez/null-ls.nvim})
   (use :nvim-treesitter/playground)
-  (use/pconf use :Olical/conjure :conjure)
+  (use {1 :Olical/conjure :setup (pconf :conjure)})
   (cmp-plugins use))
 
 ((. (require :packer) :startup) init)
