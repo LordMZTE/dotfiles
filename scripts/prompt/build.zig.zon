@@ -4,12 +4,12 @@
 
     .dependencies = .{
         .ansi_term = .{
-            .url = "https://github.com/ziglibs/ansi-term/archive/3238ee3600775a0d2ed52fa5bf30669daebd47cd.tar.gz",
-            .hash = "122054a0aadb65c0b51e0d2b6083272c8ccd59abe83469425c3ea03030e450df4625",
+            .url = "https://github.com/ziglibs/ansi-term/archive/84b2a92970bc3328b1366abb3bffd677bd681669.tar.gz",
+            .hash = "1220d454469ddc251e46fff3b2b11f7016deb54bc5cd8618e809a09a4b1f5304f555",
         },
         .known_folders = .{
-            .url = "https://github.com/ziglibs/known-folders/archive/53fe3b676f32e59d46f4fd201d7ab200e5f6cb98.tar.gz",
-            .hash = "12203e18503cd0fa097a4404b0c4f8535a68536886b536ae51c786455238ba5f183b",
+            .url = "https://github.com/ziglibs/known-folders/archive/d13ba6137084e55f873f6afb67447fe8906cc951.tar.gz",
+            .hash = "122028c00915d9b37296059be8a3883c718dbb5bd174350caedf152fed1f46f99607",
         },
     },
 }

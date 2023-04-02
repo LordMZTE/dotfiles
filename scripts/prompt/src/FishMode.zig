@@ -15,7 +15,7 @@ mode: Mode,
 const Self = @This();
 
 pub fn parse(s: []const u8) Self {
-    inline for (@typeInfo(Mode).Enum.fields) |field, i| {
+    inline for (@typeInfo(Mode).Enum.fields, 0..) |field, i| {
         if (std.mem.eql(u8, field.name, s))
             return .{ .mode = @intToEnum(Mode, i) };
     }

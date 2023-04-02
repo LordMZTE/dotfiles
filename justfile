@@ -22,8 +22,8 @@ install-scripts target=(`echo $HOME` + "/.local"):
     cd scripts/vinput && zig build -Doptimize=ReleaseFast -p {{target}}
     cd scripts/playtwitch && zig build -Doptimize=ReleaseFast -p {{target}}
     cd scripts/openbrowser && zig build -Doptimize=ReleaseFast -p {{target}}
-    cd scripts/prompt && gyro build -Doptimize=ReleaseFast -p {{target}}
-    cd scripts/mzteinit && gyro build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/prompt && zig build -Doptimize=ReleaseFast -p {{target}}
+    cd scripts/mzteinit && zig build -Doptimize=ReleaseFast -p {{target}}
 
 install-lsps-paru:
     #!/bin/sh

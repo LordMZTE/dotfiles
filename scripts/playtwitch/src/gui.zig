@@ -153,7 +153,7 @@ pub fn winContent(state: *State) !void {
         _ = c.igTableSetColumnIndex(2);
         c.igTableHeader("Live?");
 
-        for (state.channels.?) |entry, i| {
+        for (state.channels.?, 0..) |entry, i| {
             c.igPushID_Int(@intCast(c_int, i));
             defer c.igPopID();
 
