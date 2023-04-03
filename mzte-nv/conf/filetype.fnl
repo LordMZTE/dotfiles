@@ -5,4 +5,6 @@
                                ;; nvim defaults to scheme
                                :rkt :racket
                                :rktl :racket
-                               :rktd :racket}})
+                               :rktd :racket
+                               ;; nvim doesn't know zon
+                               :zon :zig}})
