@@ -29,6 +29,9 @@
 ;; Disable unwanted filetype mappings
 (set g.no_plugin_maps true)
 
+;; Disable automatic formatting of Zig code (this is on by default!!!)
+(set g.zig_fmt_autosave 0)
+
 ;; Other settings
 (cmd "colorscheme dracula")
 (cmd "filetype plugin on")
