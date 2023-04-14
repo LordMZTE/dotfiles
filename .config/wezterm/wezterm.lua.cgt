@@ -8,7 +8,7 @@
       `{:key ,key :mods ,mods :action (. wt :action ,act)}))
 
 (var keys [;; splitting
-           (kmap :h :LEADER :SplitVertical {})
+           (kmap :s :LEADER :SplitVertical {})
            (kmap :v :LEADER :SplitHorizontal {})
            ;; tabs
            (kmap :t :CTRL|SHIFT :SpawnTab :CurrentPaneDomain)
