@@ -1,11 +1,49 @@
 const std = @import("std");
 const at = @import("ansi-term");
+const env = @import("env.zig");
 const run = @import("run.zig");
 const util = @import("util.zig");
 
 pub fn main() !void {
     var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
     var exit = false;
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const alloc = gpa.allocator();
+
+    var env_map = std.process.EnvMap.init(alloc);
+    defer env_map.deinit();
+
+    for (std.os.environ) |env_var| {
+        var idx: usize = 0;
+        while (env_var[idx] != '=') {
+            idx += 1;
+        }
+
+        const eq_idx = idx;
+
+        while (env_var[idx] != 0) {
+            idx += 1;
+        }
+
+        const key = env_var[0..eq_idx];
+        const value = env_var[eq_idx + 1..idx];
+
+        try env_map.put(key, value);
+    }
+
+    if (env_map.get("MZTEINIT")) |_| {
+        try stdout.writer().writeAll("mzteinit running already, starting shell\n");
+        try stdout.flush();
+        var child = std.ChildProcess.init(&.{"fish"}, alloc);
+        _ = try child.spawnAndWait();
+        return;
+    } else {
+        try env_map.put("MZTEINIT", "1");
+    }
+
+    try env.populateEnvironment(&env_map);
 
     while (true) {
         try util.writeAnsiClear(stdout.writer());
@@ -18,7 +56,7 @@ pub fn main() !void {
         try util.writeAnsiClear(stdout.writer());
         try stdout.flush();
 
-        cmd.run(&exit) catch |e| {
+        cmd.run(alloc, &exit, &env_map) catch |e| {
             try stdout.writer().print("Error running command: {}\n\n", .{e});
             continue;
         };

@@ -31,16 +31,20 @@ pub const Command = enum {
         };
     }
 
-    pub fn run(self: Command, exit: *bool) !void {
+    pub fn run(
+        self: Command,
+        alloc: std.mem.Allocator,
+        exit: *bool,
+        env: *const std.process.EnvMap,
+    ) !void {
         if (self == .logout) {
             exit.* = true;
             return;
         }
 
-        var mem: [512]u8 = undefined;
-        var fba = std.heap.FixedBufferAllocator.init(&mem);
         const arg = self.argv();
-        var child = std.ChildProcess.init(arg, fba.allocator());
+        var child = std.ChildProcess.init(arg, alloc);
+        child.env_map = env;
         _ = try child.spawnAndWait();
     }
 

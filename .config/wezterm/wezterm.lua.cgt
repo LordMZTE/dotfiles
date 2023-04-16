@@ -1,4 +1,5 @@
 ;<! tmpl:setPostProcessor(opt.fennelCompile) !>
+; vim: filetype=fennel
 
 (local wt (require :wezterm))
 
@@ -37,7 +38,8 @@
     (table.insert keys (kmap dir-key :ALT|SHIFT :AdjustPaneSize
                              [dir-name resize-amt]))))
 
-{:color_scheme "Dracula (Official)"
+{:default_prog [:fish]
+ :color_scheme "Dracula (Official)"
  :font (wt.font "<% opt.term_font %>")
  :warn_about_missing_glyphs false
  :window_background_opacity 0.8
