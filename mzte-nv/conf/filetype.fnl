@@ -1,4 +1,4 @@
-(vim.filetype.add {:extension {:cgt (fn [_path bufnr]
+(vim.filetype.add {:extension {:cgt (fn [path bufnr]
                                       (local trimmed (path:gsub :.cgt$ ""))
                                       (vim.filetype.match {:filename trimmed
                                                            : bufnr}))
