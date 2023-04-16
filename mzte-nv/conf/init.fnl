@@ -1,7 +1,7 @@
 (require :mzte_nv_preloader)
 
-(require :plugins)
 (require :settings)
+(require :plugins)
 (require :maps)
 (require :neovide)
 (require :pipe)

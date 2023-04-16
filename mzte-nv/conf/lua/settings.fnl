@@ -2,6 +2,9 @@
 
 (local (wo g opt) (values vim.wo vim.g vim.opt))
 
+;; Shell
+(set opt.shell "fish")
+
 (cmd "syntax on")
 
 ;; Indentation
