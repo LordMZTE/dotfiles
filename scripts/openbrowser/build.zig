@@ -10,7 +10,7 @@ pub fn build(b: *std.build.Builder) void {
         .target = target,
         .optimize = mode,
     });
-    exe.install();
+    b.installArtifact(exe);
 
     const desktop_install_step = b.addInstallFile(
         .{ .path = "assets/openbrowser.desktop" },
@@ -18,7 +18,7 @@ pub fn build(b: *std.build.Builder) void {
     );
     b.getInstallStep().dependOn(&desktop_install_step.step);
 
-    const run_cmd = exe.run();
+    const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {
         run_cmd.addArgs(args);

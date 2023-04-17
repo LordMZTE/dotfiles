@@ -15,6 +15,9 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !void {
 
     try env.put("MZTE_ENV_SET", "1");
 
+    // set shell to fish to prevent anything from defaulting to mzteinit
+    try env.put("SHELL", "fish");
+
     // mix (elixir package manager) should respect XDG
     try env.put("MIX_XDG", "1");
 

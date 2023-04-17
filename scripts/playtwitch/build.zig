@@ -20,7 +20,7 @@ pub fn build(b: *std.build.Builder) void {
 
     exe.strip = optimize != .Debug and optimize != .ReleaseSafe;
 
-    exe.install();
+    b.installArtifact(exe);
 
     var logo_install_step = b.addInstallFile(
         .{ .path = "assets/playtwitch.svg" },
@@ -34,7 +34,7 @@ pub fn build(b: *std.build.Builder) void {
     );
     b.getInstallStep().dependOn(&desktop_entry_install_step.step);
 
-    const run_cmd = exe.run();
+    const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {
         run_cmd.addArgs(args);
