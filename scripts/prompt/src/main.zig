@@ -22,10 +22,10 @@ pub fn main() !void {
 
         const status = try std.fmt.parseInt(i16, std.mem.sliceTo(std.os.argv[2], 0), 10);
         const mode = FishMode.parse(std.mem.sliceTo(std.os.argv[3], 0));
-        const stdout = std.io.getStdOut().writer();
-        var buf_writer = std.io.bufferedWriter(stdout);
-        defer buf_writer.flush() catch {};
-        try prompt.render(buf_writer.writer(), status, mode);
+
+        var buf = std.BoundedArray(u8, 1024 * 8).init(0) catch unreachable;
+        try prompt.render(buf.writer(), status, mode);
+        try std.io.getStdOut().writeAll(buf.slice());
     } else {
         return error.UnknownCommand;
     }
