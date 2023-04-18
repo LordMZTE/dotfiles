@@ -24,7 +24,10 @@ pub fn main() !void {
         const mode = FishMode.parse(std.mem.sliceTo(std.os.argv[3], 0));
 
         var buf = std.BoundedArray(u8, 1024 * 8).init(0) catch unreachable;
-        try prompt.render(buf.writer(), status, mode);
+        prompt.render(buf.writer(), status, mode) catch |e| {
+            buf.resize(0) catch unreachable;
+            buf.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch unreachable;
+        };
         try std.io.getStdOut().writeAll(buf.slice());
     } else {
         return error.UnknownCommand;
