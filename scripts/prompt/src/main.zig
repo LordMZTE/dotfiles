@@ -5,7 +5,10 @@ const prompt = @import("prompt.zig");
 const fish_code =
     \\functions -e fish_mode_prompt
     \\function fish_prompt
-    \\    {s} show $status $fish_bind_mode
+    \\    set -x MZPROMPT_STATUS $status
+    \\    set -x MZPROMPT_FISH_MODE $fish_bind_mode
+    \\    set -x MZPROMPT_DURATION $CMD_DURATION
+    \\    {s} show
     \\end
 ;
 
@@ -17,14 +20,27 @@ pub fn main() !void {
         const stdout = std.io.getStdOut();
         try stdout.writer().print(fish_code ++ "\n", .{std.os.argv[0]});
     } else if (std.cstr.cmp(std.os.argv[1], "show") == 0) {
-        if (std.os.argv.len < 4)
-            return error.NotEnoughArguments;
-
-        const status = try std.fmt.parseInt(i16, std.mem.sliceTo(std.os.argv[2], 0), 10);
-        const mode = FishMode.parse(std.mem.sliceTo(std.os.argv[3], 0));
+        const options = prompt.Options{
+            .status = try std.fmt.parseInt(
+                i16,
+                std.os.getenv("MZPROMPT_STATUS") orelse
+                    return error.MissingEnv,
+                10,
+            ),
+            .mode = FishMode.parse(
+                std.os.getenv("MZPROMPT_FISH_MODE") orelse
+                    return error.MissingEnv,
+            ),
+            .duration = try std.fmt.parseInt(
+                u32,
+                std.os.getenv("MZPROMPT_DURATION") orelse
+                    return error.MissingEnv,
+                10,
+            ),
+        };
 
         var buf = std.BoundedArray(u8, 1024 * 8).init(0) catch unreachable;
-        prompt.render(buf.writer(), status, mode) catch |e| {
+        prompt.render(buf.writer(), options) catch |e| {
             buf.resize(0) catch unreachable;
             buf.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch unreachable;
         };

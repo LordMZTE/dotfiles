@@ -20,14 +20,20 @@ const symbols = struct {
     const unstaged = "";
     const home = "";
     const root = "";
+    const watch = "";
 };
 
-pub fn render(writer: anytype, status: i16, mode: FishMode) !void {
+pub const Options = struct {
+    status: i16,
+    mode: FishMode,
+    duration: u32,
+};
+
+pub fn render(writer: anytype, options: Options) !void {
     try (Renderer(@TypeOf(writer)){
         .last_style = null,
         .writer = writer,
-        .status = status,
-        .mode = mode,
+        .options = options,
     }).render();
 }
 
@@ -35,15 +41,12 @@ fn Renderer(comptime Writer: type) type {
     return struct {
         last_style: ?Style,
         writer: Writer,
-        status: i16,
-        mode: FishMode,
+        options: Options,
 
         const Self = @This();
 
         pub fn render(self: *Self) !void {
-            //const alloc = std.heap.c_allocator;
-
-            const left_color = if (self.status == 0)
+            const left_color = if (self.options.status == 0)
                 Color{ .Green = {} }
             else
                 Color{ .Red = {} };
@@ -51,6 +54,7 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .foreground = left_color });
             try self.writer.writeAll(symbols.top_left);
             try self.setStyle(.{ .background = left_color });
+            try self.renderDuration();
             try self.renderCwd();
             self.renderGit() catch |err| {
                 switch (err) {
@@ -68,7 +72,7 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .foreground = left_color, .background = left_color });
             try self.writer.writeAll(" ");
 
-            const mode_color = self.mode.getColor();
+            const mode_color = self.options.mode.getColor();
 
             try self.setStyle(.{
                 .foreground = left_color,
@@ -81,11 +85,42 @@ fn Renderer(comptime Writer: type) type {
                 .background = mode_color,
                 .font_style = .{ .bold = true },
             });
-            try self.writer.writeAll(self.mode.getText());
+            try self.writer.writeAll(self.options.mode.getText());
             try self.writer.writeAll(" ");
             try self.setStyle(.{ .foreground = mode_color });
             try self.writer.writeAll(symbols.right_separator ++ " ");
             try self.setStyle(.{});
+        }
+
+        fn renderDuration(self: *Self) !void {
+            if (self.options.duration < 2 * std.time.ms_per_s)
+                return;
+
+            try self.drawLeftSep(.Blue);
+            try self.setStyle(.{
+                .background = .Blue,
+                .foreground = .White,
+                .font_style = .{ .bold = true },
+            });
+            try self.writer.writeAll(" ");
+            try self.writer.writeAll(symbols.watch);
+            try self.writer.writeAll(" ");
+
+            const hours = self.options.duration / std.time.ms_per_hour;
+            const minutes = (self.options.duration / std.time.ms_per_min) - hours * 60;
+            const seconds = ((self.options.duration / std.time.ms_per_s) - minutes * 60) - hours * std.time.s_per_hour;
+
+            if (hours > 0) {
+                try self.writer.print("{}h ", .{hours});
+            }
+
+            if (minutes > 0 or hours > 0) {
+                try self.writer.print("{}min ", .{minutes});
+            }
+
+            if (seconds > 0 or minutes > 0 or hours > 0) {
+                try self.writer.print("{}s", .{seconds});
+            }
         }
 
         fn renderCwd(self: *Self) !void {
