@@ -38,5 +38,5 @@ pub fn build(b: *std.build.Builder) !void {
     compiler.strip = mode != .Debug;
     compiler.unwind_tables = true;
 
-    compiler.install();
+    b.installArtifact(lib);
 }
