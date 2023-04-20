@@ -109,9 +109,18 @@ fn Renderer(comptime Writer: type) type {
             try self.writer.writeAll(symbols.watch);
             try self.writer.writeAll(" ");
 
-            const hours = self.options.duration / std.time.ms_per_hour;
-            const minutes = (self.options.duration / std.time.ms_per_min) - hours * 60;
-            const seconds = ((self.options.duration / std.time.ms_per_s) - minutes * 60) - hours * std.time.s_per_hour;
+            var total = self.options.duration;
+
+            const hours = total / std.time.ms_per_hour;
+            total -= hours * std.time.ms_per_hour;
+
+            const minutes = total / std.time.ms_per_min;
+            total -= minutes * std.time.ms_per_min;
+
+            const seconds = total / std.time.ms_per_s;
+            total -= seconds * std.time.ms_per_s;
+
+            const millis = total;
 
             if (hours > 0) {
                 try self.writer.print("{}h ", .{hours});
@@ -122,7 +131,11 @@ fn Renderer(comptime Writer: type) type {
             }
 
             if (seconds > 0 or minutes > 0 or hours > 0) {
-                try self.writer.print("{}s", .{seconds});
+                try self.writer.print("{}s ", .{seconds});
+            }
+
+            if (millis > 0 or seconds > 0 or minutes > 0 or hours > 0) {
+                try self.writer.print("{}ms", .{millis});
             }
         }
 
