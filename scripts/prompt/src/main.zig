@@ -8,6 +8,7 @@ const fish_code =
     \\    set -x MZPROMPT_STATUS $status
     \\    set -x MZPROMPT_FISH_MODE $fish_bind_mode
     \\    set -x MZPROMPT_DURATION $CMD_DURATION
+    \\    set -x MZPROMPT_JOBS (count (jobs))
     \\    {s} show
     \\end
 ;
@@ -34,6 +35,12 @@ pub fn main() !void {
             .duration = try std.fmt.parseInt(
                 u32,
                 std.os.getenv("MZPROMPT_DURATION") orelse
+                    return error.MissingEnv,
+                10,
+            ),
+            .jobs = try std.fmt.parseInt(
+                u32,
+                std.os.getenv("MZPROMPT_JOBS") orelse
                     return error.MissingEnv,
                 10,
             ),

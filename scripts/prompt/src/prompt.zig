@@ -21,12 +21,14 @@ const symbols = struct {
     const home = "";
     const root = "";
     const watch = "";
+    const jobs = "";
 };
 
 pub const Options = struct {
     status: i16,
     mode: FishMode,
     duration: u32,
+    jobs: u32,
 };
 
 pub fn render(writer: anytype, options: Options) !void {
@@ -55,6 +57,7 @@ fn Renderer(comptime Writer: type) type {
             try self.writer.writeAll(symbols.top_left);
             try self.setStyle(.{ .background = left_color });
             try self.renderDuration();
+            try self.renderJobs();
             try self.renderCwd();
             self.renderGit() catch |err| {
                 switch (err) {
@@ -121,6 +124,16 @@ fn Renderer(comptime Writer: type) type {
             if (seconds > 0 or minutes > 0 or hours > 0) {
                 try self.writer.print("{}s", .{seconds});
             }
+        }
+
+        fn renderJobs(self: *Self) !void {
+            if (self.options.jobs <= 0)
+                return;
+
+            try self.drawLeftSep(.Cyan);
+            try self.setStyle(.{ .background = .Cyan, .foreground = .Black });
+
+            try self.writer.print(" {s} {}", .{ symbols.jobs, self.options.jobs });
         }
 
         fn renderCwd(self: *Self) !void {
