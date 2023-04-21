@@ -25,7 +25,9 @@
            (kmap :PageDown :ALT :ScrollByPage 1)
            ;; copying
            (kmap :C :CTRL|SHIFT :CopyTo :ClipboardAndPrimarySelection)
-           (kmap :V :CTRL|SHIFT :PasteFrom :Clipboard)])
+           (kmap :V :CTRL|SHIFT :PasteFrom :Clipboard)
+           ;; copy mode
+           (kmap :y :LEADER :ActivateCopyMode)])
 
 (local directions [[:h :Left] [:j :Down] [:k :Up] [:l :Right]])
 
