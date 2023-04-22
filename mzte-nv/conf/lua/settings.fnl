@@ -7,6 +7,9 @@
 
 (cmd "syntax on")
 
+;; Quicker updatetime
+(set opt.updatetime 1000)
+
 ;; Indentation
 (set opt.tabstop 4)
 (set opt.shiftwidth 4)

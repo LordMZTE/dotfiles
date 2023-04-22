@@ -27,6 +27,7 @@
 
 (setup :clangd {:on_attach (fn [c b] (disable-formatter c b)
                              (check-conjure c b))})
+
 (setup :cssls)
 (setup :elixirls {:cmd [:elixir-ls]})
 (setup :eslint)
