@@ -1,4 +1,6 @@
 const std = @import("std");
+const nvim = @import("nvim");
+const znvim = @import("znvim");
 const ffi = @import("ffi.zig");
 const ser = @import("ser.zig");
 const c = ffi.c;
@@ -13,8 +15,6 @@ const modules = struct {
     const utils = @import("modules/utils.zig");
 };
 
-var lua_state: ?*c.lua_State = null;
-
 pub const std_options = struct {
     pub fn logFn(
         comptime level: std.log.Level,
@@ -22,50 +22,41 @@ pub const std_options = struct {
         comptime format: []const u8,
         args: anytype,
     ) void {
-        // if there's no lua state, we can't invoke nvim notifications.
-        const l = lua_state orelse return;
+        var msg_buf: [512]u8 = undefined;
+        const msg = std.fmt.bufPrintZ(&msg_buf, format, args) catch return;
 
-        const stacktop = c.lua_gettop(l);
-        defer c.lua_settop(l, stacktop);
-
-        var fmtbuf: [2048]u8 = undefined;
-
-        c.lua_getglobal(l, "vim");
-        c.lua_getfield(l, -1, "log");
-        c.lua_getfield(l, -1, "levels");
-        switch (level) {
-            .err => c.lua_getfield(l, -1, "ERROR"),
-            .warn => c.lua_getfield(l, -1, "WARN"),
-            .info => c.lua_getfield(l, -1, "INFO"),
-            .debug => c.lua_getfield(l, -1, "DEBUG"),
-        }
-
-        const vim_lvl = c.lua_tointeger(l, -1);
-        c.lua_pop(l, 3);
-
-        c.lua_getfield(l, -1, "notify");
-
-        const msg = std.fmt.bufPrintZ(&fmtbuf, format, args) catch return;
-        c.lua_pushstring(l, msg.ptr);
-
-        c.lua_pushinteger(l, vim_lvl);
-
+        var title_buf: [512]u8 = undefined;
         const title = std.fmt.bufPrintZ(
-            &fmtbuf,
+            &title_buf,
             "MZTE-NV ({s})",
             .{@tagName(scope)},
         ) catch return;
-        ser.luaPushAny(l, .{
-            .title = title,
-        });
-        c.lua_call(l, 3, 0);
+
+        const lvl = switch (level) {
+            .debug => nvim.LOGLVL_DBG,
+            .info => nvim.LOGLVL_INF,
+            .warn => nvim.LOGLVL_WRN,
+            .err => nvim.LOGLVL_ERR,
+        };
+
+        var dict = znvim.Dictionary{.alloc = std.heap.c_allocator};
+        defer dict.deinit();
+
+        dict.push(@constCast("title"), znvim.nvimObject(@as([]u8, title))) catch return;
+
+        var e = znvim.Error{};
+        _ = nvim.nvim_notify(
+            znvim.nvimString(msg),
+            lvl,
+            dict.dict,
+            &e.err,
+        );
     }
 
     pub const log_level = .debug;
 };
 
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
-    lua_state = l_;
     const l = l_.?;
     ser.luaPushAny(l, .{
         .onInit = ffi.luaFunc(lOnInit),

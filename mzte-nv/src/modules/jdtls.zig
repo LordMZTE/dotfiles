@@ -1,5 +1,5 @@
-/// Module for the JDTLS java language server, including utilities
-/// for setting up nvim-jdtls
+//! Module for the JDTLS java language server, including utilities
+//! for setting up nvim-jdtls
 const std = @import("std");
 const ser = @import("../ser.zig");
 const ffi = @import("../ffi.zig");

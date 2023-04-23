@@ -1,0 +1,11 @@
+.{
+    .name = "mzte-nv",
+    .version = "0.0.0",
+
+    .dependencies = .{
+        .znvim = .{
+            .url = "https://mzte.de/git/LordMZTE/znvim/archive/0f07217feb2ed4e0295242a7b0a157a5f7314602.tar.gz",
+            .hash = "12208ff8bcbed85791fc4a98063967723f351b7898b651a7a3aa75d32dec04bb4a0e",
+        },
+    },
+}

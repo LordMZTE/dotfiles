@@ -16,6 +16,11 @@ pub fn build(b: *std.build.Builder) !void {
         .optimize = mode,
     });
 
+    const znvim_dep = b.dependency("znvim", .{ .target = target, .optimize = mode });
+
+    lib.addModule("nvim", znvim_dep.module("nvim_c"));
+    lib.addModule("znvim", znvim_dep.module("znvim"));
+
     lib.linkLibC();
     lib.linkSystemLibrary("luajit");
 

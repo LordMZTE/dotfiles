@@ -5,16 +5,18 @@
   (when client.server_capabilities.documentHighlightProvider
     ;; Symbol highlighting
     (vim.api.nvim_create_autocmd :CursorHold
-                                 {:callback vim.lsp.buf.document_highlight})
+                                 {:buffer buf
+                                  :callback vim.lsp.buf.document_highlight})
     (vim.api.nvim_create_autocmd :CursorHoldI
-                                 {:callback vim.lsp.buf.document_highlight})
+                                 {:buffer buf
+                                  :callback vim.lsp.buf.document_highlight})
     (vim.api.nvim_create_autocmd :CursorMoved
-                                 {:callback vim.lsp.buf.clear_references})))
+                                 {:buffer buf
+                                  :callback vim.lsp.buf.clear_references})))
 
 (vim.api.nvim_create_autocmd :LspAttach {:callback on-lsp-attach})
 
 ;; Highlight in bold font
 (local hlgroups [:LspReferenceText :LspReferenceRead :LspReferenceWrite])
 (each [_ hl (ipairs hlgroups)]
-  (vim.api.nvim_set_hl 0 hl {:bold true
-                       :bg "#6272a4"}))
+  (vim.api.nvim_set_hl 0 hl {:bold true :bg "#6272a4"}))
