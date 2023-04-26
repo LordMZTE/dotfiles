@@ -30,12 +30,6 @@ function rbgd
     disown
 end
 
-function foreachdir
-    for file in (find $argv[1] -type f -print)
-        f=$file eval $argv[2..-1]
-    end
-end
-
 function !!
     eval $history[1]
 end
@@ -68,13 +62,3 @@ ifpresent cod 'cod init %self fish | source'
 ifpresent opam 'eval (opam env)'
 ifpresent navi 'navi widget fish | source'
 
-# fw init
-if which fw &>/dev/null
-    if test -x (command -v fw)
-        if test -x (command -v fzf)
-            fw print-fish-setup -f | source
-        else
-            fw print-fish-setup | source
-        end
-    end
-end
