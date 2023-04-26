@@ -4,9 +4,19 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
-for k, v in pairs(require "cg_opts") do
-    cg.opt[k] = v
+-- Recursively merge 2 tables
+local function merge(a, b)
+    for k, v in pairs(b) do
+        if type(v) == "table" and type(a[k]) == "table" then
+            merge(a[k], v)
+        else
+            a[k] = v
+        end
+    end
+    return a
 end
+
+cg.opt = merge(cg.opt, require "cg_opts")
 
 -- This function is called in templates to allow adding device-specific configs.
 cg.opt.getDeviceConf = function(id)
@@ -18,6 +28,12 @@ cg.opt.getDeviceConf = function(id)
     end
 
     return file:read "*a"
+end
+
+local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
+
+if local_opts then
+    cg.opt = merge(cg.opt, local_opts())
 end
 
 -- Get the output of a system command
