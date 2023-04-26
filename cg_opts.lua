@@ -10,7 +10,11 @@ opts.term = {
     icon_name = "org.wezfurlong.wezterm",
 }
 
-opts.cursor_theme = "LyraQ-cursors"
+opts.cursor = {
+    theme = "LyraQ-cursors",
+    size = 24,
+}
+
 opts.icon_theme = "candy-icons"
 
 opts.commands = {
@@ -19,7 +23,6 @@ opts.commands = {
     calculator = "qalculate-gtk",
     file_manager = "thunar",
     file_manager_daemon = "thunar --daemon",
-
     -- zenity-compatible dialoger
     zenity = "yad",
 }

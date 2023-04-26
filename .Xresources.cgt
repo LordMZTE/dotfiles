@@ -1,2 +1,2 @@
-Xcursor.theme: <% opt.cursor_theme %>
-Xcursor.size: 32
+Xcursor.theme: <% opt.cursor.theme %>
+Xcursor.size: <% opt.cursor.size %>

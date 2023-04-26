@@ -161,7 +161,7 @@ riverctl csd-filter-add app-id "gedit"
 riverctl map normal Alt Space spawn 'wofi --show run'
 
 # cursor theme
-riverctl xcursor-theme <% opt.cursor_theme %>
+riverctl xcursor-theme <% opt.cursor.theme %>
 
 # power dialog
 riverctl map normal Super+Shift P spawn gpower2
