@@ -4,6 +4,8 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
+cg.addFile ".Xresources.cgt"
+
 -- Recursively merge 2 tables
 local function merge(a, b)
     for k, v in pairs(b) do
