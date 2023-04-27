@@ -27,7 +27,9 @@
            (kmap :C :CTRL|SHIFT :CopyTo :ClipboardAndPrimarySelection)
            (kmap :V :CTRL|SHIFT :PasteFrom :Clipboard)
            ;; copy mode
-           (kmap :y :LEADER :ActivateCopyMode)])
+           (kmap :y :LEADER :ActivateCopyMode)
+           ;; command palette
+           (kmap :p :LEADER :ActivateCommandPalette)])
 
 (local directions [[:h :Left] [:j :Down] [:k :Up] [:l :Right]])
 
