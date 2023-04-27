@@ -15,7 +15,7 @@ zls-git
 
 install-scripts target=(`echo $HOME` + "/.local"):
     ln -sf \
-        `pwd`/scripts/{map-touch-display,start-joshuto,withjava,startriver,update-nvim-plugins} \
+        `pwd`/scripts/{map-touch-display,playvid,start-joshuto,withjava,startriver,update-nvim-plugins} \
         {{target}}/bin
 
     cd scripts/randomwallpaper && zig build -Doptimize=ReleaseFast -p {{target}}
