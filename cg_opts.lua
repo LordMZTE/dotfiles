@@ -1,5 +1,9 @@
 local opts = {}
 
+-- Enable if you have good internet, used for stuff like making
+-- streamlink use low-latency mode.
+opts.good_internet = true
+
 opts.font = "Iosevka Nerd Font"
 opts.term_font = "Iosevka Term Nerd Font Mono"
 

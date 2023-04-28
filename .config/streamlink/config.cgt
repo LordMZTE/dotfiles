@@ -1,0 +1,6 @@
+default-stream=<! if opt.good_internet then !>best<! else !>720p60<! end !>
+twitch-disable-hosting
+<! if opt.good_internet then !>twitch-low-latency<! end !>
+twitch-disable-ads
+hls-live-edge=1
+player=mpv

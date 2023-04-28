@@ -1,6 +1,13 @@
+<!
+-- Only enable nheko mode if rofi-nheko is installed.
+local have_rofi_nheko = opt.fileExists(
+    _G.os.getenv "HOME"
+    .. "/.local/lib/rofi/librofi_nheko.so"
+)
+!>
 configuration {
     /* requires rofi-emoji */
-	modi: "window,drun,combi,emoji,nheko";
+	modi: "window,drun,combi,emoji<! if have_rofi_nheko then !>,nheko<! end !>";
 	font: "<% opt.font %> 12";
 	show-icons: true;
 	icon-theme: "<% opt.icon_theme %>";

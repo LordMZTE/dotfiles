@@ -67,3 +67,15 @@ cg.opt.fennelCompile = function(fnl)
     f:close()
     return res
 end
+
+-- Check if the given file exists
+cg.opt.fileExists = function(path)
+    local f = io.open(path, "r")
+
+    if f then
+        f:close()
+        return true
+    end
+
+    return false
+end
