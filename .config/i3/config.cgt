@@ -255,7 +255,7 @@ bindsym Ctrl+Shift+F11 exec xdotool click --delay 10 --repeat 100 1
 bindsym Ctrl+Shift+F12 exec xdotool click --delay 10 --repeat 100 3
 
 # capture current screen and open in feh
-bindsym Shift+Print exec flameshot screen --raw | feh --class feh-float -
+bindsym Shift+Print exec shotgun -s - | feh --class feh-float -
 for_window [class="feh-float"] floating enable
 
 # dracula theme
