@@ -48,4 +48,4 @@ setup-nvim-config: install-mzte-nv
 
 confgen:
     rm -rf cgout
-    confgen cgout
+    confgen confgen.lua cgout
