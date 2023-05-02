@@ -4,8 +4,8 @@ local opts = {}
 -- streamlink use low-latency mode.
 opts.good_internet = true
 
-opts.font = "Iosevka Nerd Font"
-opts.term_font = "Iosevka Nerd Font"
+opts.font = "IosevkaNerdFont"
+opts.term_font = "IosevkaTermNerdFontMono"
 
 opts.term = {
     name = "Wezterm",
