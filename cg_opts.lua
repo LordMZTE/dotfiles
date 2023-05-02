@@ -5,7 +5,7 @@ local opts = {}
 opts.good_internet = true
 
 opts.font = "Iosevka Nerd Font"
-opts.term_font = "Iosevka Term Nerd Font Mono"
+opts.term_font = "Iosevka Nerd Font"
 
 opts.term = {
     name = "Wezterm",
