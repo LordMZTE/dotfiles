@@ -20,7 +20,7 @@ pub fn loadFont() !?*c.ImFont {
     log.info("loading fonts", .{});
 
     const fonts = [_][:0]const u8{
-        "/usr/share/fonts/TTF/Iosevka Nerd Font Complete.ttf",
+        "/usr/share/fonts/TTF/IosevkaNerdFont-Regular.ttf",
         "/usr/share/fonts/noto/NotoSans-Regular.ttf",
     };
 
@@ -28,7 +28,7 @@ pub fn loadFont() !?*c.ImFont {
         const found = if (std.fs.accessAbsolute(font, .{})) |_|
             true
         else |e| if (e == error.FileNotFound)
-            true
+            false
         else
             return e;
 
