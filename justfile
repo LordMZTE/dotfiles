@@ -14,9 +14,12 @@ zls-git
 "
 
 install-scripts target=(`echo $HOME` + "/.local"):
-    ln -sf \
-        `pwd`/scripts/{map-touch-display,playvid,start-joshuto,withjava,startriver,update-nvim-plugins} \
-        {{target}}/bin
+    ln -sf `pwd`/scripts/map-touch-display.rkt {{target}}/bin/map-touch-display
+    ln -sf `pwd`/scripts/playvid.rkt {{target}}/bin/playvid
+    ln -sf `pwd`/scripts/start-joshuto.sh {{target}}/bin/start-joshuto
+    ln -sf `pwd`/scripts/startriver.sh {{target}}/bin/startriver
+    ln -sf `pwd`/scripts/update-nvim-plugins.rkt {{target}}/bin/update-nvim-plugins
+    ln -sf `pwd`/scripts/withjava.sh {{target}}/bin/withjava
 
     cd scripts/randomwallpaper && zig build -Doptimize=ReleaseFast -p {{target}}
     cd scripts/vinput && zig build -Doptimize=ReleaseFast -p {{target}}
