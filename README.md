@@ -9,5 +9,5 @@ Here's some useful facts:
 - Config files are generated using confgen, my config file template engine. Options that can be changed are in cg_opts.lua. This makes for a centralized place for common options like fonts. This allows for complete deduplication.
 - The neovim config is written in part Zig (yes, really) and part fennel. Use `just setup-nvim-config` to build and install it.
 - Lua/Fennel files in the nvim config are compiled to lua bytecode.
-- Theres a `justfile` with convenient functions such as installing scripts, building the config and setting up the neovim configuration.
+- Theres a `setup.rkt` racket script with convenient functions such as installing scripts, building the config and setting up the neovim configuration.
 - I have a lot of scripts, written in Zig, Racket and some in shell.
