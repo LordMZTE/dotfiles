@@ -15,7 +15,7 @@
 
 (define (display-function-call func args)
   (when (log-calls)
-    (printf "(~s ~a)\n" func (apply ~a #:separator " " args))))
+    (printf "\x1b[1;30m(~s ~a)\x1b[0m\n" func (apply ~a #:separator " " args))))
 
 ;; Defines an alias to a function which will log it's parameters on invokation.
 (define-syntax-rule (define-logging name func)
