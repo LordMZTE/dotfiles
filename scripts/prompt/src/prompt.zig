@@ -20,7 +20,7 @@ const symbols = struct {
     const unstaged = "";
     const home = "";
     const root = "";
-    const watch = "";
+    const watch = "";
     const jobs = "";
 };
 
