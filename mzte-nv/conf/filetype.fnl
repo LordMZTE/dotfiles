@@ -7,4 +7,6 @@
                                :rktl :racket
                                :rktd :racket
                                ;; nvim doesn't know zon
-                               :zon :zig}})
+                               :zon :zig
+                               ;; Default to Common Lisp instead of just using generic Lisp
+                               :lisp :commonlisp}})

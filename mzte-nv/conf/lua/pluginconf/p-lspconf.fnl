@@ -11,7 +11,7 @@
   `((. lspc ,conf :setup) ,args))
 
 (tset lsp-configs :cl-lsp {:default_config {:cmd [:cl-lsp]
-                                            :filetypes [:lisp]
+                                            :filetypes [:lisp :commonlisp]
                                             :root_dir lspc.util.find_git_ancestor
                                             :single_file_support true}
                            :settings {}})
