@@ -5,7 +5,8 @@
          output-bin-path
          cmd
          rm
-         copy)
+         copy
+         install-zig)
 
 ;; Whether to log calls or not
 (define log-calls (make-parameter #t))
@@ -29,3 +30,8 @@
 (define-logging cmd (λ (exe . args) (apply system* (find-executable-path exe) args)))
 (define-logging rm delete-directory/files)
 (define-logging copy copy-directory/files)
+
+(define-logging install-zig
+                (λ (path)
+                  (parameterize ([current-directory path] [log-calls #f])
+                    (cmd "zig" "build" "-p" (output-bin-path) "-Doptimize=ReleaseFast"))))

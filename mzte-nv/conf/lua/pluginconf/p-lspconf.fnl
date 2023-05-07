@@ -1,4 +1,5 @@
 (local lspc (require :lspconfig))
+(local lsp-configs (require :lspconfig.configs))
 
 (macro setup [conf args]
   (var args args)
@@ -8,6 +9,12 @@
     (tset args :on_attach `check-conjure))
   (tset args :capabilities `caps)
   `((. lspc ,conf :setup) ,args))
+
+(tset lsp-configs :cl-lsp {:default_config {:cmd [:cl-lsp]
+                                            :filetypes [:lisp]
+                                            :root_dir lspc.util.find_git_ancestor
+                                            :single_file_support true}
+                           :settings {}})
 
 (var caps
      ((. (require :cmp_nvim_lsp) :default_capabilities) (vim.lsp.protocol.make_client_capabilities)))
@@ -25,6 +32,7 @@
 (fn disable-formatter [client _]
   (tset client :server_capabilities :documentFormattingRangeProvider false))
 
+(setup :cl-lsp)
 (setup :clangd {:on_attach (fn [c b] (disable-formatter c b)
                              (check-conjure c b))})
 
