@@ -8,4 +8,8 @@
                        :scm {:icon "λ"
                              :color "#3e5ba9"
                              :cterm_color 61
-                             :name :Scheme}}})
+                             :name :Scheme}
+                       :lisp {:icon "λ"
+                              :color "#3fb68b"
+                              :cterm_color 49
+                              :name :CommonLisp}}})
