@@ -5,6 +5,7 @@ cg.addPath ".cargo"
 cg.addPath "etc"
 
 cg.addFile ".Xresources.cgt"
+cg.addFile ".replrc"
 
 -- Recursively merge 2 tables
 local function merge(a, b)
