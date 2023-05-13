@@ -11,7 +11,8 @@
   "Start a SWANK server."
   (ql:quickload :swank)
   ;; Needs to be an eval since swank package isn't loaded at compile-time 
-  (eval "(swank:create-server :dont-close t)"))
+  (let ((port (eval (read-from-string "(swank:create-server :dont-close t)"))))
+    (cl-repl:message-from-magic "Started SWANK server on port ~A" port)))
 
 ;; Remove bullshit commands
 (delete-if
