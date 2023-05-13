@@ -6,10 +6,7 @@
     ;; Symbol highlighting
     (vim.api.nvim_create_autocmd :CursorHold
                                  {:buffer buf
-                                  :callback vim.lsp.buf.document_highlight})
-    (vim.api.nvim_create_autocmd :CursorHoldI
-                                 {:buffer buf
-                                  :callback vim.lsp.buf.document_highlight})
+                                  :callback #(pcall vim.lsp.buf.document_highlight)})
     (vim.api.nvim_create_autocmd :CursorMoved
                                  {:buffer buf
                                   :callback vim.lsp.buf.clear_references})))

@@ -8,13 +8,16 @@
 
 ;; Only enable used clients
 (tset vim :g "conjure#filetypes" [:clojure
+                                  :commonlisp
                                   :fennel
                                   :racket
                                   :scheme
                                   :lua
+                                  :lisp
                                   :python])
+
 (tset vim :g "conjure#filetype#rust" false)
-(tset vim :g "conjure#filetype#lisp" false)
+(tset vim :g "conjure#filetype#commonlisp" "conjure.client.common-lisp.swank")
 
 ;; This has custom handling for compat with LSP
 (tset vim :g "conjure#mapping#doc_word" false)

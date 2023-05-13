@@ -9,4 +9,6 @@
                                ;; nvim doesn't know zon
                                :zon :zig
                                ;; Default to Common Lisp instead of just using generic Lisp
-                               :lisp :commonlisp}})
+                               :lisp :commonlisp
+                               ;; Roswell scripts
+                               :ros :commonlisp}})
