@@ -9,10 +9,11 @@
 (current-print void)
 
 (define file
-  (command-line
-   ;; default to random file
-   #:args ([f (let ([dir (directory-list)]) (path->string (list-ref dir (random (length dir)))))])
-   f))
+  ;; default to random file
+  (command-line #:args ([f
+                         (let ([dir (filter file-exists? (directory-list))])
+                           (path->string (list-ref dir (random (length dir)))))])
+                f))
 
 (printf "playing: ~a\n" file)
 (system* (find-executable-path "mpv") file)
