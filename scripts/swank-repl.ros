@@ -4,9 +4,9 @@
   (ros:ensure-asdf)
   (ql:quickload '(:swank :mondo) :silent t))
 
-(defpackage :swank-repl
+(defpackage :swank-mondo-repl
   (:use :cl))
-(in-package :swank-repl)
+(in-package :swank-mondo-repl)
 
 (defun main (&rest argv)
   (declare (ignorable argv))
