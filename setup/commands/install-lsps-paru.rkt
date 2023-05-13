@@ -23,7 +23,9 @@
     (cmd "opam" "install" "--yes" "ocaml-lsp-server" "ocamlformat"))
 
   ;; Install CommonLisp LSP
-  ;; Also useful for CommonLisp: `ros install koji-kojiro/cl-repl`
+  ;; Also useful for CommonLisp:
+  ;; - `ros install koji-kojiro/cl-repl`
+  ;; - `ros install fukamachi/mondo`
   (when (find-executable-path "ros")
     (cmd "ros" "install" "lem-project/lem" "cxxxr/cl-lsp"))
   null)
