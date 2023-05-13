@@ -1,0 +1,14 @@
+#!/usr/bin/env -S ros -Q --
+#|-*- mode:lisp -*-|#
+(progn
+  (ros:ensure-asdf)
+  (ql:quickload '(:swank :mondo) :silent t))
+
+(defpackage :swank-repl
+  (:use :cl))
+(in-package :swank-repl)
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (let ((port (swank:create-server :dont-close t)))
+    (mondo:main nil :port port)))
