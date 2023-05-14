@@ -5,4 +5,5 @@
                   :cmp.entry.get_documentation])
 
 (noice.setup {:message {:view :mini}
-              :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}})
+              :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}
+              :presets {:lsp_doc_border true}})
