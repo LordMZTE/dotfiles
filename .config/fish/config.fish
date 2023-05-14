@@ -9,8 +9,8 @@ alias lt="ll --tree"
 alias jo="TERM=xterm-256color joshuto"
 alias clip="xclip -sel clip"
 alias nv="nvim"
-#alias nvide="rbg neovide --multigrid --"
-alias nvide="rbg neovide --"
+#alias nvide="rbg neovide --nofork --multigrid --"
+alias nvide="rbg neovide --nofork --"
 
 # colored man pages
 set -gx LESS_TERMCAP_mb \e'[1;32m'
