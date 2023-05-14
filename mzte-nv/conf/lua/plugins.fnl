@@ -52,7 +52,7 @@
   (use :DingDean/wgsl.vim)
   (use :rcarriga/nvim-notify)
   ;; replaced by noice?
-  ;(use {1 :stevearc/dressing.nvim :config #((. (require :dressing) :setup) {})})
+  (use {1 :stevearc/dressing.nvim :config #((. (require :dressing) :setup) {})})
   (use/pconf use :nvim-treesitter/nvim-treesitter-context :ts-context)
   (use :DaeZak/crafttweaker-vim-highlighting)
   (use :mfussenegger/nvim-jdtls)
@@ -62,7 +62,7 @@
   (use/pconf use :mfussenegger/nvim-dap :dap {:requires :rcarriga/nvim-dap-ui})
   (use/pconf use :ThePrimeagen/harpoon :harpoon)
   (use/pconf use :chrisgrieser/nvim-recorder :recorder)
-  ;(use/pconf use :folke/noice.nvim :noice {:requires :MunifTajim/nui.nvim})
+  ;(use/pconf use :folke/noice.nvim :noice {:requires :MunifTanjim/nui.nvim})
   (use :jdonaldson/vaxe)
   (use/pconf use :CKolkey/ts-node-action :tsn-actions
              {:requires :jose-elias-alvarez/null-ls.nvim})
