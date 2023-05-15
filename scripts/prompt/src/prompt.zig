@@ -32,11 +32,12 @@ pub const Options = struct {
 };
 
 pub fn render(writer: anytype, options: Options) !void {
-    try (Renderer(@TypeOf(writer)){
+    var renderer = Renderer(@TypeOf(writer)){
         .last_style = null,
         .writer = writer,
         .options = options,
-    }).render();
+    };
+    try renderer.render();
 }
 
 fn Renderer(comptime Writer: type) type {

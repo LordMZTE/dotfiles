@@ -86,7 +86,7 @@ pub fn winContent(state: *State) !void {
 
             for (preset_qualities) |quality| {
                 if (c.igSelectable_Bool(quality.ptr, false, 0, .{ .x = 0.0, .y = 0.0 })) {
-                    std.mem.set(u8, &state.quality_buf, 0);
+                    @memset(&state.quality_buf, 0);
                     std.mem.copy(u8, &state.quality_buf, quality);
                 }
             }
