@@ -20,6 +20,7 @@
   (mklink "scripts/withjava.sh" (bin-path "withjava"))
 
   ;; Compile Zig scripts
+  (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/openbrowser")
   (install-zig "scripts/playtwitch")

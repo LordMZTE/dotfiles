@@ -6,7 +6,8 @@
          cmd
          rm
          copy
-         install-zig)
+         install-zig
+         install-rust)
 
 ;; Whether to log calls or not
 (define log-calls (make-parameter #t))
@@ -32,6 +33,17 @@
 (define-logging copy copy-directory/files)
 
 (define-logging install-zig
-                (λ (path)
-                  (parameterize ([current-directory path] [log-calls #f])
-                    (cmd "zig" "build" "-p" (output-bin-path) "-Doptimize=ReleaseFast"))))
+  (λ (path)
+    (parameterize ([current-directory path] [log-calls #f])
+      (cmd "zig" "build" "-p" (output-bin-path) "-Doptimize=ReleaseFast"))))
+
+(define-logging install-rust
+  (λ (path)
+    (parameterize ([current-directory path] [log-calls #f])
+      (cmd "cargo"
+           "-Z"
+           "unstable-options"
+           "build"
+           "--release"
+           "--out-dir"
+           (build-path (output-bin-path) "bin")))))
