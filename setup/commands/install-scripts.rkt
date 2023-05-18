@@ -12,7 +12,7 @@
     (build-path (output-bin-path) "bin" bin))
   ;; Symlink interpreted scripts
   (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (mklink "scripts/playvid.rkt" (bin-path "playvid"))
+  (mklink "scripts/playvid.ros" (bin-path "playvid"))
   (mklink "scripts/start-joshuto.sh" (bin-path "start-joshuto"))
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
   (mklink "scripts/swank-repl.ros" (bin-path "swank-repl"))

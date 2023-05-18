@@ -1,0 +1,27 @@
+#!/usr/bin/env -S ros -Q --
+#|-*- mode:lisp -*-|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(uiop trivial-raw-io) :silent t))
+
+(defpackage :playvid
+  (:use :cl))
+(in-package :playvid)
+
+(defun main (&rest argv)
+  (let* ((vidfile (or (car argv)
+                      (let ((dir (uiop:directory-files ".")))
+                        (nth (random (length dir) (make-random-state t)) dir))))
+         (basename (pathname-name vidfile)))
+    (format t "playing video: ~a~%" basename)
+    (uiop:run-program (list "mpv" (file-namestring vidfile))
+                      :input :interactive
+                      :error-output :interactive
+                      :output :interactive)
+    (format t "delete `~a`? [Y/n] " basename)
+    (force-output)
+    (let ((input (char-upcase (trivial-raw-io:read-char))))
+      (format t "~a~%" input)
+      (when (char-equal #\Y input)
+        (format t "deleting file `~a`~%" basename)
+        (delete-file vidfile)))))
