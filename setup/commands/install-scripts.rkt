@@ -12,14 +12,12 @@
     (build-path (output-bin-path) "bin" bin))
   ;; Symlink interpreted scripts
   (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (mklink "scripts/playvid.ros" (bin-path "playvid"))
   (mklink "scripts/start-joshuto.sh" (bin-path "start-joshuto"))
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
-  (mklink "scripts/swank-repl.ros" (bin-path "swank-repl"))
   (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
   (mklink "scripts/withjava.sh" (bin-path "withjava"))
 
-  ;; Compile Zig scripts
+  ;; Compile scripts
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/openbrowser")
@@ -27,4 +25,6 @@
   (install-zig "scripts/prompt")
   (install-zig "scripts/randomwallpaper")
   (install-zig "scripts/vinput")
+
+  (install-roswell "scripts/playvid.ros")
   null)
