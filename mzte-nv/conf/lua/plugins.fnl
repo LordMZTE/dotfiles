@@ -1,5 +1,7 @@
 (vim.cmd "packadd packer.nvim")
 
+(local packer (require :packer))
+
 (macro pconf [plugin]
   `#(require ,(.. :pluginconf.p- plugin)))
 
@@ -72,7 +74,12 @@
   (use {1 :Olical/conjure :setup (pconf :conjure)})
   (cmp-plugins use))
 
-((. (require :packer) :startup) init)
+(packer.startup init)
+
+;; PackerCompile automagically
+(when (= 0 (length (vim.api.nvim_get_runtime_file :plugin/packer_compiled.lua
+                                                  false)))
+  (packer.compile))
 
 ;; actually compile packer-generated config after packer's "compile" step
 (fn compile-packer-generated []
