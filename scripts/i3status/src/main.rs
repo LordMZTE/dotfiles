@@ -9,10 +9,7 @@ use i3status_rs::{
     themes::{
         color::{Color, Rgba},
         separator::Separator,
-        ColorOrLink,
         Theme,
-        ThemeOverrides,
-        ThemeUserConfig,
     },
     widget::{State, Widget},
     BarState,
@@ -42,31 +39,35 @@ async fn try_main() -> anyhow::Result<()> {
     env_logger::try_init()?;
     protocol::init(false);
 
-    fn override_color(r: u8, g: u8, b: u8) -> Option<ColorOrLink> {
-        Some(ColorOrLink::Color(Color::Rgba(Rgba { r, g, b, a: 0xff })))
+    fn color(r: u8, g: u8, b: u8) -> Color {
+        Color::Rgba(Rgba { r, g, b, a: 0xff })
     }
 
-    let icons = Icons::from_file("material-nf")?;
-    let theme = Theme::try_from(ThemeUserConfig {
-        theme: Some("slick".into()),
-        overrides: Some(ThemeOverrides {
-            // dracula theme
-            idle_bg: override_color(0x44, 0x47, 0x5a),
-            idle_fg: override_color(0xf8, 0xf8, 0xf2),
-            info_bg: override_color(0x44, 0x47, 0x5a),
-            info_fg: override_color(0xf8, 0xf8, 0xf2),
-            good_bg: override_color(0x50, 0xfa, 0x7b),
-            good_fg: override_color(0x62, 0x72, 0xa4),
-            warning_bg: override_color(0xff, 0xb8, 0x6c),
-            warning_fg: override_color(0xbd, 0x93, 0xf9),
-            critical_bg: override_color(0xff, 0x55, 0x55),
-            critical_fg: override_color(0xbd, 0x93, 0xf9),
-            separator: Some(Separator::Custom("\u{e0b2}".to_string())),
-            separator_bg: Some(ColorOrLink::Color(Color::Auto)),
-            separator_fg: Some(ColorOrLink::Color(Color::Auto)),
-            ..Default::default()
+    let icons = Icons(toml::from_str(include_str!("../assets/material-nf.toml"))?);
+    let theme = Theme {
+        // dracula theme
+        idle_bg: color(0x44, 0x47, 0x5a),
+        idle_fg: color(0xf8, 0xf8, 0xf2),
+        info_bg: color(0x44, 0x47, 0x5a),
+        info_fg: color(0xf8, 0xf8, 0xf2),
+        good_bg: color(0x50, 0xfa, 0x7b),
+        good_fg: color(0x62, 0x72, 0xa4),
+        warning_bg: color(0xff, 0xb8, 0x6c),
+        warning_fg: color(0xbd, 0x93, 0xf9),
+        critical_bg: color(0xff, 0x55, 0x55),
+        critical_fg: color(0xbd, 0x93, 0xf9),
+        separator: Separator::Custom("\u{e0b2}".to_string()),
+        separator_bg: Color::Auto,
+        separator_fg: Color::Auto,
+        alternating_tint_bg: Color::Rgba(Rgba {
+            r: 0x11,
+            g: 0x11,
+            b: 0x11,
+            a: 0x00,
         }),
-    })?;
+        alternating_tint_fg: Color::Auto,
+        end_separator: Separator::Native,
+    };
 
     let mut bar = BarState::new(i3status_rs::config::Config {
         shared: SharedConfig {
