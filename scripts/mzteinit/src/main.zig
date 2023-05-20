@@ -4,7 +4,50 @@ const env = @import("env.zig");
 const run = @import("run.zig");
 const util = @import("util.zig");
 
-pub fn main() !void {
+pub const std_options = struct {
+    pub const log_level = .debug;
+    pub fn logFn(
+        comptime msg_level: std.log.Level,
+        comptime scope: @TypeOf(.enum_literal),
+        comptime fmt: []const u8,
+        args: anytype,
+    ) void {
+        const logfile = log_file orelse return;
+
+        if (scope != .default) {
+            logfile.writer().print("[{s}] ", .{@tagName(scope)}) catch return;
+        }
+
+        logfile.writer().writeAll(switch (msg_level) {
+            .err => "E: ",
+            .warn => "W: ",
+            .info => "I: ",
+            .debug => "D: ",
+        }) catch return;
+
+        logfile.writer().print(fmt ++ "\n", args) catch return;
+    }
+};
+
+var log_file: ?std.fs.File = null;
+
+pub fn main() void {
+    log_file = createLogFile() catch null;
+    defer if (log_file) |lf| lf.close();
+
+    tryMain() catch |e| {
+        std.log.err("FATAL ERROR: {}", .{e});
+        std.debug.print("Encountered fatal error (check log), starting emergency shell!\n", .{});
+
+        @panic(@errorName(std.os.execveZ(
+            "/bin/sh",
+            &[_:null]?[*:0]const u8{"/bin/sh"},
+            &[_:null]?[*:0]const u8{},
+        )));
+    };
+}
+
+fn tryMain() !void {
     var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
     var exit = false;
 
@@ -28,7 +71,7 @@ pub fn main() !void {
         }
 
         const key = env_var[0..eq_idx];
-        const value = env_var[eq_idx + 1..idx];
+        const value = env_var[eq_idx + 1 .. idx];
 
         try env_map.put(key, value);
     }
@@ -43,7 +86,9 @@ pub fn main() !void {
         try env_map.put("MZTEINIT", "1");
     }
 
-    try env.populateEnvironment(&env_map);
+    if (try env.populateEnvironment(&env_map)) {
+        try env.populateSysdaemonEnvironment(&env_map);
+    }
 
     while (true) {
         try util.writeAnsiClear(stdout.writer());
@@ -119,6 +164,16 @@ fn ui(buf_writer: anytype) !run.Command {
     try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, old_termios);
 
     return cmd.?;
+}
+
+fn createLogFile() !std.fs.File {
+    var fname_buf: [128]u8 = undefined;
+    const fname = try std.fmt.bufPrintZ(
+        &fname_buf,
+        "/tmp/mzteinit-{}-{}.log",
+        .{ std.os.linux.getuid(), std.os.linux.getpid() },
+    );
+    return try std.fs.createFileAbsoluteZ(fname, .{});
 }
 
 fn updateStyle(

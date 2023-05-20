@@ -1,14 +1,20 @@
 const std = @import("std");
+const sysdaemon = @import("sysdaemon.zig");
+
+const log = std.log.scoped(.env);
+
 const DelimitedBuilder = @import("DelimitedBuilder.zig");
 
-pub fn populateEnvironment(env: *std.process.EnvMap) !void {
+/// Initialize the environment.
+/// Returns true if the environment should be transferred to the system daemon.
+pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     if (env.get("MZTE_ENV_SET")) |_| {
-        return;
+        return false;
     }
 
     const alloc = env.hash_map.allocator;
     const home = if (env.get("HOME")) |home| try alloc.dupe(u8, home) else blk: {
-        std.log.warn("Home not set, defaulting to current directory", .{});
+        log.warn("Home not set, defaulting to current directory", .{});
         break :blk try std.fs.realpathAlloc(alloc, ".");
     };
     defer alloc.free(home);
@@ -62,6 +68,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !void {
             defer alloc.free(res.stderr);
 
             try b.push(res.stdout);
+
+            log.info("racket binary path registered", .{});
         }
 
         if (env.get("PATH")) |system_path| {
@@ -88,5 +96,38 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !void {
         try b.pushDirect(";;");
 
         try env.putMove(try alloc.dupe(u8, "LUA_CPATH"), try b.toOwned());
+    }
+
+    return true;
+}
+
+pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
+    if (try sysdaemon.getCurrentSystemDaemon() != .systemd)
+        return;
+
+    var argv = try std.ArrayList([]const u8).initCapacity(env.hash_map.allocator, env.count() + 3);
+    defer argv.deinit();
+
+    var arg_arena = std.heap.ArenaAllocator.init(env.hash_map.allocator);
+    defer arg_arena.deinit();
+
+    try argv.appendSlice(&.{ "systemctl", "--user", "set-environment" });
+
+    var env_iter = env.iterator();
+    while (env_iter.next()) |entry| {
+        try argv.append(try std.fmt.allocPrint(
+            arg_arena.allocator(),
+            "{s}={s}",
+            .{ entry.key_ptr.*, entry.value_ptr.* },
+        ));
+    }
+
+    log.debug("sysdaemon env cmd: {s}", .{argv.items});
+
+    var child = std.ChildProcess.init(argv.items, env.hash_map.allocator);
+    const term = try child.spawnAndWait();
+
+    if (!std.meta.eql(term, .{ .Exited = 0 })) {
+        log.warn("Failed setting system environment, process exited with {}", .{term});
     }
 }
