@@ -3,7 +3,7 @@
 (local (wo g opt) (values vim.wo vim.g vim.opt))
 
 ;; Shell
-(set opt.shell "fish")
+(set opt.shell :fish)
 
 (cmd "syntax on")
 
@@ -28,6 +28,9 @@
 (set opt.termguicolors true)
 (set opt.cursorline true)
 (set opt.cursorcolumn true)
+
+;; Colorcolumn
+(set opt.colorcolumn :100)
 
 ;; Folds
 (set opt.conceallevel 2)
