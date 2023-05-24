@@ -4,5 +4,4 @@
 (require :plugins)
 (require :maps)
 (require :lsp)
-(require :neovide)
 (require :pipe)

@@ -59,6 +59,10 @@ pub fn initOptions() !void {
         const opt = try std.fmt.bufPrintZ(&buf, "g:loaded_{s}_provider", .{garbage});
         setVar(opt, .{ .bool = false });
     }
+
+    // Neovide
+    setVar("g:neovide_transparency", .{ .float = 0.9 });
+    setVar("g:neovide_cursor_vfx_mode", .{ .string = @constCast("wireframe") });
 }
 
 fn setOption(key: [*:0]const u8, value: anytype) !void {
