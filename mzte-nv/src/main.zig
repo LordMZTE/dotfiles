@@ -70,6 +70,8 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
 }
 
 fn lOnInit(l: *c.lua_State) !c_int {
+    try @import("options.zig").initOptions();
+
     c.lua_getglobal(l, "vim"); // 1
     c.lua_getfield(l, 1, "version");
     c.lua_call(l, 0, 1); // 2
