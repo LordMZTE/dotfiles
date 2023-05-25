@@ -27,20 +27,20 @@
   (current-directory script-dir))
 
 ;; Verify valid verb
-(when (not (for/or ([valid-verb verbs])
-             (symbol=? valid-verb verb)))
-  (error "Invalid verb" verb))
+(unless (for/or ([valid-verb verbs])
+          (symbol=? valid-verb verb))
+  (raise-user-error "Invalid verb" verb))
 
-(case verb
-  [(install-scripts)
+(match verb
+  ['install-scripts
    (local-require "setup/commands/install-scripts.rkt")
    (run)]
-  [(install-lsps-paru)
+  ['install-lsps-paru
    (local-require "setup/commands/install-lsps-paru.rkt")
    (run)]
-  [(setup-nvim-config)
+  ['setup-nvim-config
    (local-require "setup/commands/setup-nvim-config.rkt")
    (run)]
-  [(confgen)
+  ['confgen
    (local-require "setup/commands/confgen.rkt")
    (run)])
