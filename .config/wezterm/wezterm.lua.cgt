@@ -29,7 +29,9 @@
            ;; copy mode
            (kmap :y :LEADER :ActivateCopyMode)
            ;; command palette
-           (kmap :p :LEADER :ActivateCommandPalette)])
+           (kmap :p :LEADER :ActivateCommandPalette)
+           ;; search mode
+           (kmap :t :LEADER :Search :CurrentSelectionOrEmptyString)])
 
 (local directions [[:h :Left] [:j :Down] [:k :Up] [:l :Right]])
 
