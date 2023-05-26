@@ -34,26 +34,26 @@
 (define-logging copy copy-directory/files)
 
 (define-logging install-zig
-                (λ (path)
-                  (parameterize ([current-directory path] [log-calls #f])
-                    (cmd "zig" "build" "-p" (output-bin-path) "-Doptimize=ReleaseFast"))))
+  (λ (path [mode "ReleaseFast"])
+    (parameterize ([current-directory path] [log-calls #f])
+      (cmd "zig" "build" "-p" (output-bin-path) (string-append "-Doptimize=" mode)))))
 
 (define-logging install-rust
-                (λ (path)
-                  (parameterize ([current-directory path] [log-calls #f])
-                    (cmd "cargo"
-                         "-Z"
-                         "unstable-options"
-                         "build"
-                         "--release"
-                         "--out-dir"
-                         (build-path (output-bin-path) "bin")))))
+  (λ (path)
+    (parameterize ([current-directory path] [log-calls #f])
+      (cmd "cargo"
+           "-Z"
+           "unstable-options"
+           "build"
+           "--release"
+           "--out-dir"
+           (build-path (output-bin-path) "bin")))))
 
 (define-logging
- install-roswell
- (λ (path)
-   (parameterize ([log-calls #f])
-     (match-let*-values ([(_ filename _) (split-path path)]
-                         [(outpath)
-                          (build-path (output-bin-path) "bin" (path-replace-extension filename ""))])
-       (cmd "ros" "dump" "executable" path "-o" outpath)))))
+  install-roswell
+  (λ (path)
+    (parameterize ([log-calls #f])
+      (match-let*-values ([(_ filename _) (split-path path)]
+                          [(outpath)
+                           (build-path (output-bin-path) "bin" (path-replace-extension filename ""))])
+                         (cmd "ros" "dump" "executable" path "-o" outpath)))))

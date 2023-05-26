@@ -24,7 +24,10 @@ pub fn build(b: *std.build.Builder) !void {
     lib.linkLibC();
     lib.linkSystemLibrary("luajit");
 
-    lib.strip = mode != .Debug;
+    lib.strip = switch (mode) {
+        .Debug, .ReleaseSafe => false,
+        .ReleaseFast, .ReleaseSmall => true,
+    };
     lib.unwind_tables = true;
 
     b.getInstallStep().dependOn(&b.addInstallFile(lib.getOutputSource(), "share/nvim/mzte-nv.so").step);

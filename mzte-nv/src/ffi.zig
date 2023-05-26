@@ -11,13 +11,20 @@ pub fn luaFunc(comptime func: fn (*c.lua_State) anyerror!c_int) c.lua_CFunction 
     return &struct {
         fn f(l: ?*c.lua_State) callconv(.C) c_int {
             return func(l.?) catch |e| {
-                var buf: [128]u8 = undefined;
-                const err_s = std.fmt.bufPrintZ(
-                    &buf,
-                    "Zig Error: {s}",
-                    .{@errorName(e)},
-                ) catch unreachable;
-                c.lua_pushstring(l, err_s.ptr);
+                var buf: [1024 * 4]u8 = undefined;
+                var fbs = std.io.fixedBufferStream(&buf);
+                fbs.writer().print("Zig Error: {s}\n", .{@errorName(e)}) catch @panic("OOM");
+                if (@errorReturnTrace()) |ert| {
+                    std.debug.writeStackTrace(
+                        ert.*,
+                        fbs.writer(),
+                        std.heap.c_allocator,
+                        std.debug.getSelfDebugInfo() catch @panic("WTF"),
+                        .no_color,
+                    ) catch @panic("OOM");
+                }
+
+                luaPushString(l, fbs.getWritten());
                 _ = c.lua_error(l);
                 unreachable;
             };
