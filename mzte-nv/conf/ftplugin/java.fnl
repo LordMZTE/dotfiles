@@ -17,6 +17,14 @@
   (jdtls-setup.add_commands)
   (jdtls.setup_dap {:hotcodereplace :auto}))
 
+;; Deshittify pick UI
+(tset (require :jdtls.ui) :pick_one
+      (fn [items prompt label-fn]
+        (let [co (coroutine.running)]
+          ((. (require :jdtls.ui) :pick_one_async) items prompt label-fn
+                                                   #(coroutine.resume co $1))
+          (coroutine.yield))))
+
 (let [opts {:cmd [:jdtls :-configuration dirs.config :-data dirs.workspace]
             :capabilities caps
             :root_dir (jdtls-setup.find_root [:.git
