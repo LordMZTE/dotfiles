@@ -44,7 +44,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
     var idx: c_int = 1;
     var iter = jvmdir.iterate();
     while (try iter.next()) |jvm| {
-        if (jvm.kind != .Directory or !std.mem.startsWith(u8, jvm.name, "java-"))
+        if (jvm.kind != .directory or !std.mem.startsWith(u8, jvm.name, "java-"))
             continue;
 
         for (runtime_map) |rt| {
@@ -107,7 +107,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     var iter = dir.iterate();
     var idx: c_int = 1;
     while (try iter.next()) |f| {
-        if (f.kind != .File or !std.mem.endsWith(u8, f.name, ".jar"))
+        if (f.kind != .file or !std.mem.endsWith(u8, f.name, ".jar"))
             continue;
 
         if (!has_fernflower and std.mem.containsAtLeast(u8, f.name, 1, "fernflower"))

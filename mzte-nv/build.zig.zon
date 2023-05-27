@@ -4,7 +4,7 @@
 
     .dependencies = .{
         .znvim = .{
-            .url = "https://github.com/LordMZTE/znvim/archive/0a55798f24e084faef68e93f180683157a417639.tar.gz",
+            .url = "https://mzte.de/git/LordMZTE/znvim/archive/0a55798f24e084faef68e93f180683157a417639.tar.gz",
             .hash = "1220489beca4ac48804ddfbe85b158a49ee2ceb4bbd98fc03e76f18ec01517f5521a",
         },
     },

@@ -22,16 +22,16 @@ pub fn walk(self: *Self, dir: std.fs.IterableDir) anyerror!void {
     var iter = dir.iterate();
     while (try iter.next()) |e| {
         switch (e.kind) {
-            .File => {
+            .file => {
                 const path = try dir.dir.realpathAlloc(self.filename_arena.allocator(), e.name);
                 try self.files.append(path);
             },
-            .Directory => {
+            .directory => {
                 var subdir = try dir.dir.openIterableDir(e.name, .{});
                 defer subdir.close();
                 try self.walk(subdir);
             },
-            .SymLink => {
+            .sym_link => {
                 const p = try dir.dir.readLink(e.name, &self.buf);
                 var subdir = dir.dir.openIterableDir(p, .{}) catch |err| {
                     switch (err) {

@@ -75,7 +75,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     var files = std.ArrayList([]const u8).init(alloc);
     defer files.deinit();
 
-    if ((try std.fs.cwd().statFile(path)).kind == .Directory) {
+    if ((try std.fs.cwd().statFile(path)).kind == .directory) {
         var dir = try std.fs.cwd().openIterableDir(path, .{});
         defer dir.close();
 
@@ -86,7 +86,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             const entry_path = try std.fs.path.join(build_alloc, &.{ path, entry.path });
 
             switch (entry.kind) {
-                .File => {
+                .file => {
                     if (std.mem.endsWith(u8, entry.path, ".lua") or
                         std.mem.endsWith(u8, entry.path, ".fnl"))
                     {
