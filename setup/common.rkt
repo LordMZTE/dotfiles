@@ -29,7 +29,10 @@
     (display-function-call (quote name) args)
     (apply func args)))
 
-(define-logging cmd (λ (exe . args) (apply system* (find-executable-path exe) args)))
+(define-logging cmd
+  (λ (exe . args)
+    (unless (apply system* (find-executable-path exe) args)
+      (raise-user-error "Command Failed"))))
 (define-logging rm delete-directory/files)
 (define-logging copy copy-directory/files)
 
