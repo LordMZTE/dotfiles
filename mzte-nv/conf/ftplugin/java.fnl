@@ -9,12 +9,13 @@
 
 (local (bundle-info dirs) (values (mztenv.getBundleInfo) (mztenv.getDirs)))
 
-(fn on-attach [client _]
+(fn on-attach [client bufnr]
   ;; formatting is handled by clang-format
   (set client.server_capabilities.documentFormattingProvider false)
   ;; java lsp has shit highlights
   (set client.server_capabilities.semanticTokensProvider false)
   (jdtls-setup.add_commands)
+  (vim.keymap.set :n :FI jdtls.organize_imports {:buffer bufnr})
   (jdtls.setup_dap {:hotcodereplace :auto}))
 
 ;; Deshittify pick UI
