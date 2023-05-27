@@ -42,3 +42,12 @@ fn lFindInPath(l: *c.lua_State) !c_int {
     c.lua_pushnil(l);
     return 1;
 }
+
+/// Starts if arg 1 starts with arg 2
+fn lStartsWith(l: *c.lua_State) !c_int {
+    const haystack = ffi.luaCheckstring(l, 1);
+    const needle = ffi.luaCheckstring(l, 1);
+
+    c.lua_pushbool(std.mem.startsWith(u8, haystack, needle));
+    return 1;
+}

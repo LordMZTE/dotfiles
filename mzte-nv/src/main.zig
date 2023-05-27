@@ -39,10 +39,12 @@ pub const std_options = struct {
             .err => nvim.LOGLVL_ERR,
         };
 
-        var dict = znvim.Dictionary{.alloc = std.heap.c_allocator};
+        var dict = znvim.Dictionary{ .alloc = std.heap.c_allocator };
         defer dict.deinit();
 
         dict.push(@constCast("title"), znvim.nvimObject(@as([]u8, title))) catch return;
+        // noice notficitaions recognize this and show in the mini view instead of notifs
+        dict.push(@constCast("mzte_nv_mini"), comptime znvim.nvimObject(true)) catch return;
 
         var e = znvim.Error{};
         _ = nvim.nvim_notify(
@@ -70,29 +72,12 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
 }
 
 fn lOnInit(l: *c.lua_State) !c_int {
+    _ = l;
     try @import("options.zig").initOptions();
 
-    c.lua_getglobal(l, "vim"); // 1
-    c.lua_getfield(l, 1, "version");
-    c.lua_call(l, 0, 1); // 2
-
-    c.lua_getfield(l, 2, "major");
-    const major = c.lua_tointeger(l, -1);
-
-    c.lua_getfield(l, 2, "minor");
-    const minor = c.lua_tointeger(l, -1);
-
-    c.lua_getfield(l, 2, "patch");
-    const patch = c.lua_tointeger(l, -1);
-
-    c.lua_getfield(l, 2, "prerelease");
-    const prerelease = if (c.lua_toboolean(l, -1) != 0) " (prerelease)" else "";
-
-    c.lua_settop(l, 1);
-
     std.log.info(
-        "MZTE-NV v{s} Initialized on NVIM v{}.{}.{}{s}",
-        .{ version, major, minor, patch, prerelease },
+        "MZTE-NV v{s} Initialized on NVIM v{s}",
+        .{ version, nvim.longVersion },
     );
     return 0;
 }

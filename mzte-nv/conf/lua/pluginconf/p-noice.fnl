@@ -1,15 +1,19 @@
-(local noice (require :noice))
+(local (mztenv noice) (values (require :mzte_nv) (require :noice)))
 
 (local overrides [:vim.lsp.util.convert_input_to_markdown_lines
                   :vim.lsp.util.stylize_markdown
                   :cmp.entry.get_documentation])
 
+(fn show-mini? [notif]
+  (and notif.opts (or ;; DAP notifs
+                      (= notif.opts.title :DAP)
+                      ;; MZTE-NV notifications
+                      notif.opts.mzte_nv_mini)))
+
 (noice.setup {:messages {:view :mini}
               :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}
               :routes [;; Redirect DAP messages to mini view
-                       {:filter {:event :notify
-                                 :cond #(and $1.opts (= $.opts.title :DAP))}
-                        :view :mini}]
+                       {:filter {:event :notify :cond show-mini?} :view :mini}]
               :presets {:lsp_doc_border true}})
 
 ;; Shift-Enter to redirect cmdline
