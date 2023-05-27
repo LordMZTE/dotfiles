@@ -5,10 +5,8 @@
                   :cmp.entry.get_documentation])
 
 (fn show-mini? [notif]
-  (and notif.opts (or ;; DAP notifs
-                      (= notif.opts.title :DAP)
-                      ;; MZTE-NV notifications
-                      notif.opts.mzte_nv_mini)))
+  (or ;; INFO level
+      (= notif.level :info) (and notif.opts notif.opts.mzte_nv_mini)))
 
 (noice.setup {:messages {:view :mini}
               :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}
