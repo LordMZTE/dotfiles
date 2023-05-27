@@ -10,6 +10,7 @@ pub const version = "1.2.0";
 const modules = struct {
     const cmp = @import("modules/cmp.zig");
     const compile = @import("modules/compile.zig");
+    const cpbuf = @import("modules/cpbuf.zig");
     const jdtls = @import("modules/jdtls.zig");
     const tsn_actions = @import("modules/tsn_actions.zig");
     const utils = @import("modules/utils.zig");
@@ -64,6 +65,7 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
         .onInit = ffi.luaFunc(lOnInit),
         .cmp = modules.cmp,
         .compile = modules.compile,
+        .cpbuf = modules.cpbuf,
         .jdtls = modules.jdtls,
         .tsn_actions = modules.tsn_actions,
         .utils = modules.utils,
