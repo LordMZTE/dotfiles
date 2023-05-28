@@ -8,6 +8,8 @@ const DelimitedBuilder = @import("DelimitedBuilder.zig");
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
 pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
+    var buf: [512]u8 = undefined;
+
     if (env.get("MZTE_ENV_SET")) |_| {
         return false;
     }
@@ -20,6 +22,16 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     defer alloc.free(home);
 
     try env.put("MZTE_ENV_SET", "1");
+
+    // XDG vars
+    inline for (.{
+        .{ "XDG_DATA_HOME", ".local/share" },
+        .{ "XDG_CONFIG_HOME", ".config" },
+        .{ "XDG_STATE_HOME", ".local/state" },
+        .{ "XDG_CACHE_HOME", ".local/cache" },
+    }) |kv| {
+        try env.put(kv.@"0", try std.fmt.bufPrint(&buf, "{s}/{s}", .{ home, kv.@"1" }));
+    }
 
     // set shell to fish to prevent anything from defaulting to mzteinit
     try env.put("SHELL", "/usr/bin/fish");
@@ -38,8 +50,6 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     {
         var b = DelimitedBuilder.init(alloc, ':');
         errdefer b.deinit();
-
-        var buf: [512]u8 = undefined;
 
         const fixed_home = [_][]const u8{
             ".mix/escripts",
@@ -83,8 +93,6 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     {
         var b = DelimitedBuilder.init(alloc, ';');
         errdefer b.deinit();
-
-        var buf: [512]u8 = undefined;
 
         const fixed_home = [_][]const u8{
             ".local/lib/lua/?.so",
