@@ -112,7 +112,7 @@ async fn try_main() -> anyhow::Result<()> {
 
     spawn!(music {
         interface_name_exclude: vec![".*kdeconnect.*".to_string(), "mpd".to_string()],
-        format: " $icon {$combo.str(max_w:20, rot_interval:0.1)|} $prev| $play| $next|".parse()?,
+        format: " $icon {$combo.str(max_w:20, rot_interval:0.1) $prev $play $next|}".parse()?,
         ..Default::default()
     });
 
