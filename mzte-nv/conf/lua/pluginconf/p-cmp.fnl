@@ -15,6 +15,10 @@
                       :<C-Space> (cmp.mapping (cmp.mapping.complete) [:i :c])
                       :<Tab> (cmp.mapping mztenv.cmp.onTab [:i :s])
                       :<S-Tab> (cmp.mapping (cmp.mapping.select_prev_item))
+                      :<C-Tab> (cmp.mapping #(if (luasnip.expand_or_jumpable)
+                                                 (luasnip.expand_or_jump)
+                                                 ($1))
+                                            [:i :s])
                       :<CR> (cmp.mapping.confirm {:select true})}
             :sources (cmp.config.sources (icollect [n _ (pairs sources)]
                                            {:name n}))
