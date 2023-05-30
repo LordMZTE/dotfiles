@@ -17,9 +17,6 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     const newbuf = nvim.buflist_new(null, null, 0, nvim.BLN_LISTED | nvim.BLN_NEW) orelse
         return error.Buffer;
 
-    // close in case of error
-    errdefer _ = nvim.close_buffer(null, newbuf, 0, false, false);
-
     // create memline
     if (nvim.ml_open(newbuf) == nvim.FAIL)
         return error.Buffer;
@@ -44,6 +41,10 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     ) == nvim.FAIL)
         return error.Buffer;
 
+   // store previous window layout
+    const cursor_pos = nvim.curwin.*.w_cursor;
+    const topline = nvim.curwin.*.w_topline;
+
     // activate buffer
     if (nvim.do_buffer(
         nvim.DOBUF_GOTO,
@@ -54,6 +55,10 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     ) == nvim.FAIL)
         return error.Buffer;
 
+    // set old window layout
+    nvim.curwin.*.w_cursor = cursor_pos;
+    nvim.curwin.*.w_topline = topline;
+
     // set new filetype
     if (nvim.set_option_value("filetype", 0, ft_stringval, nvim.OPT_LOCAL)) |_|
         return error.Buffer;
@@ -61,7 +66,6 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     // apply autocmds
     _ = nvim.apply_autocmds(nvim.EVENT_BUFREADPOST, @constCast("cpbuf"), null, false, nvim.curbuf);
     _ = nvim.apply_autocmds(nvim.EVENT_BUFWINENTER, @constCast("cpbuf"), null, false, nvim.curbuf);
-
 
     // ensure redraw
     nvim.redraw_curbuf_later(nvim.UPD_NOT_VALID);
