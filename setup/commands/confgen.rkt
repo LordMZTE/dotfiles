@@ -5,4 +5,5 @@
 (define (run)
   (rm "cgout")
   (cmd "confgen" "confgen.lua" "cgout")
+  (generate-cgopt-json)
   null)

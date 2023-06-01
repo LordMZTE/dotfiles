@@ -6,6 +6,7 @@
          cmd
          rm
          copy
+         generate-cgopt-json
          install-zig
          install-rust
          install-roswell)
@@ -19,9 +20,9 @@
 (define (display-function-call func args)
   (when (log-calls)
     (fprintf (current-error-port)
-             "\x1b[1;30m(\x1b[1;32m~s \x1b[1;33m~a\x1b[1;30m)\x1b[0m\n"
+             "\x1b[1;30m(\x1b[1;32m~s\x1b[1;33m~a\x1b[1;30m)\x1b[0m\n"
              func
-             (apply ~a #:separator " " args))))
+             (string-append (if (null? args) "" " ") (apply ~a #:separator " " args)))))
 
 ;; Defines an alias to a function which will log it's parameters on invokation.
 (define-syntax-rule (define-logging name func)
@@ -51,6 +52,17 @@
            "--release"
            "--out-dir"
            (build-path (output-bin-path) "bin")))))
+
+(define-logging generate-cgopt-json
+  (λ ()
+    (unless (directory-exists? "cgout")
+      (make-directory "cgout"))
+    (call-with-output-file*
+     #:exists 'truncate/replace
+     "cgout/opts.json"
+     (λ (outfile)
+       (parameterize ([log-calls #f] [current-output-port outfile])
+         (cmd "confgen" "--json-opt" "confgen.lua"))))))
 
 (define-logging
   install-roswell

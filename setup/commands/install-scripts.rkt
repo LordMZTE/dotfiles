@@ -10,6 +10,9 @@
 (define (run)
   (define (bin-path bin)
     (build-path (output-bin-path) "bin" bin))
+
+  (generate-cgopt-json)
+
   ;; Symlink interpreted scripts
   (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
   (mklink "scripts/start-joshuto.sh" (bin-path "start-joshuto"))

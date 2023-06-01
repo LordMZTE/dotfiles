@@ -21,7 +21,7 @@ pub fn build(b: *std.build.Builder) !void {
 
     const cg_opt = try common.confgenGet(struct {
         term_font: []const u8,
-    }, "../confgen.lua", b.allocator);
+    }, "../cgout/opts.json", b.allocator);
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "font", cg_opt.term_font);
