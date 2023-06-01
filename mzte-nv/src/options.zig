@@ -2,10 +2,14 @@ const std = @import("std");
 const znvim = @import("znvim");
 const nvim = @import("nvim");
 
+const opts = @import("opts");
+
 const log = std.log.scoped(.options);
 
 /// Initializes neovim options.
 pub fn initOptions() !void {
+    var buf: [512]u8 = undefined;
+
     // Shell (defaults to mzteinit since that's my login shell)
     try setOption("shell", "fish");
 
@@ -27,7 +31,7 @@ pub fn initOptions() !void {
     try setOption("colorcolumn", "100");
     try setOption("cursorcolumn", true);
     try setOption("cursorline", true);
-    try setOption("guifont", "Iosevka Nerd Font Mono:h10");
+    try setOption("guifont", try std.fmt.bufPrintZ(&buf, "{s}:h10", .{opts.font}));
     try setOption("mouse", "a");
     try setOption("number", true);
     try setOption("relativenumber", true);
@@ -55,7 +59,6 @@ pub fn initOptions() !void {
         "perl",
         "node",
     }) |garbage| {
-        var buf: [64]u8 = undefined;
         const opt = try std.fmt.bufPrintZ(&buf, "g:loaded_{s}_provider", .{garbage});
         setVar(opt, .{ .bool = false });
     }

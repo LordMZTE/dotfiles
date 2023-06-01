@@ -1,4 +1,5 @@
 const std = @import("std");
+const common = @import("build_common.zig");
 
 pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});
@@ -17,6 +18,14 @@ pub fn build(b: *std.build.Builder) !void {
     });
 
     const znvim_dep = b.dependency("znvim", .{ .target = target, .optimize = mode });
+
+    const cg_opt = try common.confgenGet(struct {
+        term_font: []const u8,
+    }, "../confgen.lua", b.allocator);
+
+    const opts = b.addOptions();
+    opts.addOption([]const u8, "font", cg_opt.term_font);
+    lib.addOptions("opts", opts);
 
     lib.addModule("nvim", znvim_dep.module("nvim_c"));
     lib.addModule("znvim", znvim_dep.module("znvim"));
