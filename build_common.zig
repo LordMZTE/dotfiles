@@ -3,9 +3,12 @@ const std = @import("std");
 
 pub const confgen_json_opt = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
-/// Retrieve some confgen options given a path to the opts.json file and a struct type
+/// Retrieve some confgen options given a relative path to the dotfile root and a struct type
 /// with a field for each option.
-pub fn confgenGet(comptime T: type, optsjson: []const u8, alloc: std.mem.Allocator) !T {
+pub fn confgenGet(comptime T: type, root_path: []const u8, alloc: std.mem.Allocator) !T {
+    const optsjson = try std.fs.path.join(alloc, &.{ root_path, "cgout", "opts.json" });
+    defer alloc.free(optsjson);
+
     var file = try std.fs.cwd().openFile(optsjson, .{});
     defer file.close();
     var buf_reader = std.io.bufferedReader(file.reader());
@@ -15,5 +18,4 @@ pub fn confgenGet(comptime T: type, optsjson: []const u8, alloc: std.mem.Allocat
     defer reader.deinit();
 
     return try std.json.parseFromTokenSource(T, alloc, &reader, confgen_json_opt);
-    //return try std.json.parseFromSlice(T, alloc, out.stdout, confgen_json_opt);
 }
