@@ -55,10 +55,11 @@ pub fn main() !void {
     //};
 
     const editor_argv = [_][]const u8{
-        "alacritty",
+        "wezterm",
+        "start",
         "--class",
         "vinput-editor",
-        "-e",
+        "--",
         "nvim",
         "--cmd",
         "let g:started_by_vinput=v:true",
