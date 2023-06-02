@@ -221,8 +221,10 @@ exec picom -f -i 1 -c
 # conky
 exec conky
 
-# wired notification daemon
-exec wired
+<! if opt.commands.notification_daemon then !>
+# notification daemon
+exec <% opt.commands.notification_daemon %>
+<! end !>
 
 <! if opt.commands.file_manager_daemon then !>
 # start file manager daemon

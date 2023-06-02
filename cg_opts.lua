@@ -29,6 +29,7 @@ opts.commands = {
     file_manager_daemon = "thunar --daemon",
     -- zenity-compatible dialoger
     zenity = "yad",
+    notification_daemon = "wired",
 }
 
 return opts
