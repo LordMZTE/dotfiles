@@ -49,7 +49,6 @@ pub fn main() void {
 
 fn tryMain() !void {
     var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
-    var exit = false;
 
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -101,16 +100,21 @@ fn tryMain() !void {
         try util.writeAnsiClear(stdout.writer());
         try stdout.flush();
 
+        var exit = util.ExitMode.run;
         cmd.run(alloc, &exit, &env_map) catch |e| {
             try stdout.writer().print("Error running command: {}\n\n", .{e});
             continue;
         };
 
-        if (exit) {
-            try stdout.writer().writeAll("Goodbye!");
-            try stdout.flush();
-            std.time.sleep(2 * std.time.ns_per_s);
-            return;
+        switch (exit) {
+            .run => {},
+            .immediate => return,
+            .delayed => {
+                try stdout.writer().writeAll("Goodbye!");
+                try stdout.flush();
+                std.time.sleep(2 * std.time.ns_per_s);
+                return;
+            },
         }
     }
 }

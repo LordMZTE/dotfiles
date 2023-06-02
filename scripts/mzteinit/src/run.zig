@@ -1,4 +1,5 @@
 const std = @import("std");
+const log = std.log.scoped(.run);
 
 pub const Command = enum {
     startx,
@@ -34,15 +35,21 @@ pub const Command = enum {
     pub fn run(
         self: Command,
         alloc: std.mem.Allocator,
-        exit: *bool,
+        exit: *@import("util.zig").ExitMode,
         env: *const std.process.EnvMap,
     ) !void {
-        if (self == .logout) {
-            exit.* = true;
-            return;
+        switch (self) {
+            .logout => {
+                exit.* = .delayed;
+                log.info("user logged out", .{});
+                return;
+            },
+            .shutdown, .reboot => exit.* = .immediate,
+            else => {},
         }
 
         const arg = self.argv();
+        log.info("run cmd: {s}", .{arg});
         var child = std.ChildProcess.init(arg, alloc);
         child.env_map = env;
         _ = try child.spawnAndWait();
