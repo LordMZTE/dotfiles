@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use unicode_segmentation::UnicodeSegmentation;
 
 use i3status_rs::{
     blocks,
@@ -19,7 +20,7 @@ use i3status_rs::{
 async fn main() {
     if let Err(e) = try_main().await {
         let err_widget = Widget::new()
-            .with_text(e.to_string().chars().collect_pango_escaped())
+            .with_text(e.to_string().graphemes(true).collect_pango_escaped())
             .with_state(State::Critical);
 
         serde_json::to_writer(
