@@ -3,7 +3,7 @@ const sysdaemon = @import("sysdaemon.zig");
 
 const log = std.log.scoped(.env);
 
-const delimitedWriter = @import("delimeted_writer.zig").delimitedWriter;
+const delimitedWriter = @import("delimited_writer.zig").delimitedWriter;
 
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
@@ -65,6 +65,47 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
         try env.put("_JAVA_OPTIONS", bufstream.getWritten());
     }
+
+    // GUI options
+    {
+        try env.put("QT_QPA_PLATFORMTHEME", "gtk2");
+        try env.put("GTK_THEME", "Dracula");
+
+        // icon path
+        icons: {
+            const path = "/usr/share/icons/Dracula/scalable";
+            var dir = std.fs.openIterableDirAbsolute(path, .{}) catch {
+                log.warn(
+                    "Couldn't open dracula icons directory @ `{s}`, not setting ICONPATH",
+                    .{path},
+                );
+                break :icons;
+            };
+            defer dir.close();
+
+            var bufstream = std.io.fixedBufferStream(&buf);
+            var b = delimitedWriter(bufstream.writer(), ':');
+
+            var iter = dir.iterate();
+            while (try iter.next()) |entry| {
+                if (entry.kind != .directory)
+                    continue;
+
+                const dpath = try std.fs.path.join(alloc, &.{ path, entry.name });
+                defer alloc.free(dpath);
+
+                try b.push(dpath);
+            }
+
+            try env.put("ICONPATH", bufstream.getWritten());
+        }
+    }
+
+    // Rofi path
+    try env.put(
+        "ROFI_PLUGIN_PATH",
+        try std.fmt.bufPrint(&sbuf, "/usr/lib/rofi:{s}/.local/lib/rofi", .{home}),
+    );
 
     // PATH
     {
