@@ -3,12 +3,16 @@ const sysdaemon = @import("sysdaemon.zig");
 
 const log = std.log.scoped(.env);
 
-const DelimitedBuilder = @import("DelimitedBuilder.zig");
+const delimitedWriter = @import("delimeted_writer.zig").delimitedWriter;
 
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
 pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
-    var buf: [512]u8 = undefined;
+    // buffer for building values for env vars
+    var buf: [1024 * 8]u8 = undefined;
+
+    // buffer for small one-off operations while `buf` is in use
+    var sbuf: [512]u8 = undefined;
 
     if (env.get("MZTE_ENV_SET")) |_| {
         return false;
@@ -30,7 +34,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         .{ "XDG_STATE_HOME", ".local/state" },
         .{ "XDG_CACHE_HOME", ".local/cache" },
     }) |kv| {
-        try env.put(kv.@"0", try std.fmt.bufPrint(&buf, "{s}/{s}", .{ home, kv.@"1" }));
+        try env.put(kv.@"0", try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, kv.@"1" }));
     }
 
     // set shell to fish to prevent anything from defaulting to mzteinit
@@ -46,10 +50,26 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // neovim
     try env.put("EDITOR", "nvim");
 
+    // Java options
+    {
+        var bufstream = std.io.fixedBufferStream(&buf);
+        var b = delimitedWriter(bufstream.writer(), ' ');
+
+        // anti-alias text
+        try b.push("-Dawt.useSystemAAFontSettings=on");
+        try b.push("-Dswing.aatext=true");
+
+        // GTK theme
+        try b.push("-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        try b.push("-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+
+        try env.put("_JAVA_OPTIONS", bufstream.getWritten());
+    }
+
     // PATH
     {
-        var b = DelimitedBuilder.init(alloc, ':');
-        errdefer b.deinit();
+        var bufstream = std.io.fixedBufferStream(&buf);
+        var b = delimitedWriter(bufstream.writer(), ':');
 
         const fixed_home = [_][]const u8{
             ".mix/escripts",
@@ -59,7 +79,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
             ".roswell/bin",
         };
         for (fixed_home) |fixed| {
-            try b.push(try std.fmt.bufPrint(&buf, "{s}/{s}", .{ home, fixed }));
+            try b.push(try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, fixed }));
         }
 
         // racket bins
@@ -86,24 +106,24 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
             try b.push(system_path);
         }
 
-        try env.putMove(try alloc.dupe(u8, "PATH"), try b.toOwned());
+        try env.put("PATH", bufstream.getWritten());
     }
 
     // LUA_CPATH
     {
-        var b = DelimitedBuilder.init(alloc, ';');
-        errdefer b.deinit();
+        var bufstream = std.io.fixedBufferStream(&buf);
+        var b = delimitedWriter(bufstream.writer(), ';');
 
         const fixed_home = [_][]const u8{
             ".local/lib/lua/?.so",
             ".local/lib/lua/?.lua",
         };
         for (fixed_home) |fixed| {
-            try b.push(try std.fmt.bufPrint(&buf, "{s}/{s}", .{ home, fixed }));
+            try b.push(try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, fixed }));
         }
-        try b.pushDirect(";;");
+        try b.writer.writeAll(";;");
 
-        try env.putMove(try alloc.dupe(u8, "LUA_CPATH"), try b.toOwned());
+        try env.put("LUA_CPATH", bufstream.getWritten());
     }
 
     return true;
