@@ -4,6 +4,7 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
+cg.addFile ".vieterrc.cgt"
 cg.addFile ".Xresources.cgt"
 cg.addFile ".replrc"
 

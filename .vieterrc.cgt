@@ -1,0 +1,4 @@
+# Config file for the Vieter repository server
+# vim: ft=toml
+address = "https://mzte.de/vieter"
+<! if opt.vieter_key then !>api_key = "<% opt.vieter_key %>"<! end !>
