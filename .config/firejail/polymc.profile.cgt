@@ -3,4 +3,5 @@ dbus-user filter
 dbus-user.talk com.feralinteractive.GameMode
 dbus-system none
 whitelist ~/.local/share/PolyMC
+whitelist ~/.config/PolyMC
 <% opt.getDeviceConf "polymc-firejail.profile" %>
