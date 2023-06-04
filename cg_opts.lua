@@ -32,4 +32,9 @@ opts.commands = {
     notification_daemon = "wired",
 }
 
+opts.gamemode = {
+    on_start = "notify-send 'Gamemode' 'Gamemode Active'",
+    on_stop = "notify-send 'Gamemode' 'Gamemode Inactive'",
+}
+
 return opts

@@ -1,0 +1,13 @@
+[general]
+; Default is 5 seconds. Completely nuts.
+reaper_freq=30
+
+; renice to -5
+renice=5
+
+; I don't use screensavers
+inhibit_screensaver=0
+
+[custom]
+start=<% opt.gamemode.on_start %>
+end=<% opt.gamemode.on_stop %>
