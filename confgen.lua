@@ -4,9 +4,10 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
-cg.addFile ".vieterrc.cgt"
+cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".Xresources.cgt"
 cg.addFile ".replrc"
+cg.addFile ".vieterrc.cgt"
 
 -- Recursively merge 2 tables
 local function merge(a, b)
