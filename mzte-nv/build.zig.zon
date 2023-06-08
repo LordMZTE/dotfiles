@@ -4,8 +4,8 @@
 
     .dependencies = .{
         .znvim = .{
-            .url = "https://mzte.de/git/LordMZTE/znvim/archive/0a55798f24e084faef68e93f180683157a417639.tar.gz",
-            .hash = "1220489beca4ac48804ddfbe85b158a49ee2ceb4bbd98fc03e76f18ec01517f5521a",
+            .url = "https://mzte.de/git/LordMZTE/znvim/archive/cf233fd3c6b1205232755819dd781411dfc31955.tar.gz",
+            .hash = "122089cc376a4b66c4bb422d9a6ec1e3520c551ec292318a269c601b548b653defc9",
         },
     },
 }

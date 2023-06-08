@@ -29,17 +29,7 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
             return error.Buffer;
     }
 
-    // get previous filetype
-    var ft_numval: i64 = 0;
-    var ft_stringval: ?[*:0]u8 = null;
-    if (nvim.get_option_value_strict(
-        @constCast("filetype"),
-        &ft_numval,
-        &ft_stringval,
-        nvim.SREQ_BUF,
-        nvim.curbuf,
-    ) == nvim.FAIL)
-        return error.Buffer;
+    const ft_opt = znvim.OptionValue.get("filetype", .local);
 
    // store previous window layout
     const cursor_pos = nvim.curwin.*.w_cursor;
@@ -60,8 +50,7 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     nvim.curwin.*.w_topline = topline;
 
     // set new filetype
-    if (nvim.set_option_value("filetype", 0, ft_stringval, nvim.OPT_LOCAL)) |_|
-        return error.Buffer;
+    try ft_opt.setLog("filetype", .local);
 
     // apply autocmds
     _ = nvim.apply_autocmds(nvim.EVENT_BUFREADPOST, @constCast("cpbuf"), null, false, nvim.curbuf);

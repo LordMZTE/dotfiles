@@ -6,40 +6,42 @@ const opts = @import("opts");
 
 const log = std.log.scoped(.options);
 
+const opt = znvim.OptionValue.of;
+
 /// Initializes neovim options.
 pub fn initOptions() !void {
     var buf: [512]u8 = undefined;
 
     // Shell (defaults to mzteinit since that's my login shell)
-    try setOption("shell", "fish");
+    try opt("fish").setLog("shell", .both);
 
     try cmd("syntax on");
 
     // Quicker updatetime
-    try setOption("updatetime", 1000);
+    try opt(1000).setLog("updatetime", .both);
 
     // Indentation
-    try setOption("tabstop", 4);
-    try setOption("shiftwidth", 4);
-    try setOption("expandtab", true);
+    try opt(4).setLog("tabstop", .both);
+    try opt(4).setLog("shiftwidth", .both);
+    try opt(true).setLog("expandtab", .both);
 
     // Search
-    try setOption("ignorecase", true);
-    try setOption("smartcase", true);
+    try opt(true).setLog("ignorecase", .both);
+    try opt(true).setLog("smartcase", .both);
 
     // Window Config
-    try setOption("colorcolumn", "100");
-    try setOption("cursorcolumn", true);
-    try setOption("cursorline", true);
-    try setOption("guifont", try std.fmt.bufPrintZ(&buf, "{s}:h10", .{opts.font}));
-    try setOption("mouse", "a");
-    try setOption("number", true);
-    try setOption("relativenumber", true);
-    try setOption("scrolloff", 10);
-    try setOption("termguicolors", true);
+    try opt("100").setLog("colorcolumn", .both);
+    try opt(true).setLog("cursorcolumn", .both);
+    try opt(true).setLog("cursorline", .both);
+    try opt(try std.fmt.bufPrintZ(&buf, "{s}:h10", .{opts.font})).setLog("guifont", .both);
+    try opt("a").setLog("mouse", .both);
+    try opt(true).setLog("number", .both);
+    try opt(true).setLog("relativenumber", .both);
+    try opt(10).setLog("scrolloff", .both);
+    try opt(true).setLog("termguicolors", .both);
 
     // Folds
-    try setOption("conceallevel", 2);
+    try opt(2).setLog("conceallevel", .both);
 
     // Disable unwanted filetype mappings
     setVar("g:no_plugin_maps", .{ .bool = true });
@@ -59,28 +61,13 @@ pub fn initOptions() !void {
         "perl",
         "node",
     }) |garbage| {
-        const opt = try std.fmt.bufPrintZ(&buf, "g:loaded_{s}_provider", .{garbage});
-        setVar(opt, .{ .bool = false });
+        const var_name = try std.fmt.bufPrintZ(&buf, "g:loaded_{s}_provider", .{garbage});
+        setVar(var_name, .{ .bool = false });
     }
 
     // Neovide
     setVar("g:neovide_transparency", .{ .float = 0.9 });
     setVar("g:neovide_cursor_vfx_mode", .{ .string = @constCast("wireframe") });
-}
-
-fn setOption(key: [*:0]const u8, value: anytype) !void {
-    const Val = @TypeOf(value);
-    const ret = switch (@typeInfo(Val)) {
-        .Pointer => nvim.set_option_value(key, 0, value, 0),
-        .Int, .ComptimeInt => nvim.set_option_value(key, value, null, 0),
-        .Bool => nvim.set_option_value(key, @boolToInt(value), null, 0),
-        else => @compileError("Unsupported value type: " ++ @typeName(Val)),
-    };
-
-    if (ret) |err| {
-        log.err("Setting option: {s}", .{err});
-        return error.SetOption;
-    }
 }
 
 fn setVar(key: [:0]const u8, value: znvim.TypVal) void {
