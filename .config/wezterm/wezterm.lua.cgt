@@ -45,7 +45,7 @@
                              [dir-name resize-amt]))))
 
 {:default_prog [:fish]
- :color_scheme "Dracula (Official)"
+ :color_scheme "Catppuccin Mocha"
  :font (wt.font "<% opt.term_font %>")
  :warn_about_missing_glyphs false
  :window_background_opacity 0.8

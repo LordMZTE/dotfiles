@@ -36,27 +36,25 @@ async fn main() {
     }
 }
 
+mod catppuccin;
+
 async fn try_main() -> anyhow::Result<()> {
     env_logger::try_init()?;
     protocol::init(false);
 
-    fn color(r: u8, g: u8, b: u8) -> Color {
-        Color::Rgba(Rgba { r, g, b, a: 0xff })
-    }
-
     let icons = Icons(toml::from_str(include_str!("../assets/material-nf.toml"))?);
     let theme = Theme {
-        // dracula theme
-        idle_bg: color(0x44, 0x47, 0x5a),
-        idle_fg: color(0xf8, 0xf8, 0xf2),
-        info_bg: color(0x44, 0x47, 0x5a),
-        info_fg: color(0xf8, 0xf8, 0xf2),
-        good_bg: color(0x50, 0xfa, 0x7b),
-        good_fg: color(0x62, 0x72, 0xa4),
-        warning_bg: color(0xff, 0xb8, 0x6c),
-        warning_fg: color(0xbd, 0x93, 0xf9),
-        critical_bg: color(0xff, 0x55, 0x55),
-        critical_fg: color(0xbd, 0x93, 0xf9),
+        // catppuccin theme
+        idle_bg: catppuccin::MANTLE,
+        idle_fg: catppuccin::TEXT,
+        info_bg: catppuccin::BLUE,
+        info_fg: catppuccin::SURFACE[0],
+        good_bg: catppuccin::GREEN,
+        good_fg: catppuccin::BASE,
+        warning_bg: catppuccin::PEACH,
+        warning_fg: catppuccin::SURFACE[2],
+        critical_bg: catppuccin::RED,
+        critical_fg: catppuccin::SURFACE[1],
         separator: Separator::Custom("\u{e0b2}".to_string()),
         separator_bg: Color::Auto,
         separator_fg: Color::Auto,

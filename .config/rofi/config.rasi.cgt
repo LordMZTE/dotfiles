@@ -13,4 +13,4 @@ configuration {
 	icon-theme: "<% opt.icon_theme %>";
 	combi-modi: "drun,nheko,window,run";
 }
-@theme "dracula-sidebar.rasi"
+@theme "catppuccin-sidebar.rasi"

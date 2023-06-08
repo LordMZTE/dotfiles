@@ -1,3 +1,29 @@
+<!
+local base = "#1e1e2e"
+local mantle = "#181825"
+local crust = "#11111b"
+local text = "#cdd6f4"
+
+local surface0 = "#313244"
+
+local red = "#f38ba8"
+local maroon = "#eba0ac"
+
+local green = "#a6e3a1"
+local teal = "#94e2d5"
+
+local peach = "#fab387"
+local yellow = "#f9e2af"
+
+local blue = "#89b4fa"
+local sapphire = "#74c7ec"
+
+local mauve = "#cba6f7"
+local pink = "#f5c2e7"
+
+local lavender = "#b4befe"
+local sky = "#89dceb"
+!>
 /**
  * ROFI Color theme
  * User: Qball
@@ -5,41 +31,42 @@
  */
 
 * {
-    text-color: #f8f8f2;
-    background-color: #282a3630;
-    dark: #282a36;
+    text-color: <% text %>;
+    background-color: <% mantle %>30;
+    dark: <% crust %>;
+
     // Black
-    black: #282a36;
-    lightblack: #44475a;
-    //
+    black: <% crust %>;
+    lightblack: <% mantle %>;
+
     // Red
-    red: #ff5555;
-    lightred: #ff6e6e;
-    //
+    red: <% red %>;
+    lightred: <% maroon %>;
+
     // Green
-    green: #50fa7b;
-    lightgreen: #69ff94;
-    //
+    green: <% green %>;
+    lightgreen: <% teal %>;
+
     // Yellow
-    yellow: #f1fa8c;
-    lightyellow: #ffffa5;
-    //
+    yellow: <% peach %>;
+    lightyellow: <% yellow %>;
+
     // Blue
-    blue: #bd93f9;
-    lightblue: #d6acff;
-    //
+    blue: <% blue %>;
+    lightblue: <% sapphire %>;
+
     // Magenta
-    magenta: #ff79c6;
-    lightmagenta: #ff92df;
-    //
+    magenta: <% mauve %>;
+    lightmagenta: <% pink %>;
+
     // Cyan
-    cyan: #8be9fd;
-    lightcyan: #a4ffff;
-    //
+    cyan: <% lavender %>;
+    lightcyan: <% sky %>;
+
     // White
-    white: #f8f8f2;
+    white: <% text %>;
     lightwhite: #ffffff;
-    //
+
     // Bold, Italic, Underline
     highlight:     bold #ffffff;
 }
@@ -68,7 +95,7 @@ inputbar {
 }
 mainbox {
     expand: true;
-    background-color: #1c1c1cee;
+    background-color: <% mantle %>ee;
     spacing: 1em;
 }
 listview {

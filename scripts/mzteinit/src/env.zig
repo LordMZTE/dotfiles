@@ -69,14 +69,14 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // GUI options
     {
         try env.put("QT_QPA_PLATFORMTHEME", "gtk2");
-        try env.put("GTK_THEME", "Dracula");
+        try env.put("GTK_THEME", "Catppuccin-Mocha-Standard-Pink-Dark");
 
         // icon path
         icons: {
-            const path = "/usr/share/icons/Dracula/scalable";
+            const path = "/usr/share/icons/candy-icons";
             var dir = std.fs.openIterableDirAbsolute(path, .{}) catch {
                 log.warn(
-                    "Couldn't open dracula icons directory @ `{s}`, not setting ICONPATH",
+                    "Couldn't open candy-icons directory @ `{s}`, not setting ICONPATH",
                     .{path},
                 );
                 break :icons;

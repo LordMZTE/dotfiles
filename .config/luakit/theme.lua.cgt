@@ -1,99 +1,99 @@
 -- <! tmpl:setPostProcessor(opt.luaCompile) !>
-local dracula = {
-    bg = "#282a36",
-    fg = "#f8f8f2",
-    bright_bg = "#44475a",
-    very_bright_bg = "#6272a4",
-    cyan = "#8be9fd",
-    green = "#50fa7b",
-    orange = "#ffb86c",
-    pink = "#ff79c6",
-    purple = "#bd93f9",
-    red = "#ff5555",
-    yellow = "#f1fa8c",
+local catppuccin = {
+    bg = "#181825",
+    fg = "#cdd6f4",
+    bright_bg = "#1e1e2e",
+    very_bright_bg = "#313244",
+    cyan = "#89b4fa",
+    green = "#a6e3a1",
+    orange = "#fab387",
+    pink = "#f5c2e7",
+    purple = "#cba6f7",
+    red = "#f38ba8",
+    yellow = "#f9e2af",
 }
 
 local theme = {}
 
 -- Default settings
 theme.font = "12px <% opt.font %>"
-theme.fg = dracula.fg
-theme.bg = dracula.bg
+theme.fg = catppuccin.fg
+theme.bg = catppuccin.bg
 
 -- Genaral colors
-theme.success_fg = dracula.green
-theme.loaded_fg = dracula.cyan
+theme.success_fg = catppuccin.green
+theme.loaded_fg = catppuccin.cyan
 
 -- Error colors
-theme.error_fg = dracula.red
-theme.error_bg = dracula.bright_bg
+theme.error_fg = catppuccin.red
+theme.error_bg = catppuccin.bright_bg
 
 -- Warning colors
-theme.warning_fg = dracula.orange
-theme.warning_bg = dracula.bright_bg
+theme.warning_fg = catppuccin.orange
+theme.warning_bg = catppuccin.bright_bg
 
 -- Notification colors
-theme.notif_fg = dracula.very_bright_bg
-theme.notif_bg = dracula.bg
+theme.notif_fg = catppuccin.very_bright_bg
+theme.notif_bg = catppuccin.bg
 
 -- Menu colors
-theme.menu_fg = dracula.fg
-theme.menu_bg = dracula.bg
-theme.menu_selected_fg = dracula.fg
-theme.menu_selected_bg = dracula.bright_bg
-theme.menu_title_bg = dracula.bg
-theme.menu_primary_title_fg = dracula.red
-theme.menu_secondary_title_fg = dracula.bright_bg
+theme.menu_fg = catppuccin.fg
+theme.menu_bg = catppuccin.bg
+theme.menu_selected_fg = catppuccin.fg
+theme.menu_selected_bg = catppuccin.bright_bg
+theme.menu_title_bg = catppuccin.bg
+theme.menu_primary_title_fg = catppuccin.red
+theme.menu_secondary_title_fg = catppuccin.bright_bg
 
-theme.menu_disabled_fg = dracula.very_bright_bg
-theme.menu_disabled_bg = dracula.purple
+theme.menu_disabled_fg = catppuccin.very_bright_bg
+theme.menu_disabled_bg = catppuccin.purple
 theme.menu_enabled_fg = theme.menu_fg
 theme.menu_enabled_bg = theme.menu_bg
-theme.menu_active_fg = dracula.very_bright_bg
+theme.menu_active_fg = catppuccin.very_bright_bg
 theme.menu_active_bg = theme.menu_bg
 
 -- Proxy manager
-theme.proxy_active_menu_fg = dracula.fg
-theme.proxy_active_menu_bg = dracula.bg
-theme.proxy_inactive_menu_fg = dracula.bright_bg
-theme.proxy_inactive_menu_bg = dracula.very_bright_bg
+theme.proxy_active_menu_fg = catppuccin.fg
+theme.proxy_active_menu_bg = catppuccin.bg
+theme.proxy_inactive_menu_fg = catppuccin.bright_bg
+theme.proxy_inactive_menu_bg = catppuccin.very_bright_bg
 
 -- Statusbar specific
-theme.sbar_fg = dracula.fg
-theme.sbar_bg = dracula.bg
+theme.sbar_fg = catppuccin.fg
+theme.sbar_bg = catppuccin.bg
 
 -- Downloadbar specific
-theme.dbar_fg = dracula.fg
-theme.dbar_bg = dracula.bg
-theme.dbar_error_fg = dracula.red
+theme.dbar_fg = catppuccin.fg
+theme.dbar_bg = catppuccin.bg
+theme.dbar_error_fg = catppuccin.red
 
 -- Input bar specific
-theme.ibar_fg = dracula.fg
-theme.ibar_bg = dracula.bg
+theme.ibar_fg = catppuccin.fg
+theme.ibar_bg = catppuccin.bg
 
 -- Tab label
-theme.tab_fg = dracula.fg
-theme.tab_bg = dracula.bg
-theme.tab_hover_bg = dracula.orange
+theme.tab_fg = catppuccin.fg
+theme.tab_bg = catppuccin.bg
+theme.tab_hover_bg = catppuccin.orange
 theme.tab_ntheme = "#ddd"
-theme.selected_fg = dracula.fg
-theme.selected_bg = dracula.bright_bg
+theme.selected_fg = catppuccin.fg
+theme.selected_bg = catppuccin.bright_bg
 theme.selected_ntheme = "#ddd"
-theme.loading_fg = dracula.cyan
-theme.loading_bg = dracula.bg
+theme.loading_fg = catppuccin.cyan
+theme.loading_bg = catppuccin.bg
 
-theme.selected_private_tab_bg = dracula.pink
-theme.private_tab_bg = dracula.purple
+theme.selected_private_tab_bg = catppuccin.pink
+theme.private_tab_bg = catppuccin.purple
 
 -- Trusted/untrusted ssl colors
-theme.trust_fg = dracula.green
-theme.notrust_fg = dracula.red
+theme.trust_fg = catppuccin.green
+theme.notrust_fg = catppuccin.red
 
 -- Follow mode hints
 theme.hint_font = "12px <% opt.font %>, monospace, courier, sans-serif"
-theme.hint_fg = dracula.fg
-theme.hint_bg = dracula.very_bright_bg
-theme.hint_border = "2px dashed " .. dracula.green
+theme.hint_fg = catppuccin.fg
+theme.hint_bg = catppuccin.very_bright_bg
+theme.hint_border = "2px dashed " .. catppuccin.green
 theme.hint_opacity = "0.3"
 theme.hint_overlay_bg = "rgba(255,255,153,0.3)"
 theme.hint_overlay_border = "1px dotted #000"
@@ -101,9 +101,9 @@ theme.hint_overlay_selected_bg = "rgba(0,255,0,0.3)"
 theme.hint_overlay_selected_border = theme.hint_overlay_border
 
 -- General colour pairings
-theme.ok = { fg = dracula.fg, bg = dracula.bg }
-theme.warn = { fg = dracula.orange, bg = dracula.bg }
-theme.error = { fg = dracula.red, bg = dracula.bright_bg }
+theme.ok = { fg = catppuccin.fg, bg = catppuccin.bg }
+theme.warn = { fg = catppuccin.orange, bg = catppuccin.bg }
+theme.error = { fg = catppuccin.red, bg = catppuccin.bright_bg }
 
 -- Gopher page style (override defaults)
 theme.gopher_light = { bg = "#E8E8E8", fg = "#17181C", link = "#03678D" }

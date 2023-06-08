@@ -103,7 +103,7 @@ fn Renderer(comptime Writer: type) type {
             try self.drawLeftSep(.Blue);
             try self.setStyle(.{
                 .background = .Blue,
-                .foreground = .White,
+                .foreground = .Black,
                 .font_style = .{ .bold = true },
             });
             try self.writer.writeAll(" ");
@@ -162,8 +162,8 @@ fn Renderer(comptime Writer: type) type {
                 defer std.heap.c_allocator.free(home);
                 if (std.mem.startsWith(u8, cwd, home)) {
                     try self.setStyle(.{
-                        .background = .{ .Yellow = {} },
-                        .foreground = .{ .Magenta = {} },
+                        .background = .Yellow,
+                        .foreground = .Red,
                     });
                     try self.writer.writeAll(" " ++ symbols.home);
                     if (home.len != cwd.len) {
