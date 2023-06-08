@@ -34,7 +34,7 @@
 
 (fn init [use]
   (use :wbthomason/packer.nvim)
-  (use {1 :dracula/vim :as :dracula})
+  (use {1 :catppuccin/nvim :as :catppuccin})
   (use {1 :lewis6991/gitsigns.nvim
         :config #((. (require :gitsigns) :setup) {})})
   (use :dag/vim-fish)

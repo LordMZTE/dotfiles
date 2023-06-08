@@ -50,7 +50,7 @@ pub fn initOptions() !void {
     setVar("g:zig_fmt_autosave", .{ .bool = false });
 
     // Other settings
-    try cmd("colorscheme dracula");
+    try cmd("colorscheme catppuccin");
     try cmd("filetype plugin on");
 
     // Disable garbage providers
