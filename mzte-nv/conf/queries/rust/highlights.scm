@@ -3,7 +3,7 @@
 ;; Keywords
 (("async" @keyword) (#set! conceal "󰜨"))
 (("await" @keyword) (#set! conceal ""))
-(("dyn" @keyword) (#set! conceal "﫢"))
+(("dyn" @keyword) (#set! conceal "󱥒"))
 (("else" @keyword) (#set! conceal ""))
 (("enum" @keyword) (#set! conceal ""))
 (("fn" @keyword) (#set! conceal "λ"))

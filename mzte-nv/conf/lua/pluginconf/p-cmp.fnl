@@ -1,7 +1,7 @@
 (local (cmp luasnip mztenv)
        (values (require :cmp) (require :luasnip) (require :mzte_nv)))
 
-(local sources {:buffer " ﬘"
+(local sources {:buffer " "
                 :conjure " "
                 :crates " "
                 :luasnip " "
@@ -32,7 +32,7 @@
                    {:sources (cmp.config.sources [{:name :path}]
                                                  [{:name :cmdline}])})
 
-(local signs {:Error " " :Warn " " :Hint " " :Info " "})
+(local signs {:Error " " :Warn " " :Hint " " :Info " "})
 
 (each [k v (pairs signs)]
   (let [hl (.. :DiagnosticSign k)]

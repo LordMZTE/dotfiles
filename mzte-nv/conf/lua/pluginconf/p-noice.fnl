@@ -17,3 +17,9 @@
 ;; Shift-Enter to redirect cmdline
 (vim.keymap.set :c :<S-Enter> #(noice.redirect (vim.fn.getcmdline))
                 {:desc "Redirect Cmdline"})
+
+;; These default to info diagnostic colors (WTF)
+(each [_ hl (pairs [:NoiceCmdlinePopupBorder
+                    :NoiceCmdlineIcon
+                    :NoiceCmdlinePopupTitle])]
+  (vim.api.nvim_set_hl 0 hl {:link :DraculaCyan}))
