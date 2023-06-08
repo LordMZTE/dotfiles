@@ -1,21 +1,21 @@
 ; extends
 
 ;; Keywords
-(("async" @keyword) (#set! conceal "ﰦ"))
+(("async" @keyword) (#set! conceal "󰜨"))
 (("const" @keyword) (#set! conceal ""))
 (("else" @keyword) (#set! conceal ""))
 (("enum" @keyword) (#set! conceal ""))
 (("fn" @keyword) (#set! conceal "λ"))
-(("for" @keyword) (#set! conceal "ﳁ"))
+(("for" @keyword) (#set! conceal "󰇘"))
 (("if" @keyword) (#set! conceal ""))
-(("pub" @keyword) (#set! conceal ""))
+(("pub" @keyword) (#set! conceal "󰧆"))
 (("return" @keyword) (#set! conceal ""))
-(("struct" @keyword) (#set! conceal ""))
-(("switch" @keyword) (#set! conceal ""))
+(("struct" @keyword) (#set! conceal "󰆦"))
+(("switch" @keyword) (#set! conceal "󰘬"))
 (("var" @keyword) (#set! conceal ""))
-(("while" @keyword) (#set! conceal "ﯩ"))
+(("while" @keyword) (#set! conceal "󰇙"))
 (("try" @keyword) (#set! conceal ""))
-(("comptime" @keyword) (#set! conceal "ﳼ"))
+(("comptime" @keyword) (#set! conceal "󰟾"))
 
 ;; Functions
 ((BUILTINIDENTIFIER) @include
@@ -30,5 +30,5 @@
 ;; Operators
 (("&" @operator) (#set! conceal ""))
 (("*" @operator) (#set! conceal ""))
-(("=>" @operator) (#set! conceal "ﰲ"))
-(("?" @operator) (#set! conceal ""))
+(("=>" @operator) (#set! conceal "󰧂"))
+(("?" @operator) (#set! conceal ""))
