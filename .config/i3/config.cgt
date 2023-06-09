@@ -287,11 +287,11 @@ set $base      #1e1e2e
 set $mantle    #181825
 set $crust     #11111b
 
-client.focused           $red     $crust $text  $rosewater $red
-client.focused_inactive  $maroon    $base $text  $rosewater $maroon
-client.unfocused         $maroon    $base $text  $rosewater $maroon
-client.urgent            $peach    $base $peach $overlay0  $peach
-client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
+client.focused           $red      $surface1 $text  $rosewater $red
+client.focused_inactive  $maroon   $base     $text  $rosewater $maroon
+client.unfocused         $maroon   $base     $text  $rosewater $maroon
+client.urgent            $peach    $base     $peach $overlay0  $peach
+client.placeholder       $overlay0 $base     $text  $overlay0  $overlay0
 client.background        $base
 
 bar {
