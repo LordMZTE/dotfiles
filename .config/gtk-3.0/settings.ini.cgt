@@ -1,5 +1,5 @@
 [Settings]
-gtk-theme-name=Catppuccin-Mocha-Standard-Pink-Dark
+gtk-theme-name=Catppuccin-Mocha-Standard-Red-Dark
 gtk-icon-theme-name=<% opt.icon_theme %>
 gtk-font-name=<% opt.font %> 11
 gtk-cursor-theme-name=<% opt.cursor.theme %>

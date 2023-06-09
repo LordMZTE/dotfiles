@@ -11,7 +11,7 @@ export QT_QPA_PLATFORM="wayland"
 export XDG_CURRENT_DESKTOP="river"
 
 # theming
-export GTK_THEME=Catppuccin-Mocha-Standard-Pink-Dark
+export GTK_THEME=Catppuccin-Mocha-Standard-Red-Dark
 export QT_QPA_PLATFORMTHEME=gtk2
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
 
