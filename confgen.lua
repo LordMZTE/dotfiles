@@ -23,22 +23,32 @@ end
 
 cg.opt = merge(cg.opt, require "cg_opts")
 
+local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
+
+if local_opts then
+    cg.opt = merge(cg.opt, local_opts())
+end
+
 -- This function is called in templates to allow adding device-specific configs.
 cg.opt.getDeviceConf = function(id)
     local path = os.getenv "HOME" .. "/.config/mzte_localconf/" .. id
     local file = io.open(path, "r")
 
-    if file == nil then
+    if not file then
         return ""
     end
 
     return file:read "*a"
 end
 
-local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
+-- Returns the contents of a file
+cg.opt.read = function(fname)
+    local file = io.open(fname, "r")
+    if not file then
+        return nil
+    end
 
-if local_opts then
-    cg.opt = merge(cg.opt, local_opts())
+    return file:read "*a"
 end
 
 -- Get the output of a system command
