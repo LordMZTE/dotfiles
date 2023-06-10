@@ -37,3 +37,15 @@
   (vim.keymap.set :n :fn dap.step_over mopt)
   (vim.keymap.set :n :fi dap.step_into mopt)
   (vim.keymap.set :n :fo dap.step_out mopt))
+
+;; Catppuccin compat
+(let [sign vim.fn.sign_define]
+  (sign :DapBreakpoint {:text "●"
+                        :texthl :DapBreakpoint
+                        :linehl ""
+                        :numhl ""})
+  (sign :DapBreakpointCondition {:text "●"
+                                 :texthl :DapBreakpointCondition
+                                 :linehl ""
+                                 :numhl ""})
+  (sign :DapLogPoint {:text "◆" :texthl :DapLogPoint :linehl "" :numhl ""}))

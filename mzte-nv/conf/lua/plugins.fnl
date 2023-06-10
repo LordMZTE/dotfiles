@@ -34,7 +34,7 @@
 
 (fn init [use]
   (use :wbthomason/packer.nvim)
-  (use {1 :catppuccin/nvim :as :catppuccin})
+  (use/pconf use :catppuccin/nvim :catppuccin {:as :catppuccin})
   (use {1 :lewis6991/gitsigns.nvim
         :config #((. (require :gitsigns) :setup) {})})
   (use :dag/vim-fish)
@@ -49,7 +49,7 @@
              {:requires :nvim-lua/plenary.nvim})
   (use/pconf use :windwp/nvim-autopairs :autopairs)
   (use :windwp/nvim-ts-autotag)
-  (use/pconf use :HiPhish/nvim-ts-rainbow2 :tsrainbow2)
+  (use :HiPhish/nvim-ts-rainbow2)
   (use/pconf use :akinsho/toggleterm.nvim :tterm)
   (use :DingDean/wgsl.vim)
   (use :rcarriga/nvim-notify)
