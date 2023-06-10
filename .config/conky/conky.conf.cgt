@@ -91,7 +91,7 @@ conky.config = {
 };
 
 conky.text = [[
-${alignc}${color0}${font2}<% opt.read "/etc/hostname" %>${font}
+${alignc}${color0}${font2}<% opt.read "/etc/hostname" or "MZTE" %>${font}
 ${voffset 6}${alignc}${color0}${font3}${time %b %d, %Y}${font}${color}
 ${voffset 18}${goto 12}${color5}CPU${goto 50}
 ${goto 12}$cpu%
