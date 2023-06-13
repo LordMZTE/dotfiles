@@ -33,7 +33,11 @@
                                               :gradlew
                                               :build.grable])
             :settings {:java {:configuration {:runtimes (mztenv.findRuntimes)}
-                              :contentProvider bundle-info.content_provider}}
+                              :contentProvider bundle-info.content_provider
+                              :implementationsCodeLens {:enabled true}
+                              :references {:includeDecompiledSources true}
+                              :referencesCodeLens {:enabled true}
+                              :updateBuildConfiguration :interactive}}
             :init_options {:bundles bundle-info.bundles
                            :extendedClientCapabilities (let [cap jdtls.extendedClientCapabilities]
                                                          (set cap.resolveAdditionalTextEditsSupport
