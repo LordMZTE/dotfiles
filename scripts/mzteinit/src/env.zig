@@ -68,8 +68,11 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // GUI options
     {
-        try env.put("QT_STYLE_OVERRIDE", "kvantum");
+        try env.put("QT_QPA_PLATFORMTHEME", "qt5ct");
         try env.put("GTK_THEME", "Catppuccin-Mocha-Standard-Red-Dark");
+
+        // use xdg-desktop-portal
+        try env.put("GTK_USE_PORTAL", "1");
 
         // icon path
         icons: {
