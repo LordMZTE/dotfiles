@@ -5,3 +5,4 @@
 (require :maps)
 (require :lsp)
 (require :pipe)
+(require :eval)

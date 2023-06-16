@@ -8,7 +8,11 @@
   (or ;; INFO level
       (= notif.level :info) (and notif.opts notif.opts.mzte_nv_mini)))
 
-(noice.setup {:messages {:view :mini}
+(noice.setup {:cmdline {:format {:fnl {:pattern "^:%s*Fnl%s+"
+                                       :icon "🌜"
+                                       :lang :fennel
+                                       :title :Fennel}}}
+              :messages {:view :mini}
               :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}
               :routes [;; Redirect DAP messages to mini view
                        {:filter {:event :notify :cond show-mini?} :view :mini}]
