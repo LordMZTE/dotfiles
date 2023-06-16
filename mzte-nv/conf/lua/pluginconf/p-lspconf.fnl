@@ -5,8 +5,6 @@
   (var args args)
   (when (not args)
     (set args {}))
-  (when (not (. args :on_attach))
-    (tset args :on_attach `check-conjure))
   (tset args :capabilities `caps)
   `((. lspc ,conf :setup) ,args))
 
@@ -22,12 +20,13 @@
 (tset caps :textDocument :foldingRange
       {:dynamicRegistration false :lineFoldingOnly true})
 
+(tset caps :offsetEncoding :utf-8)
+
 (fn disable-formatter [client _]
   (tset client :server_capabilities :documentFormattingRangeProvider false))
 
 (setup :cl-lsp)
-(setup :clangd {:on_attach (fn [c b] (disable-formatter c b)
-                             (check-conjure c b))})
+(setup :clangd {:on_attach disable-formatter})
 
 (setup :cssls)
 (setup :elixirls {:cmd [:elixir-ls]})
