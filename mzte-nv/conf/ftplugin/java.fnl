@@ -7,6 +7,8 @@
 (local caps
        ((. (require :cmp_nvim_lsp) :default_capabilities) (vim.lsp.protocol.make_client_capabilities)))
 
+(set caps.textDocument.formatting {:dynamicRegistration false})
+
 (local (bundle-info dirs) (values (mztenv.getBundleInfo) (mztenv.getDirs)))
 
 (fn on-attach [client bufnr]
