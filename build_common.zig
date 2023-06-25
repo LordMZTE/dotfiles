@@ -17,5 +17,7 @@ pub fn confgenGet(comptime T: type, root_path: []const u8, alloc: std.mem.Alloca
         .init(alloc, buf_reader.reader());
     defer reader.deinit();
 
-    return try std.json.parseFromTokenSource(T, alloc, &reader, confgen_json_opt);
+    // We just grab the value from the parse result as this data will almost certainly have been
+    // allocated with the builder's arena anyways.
+    return (try std.json.parseFromTokenSource(T, alloc, &reader, confgen_json_opt)).value;
 }

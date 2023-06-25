@@ -7,7 +7,7 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
 
     switch (@typeInfo(T)) {
         .Void, .Null => c.lua_pushnil(l),
-        .Bool => c.lua_pushboolean(l, @intCast(c_int, @boolToInt(x))),
+        .Bool => c.lua_pushboolean(l, @intCast(c_int, @intFromBool(x))),
         .Int, .ComptimeInt => c.lua_pushinteger(l, @intCast(c_int, x)),
         .Float, .ComptimeFloat => c.lua_pushnumber(l, @floatCast(c.lua_Number, x)),
         .Pointer => |P| {
@@ -67,7 +67,7 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
 
                 inline for (S.fields) |Field| {
                     luaPushAny(l, @field(x, Field.name));
-                    c.lua_setfield(l, -2, Field.name.ptr);
+                    c.lua_setfield(l, -2, (Field.name ++ &[_]u8{0}).ptr);
                 }
             }
         },
