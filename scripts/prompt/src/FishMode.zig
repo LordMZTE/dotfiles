@@ -15,23 +15,18 @@ mode: Mode,
 const Self = @This();
 
 pub fn parse(s: []const u8) Self {
-    inline for (@typeInfo(Mode).Enum.fields, 0..) |field, i| {
-        if (std.mem.eql(u8, field.name, s))
-            return .{ .mode = @intToEnum(Mode, i) };
-    }
-
-    return .{ .mode = .unknown };
+    return .{ .mode = std.meta.stringToEnum(Mode, s) orelse .unknown };
 }
 
 /// Gets the color for the mode
 pub fn getColor(self: *Self) at.style.Color {
     return switch (self.mode) {
-        .default => .{ .Yellow = {} },
-        .insert => .{ .Green = {} },
-        .replace_one => .{ .Magenta = {} },
-        .replace => .{ .Blue = {} },
-        .visual => .{ .Magenta = {} },
-        .unknown => .{ .Red = {} },
+        .default => .Yellow,
+        .insert => .Green,
+        .replace_one => .Magenta,
+        .replace => .Blue,
+        .visual => .Magenta,
+        .unknown => .Red,
     };
 }
 

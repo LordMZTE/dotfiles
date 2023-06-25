@@ -73,7 +73,7 @@ pub fn winContent(state: *State) !void {
 
         quality_popup_pos.y += quality_popup_size.y;
         quality_popup_size.x += btn_size.x;
-        quality_popup_size.y += 5 + (quality_popup_size.y * @intToFloat(
+        quality_popup_size.y += 5 + (quality_popup_size.y * @floatFromInt(
             f32,
             preset_qualities.len,
         ));

@@ -86,7 +86,7 @@ pub fn main() !void {
             c.ImGuiCond_Always,
         );
         c.igSetWindowSize_Vec2(
-            .{ .x = @intToFloat(f32, win_width), .y = @intToFloat(f32, win_height) },
+            .{ .x = @floatFromInt(f32, win_width), .y = @floatFromInt(f32, win_height) },
             c.ImGuiCond_Always,
         );
 
