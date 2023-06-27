@@ -17,7 +17,7 @@ pub fn build(b: *std.build.Builder) !void {
     exe.addModule("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
 
     const cg_opt = try common.confgenGet(struct {
-        gtk_theme: []const u8,
+        gtk_theme: []u8, // TODO: this being non-const is a workaround for an std bug
     }, "../..", b.allocator);
 
     const opts = b.addOptions();

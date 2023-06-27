@@ -20,7 +20,7 @@ pub fn build(b: *std.build.Builder) !void {
     const znvim_dep = b.dependency("znvim", .{ .target = target, .optimize = mode });
 
     const cg_opt = try common.confgenGet(struct {
-        term_font: []const u8,
+        term_font: []u8, // TODO: this being non-const is a workaround for an std bug
     }, "..", b.allocator);
 
     const opts = b.addOptions();
