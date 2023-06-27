@@ -89,7 +89,7 @@ fn lOnTab(l: *c.lua_State) !c_int {
         const b = std.mem.indexOfScalar(
             u8,
             " \t\n",
-            line[@intCast(usize, cursor_col) - 1],
+            line[@as(usize, @intCast(cursor_col)) - 1],
         ) == null;
 
         // remove the string and the string array from the stack

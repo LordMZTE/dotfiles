@@ -339,10 +339,7 @@ fn gitStatusCb(
         c.GIT_STATUS_WT_RENAMED |
         c.GIT_STATUS_WT_TYPECHANGE;
 
-    const counts = @ptrCast(
-        *GitStatusCounts,
-        @alignCast(@alignOf(GitStatusCounts), counts_),
-    );
+    const counts: *GitStatusCounts = @ptrCast(@alignCast(counts_));
 
     if (flags & staged_flags > 0)
         counts.staged += 1;

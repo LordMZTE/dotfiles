@@ -28,7 +28,7 @@ pub fn main() !u8 {
 
     var feh_argv = try alloc.alloc(
         []const u8,
-        feh_baseargs.len + @intCast(usize, screens),
+        feh_baseargs.len + @as(usize, @intCast(screens)),
     );
     defer alloc.free(feh_argv);
     std.mem.copy([]const u8, feh_argv, &feh_baseargs);

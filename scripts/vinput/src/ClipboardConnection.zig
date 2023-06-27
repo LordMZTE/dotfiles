@@ -77,7 +77,7 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
                         c.XA_ATOM,
                         32,
                         c.PropModeReplace,
-                        @ptrCast([*c]u8, &utf8_atom),
+                        @ptrCast(&utf8_atom),
                         1,
                     );
                 } else if (xsr.target == c.XA_STRING or xsr.target == text_atom) {
@@ -89,7 +89,7 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
                         8,
                         c.PropModeReplace,
                         data.ptr,
-                        @intCast(c_int, data.len),
+                        @intCast(data.len),
                     );
                     sent_data = true;
                 } else if (xsr.target == utf8_atom) {
@@ -101,7 +101,7 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
                         8,
                         c.PropModeReplace,
                         data.ptr,
-                        @intCast(c_int, data.len),
+                        @intCast(data.len),
                     );
                     sent_data = true;
                 }
@@ -120,7 +120,7 @@ pub fn provide(self: ClipboardConnection, data: []const u8) !void {
                         .send_event = 0,
                     };
 
-                    _ = c.XSendEvent(self.dpy, ev.requestor, 0, 0, @ptrCast(*c.XEvent, &ev));
+                    _ = c.XSendEvent(self.dpy, ev.requestor, 0, 0, @ptrCast(&ev));
                     if (sent_data) {
                         if (ffi.xGetWindowName(self.dpy, xsr.requestor)) |name| {
                             defer _ = c.XFree(name.ptr);
@@ -191,5 +191,5 @@ fn getContentForType(self: ClipboardConnection, t: c.Atom) !?[]u8 {
     );
     defer _ = c.XDeleteProperty(xsel.display, xsel.requestor, xsel.property);
 
-    return (data orelse return null)[0..@intCast(usize, size)];
+    return (data orelse return null)[0..@intCast(size)];
 }

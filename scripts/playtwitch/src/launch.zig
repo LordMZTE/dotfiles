@@ -61,7 +61,7 @@ fn streamlinkThread(state: *State, channel: []const u8) !void {
         const lower_channel = std.ascii.lowerString(&ch_buf, channel);
 
         const url = try std.fmt.allocPrintZ(arg_arena.allocator(), "https://twitch.tv/{s}", .{lower_channel});
-        const quality = try std.cstr.addNullByte(arg_arena.allocator(), std.mem.sliceTo(&state.quality_buf, 0));
+        const quality = try arg_arena.allocator().dupeZ(u8, std.mem.sliceTo(&state.quality_buf, 0));
 
         const streamlink_argv = try arg_arena.allocator().allocSentinel(
             ?[*:0]const u8,

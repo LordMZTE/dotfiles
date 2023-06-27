@@ -73,10 +73,7 @@ pub fn winContent(state: *State) !void {
 
         quality_popup_pos.y += quality_popup_size.y;
         quality_popup_size.x += btn_size.x;
-        quality_popup_size.y += 5 + (quality_popup_size.y * @floatFromInt(
-            f32,
-            preset_qualities.len,
-        ));
+        quality_popup_size.y += 5 + (quality_popup_size.y * @as(f32, @floatFromInt(preset_qualities.len)));
 
         c.igSetNextWindowPos(quality_popup_pos, c.ImGuiCond_Always, .{ .x = 0.0, .y = 0.0 });
         c.igSetNextWindowSize(quality_popup_size, c.ImGuiCond_Always);
@@ -154,7 +151,7 @@ pub fn winContent(state: *State) !void {
         c.igTableHeader("Live?");
 
         for (state.channels.?, 0..) |entry, i| {
-            c.igPushID_Int(@intCast(c_int, i));
+            c.igPushID_Int(@intCast(i));
             defer c.igPopID();
 
             _ = c.igTableNextRow(0, 0.0);

@@ -7,9 +7,9 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
 
     switch (@typeInfo(T)) {
         .Void, .Null => c.lua_pushnil(l),
-        .Bool => c.lua_pushboolean(l, @intCast(c_int, @intFromBool(x))),
-        .Int, .ComptimeInt => c.lua_pushinteger(l, @intCast(c_int, x)),
-        .Float, .ComptimeFloat => c.lua_pushnumber(l, @floatCast(c.lua_Number, x)),
+        .Bool => c.lua_pushboolean(l, @intCast(@intFromBool(x))),
+        .Int, .ComptimeInt => c.lua_pushinteger(l, @intCast(x)),
+        .Float, .ComptimeFloat => c.lua_pushnumber(l, @floatCast(x)),
         .Pointer => |P| {
             switch (P.size) {
                 .One => {

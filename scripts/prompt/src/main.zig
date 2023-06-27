@@ -17,10 +17,12 @@ pub fn main() !void {
     if (std.os.argv.len < 2)
         return error.NotEnoughArguments;
 
-    if (std.cstr.cmp(std.os.argv[1], "printfish") == 0) {
+    const verb = std.mem.span(std.os.argv[1]);
+
+    if (std.mem.eql(u8, verb, "printfish")) {
         const stdout = std.io.getStdOut();
         try stdout.writer().print(fish_code ++ "\n", .{std.os.argv[0]});
-    } else if (std.cstr.cmp(std.os.argv[1], "show") == 0) {
+    } else if (std.mem.eql(u8, verb, "show")) {
         const options = prompt.Options{
             .status = try std.fmt.parseInt(
                 i16,

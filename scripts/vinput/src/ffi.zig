@@ -46,5 +46,5 @@ pub fn xGetWindowName(dpy: *c.Display, win: c.Window) ?[]u8 {
     if (name_cstr == null)
         return null;
 
-    return name_cstr[0..@intCast(usize, n)];
+    return name_cstr[0..@intCast(n)];
 }
