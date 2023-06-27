@@ -60,10 +60,27 @@ pub const std_options = struct {
     pub const log_level = .debug;
 };
 
+const reg_key = "mzte-nv-reg";
+
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
     const l = l_.?;
     ser.luaPushAny(l, .{
+        .reg = struct {
+            pub fn luaPush(lua: *c.lua_State) void {
+                c.lua_getfield(lua, c.LUA_REGISTRYINDEX, reg_key);
+
+                // registry uninitialized
+                if (c.lua_isnil(lua, -1)) {
+                    c.lua_pop(lua, 1);
+                    c.lua_newtable(lua);
+                    c.lua_pushvalue(lua, -1);
+                    c.lua_setfield(lua, c.LUA_REGISTRYINDEX, reg_key);
+                }
+            }
+        },
+
         .onInit = ffi.luaFunc(lOnInit),
+
         .cmp = modules.cmp,
         .compile = modules.compile,
         .cpbuf = modules.cpbuf,
@@ -80,7 +97,7 @@ fn lOnInit(l: *c.lua_State) !c_int {
     try @import("options.zig").initOptions();
 
     std.log.info(
-        "MZTE-NV v{s} Initialized on NVIM v{s}",
+        "MZTE-NV v{s} Initialized on {s}",
         .{ version, nvim.longVersion },
     );
     return 0;

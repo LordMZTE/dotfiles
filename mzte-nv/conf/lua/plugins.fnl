@@ -38,7 +38,8 @@
   (use {1 :lewis6991/gitsigns.nvim
         :config #((. (require :gitsigns) :setup) {})})
   (use :dag/vim-fish)
-  (use/pconf use :nvim-lualine/lualine.nvim :line)
+  (use/pconf use :nvim-lualine/lualine.nvim :line
+             {:after :catppuccin :requires :lightbulb})
   (use/pconf use :nvim-treesitter/nvim-treesitter :treesitter)
   (use/pconf use :nvim-tree/nvim-web-devicons :devicons)
   (use/pconf use :nvim-tree/nvim-tree.lua :nvimtree
@@ -72,6 +73,7 @@
              {:requires :jose-elias-alvarez/null-ls.nvim})
   (use :nvim-treesitter/playground)
   (use {1 :Olical/conjure :setup (pconf :conjure)})
+  (use/pconf use :kosayoda/nvim-lightbulb :lightbulb)
   (cmp-plugins use))
 
 (packer.startup init)
