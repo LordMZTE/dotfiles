@@ -1,6 +1,7 @@
 const std = @import("std");
+const common = @import("build_common.zig");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardOptimizeOption(.{});
 
@@ -14,6 +15,14 @@ pub fn build(b: *std.build.Builder) void {
     exe.strip = mode != .Debug;
 
     exe.addModule("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
+
+    const cg_opt = try common.confgenGet(struct {
+        gtk_theme: []const u8,
+    }, "../..", b.allocator);
+
+    const opts = b.addOptions();
+    opts.addOption([]const u8, "gtk_theme", cg_opt.gtk_theme);
+    exe.addOptions("opts", opts);
 
     b.installArtifact(exe);
 

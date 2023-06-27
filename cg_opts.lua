@@ -19,6 +19,7 @@ opts.cursor = {
     size = 24,
 }
 
+opts.gtk_theme = "Catppuccin-Mocha-Standard-Red-dark"
 opts.icon_theme = "candy-icons"
 
 opts.commands = {

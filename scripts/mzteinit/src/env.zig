@@ -69,7 +69,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // GUI options
     {
         try env.put("QT_QPA_PLATFORMTHEME", "qt5ct");
-        try env.put("GTK_THEME", "Catppuccin-Mocha-Standard-Red-Dark");
+        try env.put("GTK_THEME", @import("opts").gtk_theme); // gtk theme from confgen
 
         // use xdg-desktop-portal
         try env.put("GTK_USE_PORTAL", "1");
