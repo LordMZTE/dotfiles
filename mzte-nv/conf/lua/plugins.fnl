@@ -39,7 +39,7 @@
         :config #((. (require :gitsigns) :setup) {})})
   (use :dag/vim-fish)
   (use/pconf use :nvim-lualine/lualine.nvim :line
-             {:after :catppuccin :requires :lightbulb})
+             {:after :catppuccin})
   (use/pconf use :nvim-treesitter/nvim-treesitter :treesitter)
   (use/pconf use :nvim-tree/nvim-web-devicons :devicons)
   (use/pconf use :nvim-tree/nvim-tree.lua :nvimtree
