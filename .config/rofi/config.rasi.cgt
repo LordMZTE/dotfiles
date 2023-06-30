@@ -1,7 +1,7 @@
 <!
 -- Only enable nheko mode if rofi-nheko is installed.
 local have_rofi_nheko = opt.fileExists(
-    _G.os.getenv "HOME"
+    os.getenv "HOME"
     .. "/.local/lib/rofi/librofi_nheko.so"
 )
 !>

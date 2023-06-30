@@ -2,6 +2,6 @@
 -- File containing GTK3 filemanager bookmarks
 -- Used by Thunar among others
 local bookmarks = opt.filemanager_bookmarks or {}
-for _, bm in _G.pairs(bookmarks) do
+for _, bm in pairs(bookmarks) do
 !>file://<% bm %>
 <! end !>
