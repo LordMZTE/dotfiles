@@ -1,5 +1,6 @@
 (local fnl-eval (. (require :mzte_nv) :fennel :eval))
-(vim.api.nvim_create_user_command :Fnl (fn [args] (fnl-eval args.args))
+(vim.api.nvim_create_user_command :Fnl
+                                  (fn [args] (vim.print (fnl-eval args.args)))
                                   {:nargs "+"})
 
 (fn insert-at-cursor [txt]
