@@ -1,4 +1,3 @@
-(print "catppuccin config")
 (local (mztenv catppuccin palettes)
        (values (require :mzte_nv) (require :catppuccin)
                (require :catppuccin.palettes)))
