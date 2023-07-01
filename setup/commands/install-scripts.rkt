@@ -18,7 +18,6 @@
   (mklink "scripts/start-joshuto.sh" (bin-path "start-joshuto"))
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
   (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
-  (mklink "scripts/withjava.sh" (bin-path "withjava"))
 
   ;; Compile scripts
   (install-rust "scripts/i3status")
@@ -28,6 +27,7 @@
   (install-zig "scripts/prompt")
   (install-zig "scripts/randomwallpaper")
   (install-zig "scripts/vinput")
+  (install-zig "scripts/withjava")
 
   (install-roswell "scripts/playvid.ros")
   null)
