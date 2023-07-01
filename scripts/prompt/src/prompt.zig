@@ -49,10 +49,7 @@ fn Renderer(comptime Writer: type) type {
         const Self = @This();
 
         pub fn render(self: *Self) !void {
-            const left_color = if (self.options.status == 0)
-                Color{ .Green = {} }
-            else
-                Color{ .Red = {} };
+            const left_color: Color = if (self.options.status == 0) .Green else .Red;
 
             try self.setStyle(.{ .foreground = left_color });
             try self.writer.writeAll(symbols.top_left);
@@ -85,7 +82,7 @@ fn Renderer(comptime Writer: type) type {
             });
             try self.writer.writeAll(symbols.right_separator ++ " ");
             try self.setStyle(.{
-                .foreground = .{ .Black = {} },
+                .foreground = .Black,
                 .background = mode_color,
                 .font_style = .{ .bold = true },
             });
@@ -177,8 +174,8 @@ fn Renderer(comptime Writer: type) type {
             // write root-relative path
             if (!written_path) {
                 try self.setStyle(.{
-                    .background = .{ .Yellow = {} },
-                    .foreground = .{ .Red = {} },
+                    .background = .Yellow,
+                    .foreground = .Red,
                 });
                 try self.writer.writeAll(" " ++ symbols.root);
 
@@ -201,14 +198,14 @@ fn Renderer(comptime Writer: type) type {
         fn renderPathSep(self: *Self) !void {
             try self.setStyle(.{
                 .background = self.last_style.?.background,
-                .foreground = .{ .Blue = {} },
+                .foreground = .Blue,
             });
 
             try self.writer.writeAll(" " ++ symbols.path_separator ++ " ");
 
             try self.setStyle(.{
                 .background = self.last_style.?.background,
-                .foreground = .{ .Black = {} },
+                .foreground = .Black,
             });
         }
 
@@ -235,7 +232,7 @@ fn Renderer(comptime Writer: type) type {
                 try self.drawLeftSep(bg);
                 try self.setStyle(.{
                     .background = bg,
-                    .foreground = .{ .Black = {} },
+                    .foreground = .Black,
                     .font_style = .{ .bold = true },
                 });
                 try self.writer.writeAll(" <new branch>");
@@ -277,27 +274,27 @@ fn Renderer(comptime Writer: type) type {
 
             try self.setStyle(.{
                 .background = ref_bg,
-                .foreground = .{ .Black = {} },
+                .foreground = .Black,
                 .font_style = .{ .bold = true },
             });
             // using print here because name is a cstring
             try self.writer.print(" {s}", .{name});
 
             if (counts.staged > 0) {
-                try self.drawLeftSep(.{ .Green = {} });
+                try self.drawLeftSep(.Green);
                 try self.setStyle(.{
-                    .background = .{ .Green = {} },
-                    .foreground = .{ .Black = {} },
+                    .background = .Green,
+                    .foreground = .Black,
                 });
 
                 try self.writer.print(" {}{s}", .{ counts.staged, symbols.staged });
             }
 
             if (counts.unstaged > 0) {
-                try self.drawLeftSep(.{ .Magenta = {} });
+                try self.drawLeftSep(.Magenta);
                 try self.setStyle(.{
-                    .background = .{ .Magenta = {} },
-                    .foreground = .{ .Black = {} },
+                    .background = .Magenta,
+                    .foreground = .Black,
                 });
 
                 try self.writer.print(" {}{s}", .{ counts.unstaged, symbols.unstaged });
@@ -351,20 +348,20 @@ fn gitStatusCb(
 }
 
 const GitStatusCounts = struct {
-    staged: c_int = 0,
-    unstaged: c_int = 0,
+    staged: u32 = 0,
+    unstaged: u32 = 0,
 
     pub fn getColor(self: *GitStatusCounts) Color {
         const has_staged = self.staged > 0;
         const has_unstaged = self.unstaged > 0;
 
         return if (!has_staged and !has_unstaged)
-            Color{ .Blue = {} }
+            .Blue
         else if (has_staged and has_unstaged)
-            Color{ .Magenta = {} }
+            .Magenta
         else if (has_staged)
-            Color{ .Green = {} }
+            .Green
         else
-            Color{ .Grey = 200 };
+            .{ .Grey = 200 };
     }
 };

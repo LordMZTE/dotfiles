@@ -48,12 +48,13 @@ pub fn main() !void {
             ),
         };
 
-        var buf = std.BoundedArray(u8, 1024 * 8).init(0) catch unreachable;
-        prompt.render(buf.writer(), options) catch |e| {
-            buf.resize(0) catch unreachable;
-            buf.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch unreachable;
+        var buf: [1024 * 8]u8 = undefined;
+        var fbs = std.io.fixedBufferStream(&buf);
+        prompt.render(fbs.writer(), options) catch |e| {
+            fbs.reset();
+            fbs.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch unreachable;
         };
-        try std.io.getStdOut().writeAll(buf.slice());
+        try std.io.getStdOut().writeAll(fbs.getWritten());
     } else {
         return error.UnknownCommand;
     }

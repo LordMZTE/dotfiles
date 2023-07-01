@@ -61,7 +61,11 @@ pub fn main() !u8 {
 }
 
 fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
-    const home = std.fs.cwd().openDir(home_s, .{}) catch return;
-    const local_wp = home.openIterableDir(".local/share/backgrounds/", .{}) catch return;
+    const wp_path = try std.fs.path.join(walker.files.allocator, &.{home_s, ".local/share/backgrounds"});
+    defer walker.files.allocator.free(wp_path);
+
+    var local_wp = try std.fs.cwd().openIterableDir(wp_path, .{});
+    defer local_wp.close();
+
     try walker.walk(local_wp);
 }

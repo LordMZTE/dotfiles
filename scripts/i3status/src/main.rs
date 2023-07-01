@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 use std::sync::Arc;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -16,6 +17,8 @@ use i3status_rs::{
     BarState,
 };
 
+mod catppuccin;
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     if let Err(e) = try_main().await {
@@ -25,7 +28,7 @@ async fn main() {
 
         serde_json::to_writer(
             std::io::stdout(),
-            &err_widget.get_data(&Default::default(), 0).unwrap(),
+            &err_widget.get_data(&SharedConfig::default(), 0).unwrap(),
         )
         .unwrap();
         println!(",");
@@ -35,8 +38,6 @@ async fn main() {
         std::future::pending::<()>().await;
     }
 }
-
-mod catppuccin;
 
 async fn try_main() -> anyhow::Result<()> {
     env_logger::try_init()?;

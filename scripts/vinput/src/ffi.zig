@@ -27,7 +27,7 @@ pub fn xGetWindowName(dpy: *c.Display, win: c.Window) ?[]u8 {
     var format: c_int = 0;
     var n: c_ulong = 0;
     var extra: c_ulong = 0;
-    var name_cstr: [*c]u8 = undefined;
+    var name_cstr: ?[*:0]u8 = null;
     _ = c.XGetWindowProperty(
         dpy,
         win,
@@ -43,8 +43,5 @@ pub fn xGetWindowName(dpy: *c.Display, win: c.Window) ?[]u8 {
         &name_cstr,
     );
 
-    if (name_cstr == null)
-        return null;
-
-    return name_cstr[0..@intCast(n)];
+    return (name_cstr orelse return null)[0..@intCast(n)];
 }

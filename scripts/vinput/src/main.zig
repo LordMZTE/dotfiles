@@ -27,7 +27,7 @@ pub fn main() !void {
     );
     defer alloc.free(filename);
 
-    const cp = try ClipboardConnection.init();
+    var cp = try ClipboardConnection.init();
     defer cp.deinit();
 
     const cp_data = try cp.getText();

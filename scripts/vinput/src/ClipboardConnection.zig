@@ -36,9 +36,10 @@ pub fn init() !ClipboardConnection {
     };
 }
 
-pub fn deinit(self: ClipboardConnection) void {
+pub fn deinit(self: *ClipboardConnection) void {
     _ = c.XDestroyWindow(self.dpy, self.win);
     _ = c.XCloseDisplay(self.dpy);
+    self.* = undefined;
 }
 
 pub fn provide(self: ClipboardConnection, data: []const u8) !void {

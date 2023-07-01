@@ -15,12 +15,9 @@ pub fn getCurrentSystemDaemon() !SystemDaemon {
     if (cache.daemon) |d|
         return d;
 
-    const systemd_stat: ?std.fs.File.Stat = std.fs.cwd().statFile("/etc/systemd") catch |e| blk: {
-        if (e == error.FileNotFound) {
-            break :blk null;
-        }
-
-        return e;
+    const systemd_stat: ?std.fs.File.Stat = std.fs.cwd().statFile("/etc/systemd") catch |e| switch (e) {
+        error.FileNotFound => null,
+        else => return e,
     };
 
     const daemon: SystemDaemon = if (systemd_stat) |_| .systemd else .none;

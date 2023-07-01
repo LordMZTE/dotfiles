@@ -2,7 +2,6 @@ const std = @import("std");
 
 files: std.ArrayList([]u8),
 filename_arena: std.heap.ArenaAllocator,
-buf: [64]u8 = undefined,
 
 const Self = @This();
 
@@ -32,17 +31,16 @@ pub fn walk(self: *Self, dir: std.fs.IterableDir) anyerror!void {
                 try self.walk(subdir);
             },
             .sym_link => {
-                const p = try dir.dir.readLink(e.name, &self.buf);
+                var p_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+                const p = try dir.dir.readLink(e.name, &p_buf);
                 var subdir = dir.dir.openIterableDir(p, .{}) catch |err| {
                     switch (err) {
-                        std.fs.Dir.OpenError.NotDir => {
+                        error.NotDir => {
                             const fpath = try self.filename_arena.allocator().dupe(u8, p);
                             try self.files.append(fpath);
                             continue;
                         },
-                        else => {
-                            return err;
-                        },
+                        else => return err,
                     }
                 };
                 defer subdir.close();

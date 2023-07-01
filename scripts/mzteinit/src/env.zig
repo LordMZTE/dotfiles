@@ -14,9 +14,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // buffer for small one-off operations while `buf` is in use
     var sbuf: [512]u8 = undefined;
 
-    if (env.get("MZTE_ENV_SET")) |_| {
+    if (env.get("MZTE_ENV_SET")) |_|
         return false;
-    }
 
     const alloc = env.hash_map.allocator;
     const home = if (env.get("HOME")) |home| try alloc.dupe(u8, home) else blk: {
@@ -28,13 +27,13 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     try env.put("MZTE_ENV_SET", "1");
 
     // XDG vars
-    inline for (.{
+    for ([_][2][]const u8{
         .{ "XDG_DATA_HOME", ".local/share" },
         .{ "XDG_CONFIG_HOME", ".config" },
         .{ "XDG_STATE_HOME", ".local/state" },
         .{ "XDG_CACHE_HOME", ".local/cache" },
     }) |kv| {
-        try env.put(kv.@"0", try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, kv.@"1" }));
+        try env.put(kv[0], try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, kv[1] }));
     }
 
     // set shell to fish to prevent anything from defaulting to mzteinit
@@ -115,14 +114,13 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         var bufstream = std.io.fixedBufferStream(&buf);
         var b = delimitedWriter(bufstream.writer(), ':');
 
-        const fixed_home = [_][]const u8{
+        for ([_][]const u8{
             ".mix/escripts",
             ".cargo/bin",
             ".local/bin",
             "go/bin",
             ".roswell/bin",
-        };
-        for (fixed_home) |fixed| {
+        }) |fixed| {
             try b.push(try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, fixed }));
         }
 

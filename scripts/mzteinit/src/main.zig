@@ -57,20 +57,12 @@ fn tryMain() !void {
     var env_map = std.process.EnvMap.init(alloc);
     defer env_map.deinit();
 
-    for (std.os.environ) |env_var| {
-        var idx: usize = 0;
-        while (env_var[idx] != '=') {
-            idx += 1;
-        }
-
-        const eq_idx = idx;
-
-        while (env_var[idx] != 0) {
-            idx += 1;
-        }
+    for (std.os.environ) |env_var_z| {
+        const env_var = std.mem.span(env_var_z);
+        const eq_idx = std.mem.indexOfScalar(u8, env_var, '=').?;
 
         const key = env_var[0..eq_idx];
-        const value = env_var[eq_idx + 1 .. idx];
+        const value = env_var[eq_idx + 1 ..];
 
         try env_map.put(key, value);
     }
@@ -90,14 +82,14 @@ fn tryMain() !void {
     }
 
     while (true) {
-        try util.writeAnsiClear(stdout.writer());
+        try stdout.writer().writeAll(util.ansi_clear);
 
         const cmd = ui(&stdout) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             break;
         };
 
-        try util.writeAnsiClear(stdout.writer());
+        try stdout.writer().writeAll(util.ansi_clear);
         try stdout.flush();
 
         var exit = util.ExitMode.run;
