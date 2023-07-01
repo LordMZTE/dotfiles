@@ -41,8 +41,7 @@
   (use/mztegit :packer.nvim)
   (use/mztegit :plenary.nvim)
   (use/pconf :catppuccin :catppuccin)
-  (use/mztegit :gitsigns.nvim
-               {:config #((. (require :gitsigns) :setup) {})})
+  (use/mztegit :gitsigns.nvim {:config #((. (require :gitsigns) :setup) {})})
   (use/mztegit :vim-fish)
   (use/pconf :lualine.nvim :line {:after :catppuccin})
   (use/pconf :nvim-treesitter :treesitter)
@@ -64,8 +63,7 @@
   (use/mztegit :crafttweaker-vim-highlighting)
   (use/mztegit :nvim-jdtls)
   (use/mztegit :promise-async)
-  (use/pconf :nvim-ufo :ufo
-             {:after :nvim-lspconfig})
+  (use/pconf :nvim-ufo :ufo {:after :nvim-lspconfig})
   (use/pconf :aerial.nvim :aerial)
   (use/mztegit :nvim-dap-ui)
   (use/pconf :nvim-dap :dap)
@@ -83,7 +81,7 @@
 (packer.startup init)
 
 ;; PackerCompile automagically
-(when (= 0 (length (vim.api.nvim_get_runtime_file :packer_compiled.lua
+(when (= 0 (length (vim.api.nvim_get_runtime_file :plugin/packer_compiled.lua
                                                   false)))
   (packer.compile))
 
