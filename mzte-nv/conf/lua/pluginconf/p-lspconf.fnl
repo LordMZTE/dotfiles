@@ -20,7 +20,7 @@
 (tset caps :textDocument :foldingRange
       {:dynamicRegistration false :lineFoldingOnly true})
 
-(tset caps :offsetEncoding :utf-8)
+(tset caps :offsetEncoding [:utf-8])
 
 (fn disable-formatter [client _]
   (tset client :server_capabilities :documentFormattingRangeProvider false))
