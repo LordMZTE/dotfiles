@@ -11,7 +11,7 @@
                                   :callback #(pcall vim.lsp.buf.document_highlight)})
     (vim.api.nvim_create_autocmd :CursorMoved
                                  {:buffer buf
-                                  :callback vim.lsp.buf.clear_references})))
+                                  :callback #(vim.lsp.buf.clear_references)})))
 
 (vim.api.nvim_create_autocmd :LspAttach {:callback on-lsp-attach})
 
