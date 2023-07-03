@@ -41,6 +41,8 @@ bindsym XF86AudioPrev exec playerctl previous
 # other fancy keys
 bindsym XF86Mail exec <% opt.commands.email %>
 bindsym XF86Calculator exec <% opt.commands.calculator %>
+bindsym XF86Explorer exec <% opt.commands.file_manager %>
+bindsym XF86HomePage exec <% opt.commands.browser %>
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
