@@ -1,5 +1,5 @@
 const std = @import("std");
-const ProcessInfo = @import("ProcessInfo.zig");
+const info = @import("info.zig");
 
 pub const std_options = struct {
     pub const log_level = .debug;
@@ -16,17 +16,20 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
-    for (browsers) |browser| {
-        var info = try ProcessInfo.get(browser, alloc);
-        defer info.deinit(alloc);
+    var queries: [browsers.len]info.ProcessQuery = undefined;
+    for (browsers, &queries) |b, *q|
+        q.* = .{ .name = b };
 
-        if (!info.running)
-            continue;
+    try info.query(alloc, &queries);
+    defer for (&queries) |*q| q.deinit(alloc);
 
-        std.log.info("found running browser {s}", .{info.exepath.?});
+    for (queries) |q| {
+        if (q.found_exepath) |path| {
+            std.log.info("found running browser: {s}", .{path});
 
-        try start(browser, alloc);
-        return;
+            try start(q.name, alloc);
+            return;
+        }
     }
 
     std.log.info("no running browser, using first choice", .{});
