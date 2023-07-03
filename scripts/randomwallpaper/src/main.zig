@@ -3,6 +3,10 @@ const xinerama = @import("xinerama.zig");
 const Walker = @import("Walker.zig");
 const c = @import("ffi.zig").c;
 
+pub const std_options = struct {
+    pub const log_level = .debug;
+};
+
 pub fn main() !u8 {
     const alloc = std.heap.c_allocator;
     const home_s = std.os.getenv("HOME") orelse return error.HomeNotSet;
@@ -61,10 +65,19 @@ pub fn main() !u8 {
 }
 
 fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
-    const wp_path = try std.fs.path.join(walker.files.allocator, &.{home_s, ".local/share/backgrounds"});
+    const wp_path = try std.fs.path.join(walker.files.allocator, &.{ home_s, ".local/share/backgrounds" });
     defer walker.files.allocator.free(wp_path);
 
-    var local_wp = try std.fs.cwd().openIterableDir(wp_path, .{});
+    var local_wp = std.fs.cwd().openIterableDir(wp_path, .{}) catch |e| switch (e) {
+        error.FileNotFound => {
+            std.log.warn(
+                "No local wallpaper directory @ {s}, skipping local wallpapers",
+                .{wp_path},
+            );
+            return;
+        },
+        else => return e,
+    };
     defer local_wp.close();
 
     try walker.walk(local_wp);
