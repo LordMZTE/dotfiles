@@ -2,10 +2,6 @@
 fish_vi_key_bindings
 
 # ALIASES
-alias ls="lsd"
-alias ll="ls -l"
-alias la="ll -a"
-alias lt="ll --tree"
 alias jo="TERM=xterm-256color joshuto"
 alias clip="xclip -sel clip"
 alias nv="nvim"
