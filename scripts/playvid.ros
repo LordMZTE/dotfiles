@@ -12,7 +12,7 @@ exec ros -Q -- $0 "$@"
 (in-package :playvid)
 
 (defun main (&rest argv)
-  (let* ((vidfile (or (car argv)
+  (let* ((vidfile (or (uiop:parse-native-namestring (car argv))
                       (let ((dir (uiop:directory-files ".")))
                         (nth (random (length dir) (make-random-state t)) dir))))
          (basename (pathname-name vidfile)))
