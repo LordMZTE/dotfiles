@@ -2,7 +2,6 @@
 fish_vi_key_bindings
 
 # ALIASES
-alias jo="TERM=xterm-256color joshuto"
 alias clip="xclip -sel clip"
 alias nv="nvim"
 #alias nvide="rbg neovide --nofork --multigrid --"

@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Joshuto
-Comment=TUI File Manager
-Terminal=false
-Exec=alacritty -e start-joshuto
-Icon=file-manager
-Type=Application

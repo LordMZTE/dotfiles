@@ -15,7 +15,6 @@
 
   ;; Symlink interpreted scripts
   (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (mklink "scripts/start-joshuto.sh" (bin-path "start-joshuto"))
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
   (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
 
