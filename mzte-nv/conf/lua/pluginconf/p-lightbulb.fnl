@@ -2,7 +2,7 @@
 
 (local ignored-clients [:null-ls])
 
-(lightbulb.setup {:ignore ignored-clients
+(lightbulb.setup {:ignore {:clients ignored-clients}
                   ;; No gutter sign
                   :sign {:enabled false}
                   ;; Status bar text
