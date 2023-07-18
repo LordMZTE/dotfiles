@@ -1,0 +1,41 @@
+#!/usr/bin/env -S ros -Q --
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '(uiop) :silent t))
+
+(defpackage :launchmenu
+  (:use :cl))
+(in-package :launchmenu)
+
+(defun write-app (stream icon layout programs)
+    (format stream "IMG:~a~C~s~%" icon #\Tab (cons layout programs)))
+
+(defun write-commands (stream)
+    (write-app stream "scalable/www-browser.svg" nil '(("openbrowser")))
+    (write-app stream "scalable/irc-chat.svg" "chat" '(("nheko") ("discord")))
+    (write-app stream "scalable/system-file-manager.svg" "double-fileman" '(("thunar") ("thunar"))))
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (destructuring-bind (layout . programs) (uiop:run-program '("pmenu")
+                                           :output #'read
+                                           :error-output :interactive
+                                           :input #'write-commands)
+   (when layout
+    (uiop:run-program (list "i3-msg" (format
+                                      nil
+                                      "append_layout ~a/.local/share/i3-layouts/~a.json"
+                                      (user-homedir-pathname)
+                                      layout))
+     :output :interactive
+     :error-output :interactive
+     :input :interactive))
+   (dolist (program programs)
+    (uiop:launch-program program
+     :output :interactive
+     :error-output :interactive
+     :input :interactive))))

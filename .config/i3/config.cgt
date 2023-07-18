@@ -56,6 +56,9 @@ bindsym $mod+Ctrl+e exec <% opt.commands.file_manager %>
 # open browser
 bindsym $mod+Ctrl+b exec <% opt.commands.browser %>
 
+# launch menu
+bindsym $mod+Ctrl+m exec launchmenu
+
 # vinput
 bindsym $mod+Ctrl+v exec vinput md
 for_window [class="vinput-editor"] floating enable
