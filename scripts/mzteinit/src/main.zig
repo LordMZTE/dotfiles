@@ -54,18 +54,8 @@ fn tryMain() !void {
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
-    var env_map = std.process.EnvMap.init(alloc);
+    var env_map = try std.process.getEnvMap(alloc);
     defer env_map.deinit();
-
-    for (std.os.environ) |env_var_z| {
-        const env_var = std.mem.span(env_var_z);
-        const eq_idx = std.mem.indexOfScalar(u8, env_var, '=').?;
-
-        const key = env_var[0..eq_idx];
-        const value = env_var[eq_idx + 1 ..];
-
-        try env_map.put(key, value);
-    }
 
     if (env_map.get("MZTEINIT")) |_| {
         try stdout.writer().writeAll("mzteinit running already, starting shell\n");

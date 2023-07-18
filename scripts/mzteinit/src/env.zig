@@ -1,6 +1,8 @@
 const std = @import("std");
 const sysdaemon = @import("sysdaemon.zig");
 
+const msg = @import("message.zig").msg;
+
 const log = std.log.scoped(.env);
 
 const delimitedWriter = @import("delimited_writer.zig").delimitedWriter;
@@ -8,6 +10,7 @@ const delimitedWriter = @import("delimited_writer.zig").delimitedWriter;
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
 pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
+    try msg("Loading environment...", .{});
     // buffer for building values for env vars
     var buf: [1024 * 8]u8 = undefined;
 
@@ -75,6 +78,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
         // icon path
         icons: {
+            try msg("building $ICONPATH...", .{});
             const path = "/usr/share/icons/candy-icons";
             var dir = std.fs.openIterableDirAbsolute(path, .{}) catch {
                 log.warn(
@@ -126,6 +130,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
         // racket bins
         racket: {
+            try msg("acquiring racket binary path...", .{});
             const res = std.ChildProcess.exec(.{
                 .allocator = alloc,
                 .argv = &.{
@@ -174,6 +179,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
     if (try sysdaemon.getCurrentSystemDaemon() != .systemd)
         return;
+
+    try msg("updating SystemD environment...", .{});
 
     var argv = try std.ArrayList([]const u8).initCapacity(env.hash_map.allocator, env.count() + 3);
     defer argv.deinit();

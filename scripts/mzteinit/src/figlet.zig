@@ -1,6 +1,8 @@
 const std = @import("std");
 const at = @import("ansi-term");
 
+const util = @import("util.zig");
+
 // r means switch to red
 const figlet =
     \\        __                   __r__  ________ ____________
@@ -15,12 +17,10 @@ pub fn writeFiglet(writer: anytype) !void {
     for (figlet) |char| {
         switch (char) {
             'r' => {
-                try at.format.updateStyle(writer, .{ .foreground = .Red }, style);
-                style = .{ .foreground = .Red };
+                try util.updateStyle(writer, &style, .{ .foreground = .Red });
             },
             '\n' => {
-                try at.format.updateStyle(writer, .{ .foreground = .Default }, style);
-                style = .{ .foreground = .Default };
+                try util.updateStyle(writer, &style, .{});
                 try writer.writeByte('\n');
             },
             else => try writer.writeByte(char),
