@@ -10,7 +10,7 @@ const delimitedWriter = @import("delimited_writer.zig").delimitedWriter;
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
 pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
-    try msg("Loading environment...", .{});
+    try msg("loading environment...", .{});
     // buffer for building values for env vars
     var buf: [1024 * 8]u8 = undefined;
 
