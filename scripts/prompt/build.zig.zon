@@ -8,8 +8,8 @@
             .hash = "12206275be1f3720c1f33e6a9cda79f25069996e44a0e6e7bf4b802116edd245b49f",
         },
         .known_folders = .{
-            .url = "https://github.com/ziglibs/known-folders/archive/d070896807cbbd2847d24d561438994504b929dd.tar.gz",
-            .hash = "122001a81a0ba2faca0271d53c50e8069721fe66a19d71dd8498e61fa26d7ca6f558",
+            .url = "https://github.com/ziglibs/known-folders/archive/fa75e1bc672952efa0cf06160bbd942b47f6d59b.tar.gz",
+            .hash = "122048992ca58a78318b6eba4f65c692564be5af3b30fbef50cd4abeda981b2e7fa5",
         },
     },
 }
