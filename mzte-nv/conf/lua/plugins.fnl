@@ -51,7 +51,7 @@
   (use/pconf :telescope.nvim :telescope)
   (use/pconf :nvim-autopairs :autopairs)
   (use/mztegit :nvim-ts-autotag)
-  (use/mztegit :nvim-ts-rainbow2)
+  (use/mztegit :rainbow-delimiters.nvim)
   (use/pconf :toggleterm.nvim :tterm)
   (use/mztegit :wgsl.vim)
   (use/mztegit :nvim-notify)

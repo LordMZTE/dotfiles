@@ -7,19 +7,19 @@
 (catppuccin.setup {: flavour
                    ;; Enable all relevant integrations
                    :integrations {:aerial true
-                                  :harpoon true
-                                  :gitsigns true
-                                  :neogit true
-                                  :noice true
                                   :cmp true
                                   :dap {:enabled true :enable_ui true}
+                                  :gitsigns true
+                                  :harpoon true
                                   :native_lsp {:enabled true}
+                                  :neogit true
+                                  :noice true
                                   :notify true
                                   :nvimtree true
+                                  :rainbow_delimiters true
+                                  :telescope true
                                   :treesitter true
-                                  :treesitter_context true
-                                  :ts_rainbow2 true
-                                  :telescope true}})
+                                  :treesitter_context true}})
 
 (vim.cmd.colorscheme :catppuccin)
 

@@ -13,7 +13,6 @@
 (configs.setup {:highlight {:enable true}
                 :autotag {:enable true}
                 :indent {:enable true}
-                :rainbow {:enable true}
                 :playground {:enable true}
                 :incremental_selection {:enable true
                                         :keymaps {:init_selection :fv
