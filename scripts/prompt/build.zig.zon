@@ -4,8 +4,8 @@
 
     .dependencies = .{
         .ansi_term = .{
-            .url = "https://github.com/ziglibs/ansi-term/archive/fe6df80ab1de74be9d0114cfbca7173d6dc3ed93.tar.gz",
-            .hash = "12206275be1f3720c1f33e6a9cda79f25069996e44a0e6e7bf4b802116edd245b49f",
+            .url = "https://github.com/ziglibs/ansi-term/archive/1614b61486d567b59abe11a097d11aa6ce679819.tar.gz",
+            .hash = "1220647eea49d2c48d5e59354291e975f813be3cc5a9d9920a50bbfaa40a891a06ee",
         },
         .known_folders = .{
             .url = "https://github.com/ziglibs/known-folders/archive/fa75e1bc672952efa0cf06160bbd942b47f6d59b.tar.gz",
