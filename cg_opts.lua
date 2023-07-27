@@ -31,6 +31,7 @@ opts.commands = {
     -- zenity-compatible dialoger
     zenity = "yad",
     notification_daemon = "wired",
+    screen_lock = string.format("i3lock -ti %s/.local/share/backgrounds/mzte.png", os.getenv "HOME"),
 }
 
 opts.gamemode = {
