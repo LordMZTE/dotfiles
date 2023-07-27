@@ -38,4 +38,6 @@ opts.gamemode = {
     on_stop = "notify-send 'Gamemode' 'Gamemode Inactive'",
 }
 
+opts.dev_dir = os.getenv "HOME" .. "/dev"
+
 return opts

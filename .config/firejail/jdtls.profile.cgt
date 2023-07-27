@@ -1,0 +1,7 @@
+# vim: filetype=firejail
+include whitelist-common.inc
+include allow-java.inc
+whitelist ~/.gradle
+whitelist ~/.eclipse
+whitelist ~/.cache/jdtls
+whitelist <% opt.dev_dir %>

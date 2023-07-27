@@ -1,3 +1,4 @@
+# vim: filetype=firejail
 # Make discord use xdg-desktop-portal to open links by pretending
 # we're running inside flatpak (eww).
 private-bin gdbus
