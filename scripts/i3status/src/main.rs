@@ -1,4 +1,5 @@
 #![warn(clippy::pedantic)]
+#![feature(fs_try_exists)]
 use std::sync::Arc;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -18,6 +19,7 @@ use i3status_rs::{
 };
 
 mod catppuccin;
+mod gpu;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -78,6 +80,15 @@ async fn try_main() -> anyhow::Result<()> {
         ..Default::default()
     });
 
+    spawn_blocks(&mut bar).await?;
+
+    bar.run_event_loop(|| panic!("Hey! No restarting!")).await?;
+
+    Ok(())
+}
+
+#[allow(clippy::needless_pass_by_ref_mut)] // clippy is to stupid to reason about my macro
+async fn spawn_blocks(bar: &mut BarState) -> anyhow::Result<()> {
     macro_rules! spawn {
         ($mod:ident $structinit:tt) => {
             bar.spawn_block(BlockConfigEntry {
@@ -110,6 +121,22 @@ async fn try_main() -> anyhow::Result<()> {
         ..Default::default()
     });
 
+    match gpu::Type::get()? {
+        gpu::Type::NVidia => {
+            spawn!(nvidia_gpu {
+                format: " $icon $utilization $memory $temperature $fan_speed $power".parse()?,
+                ..Default::default()
+            });
+        },
+        gpu::Type::Amd => {
+            spawn!(amd_gpu {
+                format: " $icon $utilization $vram_used_percents".parse()?,
+                ..Default::default()
+            });
+        },
+        gpu::Type::Unknown => {}, // no GPU block
+    }
+
     spawn!(music {
         interface_name_exclude: vec![".*kdeconnect.*".to_string(), "mpd".to_string()],
         format: " $icon {$combo.str(max_w:20, rot_interval:0.1) $prev $play $next|}".parse()?,
@@ -133,8 +160,6 @@ async fn try_main() -> anyhow::Result<()> {
         format: " $icon $timestamp.datetime(f:'%a %d.%m.%Y %T')".parse()?,
         ..Default::default()
     });
-
-    bar.run_event_loop(|| panic!("Hey! No restarting!")).await?;
 
     Ok(())
 }
