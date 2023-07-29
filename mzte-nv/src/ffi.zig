@@ -7,7 +7,8 @@ pub const c = @cImport({
 });
 
 /// Generates a wrapper function with error handling for a lua CFunction
-pub fn luaFunc(comptime func: fn (*c.lua_State) anyerror!c_int) c.lua_CFunction {
+/// func should be `fn(*c.lua_State) !c_int` ()
+pub fn luaFunc(comptime func: anytype) c.lua_CFunction {
     return &struct {
         fn f(l: ?*c.lua_State) callconv(.C) c_int {
             return func(l.?) catch |e| {
