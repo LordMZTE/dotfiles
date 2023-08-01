@@ -17,6 +17,7 @@
   (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
   (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
+  (mklink "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
 
   ;; Compile scripts
   (install-rust "scripts/i3status")

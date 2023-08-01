@@ -1,6 +1,8 @@
 const std = @import("std");
 const sysdaemon = @import("sysdaemon.zig");
 
+const util = @import("util.zig");
+
 const msg = @import("message.zig").msg;
 
 const log = std.log.scoped(.env);
@@ -51,6 +53,19 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // neovim
     try env.put("EDITOR", "nvim");
+
+    // Colored manpages
+    {
+        inline for ([_][2][]const u8{
+            .{ "mb", "1;32m" },
+            .{ "md", "1;32m" },
+            .{ "me", "0m" },
+            .{ "se", "0m" },
+            .{ "so", "01;33m" },
+            .{ "ue", "0m" },
+            .{ "us", "1;4;31m" },
+        }) |kv| try env.put("LESS_TERMCAP_" ++ kv[0], "\x1b[" ++ kv[1]);
+    }
 
     // Java options
     {
@@ -199,7 +214,7 @@ pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
         ));
     }
 
-    log.debug("sysdaemon env cmd: {s}", .{argv.items});
+    log.debug("sysdaemon env cmd: {}", .{util.fmtCommand(argv.items)});
 
     var child = std.ChildProcess.init(argv.items, env.hash_map.allocator);
     const term = try child.spawnAndWait();
