@@ -119,7 +119,7 @@ pub fn correctCommand(
 
         var cmd_slice_end = subslice.len - 1;
 
-        while (cmd_slice_end > 1) : (cmd_slice_end -= 1) {
+        while (cmd_slice_end >= 1) : (cmd_slice_end -= 1) {
             if (arg_map.get(subslice[0..cmd_slice_end])) |r| {
                 req = r;
                 break;

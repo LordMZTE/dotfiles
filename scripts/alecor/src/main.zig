@@ -3,6 +3,10 @@ const std = @import("std");
 const cache = @import("cache.zig");
 const util = @import("util.zig");
 
+pub const std_options = struct {
+    pub const log_level = .debug;
+};
+
 pub fn main() !void {
     if (std.os.argv.len < 2)
         return error.NotEnoughArguments;
