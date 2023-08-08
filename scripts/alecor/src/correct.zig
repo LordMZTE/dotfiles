@@ -115,22 +115,29 @@ pub fn correctCommand(
 
     // correct args. loop as long as corrections are made
     while (true) {
-        var req: ArgRequirement = .file_or_directory;
+        var req: ?ArgRequirement = null;
 
         var cmd_slice_end = subslice.len - 1;
 
         while (cmd_slice_end >= 1) : (cmd_slice_end -= 1) {
             if (arg_map.get(subslice[0..cmd_slice_end])) |r| {
                 req = r;
+                cmd_slice_end -= 1;
                 break;
             }
         }
 
-        var new_arg = subslice[cmd_slice_end];
-        try correctArgForReq(arena, req, &new_arg);
-        if (!std.mem.eql(u8, subslice[cmd_slice_end], new_arg)) {
-            std.log.info("[A] {s} => {s}", .{ subslice[cmd_slice_end], new_arg });
-            subslice[cmd_slice_end] = new_arg;
+        // If the argument contains a slash, assume it's a path.
+        if (req == null and std.mem.containsAtLeast(u8, subslice[cmd_slice_end + 1], 1, "/"))
+            req = .file_or_directory;
+
+        if (req) |r| {
+            var new_arg = subslice[cmd_slice_end + 1];
+            try correctArgForReq(arena, r, &new_arg);
+            if (!std.mem.eql(u8, subslice[cmd_slice_end + 1], new_arg)) {
+                std.log.info("[A] {s} => {s}", .{ subslice[cmd_slice_end + 1], new_arg });
+                subslice[cmd_slice_end + 1] = new_arg;
+            } else break;
         } else break;
     }
 }
