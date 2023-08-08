@@ -20,6 +20,7 @@
   (mklink "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
 
   ;; Compile scripts
+  (install-zig "scripts/alecor")
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/openbrowser")
