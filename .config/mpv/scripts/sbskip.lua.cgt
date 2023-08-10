@@ -3,12 +3,25 @@
 
 ;; MPV script to skip SponsorBlock segments added by yt-dlp's `--sponsorblock-mark=all` option
 
-;; list of SponsorBlock segment types NOT to skip
-(local blacklist [:Highlight])
+;; list of SponsorBlock segment types to skip
+(local blacklist [:Intro :Sponsor :Outro :Endcards/Credits :Inermission])
 
 ;; chapters alredy skipped this file
 ;; table of chapter id => true
 (var skipped {})
+
+(fn should-skip [typestr]
+  (accumulate [matched false
+               ty (string.gmatch typestr "([^,]+),?%s*")
+               &until matched]
+    (accumulate [blacklisted false
+                 _ bl (ipairs blacklist)
+                 &until blacklisted]
+      (= ty bl))))
+
+(fn msg [msg]
+  (print msg)
+  (mp.osd_message (.. "[sbskip] " msg) 4))
 
 (fn on-chapter-change [_ chapter#]
   (when (and chapter# (not (. skipped chapter#)))
@@ -17,11 +30,8 @@
           next (. chapter-list (+ chapter# 2))
           seg-type (string.match chapter.title "%[SponsorBlock%]: (.*)")]
       ;; when the pattern matches and the type isn't blacklisted...
-      (when (and seg-type (not (accumulate [has false
-                                                _ type (ipairs blacklist)
-                                                &until has]
-                                     (= type seg-type))))
-        (mp.osd_message (.. "[sbskip] skip: " seg-type) 4)
+      (when (and seg-type (should-skip seg-type))
+        (msg (.. "skip: " seg-type))
         ;; add to skipped to not skip chapter again
         (tset skipped chapter# true)
         ;; set time to start of next chapter or end of video
