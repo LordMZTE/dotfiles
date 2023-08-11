@@ -4,7 +4,13 @@
 ;; MPV script to skip SponsorBlock segments added by yt-dlp's `--sponsorblock-mark=all` option
 
 ;; list of SponsorBlock segment types to skip
-(local blacklist [:Intro :Sponsor :Outro :Endcards/Credits "Intermission/Intro Animation"])
+(local blacklist [:Intro
+                  :Sponsor
+                  :Outro
+                  :Endcards/Credits
+                  "Intermission/Intro Animation"
+                  "Interaction Reminder"
+                  "Unpaid/Self Promotion"])
 
 ;; chapters alredy skipped this file
 ;; table of chapter id => true
