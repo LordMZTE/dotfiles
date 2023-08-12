@@ -44,6 +44,32 @@
     (table.insert keys (kmap dir-key :ALT|SHIFT :AdjustPaneSize
                              [dir-name resize-amt]))))
 
+
+(fn on-format-tab-title [tab tabs panes config hover max_width]
+  (let [title (if (and tab.tab_title (> (length tab.tab_title) 0))
+                  tab.tab_title tab.active_pane.title)
+        bg (fn [t] (if t.is_active :#cba6f7 :#313244))
+        fg (fn [t] (if t.is_active :#181825 :#cdd6f4))
+        elems []]
+    ;; first tab
+    (when (~= tab.tab_index 0)
+      (table.insert elems {:Foreground {:Color (bg (. tabs tab.tab_index))}})
+      (table.insert elems {:Background {:Color (bg tab)}})
+      (table.insert elems {:Text " "}))
+
+    (table.insert elems {:Background {:Color (bg tab)}})
+    (table.insert elems {:Foreground {:Color (fg tab)}})
+    (table.insert elems {:Text (.. " " title " ")})
+
+    ;; last tab
+    (when (= tab.tab_index (- (length tabs) 1))
+      (table.insert elems {:Foreground {:Color (bg tab)}})
+      (table.insert elems {:Background {:Color :#45475a}}) ;; color of new tab button
+      (table.insert elems {:Text " "}))
+    elems))
+
+(wt.on :format-tab-title on-format-tab-title)
+
 {:default_prog [:fish]
  :color_scheme "Catppuccin Mocha"
  :font (wt.font "<% opt.term_font %>")
@@ -51,4 +77,15 @@
  :window_background_opacity 0.8
  :disable_default_key_bindings true
  :leader {:key :a :mods :CTRL :timeout_milliseconds 2000}
+ :adjust_window_size_when_changing_font_size false ;; this breaks on tiling WMs
+ :cursor_blink_ease_in :Constant
+ :cursor_blink_ease_out :Constant
+ :check_for_updates false ;; WTF
+ :use_fancy_tab_bar false
+ :tab_bar_style {:new_tab (wt.format [{:Background {:Color :#45475a}}
+                                      {:Foreground {:Color :#cdd6f4}}
+                                      {:Text "  "}
+                                      {:Foreground {:Color :#45475a}}
+                                      {:Background {:Color :#11111b}}
+                                      {:Text ""}])}
  : keys}
