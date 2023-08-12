@@ -1,7 +1,6 @@
 const std = @import("std");
 const xinerama = @import("xinerama.zig");
 const Walker = @import("Walker.zig");
-const c = @import("ffi.zig").c;
 
 pub const std_options = struct {
     pub const log_level = .debug;

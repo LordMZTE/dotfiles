@@ -1,5 +1,4 @@
 pub const c = @cImport({
-    @cInclude("stdlib.h");
-    @cInclude("X11/Xlib.h");
-    @cInclude("X11/extensions/Xinerama.h");
+    @cInclude("xcb/xcb.h");
+    @cInclude("xcb/xinerama.h");
 });

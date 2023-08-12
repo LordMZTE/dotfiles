@@ -12,8 +12,8 @@ pub fn build(b: *std.build.Builder) void {
     });
 
     exe.linkLibC();
-    exe.linkSystemLibrary("x11");
-    exe.linkSystemLibrary("xinerama");
+    exe.linkSystemLibrary("xcb");
+    exe.linkSystemLibrary("xcb-xinerama");
 
     exe.strip = mode != .Debug;
 
