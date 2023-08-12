@@ -7,13 +7,13 @@
          "setup/common.rkt")
 
 ;; Valid verbs
-(define verbs '(install-scripts install-lsps-paru setup-nvim-config confgen))
+(define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config confgen))
 
 (define verb
   (command-line
    #:program "setup.rkt"
    #:usage-help "Sets up my dotfiles. Available verbs:"
-   "install-scripts, install-lsps-paru, setup-nvim-config, confgen"
+   "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, confgen"
    #:once-each [("-o" "--bin-output") o "Output directory for executables" (output-bin-path o)]
    #:args (verb)
    (string->symbol verb)))
@@ -34,6 +34,9 @@
 (match verb
   ['install-scripts
    (local-require "setup/commands/install-scripts.rkt")
+   (run)]
+  ['install-plugins
+   (local-require "setup/commands/install-plugins.rkt")
    (run)]
   ['install-lsps-paru
    (local-require "setup/commands/install-lsps-paru.rkt")
