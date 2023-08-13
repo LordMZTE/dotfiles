@@ -48,7 +48,7 @@
 (fn on-format-tab-title [tab tabs panes config hover max_width]
   (let [title (if (and tab.tab_title (> (length tab.tab_title) 0))
                   tab.tab_title tab.active_pane.title)
-        bg (fn [t] (if t.is_active :#cba6f7 :#313244))
+        bg (fn [t] (if t.is_active :#cba6f7 (if hover :#45475a :#313244)))
         fg (fn [t] (if t.is_active :#181825 :#cdd6f4))
         not-first? (~= tab.tab_index 0)
         last? (= tab.tab_index (- (length tabs) 1))
@@ -75,6 +75,15 @@
 
 (wt.on :format-tab-title on-format-tab-title)
 
+(fn new-tab-button [hover]
+  (let [bg (if hover :#89b4fa :#45475a)]
+    (wt.format [{:Background {:Color bg}}
+                {:Foreground {:Color :#cdd6f4}}
+                {:Text "  "}
+                {:Foreground {:Color bg}}
+                {:Background {:Color :#11111b}}
+                {:Text ""}])))
+
 {:default_prog [:fish]
  :color_scheme "Catppuccin Mocha"
  :font (wt.font "<% opt.term_font %>")
@@ -87,11 +96,6 @@
  :cursor_blink_ease_out :Constant
  :check_for_updates false ;; WTF
  :use_fancy_tab_bar false
- :tab_bar_style {:new_tab (wt.format [{:Background {:Color :#45475a}}
-                                      {:Foreground {:Color :#cdd6f4}}
-                                      {:Text "  "}
-                                      {:Foreground {:Color :#45475a}}
-                                      {:Background {:Color :#11111b}}
-                                      {:Text ""}])}
+ :tab_bar_style {:new_tab (new-tab-button false) :new_tab_hover (new-tab-button true)}
  :tab_max_width 128
  : keys}
