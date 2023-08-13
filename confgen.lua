@@ -57,7 +57,8 @@ cg.opt.system = function(cmd)
     if handle == nil then
         error("Failed to spawn process" .. cmd)
     end
-    return handle:read("*a"):gsub("%s+", "")
+    local data, _ = handle:read("*a"):gsub("%s$", "")
+    return data
 end
 
 -- Compile the input as lua. Meant to be used as a post-processor.
