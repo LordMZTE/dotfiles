@@ -50,16 +50,21 @@
                   tab.tab_title tab.active_pane.title)
         bg (fn [t] (if t.is_active :#cba6f7 :#313244))
         fg (fn [t] (if t.is_active :#181825 :#cdd6f4))
+        not-first? (~= tab.tab_index 0)
+        last? (= tab.tab_index (- (length tabs) 1))
+        deco-len (+ 2
+                    (if not-first? 1 0)
+                    (if last? 2 0))
         elems []]
     ;; first tab
     (when (~= tab.tab_index 0)
       (table.insert elems {:Foreground {:Color (bg (. tabs tab.tab_index))}})
       (table.insert elems {:Background {:Color (bg tab)}})
-      (table.insert elems {:Text " "}))
+      (table.insert elems {:Text ""}))
 
     (table.insert elems {:Background {:Color (bg tab)}})
     (table.insert elems {:Foreground {:Color (fg tab)}})
-    (table.insert elems {:Text (.. " " (string.sub title 1 (math.min (- max_width 6) (length title))) " ")})
+    (table.insert elems {:Text (.. " " (string.sub title 1 (math.min (- max_width deco-len) (length title))) " ")})
 
     ;; last tab
     (when (= tab.tab_index (- (length tabs) 1))
