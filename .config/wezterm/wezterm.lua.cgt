@@ -59,7 +59,7 @@
 
     (table.insert elems {:Background {:Color (bg tab)}})
     (table.insert elems {:Foreground {:Color (fg tab)}})
-    (table.insert elems {:Text (.. " " title " ")})
+    (table.insert elems {:Text (.. " " (string.sub title 1 (math.min (- max_width 6) (length title))) " ")})
 
     ;; last tab
     (when (= tab.tab_index (- (length tabs) 1))
@@ -88,4 +88,5 @@
                                       {:Foreground {:Color :#45475a}}
                                       {:Background {:Color :#11111b}}
                                       {:Text ""}])}
+ :tab_max_width 128
  : keys}
