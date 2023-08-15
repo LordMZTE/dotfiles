@@ -48,7 +48,7 @@
 (fn on-format-tab-title [tab tabs panes config hover max_width]
   (let [title (if (and tab.tab_title (> (length tab.tab_title) 0))
                   tab.tab_title tab.active_pane.title)
-        bg (fn [t] (if t.is_active :#cba6f7 (if hover :#45475a :#313244)))
+        bg (fn [t h] (if t.is_active :#cba6f7 (if h :#45475a :#313244)))
         fg (fn [t] (if t.is_active :#181825 :#cdd6f4))
         not-first? (~= tab.tab_index 0)
         last? (= tab.tab_index (- (length tabs) 1))
@@ -58,17 +58,17 @@
         elems []]
     ;; first tab
     (when (~= tab.tab_index 0)
-      (table.insert elems {:Foreground {:Color (bg (. tabs tab.tab_index))}})
-      (table.insert elems {:Background {:Color (bg tab)}})
+      (table.insert elems {:Foreground {:Color (bg (. tabs tab.tab_index) false)}})
+      (table.insert elems {:Background {:Color (bg tab hover)}})
       (table.insert elems {:Text ""}))
 
-    (table.insert elems {:Background {:Color (bg tab)}})
+    (table.insert elems {:Background {:Color (bg tab hover)}})
     (table.insert elems {:Foreground {:Color (fg tab)}})
     (table.insert elems {:Text (.. " " (string.sub title 1 (math.min (- max_width deco-len) (length title))) " ")})
 
     ;; last tab
     (when (= tab.tab_index (- (length tabs) 1))
-      (table.insert elems {:Foreground {:Color (bg tab)}})
+      (table.insert elems {:Foreground {:Color (bg tab hover)}})
       (table.insert elems {:Background {:Color :#45475a}}) ;; color of new tab button
       (table.insert elems {:Text " "}))
     elems))
