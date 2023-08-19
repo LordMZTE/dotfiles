@@ -1,0 +1,5 @@
+-cp src
+-main Main
+--macro Macro.init()
+
+-js script.js

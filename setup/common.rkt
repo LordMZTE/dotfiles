@@ -9,7 +9,8 @@
          generate-cgopt-json
          install-zig
          install-rust
-         install-roswell)
+         install-roswell
+         build-haxe)
 
 ;; Whether to log calls or not
 (define log-calls (make-parameter #t))
@@ -52,6 +53,11 @@
            "--release"
            "--out-dir"
            (build-path (output-bin-path) "bin")))))
+
+(define-logging build-haxe
+  (λ (path)
+    (parameterize ([current-directory path] [log-calls #f])
+      (cmd "haxe" "build.hxml"))))
 
 (define-logging generate-cgopt-json
   (λ ()
