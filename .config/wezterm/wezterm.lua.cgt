@@ -1,4 +1,7 @@
-;<! tmpl:setPostProcessor(opt.fennelCompile) !>
+;<!
+;  tmpl:setPostProcessor(opt.fennelCompile)
+;  local shell = os.getenv "SHELL"
+;!>
 ; vim: filetype=fennel
 
 (local wt (require :wezterm))
@@ -84,7 +87,7 @@
                 {:Background {:Color :#11111b}}
                 {:Text ""}])))
 
-{:default_prog [:fish]
+{:default_prog ["<% shell %>"]
  :color_scheme "Catppuccin Mocha"
  :font (wt.font "<% opt.term_font %>")
  :warn_about_missing_glyphs false
@@ -98,4 +101,10 @@
  :use_fancy_tab_bar false
  :tab_bar_style {:new_tab (new-tab-button false) :new_tab_hover (new-tab-button true)}
  :tab_max_width 128
+ ;; BULLSHIT: WezTerm by default sets $SHELL to the login shell.
+ ;; This is justified by the fact that some users are too incompetent to
+ ;; relog after chaning their login shell. WezTerm is fixing a very rare (and basic)
+ ;; user error while compromising the experience of advanced users.
+ ;; See https://github.com/wez/wezterm/issues/4168
+ :set_environment_variables {:SHELL "<% shell %>"}
  : keys}
