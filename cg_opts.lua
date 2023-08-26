@@ -19,6 +19,9 @@ opts.cursor = {
     size = 24,
 }
 
+-- used in waybar config
+opts.wayland_compositor = nil
+
 opts.gtk_theme = "Catppuccin-Mocha-Standard-Red-dark"
 opts.icon_theme = "candy-icons"
 
