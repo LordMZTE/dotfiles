@@ -55,5 +55,5 @@ pub fn build(b: *std.build.Builder) !void {
     compiler.strip = mode != .Debug;
     compiler.unwind_tables = true;
 
-    b.installArtifact(lib);
+    b.installArtifact(compiler);
 }
