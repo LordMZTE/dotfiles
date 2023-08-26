@@ -4,6 +4,8 @@ const env = @import("env.zig");
 const run = @import("run.zig");
 const util = @import("util.zig");
 
+const msg = @import("message.zig").msg;
+
 pub const std_options = struct {
     pub const log_level = .debug;
     pub fn logFn(
@@ -54,13 +56,26 @@ fn tryMain() !void {
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
+    var launch_cmd: ?[][]const u8 = null;
+    defer if (launch_cmd) |cmd| alloc.free(cmd);
+
+    if (std.os.argv.len >= 2) {
+        if (!std.mem.eql(u8, std.mem.span(std.os.argv[1]), "cmd") or std.os.argv.len < 3)
+            return error.InvalidCommand;
+
+        launch_cmd = try alloc.alloc([]const u8, std.os.argv[2..].len);
+        for (launch_cmd.?, std.os.argv[2..]) |*arg, arg_in| {
+            arg.* = std.mem.span(arg_in);
+        }
+    }
+    
     var env_map = try std.process.getEnvMap(alloc);
     defer env_map.deinit();
 
     if (env_map.get("MZTEINIT")) |_| {
         try stdout.writer().writeAll("mzteinit running already, starting shell\n");
         try stdout.flush();
-        var child = std.ChildProcess.init(&.{"fish"}, alloc);
+        var child = std.ChildProcess.init(launch_cmd orelse &.{"fish"}, alloc);
         _ = try child.spawnAndWait();
         return;
     } else {
@@ -69,6 +84,13 @@ fn tryMain() !void {
 
     if (try env.populateEnvironment(&env_map)) {
         try env.populateSysdaemonEnvironment(&env_map);
+    }
+
+    if (launch_cmd) |cmd| {
+        try msg("using launch command", .{});
+        var child = std.ChildProcess.init(cmd, alloc);
+        _ = try child.spawnAndWait();
+        return;
     }
 
     while (true) {
