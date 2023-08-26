@@ -89,6 +89,7 @@ fn tryMain() !void {
     if (launch_cmd) |cmd| {
         try msg("using launch command", .{});
         var child = std.ChildProcess.init(cmd, alloc);
+        child.env_map = &env_map;
         _ = try child.spawnAndWait();
         return;
     }
