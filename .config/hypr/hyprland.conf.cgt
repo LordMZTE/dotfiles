@@ -106,17 +106,18 @@ device:epic-mouse-v1 {
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 $mainMod = SUPER
 
-# Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-bind = $mainMod, RETURN, exec, foot # need to hard-code foot here, because WezTerm is currently too incompetent for WL
-bind = $mainMod + SHIFT, Q, killactive,
 bind = $mainMod + SHIFT, E, exit,
-bind = $mainMod + CTRL, E, exec, <% opt.commands.file_manager %>
+bind = $mainMod + SHIFT, Q, killactive,
 bind = $mainMod + SHIFT, SPACE, togglefloating, 
+bind = $mainMod, P, pseudo, # dwindle
+bind = $mainMod, R, togglesplit, # dwindle
+bind = $mainMod, F, fullscreen,
+
+bind = $mainMod, RETURN, exec, foot # need to hard-code foot here, because WezTerm is currently too incompetent for WL
+bind = $mainMod + CTRL, E, exec, <% opt.commands.file_manager %>
 bind = ALT, SPACE, exec, wofi --show drun
 bind = $mainMod + CTRL, B, exec, <% opt.commands.browser %>
-bind = $mainMod + SHIFT, P, pseudo, # dwindle
-bind = $mainMod + SHIFT, R, togglesplit, # dwindle
-bind = $mainMod, F, fullscreen,
+bind = $mainMod + SHIFT, P, exec, gpower2
 
 # Move focus with mainMod + arrow keys
 bind = $mainMod, left, movefocus, l
@@ -184,5 +185,5 @@ env = WLR_NO_HARDWARE_CURSORS, 1
 <! end !>
 
 exec-once = waybar
-exec-once = swaybg -i ~/.local/share/backgrounds/mzte.png
+exec-once = wpaperd
 exec-once = hyprctl setcursor <% opt.cursor.theme %> <% opt.cursor.size %>
