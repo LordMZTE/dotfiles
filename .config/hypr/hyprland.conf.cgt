@@ -188,6 +188,7 @@ bindm = $mainMod, mouse:272, movewindow
 bindm = $mainMod, mouse:273, resizewindow
 
 env = XDG_SESSION_TYPE, wayland
+env = MOZ_ENABLE_WAYLAND, 1
 
 <! if opt.nvidia then -- nvidia workarounds !>
 env = LIBVA_DRIVER_NAME, nvidia
