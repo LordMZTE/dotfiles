@@ -1,0 +1,3 @@
+<! for _, v in ipairs(opt.mzteinit_entries) do !>
+<% v.key %> <% v.label %>: <% table.concat(v.cmd, ",") %><! if v.quit then !> :Q<! end !>
+<! end !>

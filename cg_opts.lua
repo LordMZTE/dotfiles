@@ -1,5 +1,13 @@
 local opts = {}
 
+opts.mzteinit_entries = {
+    { key = "x", label = "startx",   cmd = { "starx" } },
+    { key = "s", label = "shell",    cmd = { "fish" } },
+    { key = "l", label = "logout",   cmd = { "!quit" } },
+    { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
+    { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },   quit = true },
+}
+
 -- Enable if you have good internet, used for stuff like making
 -- streamlink use low-latency mode.
 opts.good_internet = true

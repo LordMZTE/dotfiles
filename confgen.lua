@@ -11,9 +11,13 @@ cg.addFile ".vieterrc.cgt"
 
 -- Recursively merge 2 tables
 local function merge(a, b)
+    if b[1] then -- b is a list
+        return b
+    end
+
     for k, v in pairs(b) do
         if type(v) == "table" and type(a[k]) == "table" then
-            merge(a[k], v)
+            a[k] = merge(a[k], v)
         else
             a[k] = v
         end

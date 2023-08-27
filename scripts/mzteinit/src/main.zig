@@ -1,7 +1,7 @@
 const std = @import("std");
 const at = @import("ansi-term");
 const env = @import("env.zig");
-const run = @import("run.zig");
+const command = @import("command.zig");
 const util = @import("util.zig");
 
 const msg = @import("message.zig").msg;
@@ -68,7 +68,7 @@ fn tryMain() !void {
             arg.* = std.mem.span(arg_in);
         }
     }
-    
+
     var env_map = try std.process.getEnvMap(alloc);
     defer env_map.deinit();
 
@@ -94,10 +94,30 @@ fn tryMain() !void {
         return;
     }
 
+    const entries_config_path = try std.fs.path.join(alloc, &.{
+        env_map.get("XDG_CONFIG_HOME") orelse @panic("bork"),
+        "mzteinit",
+        "entries.cfg",
+    });
+    defer alloc.free(entries_config_path);
+
+    var entries_config_file = try std.fs.cwd().openFile(entries_config_path, .{});
+    defer entries_config_file.close();
+
+    const entries_config_data = try entries_config_file.readToEndAlloc(alloc, std.math.maxInt(usize));
+    defer alloc.free(entries_config_data);
+
+    const entries = try command.parseEntriesConfig(alloc, entries_config_data);
+    defer {
+        for (entries) |entry|
+            entry.deinit(alloc);
+        alloc.free(entries);
+    }
+
     while (true) {
         try stdout.writer().writeAll(util.ansi_clear);
 
-        const cmd = ui(&stdout) catch |e| {
+        const cmd = ui(&stdout, entries) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             break;
         };
@@ -124,7 +144,7 @@ fn tryMain() !void {
     }
 }
 
-fn ui(buf_writer: anytype) !run.Command {
+fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
     const w = buf_writer.writer();
     var style: ?at.style.Style = null;
 
@@ -143,11 +163,11 @@ fn ui(buf_writer: anytype) !run.Command {
     try updateStyle(w, .{ .font_style = .{ .bold = true } }, &style);
     try w.writeAll("     What do you want to do?\n\n");
 
-    for (std.enums.values(run.Command)) |tag| {
+    for (entries) |entry| {
         try updateStyle(w, .{ .foreground = .Cyan }, &style);
-        try w.print("[{c}] ", .{tag.char()});
+        try w.print("[{c}] ", .{entry.key});
         try updateStyle(w, .{ .foreground = .Green }, &style);
-        try w.print("{s}\n", .{@tagName(tag)});
+        try w.print("{s}\n", .{entry.label});
     }
     try at.format.resetStyle(w);
     style = .{};
@@ -160,12 +180,17 @@ fn ui(buf_writer: anytype) !run.Command {
     new_termios.lflag &= ~std.os.linux.ECHO; // No echoing stuff
     try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, new_termios);
 
-    var cmd: ?run.Command = null;
+    var cmd: ?command.Command = null;
     var c: [1]u8 = undefined;
     while (cmd == null) {
         std.debug.assert(try std.io.getStdIn().read(&c) == 1);
-        cmd = run.Command.fromChar(c[0]);
-        if (cmd == null) {
+        const key_upper = std.ascii.toUpper(c[0]);
+        for (entries) |entry| {
+            if (entry.key == key_upper) {
+                cmd = entry;
+                break;
+            }
+        } else {
             try w.print("Unknown command '{s}'\n", .{c});
             try buf_writer.flush();
         }
