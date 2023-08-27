@@ -4,6 +4,9 @@ local opts = {}
 -- streamlink use low-latency mode.
 opts.good_internet = true
 
+-- Enable if stuck on garbage hardware. Enables wayland-related workarounds.
+opts.nvidia = false
+
 opts.font = "Iosevka Nerd Font"
 opts.term_font = "IosevkaTerm Nerd Font Mono"
 

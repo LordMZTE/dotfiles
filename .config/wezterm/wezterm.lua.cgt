@@ -107,4 +107,5 @@
  ;; user error while compromising the experience of advanced users.
  ;; See https://github.com/wez/wezterm/issues/4168
  :set_environment_variables {:SHELL "<% shell %>"}
+ :enable_wayland false ;; WL is completely broken
  : keys}

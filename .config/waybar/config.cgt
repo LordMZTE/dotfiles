@@ -2,19 +2,23 @@
 {
     // "layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 25, // Waybar height (to be removed for auto height)
+    "height": 16, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
+
+    "layer": "top",
 
     //<! if opt.wayland_compositor == "river" then !>
     "modules-left": ["river/tags"],
     "modules-center": ["river/window"],
     //<! elseif opt.wayland_compositor == "hyprland" then !>
-    "modules-left": ["wlr/workspaces"],
-    "modules-center": ["wlr/taskbar"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
     //<! end !>
 
     "modules-right": ["cpu", "memory", "pulseaudio", "temperature", "battery", "battery#bat2", "clock", "tray"],
+
+    "hyprland/workspaces": {},
+
     "tray": {
         // "icon-size": 21,
         "spacing": 10
