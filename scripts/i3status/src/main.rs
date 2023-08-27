@@ -100,20 +100,20 @@ async fn spawn_blocks(bar: &mut BarState) -> anyhow::Result<()> {
     }
 
     spawn!(memory {
-        format: " $icon $mem_used_percents $mem_used/$mem_avail".parse()?,
-        format_alt: Some(" $icon $swap_used_percents $swap_used/$swap_free".parse()?),
+        format: " $icon $mem_used_percents $mem_used/$mem_avail ".parse()?,
+        format_alt: Some(" $icon $swap_used_percents $swap_used/$swap_free ".parse()?),
         ..Default::default()
     });
 
     spawn!(cpu {
         interval: 1.into(),
-        format: " $icon $frequency $barchart $utilization".parse()?,
+        format: " $icon $frequency $barchart $utilization ".parse()?,
         ..Default::default()
     });
 
     spawn!(temperature {
         interval: 5.into(),
-        format: " $icon $min - $average ~ $max +".parse()?,
+        format: " $icon $min - $average ~ $max + ".parse()?,
         chip: Some("*-isa-*".into()),
         idle: Some(40.),
         info: Some(65.),
@@ -124,13 +124,13 @@ async fn spawn_blocks(bar: &mut BarState) -> anyhow::Result<()> {
     match gpu::Type::get()? {
         gpu::Type::NVidia => {
             spawn!(nvidia_gpu {
-                format: " $icon $utilization $memory $temperature $fan_speed $power".parse()?,
+                format: " $icon $utilization $memory $temperature $fan_speed $power ".parse()?,
                 ..Default::default()
             });
         },
         gpu::Type::Amd => {
             spawn!(amd_gpu {
-                format: " $icon $utilization $vram_used_percents".parse()?,
+                format: " $icon $utilization $vram_used_percents ".parse()?,
                 ..Default::default()
             });
         },
@@ -139,25 +139,25 @@ async fn spawn_blocks(bar: &mut BarState) -> anyhow::Result<()> {
 
     spawn!(music {
         interface_name_exclude: vec![".*kdeconnect.*".to_string(), "mpd".to_string()],
-        format: " $icon {$combo.str(max_w:20, rot_interval:0.1) $prev $play $next|}".parse()?,
+        format: " $icon {$combo.str(max_w:20, rot_interval:0.1) $prev $play $next |}".parse()?,
         ..Default::default()
     });
 
     spawn!(sound {
-        format: " $icon $output_description{ $volume|}".parse()?,
+        format: " $icon $output_description{ $volume|} ".parse()?,
         ..Default::default()
     });
 
     spawn!(battery {
         interval: 10.into(),
-        format: " $icon $percentage $power".parse()?,
+        format: " $icon $percentage $power ".parse()?,
         missing_format: "".parse()?,
         ..Default::default()
     });
 
     spawn!(time {
         interval: 1.into(),
-        format: " $icon $timestamp.datetime(f:'%a %d.%m.%Y %T')".parse()?,
+        format: " $icon $timestamp.datetime(f:'%a %d.%m.%Y %T') ".parse()?,
         ..Default::default()
     });
 
