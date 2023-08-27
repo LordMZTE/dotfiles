@@ -106,6 +106,16 @@ device:epic-mouse-v1 {
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 $mainMod = SUPER
 
+# Media keys
+bind = ,XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
+bind = ,XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
+bind = ,XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle
+bind = ,XF86AudioMicMute, exec, pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bind = ,XF86AudioPlay, exec, playerctl play-pause
+bind = ,XF86AudioStop, exec, playerctl stop
+bind = ,XF86AudioNext, exec, playerctl next
+bind = ,XF86AudioPrev, exec, playerctl previous
+
 bind = $mainMod + SHIFT, E, exit,
 bind = $mainMod + SHIFT, Q, killactive,
 bind = $mainMod + SHIFT, SPACE, togglefloating, 
@@ -115,7 +125,7 @@ bind = $mainMod, F, fullscreen,
 
 bind = $mainMod, RETURN, exec, foot # need to hard-code foot here, because WezTerm is currently too incompetent for WL
 bind = $mainMod + CTRL, E, exec, <% opt.commands.file_manager %>
-bind = ALT, SPACE, exec, wofi --show drun
+bind = ALT, SPACE, exec, rofi -show combi
 bind = $mainMod + CTRL, B, exec, <% opt.commands.browser %>
 bind = $mainMod + SHIFT, P, exec, gpower2
 bind = ,PRINT, exec, grim -g "$(slurp)" ~/Downloads/screenshot.png
