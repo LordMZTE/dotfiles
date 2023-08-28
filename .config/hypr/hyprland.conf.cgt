@@ -1,5 +1,7 @@
 # See https://wiki.hyprland.org/Configuring/Monitors/
 #monitor=,preferred,auto,auto
+$mainMod = SUPER
+
 <% opt.getDeviceConf "hyprland.conf" %>
 
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
@@ -18,7 +20,6 @@ input {
     kb_layout = de
     kb_variant =
     kb_model =
-    kb_options =
     kb_rules =
 
     follow_mouse = 2
@@ -101,10 +102,6 @@ device:epic-mouse-v1 {
 # Example windowrule v2
 # windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
 # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
-
-
-# See https://wiki.hyprland.org/Configuring/Keywords/ for more
-$mainMod = SUPER
 
 # Media keys
 bind = ,XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
