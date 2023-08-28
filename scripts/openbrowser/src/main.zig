@@ -6,6 +6,7 @@ pub const std_options = struct {
 };
 
 const browsers = &[_][]const u8{
+    "brave",
     "firefox",
     "luakit",
     "chromium",
