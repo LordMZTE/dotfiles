@@ -197,3 +197,4 @@ env = WLR_NO_HARDWARE_CURSORS, 1
 exec-once = waybar
 exec-once = wpaperd
 exec-once = hyprctl setcursor <% opt.cursor.theme %> <% opt.cursor.size %>
+exec-once = wired # wired works meh on WL
