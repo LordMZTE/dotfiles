@@ -89,7 +89,7 @@ fn setWallpapersSwww(alloc: std.mem.Allocator, wps: []const []const u8) !u8 {
             "--transition-angle",
             "30",
             "--transition-bezier",
-            "0.5,0.0,0.5,1.0",
+            "0.8,0.0,0.2,1.0",
             "--transition-fps",
             "60",
             "--transition-duration",
