@@ -9,6 +9,18 @@ cg.addFile ".Xresources.cgt"
 cg.addFile ".replrc"
 cg.addFile ".vieterrc.cgt"
 
+cg.onDone(function(errors)
+    if errors then
+        print "ERRORS DURING CONFGEN"
+    else
+        print "updating gsettings"
+        cg.opt.system("gsettings set org.gnome.desktop.interface icon-theme " .. cg.opt.icon_theme)
+        cg.opt.system("gsettings set org.gnome.desktop.interface gtk-theme " .. cg.opt.gtk_theme)
+        cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
+        cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
+    end
+end)
+
 -- Recursively merge 2 tables
 local function merge(a, b)
     if b[1] then -- b is a list
