@@ -1,0 +1,58 @@
+# Media keys
+bind = ,XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
+bind = ,XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
+bind = ,XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle
+bind = ,XF86AudioMicMute, exec, pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bind = ,XF86AudioPlay, exec, playerctl play-pause
+bind = ,XF86AudioStop, exec, playerctl stop
+bind = ,XF86AudioNext, exec, playerctl next
+bind = ,XF86AudioPrev, exec, playerctl previous
+
+# Control keys
+bind = SUPER + SHIFT, E, exit,
+bind = SUPER + SHIFT, Q, killactive,
+bind = SUPER + SHIFT, SPACE, togglefloating, 
+bind = SUPER, P, pseudo, # dwindle
+bind = SUPER, R, togglesplit, # dwindle
+bind = SUPER, F, fullscreen,
+
+# Move focus with mainMod + arrow keys
+bind = SUPER, left, movefocus, l
+bind = SUPER, right, movefocus, r
+bind = SUPER, up, movefocus, u
+bind = SUPER, down, movefocus, d
+
+# HJKL
+bind = SUPER, H, movefocus, l
+bind = SUPER, L, movefocus, r
+bind = SUPER, K, movefocus, u
+bind = SUPER, J, movefocus, d
+
+# Window Moving
+bind = SUPER + SHIFT, left, movewindow, l
+bind = SUPER + SHIFT, right, movewindow, r
+bind = SUPER + SHIFT, up, movewindow, u
+bind = SUPER + SHIFT, down, movewindow, d
+
+# HJKL
+bind = SUPER + SHIFT, H, movewindow, l
+bind = SUPER + SHIFT, L, movewindow, r
+bind = SUPER + SHIFT, K, movewindow, u
+bind = SUPER + SHIFT, J, movewindow, d
+
+# Workspace keybinds
+<! for i = 1, 9 do !>
+bind = SUPER, <% i %>, workspace, <% i %>
+bind = SUPER SHIFT, <% i %>, movetoworkspacesilent, <% i %>
+<! end !>
+
+bind = SUPER, 0, workspace, 10
+bind = SUPER SHIFT, 0, movetoworkspacesilent, 10
+
+# Scroll through existing workspaces with mainMod + scroll
+bind = SUPER, mouse_down, workspace, e+1
+bind = SUPER, mouse_up, workspace, e-1
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = SUPER, mouse:272, movewindow
+bindm = SUPER, mouse:273, resizewindow

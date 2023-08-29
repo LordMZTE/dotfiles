@@ -112,7 +112,7 @@ window#waybar.PCSX2 #window {
 	margin-bottom: 0;
 	transition: none;
 	color: @base;
-	background: @green;
+	background: @blue;
 }
 
 #clock {
@@ -125,6 +125,17 @@ window#waybar.PCSX2 #window {
 	transition: none;
 	color: @text;
 	background: @mantle;
+}
+
+#gamemode {
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-bottom: 0;
+	transition: none;
+	color: @text;
+	background: @red;
 }
 
 #tray {
