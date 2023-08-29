@@ -1,9 +1,9 @@
 bind = SUPER, RETURN, exec, foot # need to hard-code foot here, because WezTerm is currently too incompetent for WL
-bind = SUPER + CTRL, E, exec, <% opt.commands.file_manager %>
+bind = SUPER CTRL, E, exec, <% opt.commands.file_manager %>
 bind = ALT, SPACE, exec, rofi -show combi
-bind = SUPER + CTRL, B, exec, <% opt.commands.browser %>
-bind = SUPER + SHIFT, P, exec, gpower2
+bind = SUPER CTRL, B, exec, <% opt.commands.browser %>
+bind = SUPER SHIFT, P, exec, gpower2
 bind = ,PRINT, exec, grim -g "$(slurp; sleep 1)" ~/Downloads/screenshot.png
 bind = SHIFT, PRINT, exec, grim -g "$(slurp; sleep 1)" - | feh -
-bind = SUPER + SHIFT, W, exec, randomwallpaper
+bind = SUPER SHIFT, W, exec, randomwallpaper
 
