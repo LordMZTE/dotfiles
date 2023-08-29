@@ -125,7 +125,7 @@ bind = $mainMod + CTRL, E, exec, <% opt.commands.file_manager %>
 bind = ALT, SPACE, exec, rofi -show combi
 bind = $mainMod + CTRL, B, exec, <% opt.commands.browser %>
 bind = $mainMod + SHIFT, P, exec, gpower2
-bind = ,PRINT, exec, grim -g "$(slurp)" ~/Downloads/screenshot.png
+bind = ,PRINT, exec, XDG_CURRENT_DESKTOP=sway flameshot gui
 bind = SHIFT, PRINT, exec, grim -g "$(slurp)" - | feh -
 
 # Move focus with mainMod + arrow keys
