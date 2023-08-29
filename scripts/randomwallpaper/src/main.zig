@@ -9,7 +9,7 @@ pub const std_options = struct {
 pub fn main() !u8 {
     const alloc = std.heap.c_allocator;
     const home_s = std.os.getenv("HOME") orelse return error.HomeNotSet;
-    const screens = try xinerama.getHeadCount();
+    const runtime_dir = std.os.getenv("XDG_RUNTIME_DIR") orelse return error.MissingRuntimeDir;
 
     var walker = Walker.init(alloc);
     defer walker.deinit();
@@ -23,44 +23,21 @@ pub fn main() !u8 {
 
     try walkLocalWps(&walker, home_s);
 
-    const feh_baseargs = [_][]const u8{
-        "feh",
-        "--no-fehbg",
-        "--bg-fill",
+    const swww_socket_path = try std.fs.path.join(alloc, &.{ runtime_dir, "swww.socket" });
+    defer alloc.free(swww_socket_path);
+
+    const has_swww = if (std.fs.cwd().statFile(swww_socket_path)) |_| true else |e| switch (e) {
+        error.FileNotFound => false,
+        else => return e,
     };
 
-    var feh_argv = try alloc.alloc(
-        []const u8,
-        feh_baseargs.len + @as(usize, @intCast(screens)),
-    );
-    defer alloc.free(feh_argv);
-    std.mem.copy([]const u8, feh_argv, &feh_baseargs);
-
-    var prng = std.rand.DefaultPrng.init(std.crypto.random.int(u64));
-    const rand = prng.random();
-
-    var i: u31 = 0;
-    while (i < screens) : (i += 1) {
-        const idx = rand.uintAtMost(usize, walker.files.items.len - 1);
-        feh_argv[feh_baseargs.len + i] = walker.files.items[idx];
+    if (has_swww) {
+        std.log.info("found running swww daemon, using swww backend", .{});
+        return try setWallpapersSwww(alloc, walker.files.items);
+    } else {
+        std.log.info("using X/feh backend", .{});
+        return try setWallpapersX(alloc, walker.files.items);
     }
-
-    std.log.info("feh argv: {s}", .{feh_argv});
-    var child = std.ChildProcess.init(feh_argv, alloc);
-    const term = try child.spawnAndWait();
-
-    const exit = switch (term) {
-        .Exited => |n| n,
-        .Signal,
-        .Stopped,
-        .Unknown,
-        => |n| b: {
-            std.log.err("Child borked with code {}", .{n});
-            break :b 1;
-        },
-    };
-
-    return exit;
 }
 
 fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
@@ -80,4 +57,101 @@ fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
     defer local_wp.close();
 
     try walker.walk(local_wp);
+}
+
+fn setWallpapersSwww(alloc: std.mem.Allocator, wps: []const []const u8) !u8 {
+    const exec_res = try std.process.Child.exec(.{
+        .allocator = alloc,
+        .argv = &.{ "swww", "query" },
+    });
+    defer alloc.free(exec_res.stdout);
+    defer alloc.free(exec_res.stderr);
+
+    if (!std.meta.eql(exec_res.term, .{ .Exited = 0 }))
+        return error.SwwwQuery;
+
+    var prng = std.rand.DefaultPrng.init(std.crypto.random.int(u64));
+    const rand = prng.random();
+
+    var output_iter = std.mem.tokenizeScalar(u8, exec_res.stdout, '\n');
+    while (output_iter.next()) |line| {
+        if (line.len == 0) continue;
+        const output = std.mem.sliceTo(line, ':');
+
+        const argv = [_][]const u8{
+            "swww",
+            "img",
+            wps[rand.uintAtMost(usize, wps.len - 1)],
+            "--outputs",
+            output,
+            "--transition-type",
+            "wipe",
+            "--transition-angle",
+            "30",
+            "--transition-bezier",
+            "0.5,0.0,0.5,1.0",
+            "--transition-fps",
+            "60",
+            "--transition-duration",
+            "2",
+        };
+
+        var child = std.process.Child.init(&argv, alloc);
+        const term = try child.spawnAndWait();
+        const code = switch (term) {
+            .Exited => |n| n,
+            .Signal,
+            .Stopped,
+            .Unknown,
+            => |n| b: {
+                std.log.err("Child borked with code {}", .{n});
+                break :b 1;
+            },
+        };
+
+        if (code != 0) return code;
+    }
+
+    return 0;
+}
+
+fn setWallpapersX(alloc: std.mem.Allocator, wps: []const []const u8) !u8 {
+    const screens = try xinerama.getHeadCount();
+
+    const feh_baseargs = [_][]const u8{
+        "feh",
+        "--no-fehbg",
+        "--bg-fill",
+    };
+
+    var feh_argv = try alloc.alloc(
+        []const u8,
+        feh_baseargs.len + @as(usize, @intCast(screens)),
+    );
+    defer alloc.free(feh_argv);
+    std.mem.copy([]const u8, feh_argv, &feh_baseargs);
+
+    var prng = std.rand.DefaultPrng.init(std.crypto.random.int(u64));
+    const rand = prng.random();
+
+    var i: u31 = 0;
+    while (i < screens) : (i += 1) {
+        const idx = rand.uintAtMost(usize, wps.len - 1);
+        feh_argv[feh_baseargs.len + i] = wps[idx];
+    }
+
+    std.log.info("feh argv: {s}", .{feh_argv});
+    var child = std.process.Child.init(feh_argv, alloc);
+    const term = try child.spawnAndWait();
+
+    return switch (term) {
+        .Exited => |n| n,
+        .Signal,
+        .Stopped,
+        .Unknown,
+        => |n| b: {
+            std.log.err("Child borked with code {}", .{n});
+            break :b 1;
+        },
+    };
 }
