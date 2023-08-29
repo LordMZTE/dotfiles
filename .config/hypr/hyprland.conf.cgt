@@ -136,6 +136,7 @@ bind = $mainMod + CTRL, B, exec, <% opt.commands.browser %>
 bind = $mainMod + SHIFT, P, exec, gpower2
 bind = ,PRINT, exec, XDG_CURRENT_DESKTOP=sway flameshot gui
 bind = SHIFT, PRINT, exec, grim -g "$(slurp)" - | feh -
+bind = $mainMod + SHIFT, W, exec, randomwallpaper
 
 # Move focus with mainMod + arrow keys
 bind = $mainMod, left, movefocus, l
