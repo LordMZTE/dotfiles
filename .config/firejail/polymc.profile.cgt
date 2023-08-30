@@ -16,7 +16,8 @@ nodvd
 nogroups
 noinput
 nonewprivs
-noroot
+# Breaks GameMode
+#noroot 
 notv
 nou2f
 novideo
