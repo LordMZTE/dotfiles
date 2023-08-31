@@ -21,6 +21,7 @@
 
   ;; Compile scripts
   (install-zig "scripts/alecor")
+  (install-zig "scripts/hyprtool")
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/openbrowser")
