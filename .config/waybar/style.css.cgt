@@ -71,6 +71,17 @@ window#waybar.PCSX2 #window {
 	background: @teal;
 }
 
+#mpris {
+	margin-top: 8px;
+	margin-left: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin-bottom: 0;
+	transition: none;
+	color: @text;
+	background: @surface0;
+}
+
 #temperature {
 	margin-top: 8px;
 	margin-left: 8px;
