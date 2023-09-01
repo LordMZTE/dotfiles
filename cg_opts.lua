@@ -1,7 +1,7 @@
 local opts = {}
 
 opts.mzteinit_entries = {
-    { key = "x", label = "startx",   cmd = { "starx" } },
+    { key = "x", label = "startx",   cmd = { "startx" } },
     { key = "s", label = "shell",    cmd = { "fish" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },
     { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
