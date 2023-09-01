@@ -88,6 +88,10 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         try env.put("QT_QPA_PLATFORMTHEME", "qt5ct");
         try env.put("GTK_THEME", @import("opts").gtk_theme); // gtk theme from confgen
 
+        // this stops GTK from dbus-launching the mid-bogglingly pointless at-spi daemon
+        try env.put("NO_AT_BRIDGE", "1");
+        try env.put("GTK_A11Y", "none");
+
         // use xdg-desktop-portal
         try env.put("GTK_USE_PORTAL", "1");
 
