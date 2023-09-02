@@ -33,13 +33,26 @@
     ],
     "mpris": {
         "format": "{status_icon} {dynamic}",
+        "dynamic-order": [
+            "title",
+            "artist",
+            "position",
+            "length"
+        ],
+        "dynamic-importance-order": [
+            "title",
+            "position",
+            "length",
+            "artist",
+            "album"
+        ],
         "status-icons": {
             "playing": "󰏤",
             "paused": "󰐊",
             "stopped": "󰓛"
         },
         "dynamic-len": 50,
-        "dynamic-separator": "  "
+        "dynamic-separator": " 󱓜 "
     },
     "gamemode": {
         "format": "{glyph} {count}"
