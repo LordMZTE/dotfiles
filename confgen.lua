@@ -21,6 +21,8 @@ cg.onDone(function(errors)
     end
 end)
 
+local fennel = loadfile("/usr/share/lua/5.4/fennel.lua")()
+
 -- Recursively merge 2 tables
 local function merge(a, b)
     if b[1] then -- b is a list
@@ -83,19 +85,11 @@ cg.opt.luaCompile = function(lua)
 end
 
 -- Compile the input as fennel. Meant to be used as a post-processor.
-cg.opt.fennelCompile = function(fnl)
-    local handle = io.popen("fennel -c - > /tmp/cgfnl", "w")
-    if handle == nil then
-        error "Failed to spawn fennel"
-    end
+cg.opt.fennelCompile = fennel.compileString
 
-    handle:write(fnl)
-    handle:close()
-
-    local f = io.open "/tmp/cgfnl"
-    local res = f:read "*a"
-    f:close()
-    return res
+-- Evaluate fennel code and JSONify the result. Meant to be used as a post-processor.
+cg.opt.fennelToJSON = function(str)
+    return cg.toJSON(fennel.eval(str))
 end
 
 -- Check if the given file exists

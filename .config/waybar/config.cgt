@@ -1,134 +1,58 @@
-// vim: ft=jsonc
-{
-    // "layer": "top", // Waybar at top layer
-    // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 16, // Waybar height (to be removed for auto height)
-    // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
-    "layer": "top",
-    //<! if opt.wayland_compositor == "river" then !>
-    "modules-left": [
-        "river/tags"
-    ],
-    "modules-center": [
-        "river/window"
-    ],
-    //<! elseif opt.wayland_compositor == "hyprland" then !>
-    "modules-left": [
-        "hyprland/workspaces",
-        "hyprland/window"
-    ],
-    //<! end !>
-    "modules-right": [
-        "mpris",
-        "cpu",
-        "memory",
-        "pulseaudio",
-        "gamemode",
-        "temperature",
-        "battery",
-        "battery#bat2",
-        "clock",
-        "tray"
-    ],
-    "mpris": {
-        "format": "{status_icon} {dynamic}",
-        "dynamic-order": [
-            "title",
-            "artist",
-            "position",
-            "length"
-        ],
-        "dynamic-importance-order": [
-            "title",
-            "position",
-            "length",
-            "artist",
-            "album"
-        ],
-        "status-icons": {
-            "playing": "󰏤",
-            "paused": "󰐊",
-            "stopped": "󰓛"
-        },
-        "dynamic-len": 50,
-        "dynamic-separator": " 󱓜 "
-    },
-    "gamemode": {
-        "format": "{glyph} {count}"
-    },
-    "tray": {
-        // "icon-size": 21,
-        "spacing": 10
-    },
-    "clock": {
-        // "timezone": "America/New_York",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
-    },
-    "cpu": {
-        "format": "{usage}% ",
-        "tooltip": false
-    },
-    "memory": {
-        "format": "{}% "
-    },
-    "temperature": {
-        // "thermal-zone": 2,
-        "hwmon-path": "<% opt.cpu_temp_hwmon %>",
-        "critical-threshold": 80,
-        // "format-critical": "{temperatureC}°C {icon}",
-        "format": "{temperatureC}°C {icon}",
-        "format-icons": [
-            "",
-            "",
-            ""
-        ]
-    },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% 󰂄",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
-        "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
-        ]
-    },
-    "battery#bat2": {
-        "bat": "BAT2"
-    },
-    "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon} {format_source}",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": "󰝟 {icon} {format_source}",
-        "format-muted": "󰝟 {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": [
-                "",
-                "",
-                ""
-            ]
-        },
-        "on-click": "pavucontrol"
-    },
-}
+;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
+;; vim: ft=fennel
+{:spacing 4
+ :layer :top
+ ;<! if opt.wayland_compositor == "river" then !>
+ :modules-left [:river/tags :river/window]
+ ;<! elseif opt.wayland_compositor == "hyprland" then !>
+ :modules-left [:hyprland/workspaces :hyprland/window]
+ ;<! end !>
+ :modules-right [:mpris
+                 :cpu
+                 :memory
+                 :pulseaudio
+                 :gamemode
+                 :temperature
+                 :battery
+                 :clock
+                 :tray]
+ :mpris {:format "{status_icon} {dynamic}"
+         :dynamic-order [:title :artist :position :length]
+         :dynamic-importance-order [:title :position :length :artist :album]
+         :status-icons {:playing "󰏤" :paused "󰐊" :stopped "󰓛"}
+         :dynamic-len 50
+         :dynamic-separators " 󱓜 "}
+ :gamemode {:format "{glyph} {count}"}
+ :tray {:spacing 10}
+ :clock {:tooltip-format "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+         :format-alt "{:%Y-%m-%d}"}
+ :cpu {:format "{usage}% "}
+ :memory {:format "{}% "}
+ :temperature {:hwmon-path "<% opt.cpu_temp_hwmon %>"
+               :critical-threshold 80
+               :format "{temperatureC}°C {icon}"
+               :format-icons ["" "" ""]}
+ :battery {:states {:warning 50 :critical 20}
+           :format "{capacity}% {icon}"
+           :format-charging "{capacity}% 󰂄"
+           :format-plugged "{capacity}% "
+           :format-alt "{time} {icon}"
+           :format-icons ["" "" "" "" ""]}
+ :pulseaudio (let [fstring (fn [muted bluetooth]
+                             (.. (if muted "󰝟" "{volume}%")
+                                 (if (and muted (not bluetooth)) "" " {icon}")
+                                 (if bluetooth "" "") " {format_source}"))]
+               {:format (fstring false false)
+                :format-muted (fstring true false)
+                :format-bluetooth (fstring false true)
+                :format-bluetooth-muted (fstring true true)
+                :format-source "{volume}% "
+                :format-source-muted ""
+                :format-icons {:headphone ""
+                               :hands-free ""
+                               :headset ""
+                               :phone ""
+                               :portable ""
+                               :car ""
+                               :default ["" "" ""]}
+                :on-click :pavucontrol})}
