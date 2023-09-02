@@ -78,7 +78,6 @@ IndentWidth: 4
 IndentWrappedFunctionNames: false
 #InsertBraces: false
 InsertTrailingCommas: Wrapped
-JavaImportGroups: ["java"]
 JavaScriptQuotes: Double
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
@@ -94,7 +93,7 @@ ReflowComments: true
 #RequiresClausePosition: OwnLine
 #RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always
-SortIncludes: CaseInsensitive
+SortIncludes: false
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: true
