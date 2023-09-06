@@ -39,7 +39,7 @@ export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {
 }
 
 fn tryMain(mpv: *c.mpv_handle) !void {
-    var skipped_chapter_ids = std.AutoHashMap(usize, void).init(std.heap.c_allocator);
+    var skipped_chapter_ids = std.AutoHashMap(isize, void).init(std.heap.c_allocator);
     defer skipped_chapter_ids.deinit();
 
     try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "chapter", c.MPV_FORMAT_INT64));
@@ -53,6 +53,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
             c.MPV_EVENT_PROPERTY_CHANGE => {
                 const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
                 if (std.mem.eql(u8, "chapter", std.mem.span(evprop.name))) {
+                    std.debug.assert(evprop.format == c.MPV_FORMAT_INT64);
                     const chapter_id_ptr = @as(?*i64, @ptrCast(@alignCast(evprop.data)));
                     if (chapter_id_ptr) |chptr|
                         try onChapterChange(mpv, @intCast(chptr.*), &skipped_chapter_ids);
@@ -78,10 +79,10 @@ fn msg(mpv: *c.mpv_handle, comptime fmt: []const u8, args: anytype) !void {
 
 fn onChapterChange(
     mpv: *c.mpv_handle,
-    chapter_id: usize,
-    skipped: *std.AutoHashMap(usize, void),
+    chapter_id: isize,
+    skipped: *std.AutoHashMap(isize, void),
 ) !void {
-    if (skipped.contains(chapter_id))
+    if (chapter_id < 0 or skipped.contains(chapter_id))
         return;
 
     // fuck these ubiquitous duck typing implementations everywhere! we have structs, for fuck's sake!
@@ -97,13 +98,16 @@ fn onChapterChange(
 
     const chapter_nodes = chapter_list_node.u.list.*.values[0..@intCast(chapter_list_node.u.list.*.num)];
 
-    std.debug.assert(chapter_nodes[chapter_id].format == c.MPV_FORMAT_NODE_MAP);
-    const chapter = Chapter.fromNodeMap(chapter_nodes[chapter_id].u.list.*);
+    std.debug.assert(chapter_nodes[@intCast(chapter_id)].format == c.MPV_FORMAT_NODE_MAP);
+    const chapter = Chapter.fromNodeMap(chapter_nodes[@intCast(chapter_id)].u.list.*);
 
     if (chapter.skipReason()) |reason| {
         const end_time = if (chapter_id != chapter_nodes.len - 1) end_time: {
-            std.debug.assert(chapter_nodes[chapter_id + 1].format == c.MPV_FORMAT_NODE_MAP);
-            const next_chapter = Chapter.fromNodeMap(chapter_nodes[chapter_id + 1].u.list.*);
+            std.debug.assert(chapter_nodes[@as(usize, @intCast(chapter_id)) + 1].format ==
+                c.MPV_FORMAT_NODE_MAP);
+            const next_chapter = Chapter.fromNodeMap(
+                chapter_nodes[@as(usize, @intCast(chapter_id)) + 1].u.list.*,
+            );
             break :end_time next_chapter.time;
         } else end_time: {
             var end_time: f64 = 0.0;
