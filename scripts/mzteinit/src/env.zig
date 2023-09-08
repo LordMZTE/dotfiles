@@ -47,10 +47,6 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // mix (elixir package manager) should respect XDG
     try env.put("MIX_XDG", "1");
 
-    // use clang
-    try env.put("CC", "clang");
-    try env.put("CXX", "clang++");
-
     // neovim
     try env.put("EDITOR", "nvim");
 
