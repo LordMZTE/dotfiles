@@ -2,6 +2,7 @@ local opts = {}
 
 opts.mzteinit_entries = {
     { key = "x", label = "startx",   cmd = { "startx" } },
+    { key = "h", label = "hyprland", cmd = { "Hyprland" } },
     { key = "s", label = "shell",    cmd = { "fish" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },
     { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
