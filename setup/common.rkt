@@ -35,7 +35,7 @@
   (λ (exe . args)
     (unless (apply system* (find-executable-path exe) args)
       (raise-user-error "Command Failed"))))
-(define-logging rm delete-directory/files)
+(define-logging rm (λ (path) (delete-directory/files path #:must-exist? false)))
 (define-logging copy copy-directory/files)
 
 (define-logging install-zig
