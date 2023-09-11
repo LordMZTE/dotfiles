@@ -18,6 +18,7 @@
   (mklink "scripts/startriver.sh" (bin-path "startriver"))
   (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
   (mklink "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
+  (mklink "scripts/videos-duration.sh" (bin-path "videos-duration"))
 
   ;; Compile scripts
   (install-zig "scripts/alecor")
