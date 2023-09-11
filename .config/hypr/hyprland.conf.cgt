@@ -8,8 +8,6 @@ input {
     touchpad {
         natural_scroll = no
     }
-
-    sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
 }
 
 general {
