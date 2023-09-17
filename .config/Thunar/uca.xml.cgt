@@ -29,7 +29,7 @@
 <action>
     <name>rm -rf</name>
     <icon>user-trash-full</icon>
-    <command><% opt.commands.zenity %> --text "Delete these files?\n\n%F" &amp;&amp; rm -rf %F</command>
+    <command>[ "$(echo -e "Yes\nNo" | rofi -dmenu -theme ~/.local/share/rofi/applets/confirm.rasi -mesg $'Delete these Files?\n\n%F')" == Yes ] &amp;&amp; rm -rf %F</command>
     <description>force delete stuff</description>
     <patterns>*</patterns>
 
