@@ -18,10 +18,11 @@ cg.onDone(function(errors)
         cg.opt.system("gsettings set org.gnome.desktop.interface gtk-theme " .. cg.opt.gtk_theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
+        cg.opt.system("gsettings set org.gnome.desktop.interface font-name \"" .. cg.opt.font .. " 11\"")
     end
 end)
 
-local fennel = loadfile("/usr/share/lua/5.4/fennel.lua")()
+local fennel = loadfile "/usr/share/lua/5.4/fennel.lua" ()
 
 -- Recursively merge 2 tables
 local function merge(a, b)

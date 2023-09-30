@@ -1,3 +1,4 @@
 gtk-icon-theme-name="<% opt.icon_theme %>"
 gtk-cursor-theme-name="<% opt.cursor.theme %>"
 gtk-theme-name="<% opt.gtk_theme %>"
+gtk-font-name="<% opt.font %> 11"
