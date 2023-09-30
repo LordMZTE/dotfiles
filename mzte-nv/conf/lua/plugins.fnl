@@ -6,7 +6,7 @@
   `#(require ,(.. :pluginconf.p- plugin)))
 
 (fn use/mztegit [plugin opts]
-  (let [url (.. "https://mzte.de/git/nvim-plugins/" plugin)
+  (let [url (.. "https://git.mzte.de/nvim-plugins/" plugin)
         opt (or opts {})]
     (tset opt 1 url)
     (packer.use opt)))
