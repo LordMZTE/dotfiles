@@ -48,7 +48,10 @@ opts.commands = {
     file_manager_daemon = "thunar --daemon",
     -- zenity-compatible dialoger
     zenity = "yad",
-    notification_daemon = "wired",
+    notification_daemon = {
+        x = "wired",
+        wl = "mako",
+    },
     screen_lock = string.format("i3lock -ti %s/.local/share/backgrounds/mzte.png", os.getenv "HOME"),
 }
 
@@ -58,5 +61,34 @@ opts.gamemode = {
 }
 
 opts.dev_dir = os.getenv "HOME" .. "/dev"
+
+opts.catppuccin = {
+    base = "#1e1e2e",
+    blue = "#89b4fa",
+    crust = "#11111b",
+    flamingo = "#f2cdcd",
+    green = "#a6e3a1",
+    lavender = "#b4befe",
+    mantle = "#181825",
+    maroon = "#eba0ac",
+    mauve = "#cba6f7",
+    overlay0 = "#6c7086",
+    overlay1 = "#7f849c",
+    overlay2 = "#9399b2",
+    peach = "#fab387",
+    pink = "#f5c2e7",
+    red = "#f38ba8",
+    rosewater = "#f5e0dc",
+    sapphire = "#74c7ec",
+    sky = "#89dceb",
+    subtext0 = "#a6adc8",
+    subtext1 = "#bac2de",
+    surface0 = "#313244",
+    surface1 = "#45475a",
+    surface2 = "#585b70",
+    teal = "#94e2d5",
+    text = "#cdd6f4",
+    yellow = "#f9e2af",
+}
 
 return opts

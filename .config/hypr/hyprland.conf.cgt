@@ -82,4 +82,6 @@ exec-once = waybar
 exec-once = swww-daemon
 exec-once = sleep 1 && randomwallpaper
 exec-once = hyprctl setcursor <% opt.cursor.theme %> <% opt.cursor.size %>
-exec-once = wired # wired works meh on WL
+<! if opt.commands.notification_daemon.wl then !>
+exec-once = <% opt.commands.notification_daemon.wl %>
+<! end !>
