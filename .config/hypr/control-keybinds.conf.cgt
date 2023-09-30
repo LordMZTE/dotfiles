@@ -15,6 +15,7 @@ bind = SUPER SHIFT, SPACE, togglefloating,
 bind = SUPER, P, pseudo, # dwindle
 bind = SUPER, R, togglesplit, # dwindle
 bind = SUPER, F, fullscreen,
+bind = SUPER, T, fullscreen, 1 # maximize
 bind = SUPER SHIFT, F, exec, hyprtool fullerscreen
 bind = SUPER CTRL, F, fakefullscreen,
 
