@@ -1,0 +1,15 @@
+<! function col(c)
+    return opt.catppuccin[c]:gsub("^#", "0x")
+end !>
+
+[colours]
+background = <% col "mantle" %>;
+border = <% col "red" %>;
+text = <% col "text" %>;
+error-text = <% col "red" %>;
+pin-background = <% col "base" %>;
+pin-border = <% col "green" %>;
+pin-square = <% col "mauve" %>;
+ok-button = <% col "blue" %>;
+not-ok-button = <% col "maroon" %>;
+cancel-button = <% col "red" %>;
