@@ -1,0 +1,3 @@
+#!/bin/sh
+# This essentially overrides the pinentry prompt to use wayprompt.
+exec pinentry-wayprompt "$@"
