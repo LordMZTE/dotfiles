@@ -146,7 +146,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         // racket bins
         racket: {
             try msg("acquiring racket binary path...", .{});
-            const res = std.ChildProcess.exec(.{
+            const res = std.process.Child.run(.{
                 .allocator = alloc,
                 .argv = &.{
                     "racket",

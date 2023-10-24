@@ -60,7 +60,7 @@ fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
 }
 
 fn setWallpapersSwww(alloc: std.mem.Allocator, wps: []const []const u8) !u8 {
-    const exec_res = try std.process.Child.exec(.{
+    const exec_res = try std.process.Child.run(.{
         .allocator = alloc,
         .argv = &.{ "swww", "query" },
     });
