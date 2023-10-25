@@ -41,15 +41,14 @@ pub fn main() !void {
     //const editor_argv = [_][]const u8{
     //    "neovide",
     //    "--nofork",
-    //    "--x11-wm-class",
+    //    "--wayland_app_id",
     //    "vinput-editor",
     //    filename,
     //};
 
     const editor_argv = [_][]const u8{
-        "wezterm",
-        "start",
-        "--class",
+        "foot",
+        "--app-id",
         "vinput-editor",
         "--",
         "nvim",

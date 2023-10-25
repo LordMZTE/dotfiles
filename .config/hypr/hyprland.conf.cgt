@@ -63,6 +63,9 @@ dwindle {
     preserve_split = yes
 }
 
+windowrule = float,^(vinput-editor)$
+windowrule = center,^(vinput-editor)$
+
 source = ~/.config/hypr/control-keybinds.conf
 source = ~/.config/hypr/prog-keybinds.conf
 
