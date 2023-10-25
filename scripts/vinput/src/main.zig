@@ -30,20 +30,12 @@ pub fn main() !void {
     var cp = try ClipboardConnection.init();
     defer cp.deinit();
 
-    const cp_data = try cp.getText();
-    defer if (cp_data) |d| {
-        _ = c.XFree(d.ptr);
-    };
-
     {
         const file = try std.fs.createFileAbsolute(filename, .{});
         defer file.close();
 
-        if (cp_data) |data| {
-            try file.writeAll(data);
-        } else {
-            std.log.info("clipboard empty", .{});
-        }
+        std.log.info("telling compositor to write clipboard content into tmpfile...", .{});
+        try cp.getContent(file.handle);
     }
 
     //const editor_argv = [_][]const u8{
@@ -91,7 +83,6 @@ pub fn main() !void {
 
         std.log.info("mmapping tempfile", .{});
 
-        // ooooh memmap, performance!
         const fcontent = try std.os.mmap(
             null,
             stat.size,
@@ -102,7 +93,7 @@ pub fn main() !void {
         );
         defer std.os.munmap(fcontent);
 
-        try cp.provide(std.mem.trim(u8, fcontent, " \n\r"));
+        try cp.serveContent(std.mem.trim(u8, fcontent, " \n\r"));
     }
     std.log.info("deleting tempfile {s}", .{filename});
     try std.fs.deleteFileAbsolute(filename);

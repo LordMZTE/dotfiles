@@ -1,196 +1,307 @@
 const std = @import("std");
-const ffi = @import("ffi.zig");
-const c = ffi.c;
+const wayland = @import("wayland");
+const wl = wayland.client.wl;
+const xdg = wayland.client.xdg;
 
-const log = std.log.scoped(.clipboard);
+const log = std.log.scoped(.wayland_clipboard);
 
-dpy: *c.Display,
-win: c.Window,
+display: *wl.Display,
+shm: *wl.Shm,
+seat: *wl.Seat,
+compositor: *wl.Compositor,
+data_device_manager: *wl.DataDeviceManager,
+xdg_wm_base: *xdg.WmBase,
 
 const ClipboardConnection = @This();
 
-pub fn init() !ClipboardConnection {
-    const dpy = c.XOpenDisplay(
-        c.getenv("DISPLAY") orelse return error.DisplayNotSet,
-    ) orelse return error.OpenDisplay;
-    errdefer _ = c.XCloseDisplay(dpy);
+const GlobalCollector = struct {
+    seat: ?*wl.Seat,
+    shm: ?*wl.Shm,
+    compositor: ?*wl.Compositor,
+    data_device_manager: ?*wl.DataDeviceManager,
+    xdg_wm_base: ?*xdg.WmBase,
+};
 
-    const screen_n = c.XDefaultScreen(dpy);
-    const screen = c.XScreenOfDisplay(dpy, screen_n);
-    const win = c.XCreateSimpleWindow(
-        dpy,
-        screen.*.root,
-        0,
-        0,
-        1,
-        1,
-        0,
-        screen.*.black_pixel,
-        screen.*.white_pixel,
-    );
-    _ = c.XStoreName(dpy, win, "vinput");
+const PopupWindow = struct {
+    surface: *wl.Surface,
+    xdg_surface: *xdg.Surface,
+    xdg_toplevel: *xdg.Toplevel,
+    shm_pool: *wl.ShmPool,
+    shm_buf: *wl.Buffer,
+
+    fn show(cc: *ClipboardConnection) !PopupWindow {
+        const surf = try cc.compositor.createSurface();
+        errdefer surf.destroy();
+
+        const xdg_surface = try cc.xdg_wm_base.getXdgSurface(surf);
+        errdefer xdg_surface.destroy();
+        xdg_surface.setListener(*const void, xdgSurfaceConfigureListener, &{});
+
+        const xdg_toplevel = try xdg_surface.getToplevel();
+        errdefer xdg_toplevel.destroy();
+        xdg_toplevel.setTitle("vinput");
+
+        surf.commit();
+
+        try cc.roundtrip();
+
+        const width = 1;
+        const height = 1;
+        const stride = width * 4;
+        const size = stride * height; // 1x1x4 bytes
+
+        const memfd = try std.os.memfd_create("surface_shm", 0);
+        defer std.os.close(memfd);
+        try std.os.ftruncate(memfd, size);
+
+        const shm_pool = try cc.shm.createPool(memfd, size);
+        errdefer shm_pool.destroy();
+        const shm_buf = try shm_pool.createBuffer(0, width, height, stride, .argb8888);
+        errdefer shm_buf.destroy();
+
+        surf.attach(shm_buf, 0, 0);
+        surf.damage(0, 0, width, height);
+        surf.commit();
+
+        try cc.roundtrip();
+
+        return .{
+            .surface = surf,
+            .xdg_surface = xdg_surface,
+            .xdg_toplevel = xdg_toplevel,
+            .shm_pool = shm_pool,
+            .shm_buf = shm_buf,
+        };
+    }
+
+    fn deinit(self: PopupWindow) void {
+        self.shm_buf.destroy();
+        self.shm_pool.destroy();
+        self.xdg_toplevel.destroy();
+        self.xdg_surface.destroy();
+        self.surface.destroy();
+    }
+};
+
+pub fn init() !ClipboardConnection {
+    const dpy = try wl.Display.connect(null);
+    errdefer dpy.disconnect();
+
+    const registry = try dpy.getRegistry();
+    defer registry.destroy();
+
+    var globals = GlobalCollector{
+        .shm = null,
+        .seat = null,
+        .compositor = null,
+        .data_device_manager = null,
+        .xdg_wm_base = null,
+    };
+
+    registry.setListener(*GlobalCollector, registryListener, &globals);
+
+    log.info("beginning initial display roundtrip", .{});
+    if (dpy.roundtrip() != .SUCCESS) return error.RoundtripFail;
 
     return .{
-        .dpy = dpy,
-        .win = win,
+        .display = dpy,
+        .shm = globals.shm orelse return error.MissingGlobal,
+        .seat = globals.seat orelse return error.MissingGlobal,
+        .compositor = globals.compositor orelse return error.MissingGlobal,
+        .data_device_manager = globals.data_device_manager orelse return error.MissingGlobal,
+        .xdg_wm_base = globals.xdg_wm_base orelse return error.MissingGlobal,
     };
 }
 
 pub fn deinit(self: *ClipboardConnection) void {
-    _ = c.XDestroyWindow(self.dpy, self.win);
-    _ = c.XCloseDisplay(self.dpy);
+    self.shm.destroy();
+    self.seat.destroy();
+    self.compositor.destroy();
+    self.data_device_manager.destroy();
+    self.xdg_wm_base.destroy();
+    self.display.disconnect();
     self.* = undefined;
 }
 
-pub fn provide(self: ClipboardConnection, data: []const u8) !void {
-    const selection = c.XInternAtom(self.dpy, "CLIPBOARD", 0);
-    const targets_atom = c.XInternAtom(self.dpy, "TARGETS", 0);
-    const text_atom = c.XInternAtom(self.dpy, "TEXT", 0);
-    var utf8_atom = c.XInternAtom(self.dpy, "UTF8_STRING", 1);
-    if (utf8_atom == c.None) {
-        utf8_atom = c.XA_STRING;
-    }
+pub fn getContent(self: *ClipboardConnection, out_fd: std.os.fd_t) !void {
+    const DataDeviceListener = struct {
+        out_fd: std.os.fd_t,
+        display: *wl.Display,
 
-    _ = c.XSetSelectionOwner(self.dpy, selection, self.win, 0);
-    if (c.XGetSelectionOwner(self.dpy, selection) != self.win) {
-        return error.FailedToAquireSelection;
-    }
+        fn onEvent(_: *wl.DataDevice, ev: wl.DataDevice.Event, ddl: *@This()) void {
+            switch (ev) {
+                .data_offer => |offer| {
+                    defer offer.id.destroy();
+                    const MimeType = struct {
+                        buf: [1024]u8 = undefined,
+                        t: ?[:0]const u8 = null,
 
-    log.info("providing clipboard", .{});
+                        fn offerListener(_: *wl.DataOffer, event: wl.DataOffer.Event, mt: *@This()) void {
+                            const text_types = std.ComptimeStringMap(void, .{
+                                .{ "TEXT", {} },
+                                .{ "STRING", {} },
+                                .{ "UTF8_STRING", {} },
+                            });
 
-    var event: c.XEvent = undefined;
-    while (true) {
-        try ffi.checkXError(self.dpy, c.XNextEvent(self.dpy, &event));
-        switch (event.type) {
-            c.SelectionRequest => {
-                if (event.xselectionrequest.selection != selection)
-                    continue;
+                            switch (event) {
+                                .offer => |o| {
+                                    if (mt.t) |current_type| {
+                                        var buf: [512]u8 = undefined;
+                                        const lower_type = std.ascii.lowerString(&buf, current_type);
 
-                const xsr = event.xselectionrequest;
+                                        if (std.mem.containsAtLeast(u8, lower_type, 1, "utf8") or
+                                            std.mem.containsAtLeast(u8, lower_type, 1, "utf-8"))
+                                        {
+                                            // GTK likes to mangle text when a MIME type without UTF-8
+                                            // is requested, thus we prefer it.
+                                            return;
+                                        }
+                                    }
 
-                var sent_data = false;
-                var r: c_int = 0;
-                if (xsr.target == targets_atom) {
-                    r = c.XChangeProperty(
-                        xsr.display,
-                        xsr.requestor,
-                        xsr.property,
-                        c.XA_ATOM,
-                        32,
-                        c.PropModeReplace,
-                        @ptrCast(&utf8_atom),
-                        1,
-                    );
-                } else if (xsr.target == c.XA_STRING or xsr.target == text_atom) {
-                    r = c.XChangeProperty(
-                        xsr.display,
-                        xsr.requestor,
-                        xsr.property,
-                        c.XA_STRING,
-                        8,
-                        c.PropModeReplace,
-                        data.ptr,
-                        @intCast(data.len),
-                    );
-                    sent_data = true;
-                } else if (xsr.target == utf8_atom) {
-                    r = c.XChangeProperty(
-                        xsr.display,
-                        xsr.requestor,
-                        xsr.property,
-                        utf8_atom,
-                        8,
-                        c.PropModeReplace,
-                        data.ptr,
-                        @intCast(data.len),
-                    );
-                    sent_data = true;
-                }
+                                    const mimetype = std.mem.span(o.mime_type);
+                                    if (text_types.has(mimetype) or
+                                        std.mem.startsWith(u8, mimetype, "text/"))
+                                    {
+                                        if (mimetype.len > mt.buf.len - 1) {
+                                            log.err("got humungous MIME type, skipping", .{});
+                                            return;
+                                        }
 
-                if ((r & 2) == 0) {
-                    var ev = c.XSelectionEvent{
-                        .type = c.SelectionNotify,
-                        .display = xsr.display,
-                        .requestor = xsr.requestor,
-                        .selection = xsr.selection,
-                        .time = xsr.time,
-                        .target = xsr.target,
-                        .property = xsr.property,
+                                        @memcpy(mt.buf[0..mimetype.len], mimetype);
+                                        mt.buf[mimetype.len] = 0;
+                                        mt.t = mt.buf[0..mimetype.len :0];
+                                    }
+                                },
 
-                        .serial = 0,
-                        .send_event = 0,
+                                else => {},
+                            }
+                        }
                     };
 
-                    _ = c.XSendEvent(self.dpy, ev.requestor, 0, 0, @ptrCast(&ev));
-                    if (sent_data) {
-                        if (ffi.xGetWindowName(self.dpy, xsr.requestor)) |name| {
-                            defer _ = c.XFree(name.ptr);
+                    var mime = MimeType{};
 
-                            log.info("sent clipboard to {s}", .{name});
-                        } else {
-                            log.info("sent clipboard to unknown window", .{});
-                        }
+                    offer.id.setListener(*MimeType, MimeType.offerListener, &mime);
+                    if (ddl.display.dispatch() != .SUCCESS)
+                        log.err("dispatch in data offer receive failed", .{});
+
+                    if (mime.t) |mimetype| {
+                        log.info("receiving data offer with MIME type {s}", .{mimetype});
+                        offer.id.receive(mimetype, ddl.out_fd);
+                    } else {
+                        log.warn("got data offer with no text MIME type", .{});
                     }
-                }
-            },
-            c.SelectionClear => {
-                log.info("Selection cleared", .{});
-                break;
-            },
-            else => {},
+                },
+
+                else => {},
+            }
         }
+    };
+    var ddl = DataDeviceListener{
+        .display = self.display,
+        .out_fd = out_fd,
+    };
+
+    const data_device = try self.data_device_manager.getDataDevice(self.seat);
+    defer data_device.release();
+    data_device.setListener(*DataDeviceListener, DataDeviceListener.onEvent, &ddl);
+
+    const popup = try PopupWindow.show(self);
+    popup.deinit();
+    try self.roundtrip();
+}
+
+pub fn serveContent(self: *ClipboardConnection, data: []const u8) !void {
+    const DataSender = struct {
+        data: []const u8,
+        data_source: *wl.DataSource,
+        device: *wl.DataDevice,
+        kb: *wl.Keyboard,
+        done: bool = false,
+
+        fn onEvent(_: *wl.DataSource, ev: wl.DataSource.Event, ds: *@This()) void {
+            switch (ev) {
+                .send => |send| {
+                    log.info("sending data", .{});
+                    var file = std.fs.File{ .handle = send.fd };
+                    defer file.close();
+                    file.writeAll(ds.data) catch |e| {
+                        log.err("unable to send clipboard content: {}", .{e});
+                    };
+                },
+                .cancelled => {
+                    ds.done = true;
+                    log.info("done serving data source", .{});
+                },
+                else => {},
+            }
+        }
+
+        fn keyboardListener(_: *wl.Keyboard, ev: wl.Keyboard.Event, ds: *@This()) void {
+            switch (ev) {
+                .enter => |enter| {
+                    log.info("got keyboard enter event", .{});
+                    ds.device.setSelection(ds.data_source, enter.serial);
+                },
+                else => {},
+            }
+        }
+    };
+    const device = try self.data_device_manager.getDataDevice(self.seat);
+    defer device.release();
+
+    const data_source = try self.data_device_manager.createDataSource();
+    defer data_source.destroy();
+    data_source.offer("text/plain");
+    data_source.offer("text/plain;charset=utf-8");
+    data_source.offer("TEXT");
+    data_source.offer("STRING");
+    data_source.offer("UTF8_STRING");
+
+    const kb = try self.seat.getKeyboard();
+    defer kb.destroy();
+
+    var data_sender = DataSender{
+        .data = data,
+        .data_source = data_source,
+        .device = device,
+        .kb = kb,
+    };
+
+    data_source.setListener(*DataSender, DataSender.onEvent, &data_sender);
+    kb.setListener(*DataSender, DataSender.keyboardListener, &data_sender);
+
+    // This generates a keyboard enter event, the serial of which we can use to set the selection.
+    const popup = try PopupWindow.show(self);
+    popup.deinit();
+
+    while (!data_sender.done) {
+        if (self.display.dispatch() != .SUCCESS) return error.DispatchFail;
     }
 }
 
-/// Get the current text in the clipboard. Must be freed using XFree.
-pub fn getText(self: ClipboardConnection) !?[]u8 {
-    log.info("reading clipboard", .{});
-    const utf8 = c.XInternAtom(self.dpy, "UTF8_STRING", 0);
-    if (try self.getContentForType(utf8)) |data| return data;
-
-    return try self.getContentForType(c.XA_STRING);
+fn xdgSurfaceConfigureListener(xdg_surface: *xdg.Surface, ev: xdg.Surface.Event, _: *const void) void {
+    xdg_surface.ackConfigure(ev.configure.serial);
 }
 
-fn getContentForType(self: ClipboardConnection, t: c.Atom) !?[]u8 {
-    const selection = c.XInternAtom(self.dpy, "CLIPBOARD", 0);
-    //const utf8_atom = c.XInternAtom(self.dpy, "UTF8_STRING", 1);
-    const xsel_data_atom = c.XInternAtom(self.dpy, "XSEL_DATA", 0);
+fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *GlobalCollector) void {
+    switch (event) {
+        .global => |glob| {
+            inline for (std.meta.fields(GlobalCollector)) |f| {
+                const Interface = @typeInfo(@typeInfo(f.type).Optional.child).Pointer.child;
+                if (std.mem.orderZ(u8, glob.interface, Interface.getInterface().name) == .eq) {
+                    @field(globals, f.name) = reg.bind(
+                        glob.name,
+                        Interface,
+                        Interface.generated_version,
+                    ) catch return;
+                    return;
+                }
+            }
+        },
+        .global_remove => {},
+    }
+}
 
-    _ = c.XConvertSelection(self.dpy, selection, t, xsel_data_atom, self.win, c.CurrentTime);
-    _ = c.XSync(self.dpy, 0);
-
-    var event: c.XEvent = undefined;
-    try ffi.checkXError(self.dpy, c.XNextEvent(self.dpy, &event));
-
-    if (event.type != c.SelectionNotify)
-        return null;
-
-    const xsel = event.xselection;
-
-    // Wrong selection or conversion failed.
-    if (xsel.property == 0)
-        return null;
-
-    var target: c.Atom = undefined;
-    var data: ?[*]u8 = null;
-    var format: c_int = 0;
-    var size: c_ulong = 0;
-    var n: c_ulong = 0;
-    _ = c.XGetWindowProperty(
-        xsel.display,
-        xsel.requestor,
-        xsel.property,
-        0,
-        -1,
-        0,
-        c.AnyPropertyType,
-        &target,
-        &format,
-        &size,
-        &n,
-        &data,
-    );
-    defer _ = c.XDeleteProperty(xsel.display, xsel.requestor, xsel.property);
-
-    return (data orelse return null)[0..@intCast(size)];
+fn roundtrip(self: *const ClipboardConnection) !void {
+    if (self.display.roundtrip() != .SUCCESS) return error.RoundtripFail;
 }
