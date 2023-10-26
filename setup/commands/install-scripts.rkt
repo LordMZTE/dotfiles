@@ -31,6 +31,7 @@
   (install-zig "scripts/randomwallpaper")
   (install-zig "scripts/vinput")
   (install-zig "scripts/withjava")
+  (install-zig "scripts/wlbg")
 
   (install-roswell "scripts/launchmenu.ros")
   (install-roswell "scripts/playvid.ros")
