@@ -7,7 +7,6 @@ const OutputInfo = @import("OutputInfo.zig");
 
 egl_dpy: c.EGLDisplay,
 bg_shader_program: c_uint,
-time: f64,
 
 const Gfx = @This();
 
@@ -31,7 +30,6 @@ pub fn init(egl_dpy: c.EGLDisplay) !Gfx {
     return .{
         .egl_dpy = egl_dpy,
         .bg_shader_program = program,
-        .time = 0.0,
     };
 }
 
@@ -40,15 +38,15 @@ pub fn deinit(self: *Gfx) void {
     self.* = undefined;
 }
 
-pub fn draw(
+pub fn drawBackground(
     self: *Gfx,
-    dt: f32,
+    dt: i64,
     egl_surface: c.EGLSurface,
     info: OutputInfo,
     base_xoff: i32,
     base_yoff: i32,
 ) !void {
-    self.time += dt;
+    _ = dt;
 
     // There's just about a 0% chance this works properly when monitors have different resolutions,
     // but I can't even begin thinking about that.
@@ -76,9 +74,11 @@ pub fn draw(
     c.glVertexAttribPointer(1, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, @ptrFromInt(@intFromPtr(&vertices) + @sizeOf(f32) * 3));
     c.glEnableVertexAttribArray(1);
 
-    c.glUniform1f(c.glGetUniformLocation(self.bg_shader_program, "time"), @as(f32, @floatCast(self.time / 10000.0)));
+    const rand = std.crypto.random.float(f32);
+    c.glUniform1f(c.glGetUniformLocation(self.bg_shader_program, "time"), rand * 2000.0 - 1000.0);
 
     c.glDrawArrays(c.GL_TRIANGLES, 0, vertices.len / 3);
 
-    if (c.eglSwapBuffers(self.egl_dpy, egl_surface) != c.EGL_TRUE) return error.EGLError;
+    if (c.eglSwapInterval(self.egl_dpy, 0) != c.EGL_TRUE or
+        c.eglSwapBuffers(self.egl_dpy, egl_surface) != c.EGL_TRUE) return error.EGLError;
 }

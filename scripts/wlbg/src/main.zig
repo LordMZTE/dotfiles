@@ -12,9 +12,11 @@ const wl = wayland.client.wl;
 const zwlr = wayland.client.zwlr;
 const zxdg = wayland.client.zxdg;
 
-const fps = 10;
-
 pub fn main() !void {
+    std.log.info("initializing event loop", .{});
+    var loop = try xev.Loop.init(.{});
+    defer loop.deinit();
+
     std.log.info("connecting to wayland display", .{});
     const dpy = try wl.Display.connect(null);
     defer dpy.disconnect();
@@ -146,32 +148,116 @@ pub fn main() !void {
     var gfx = try Gfx.init(egl_dpy);
     defer gfx.deinit();
 
-    var timer = try std.time.Timer.start();
-    var prev_time = std.time.milliTimestamp();
-    while (true) {
-        const now_time = std.time.milliTimestamp();
-        const delta_time: f32 = @floatFromInt(now_time - prev_time);
-        prev_time = now_time;
+    var rbgdata = RenderBackgroundData{
+        .gfx = &gfx,
+        .egl_dpy = egl_dpy,
+        .egl_ctx = egl_ctx,
+        .outputs = output_windows,
+        .output_info = output_info,
+        .last_time = loop.now(),
+        .base_offset = .{ base_xoff, base_yoff },
+    };
 
-        for (output_windows, output_info) |output, info| {
-            if (c.eglMakeCurrent(
-                egl_dpy,
-                output.egl_surface,
-                output.egl_surface,
-                egl_ctx,
-            ) != c.EGL_TRUE) return error.EGLError;
-            try gfx.draw(delta_time, output.egl_surface, info, base_xoff, base_yoff);
+    var rbg_timer_completion: xev.Completion = undefined;
+    var rbg_timer = try xev.Timer.init();
+    defer rbg_timer.deinit();
+
+    rbg_timer.run(
+        &loop,
+        &rbg_timer_completion,
+        0,
+        RenderBackgroundData,
+        &rbgdata,
+        renderBackgroundCb,
+    );
+
+    var wl_poll_completion = xev.Completion{
+        .op = .{ .poll = .{ .fd = dpy.getFd() } },
+        .userdata = dpy,
+        .callback = wlPollCb,
+    };
+    loop.add(&wl_poll_completion);
+
+    std.log.info("running event loop", .{});
+    try loop.run(.until_done);
+}
+
+const RenderBackgroundData = struct {
+    gfx: *Gfx,
+    egl_dpy: c.EGLDisplay,
+    egl_ctx: c.EGLContext,
+    outputs: []const OutputWindow,
+    output_info: []const OutputInfo,
+    last_time: isize,
+    base_offset: [2]c_int,
+};
+
+fn renderBackgroundCb(
+    data: ?*RenderBackgroundData,
+    loop: *xev.Loop,
+    completion: *xev.Completion,
+    result: xev.Timer.RunError!void,
+) xev.CallbackAction {
+    result catch unreachable;
+
+    const now = loop.now();
+
+    const delta_time = now - data.?.last_time;
+    data.?.last_time = now;
+    const next_time = now + std.time.ms_per_min;
+    completion.op.timer.reset = .{
+        .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
+        .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
+    };
+
+    for (data.?.outputs, data.?.output_info) |output, info| {
+        if (c.eglMakeCurrent(
+            data.?.egl_dpy,
+            output.egl_surface,
+            output.egl_surface,
+            data.?.egl_ctx,
+        ) != c.EGL_TRUE) {
+            std.log.err("failed to set EGL context", .{});
+            loop.stop();
+            return .disarm;
         }
 
-        if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS) {
-            std.log.err("error processing wayland events", .{});
-            return error.DispatchFail;
-        }
-
-        const elapsed = timer.lap();
-        if (elapsed < 1000 * std.time.ns_per_ms / fps)
-            std.os.nanosleep(0, (1000 * std.time.ns_per_ms) / fps - elapsed);
+        data.?.gfx.drawBackground(
+            delta_time,
+            output.egl_surface,
+            info,
+            data.?.base_offset[0],
+            data.?.base_offset[1],
+        ) catch |e| {
+            std.log.err("drawing: {}", .{e});
+            loop.stop();
+            return .disarm;
+        };
     }
+
+    return .rearm;
+}
+
+fn wlPollCb(
+    userdata: ?*anyopaque,
+    loop: *xev.Loop,
+    _: *xev.Completion,
+    result: xev.Result,
+) xev.CallbackAction {
+    result.poll catch |e| {
+        std.log.err("unable to poll wayland FD: {}", .{e});
+        loop.stop();
+        return .disarm;
+    };
+
+    const dpy: *wl.Display = @ptrCast(@alignCast(userdata));
+    if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS) {
+        std.log.err("error processing wayland events", .{});
+        loop.stop();
+        return .disarm;
+    }
+
+    return .rearm;
 }
 
 const OutputWindow = struct {

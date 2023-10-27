@@ -16,6 +16,10 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    exe.addModule("xev", b.dependency("xev", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("xev"));
     exe.addModule("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
