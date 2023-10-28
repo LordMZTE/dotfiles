@@ -2,12 +2,13 @@
 
 precision mediump float;
 
+uniform vec2 offset;
+
 attribute vec4 vPos;
-attribute vec2 monitorOffset;
 
 out vec2 fragCoord;
 
 void main() {
     gl_Position = vPos;
-    fragCoord = vPos.xy + monitorOffset * 2.0;
+    fragCoord = vPos.xy + offset * 2.0;
 }

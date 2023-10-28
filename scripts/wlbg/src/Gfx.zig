@@ -2,6 +2,7 @@ const std = @import("std");
 const c = @import("ffi.zig").c;
 
 const glutil = @import("glutil.zig");
+const options = @import("options.zig");
 
 const OutputInfo = @import("OutputInfo.zig");
 const OutputWindow = @import("OutputWindow.zig");
@@ -261,17 +262,19 @@ pub fn drawBackground(
 ) !void {
     // There's just about a 0% chance this works properly when monitors have different resolutions,
     // but I can't even begin thinking about that.
-    const xoff = @as(f32, @floatFromInt(info.x - base_off[0])) / @as(f32, @floatFromInt(info.width));
-    const yoff = @as(f32, @floatFromInt(info.y - base_off[1])) / @as(f32, @floatFromInt(info.height));
+    const off: struct { x: f32, y: f32 } = if (options.multihead_mode == .combined) .{
+        .x = @as(f32, @floatFromInt(info.x - base_off[0])) / @as(f32, @floatFromInt(info.width)),
+        .y = @as(f32, @floatFromInt(info.y - base_off[1])) / @as(f32, @floatFromInt(info.height)),
+    } else .{ .x = 0, .y = 0 };
 
     const vertices = [_]f32{
-        -1.0, -1.0, 0.0, xoff, yoff,
-        1.0,  -1.0, 0.0, xoff, yoff,
-        1.0,  1.0,  0.0, xoff, yoff,
+        -1.0, -1.0, 0.0,
+        1.0,  -1.0, 0.0,
+        1.0,  1.0,  0.0,
 
-        -1.0, -1.0, 0.0, xoff, yoff,
-        1.0,  1.0,  0.0, xoff, yoff,
-        -1.0, 1.0,  0.0, xoff, yoff,
+        -1.0, -1.0, 0.0,
+        1.0,  1.0,  0.0,
+        -1.0, 1.0,  0.0,
     };
 
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, self.bg_bufs.get(output_idx).framebuffer);
@@ -281,12 +284,10 @@ pub fn drawBackground(
 
     c.glUseProgram(self.bg_shader_program);
 
-    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, &vertices);
+    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, 0, &vertices);
     c.glEnableVertexAttribArray(0);
 
-    c.glVertexAttribPointer(1, 2, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, @ptrFromInt(@intFromPtr(&vertices) + @sizeOf(f32) * 3));
-    c.glEnableVertexAttribArray(1);
-
+    c.glUniform2f(c.glGetUniformLocation(self.bg_shader_program, "offset"), off.x, off.y);
     c.glUniform1f(c.glGetUniformLocation(self.bg_shader_program, "time"), rand * 2000.0 - 1000.0);
 
     c.glDrawArrays(c.GL_TRIANGLES, 0, vertices.len / 3);

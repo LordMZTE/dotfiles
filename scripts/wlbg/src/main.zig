@@ -3,6 +3,7 @@ const xev = @import("xev");
 const wayland = @import("wayland");
 
 const c = @import("ffi.zig").c;
+const options = @import("options.zig");
 
 const Gfx = @import("Gfx.zig");
 const Globals = @import("Globals.zig");
@@ -17,8 +18,6 @@ const zxdg = wayland.client.zxdg;
 pub const std_options = struct {
     pub const log_level = .debug;
 };
-
-const fps = 30;
 
 pub fn main() !void {
     std.log.info("initializing event loop", .{});
@@ -141,21 +140,26 @@ pub fn main() !void {
     defer pointer.destroy();
     pointer.setListener(*PointerState, pointerListener, &pointer_state);
 
-    var total_width: i32 = 0;
-    var total_height: i32 = 0;
+    const base_offset: [2]i32 = off: {
+        if (comptime options.multihead_mode == .individual) break :off .{ 0, 0 };
 
-    for (output_info) |inf| {
-        const xmax = inf.x;
-        const ymax = inf.y;
+        var total_width: i32 = 0;
+        var total_height: i32 = 0;
+        for (output_info) |inf| {
+            const xmax = inf.x;
+            const ymax = inf.y;
 
-        if (xmax > total_width)
-            total_width = xmax;
-        if (ymax > total_height)
-            total_height = ymax;
-    }
+            if (xmax > total_width)
+                total_width = xmax;
+            if (ymax > total_height)
+                total_height = ymax;
+        }
 
-    const base_xoff = @divTrunc(total_width, 2);
-    const base_yoff = @divTrunc(total_height, 2);
+        break :off .{
+            @divTrunc(total_width, 2),
+            @divTrunc(total_height, 2),
+        };
+    };
 
     if (c.eglMakeCurrent(
         egl_dpy,
@@ -174,7 +178,7 @@ pub fn main() !void {
         .outputs = output_windows,
         .output_info = output_info,
         .last_time = loop.now(),
-        .base_offset = .{ base_xoff, base_yoff },
+        .base_offset = base_offset,
         .pointer_state = &pointer_state,
     };
 
@@ -238,7 +242,7 @@ fn renderCb(
     const delta_time = now - data.?.last_time;
     data.?.last_time = now;
 
-    resetXevTimerCompletion(completion, now, 1000 / fps);
+    resetXevTimerCompletion(completion, now, 1000 / options.fps);
 
     data.?.gfx.preDraw(
         delta_time,
@@ -287,11 +291,11 @@ fn renderBackgroundCb(
 ) xev.CallbackAction {
     result catch unreachable;
 
-    resetXevTimerCompletion(completion, loop.now(), std.time.ms_per_min);
+    resetXevTimerCompletion(completion, loop.now(), options.refresh_time);
 
-    const rand = std.crypto.random.float(f32);
-    for (data.?.outputs, data.?.output_info, 0..) |output, info, i| {
-        _ = output;
+    var rand: f32 = if (options.multihead_mode == .combined) std.crypto.random.float(f32) else 0.0;
+    for (data.?.output_info, 0..) |info, i| {
+        if (options.multihead_mode == .individual) rand = std.crypto.random.float(f32);
         data.?.gfx.drawBackground(
             info,
             i,
