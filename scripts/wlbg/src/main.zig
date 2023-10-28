@@ -141,6 +141,7 @@ pub fn main() !void {
         .loop = &loop,
     };
     defer std.heap.c_allocator.free(dth.should_redraw);
+    @memset(dth.should_redraw, true);
 
     var pointer_state = PointerState{
         .surface = null,
@@ -328,8 +329,9 @@ fn renderBackgroundCb(
             loop.stop();
             return .disarm;
         };
-        @memset(data.?.gfx.should_redraw, true);
     }
+
+    data.?.dth.damageAll();
 
     return .rearm;
 }

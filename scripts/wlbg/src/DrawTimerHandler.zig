@@ -39,3 +39,7 @@ pub fn damage(self: *DrawTimerHandler, idx: usize) void {
     self.maybeWake();
 }
 
+pub fn damageAll(self: *DrawTimerHandler) void {
+    @memset(self.should_redraw, true);
+    self.maybeWake();
+}

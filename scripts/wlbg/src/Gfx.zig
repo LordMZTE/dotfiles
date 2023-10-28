@@ -15,7 +15,6 @@ main_shader_program: c_uint,
 bg_bufs: std.MultiArrayList(BgBuf),
 time: i64,
 cursor_positions: [][2]c_int,
-should_redraw: []bool,
 
 const Gfx = @This();
 
@@ -69,10 +68,6 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
     const cursor_positions = try std.heap.c_allocator.alloc([2]c_int, output_info.len);
     errdefer std.heap.c_allocator.free(cursor_positions);
     @memset(cursor_positions, .{ 0, 0 });
-
-    const should_redraw = try std.heap.c_allocator.alloc(bool, output_info.len);
-    errdefer std.heap.c_allocator.free(should_redraw);
-    @memset(should_redraw, true);
 
     var bg_bufs = std.MultiArrayList(BgBuf){};
     errdefer bg_bufs.deinit(std.heap.c_allocator);
@@ -139,7 +134,6 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
         .bg_bufs = bg_bufs,
         .time = 0,
         .cursor_positions = cursor_positions,
-        .should_redraw = should_redraw,
     };
 }
 
@@ -154,7 +148,6 @@ pub fn deinit(self: *Gfx) void {
     c.glDeleteProgram(self.main_shader_program);
 
     std.heap.c_allocator.free(self.cursor_positions);
-    std.heap.c_allocator.free(self.should_redraw);
 
     self.* = undefined;
 }
