@@ -18,7 +18,7 @@ pub const std_options = struct {
     pub const log_level = .debug;
 };
 
-const fps = 15;
+const fps = 30;
 
 pub fn main() !void {
     std.log.info("initializing event loop", .{});
@@ -239,6 +239,17 @@ fn renderCb(
     data.?.last_time = now;
 
     resetXevTimerCompletion(completion, now, 1000 / fps);
+
+    data.?.gfx.preDraw(
+        delta_time,
+        data.?.pointer_state,
+        data.?.outputs,
+        data.?.output_info,
+    ) catch |e| {
+        std.log.err("running preDraw: {}", .{e});
+        loop.stop();
+        return .disarm;
+    };
 
     for (data.?.outputs, 0..) |output, i| {
         if (c.eglMakeCurrent(

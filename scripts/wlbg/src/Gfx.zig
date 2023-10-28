@@ -157,6 +157,38 @@ pub fn deinit(self: *Gfx) void {
     self.* = undefined;
 }
 
+pub fn preDraw(
+    self: *Gfx,
+    dt: i64,
+    pointer_state: *PointerState,
+    outputs: []const OutputWindow,
+    infos: []const OutputInfo,
+) !void {
+    for (self.cursor_positions, self.should_redraw, infos, outputs) |*pos, *redraw, inf, outp| {
+        const target = if (pointer_state.surface == outp.surface)
+            .{ pointer_state.x, pointer_state.y }
+        else
+            .{ @divTrunc(inf.width, 2), @divTrunc(inf.height, 2) };
+
+        const new_x: c_int = @intFromFloat(std.math.lerp(
+            @as(f32, @floatFromInt(pos[0])),
+            @as(f32, @floatFromInt(target[0])),
+            std.math.clamp(@as(f32, @floatFromInt(dt)) / 250.0, 0.0, 1.0),
+        ));
+        const new_y: c_int = @intFromFloat(std.math.lerp(
+            @as(f32, @floatFromInt(pos[1])),
+            @as(f32, @floatFromInt(target[1])),
+            std.math.clamp(@as(f32, @floatFromInt(dt)) / 250.0, 0.0, 1.0),
+        ));
+
+        if (new_x != pos[0] or new_y != pos[1])
+            redraw.* = true;
+
+        pos[0] = new_x;
+        pos[1] = new_y;
+    }
+}
+
 pub fn draw(
     self: *Gfx,
     dt: i64,
@@ -168,30 +200,6 @@ pub fn draw(
     self.time += dt;
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0); // use default framebuffer
     c.glUseProgram(self.main_shader_program);
-
-    for (self.cursor_positions, self.should_redraw, infos, outputs) |*pos, *redraw, inf, outp| {
-        const target = if (pointer_state.surface == outp.surface)
-            .{ pointer_state.x, pointer_state.y }
-        else
-            .{ @divTrunc(inf.width, 2), @divTrunc(inf.height, 2) };
-
-        const new_x: c_int = @intFromFloat(std.math.lerp(
-            @as(f32, @floatFromInt(pos[0])),
-            @as(f32, @floatFromInt(target[0])),
-            std.math.clamp(@as(f32, @floatFromInt(dt)) / 1000.0, 0.0, 1.0),
-        ));
-        const new_y: c_int = @intFromFloat(std.math.lerp(
-            @as(f32, @floatFromInt(pos[1])),
-            @as(f32, @floatFromInt(target[1])),
-            std.math.clamp(@as(f32, @floatFromInt(dt)) / 1000.0, 0.0, 1.0),
-        ));
-
-        if (new_x != pos[0] or new_y != pos[1])
-            redraw.* = true;
-
-        pos[0] = new_x;
-        pos[1] = new_y;
-    }
 
     if (!self.should_redraw[output_idx])
         return;
