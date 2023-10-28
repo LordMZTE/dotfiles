@@ -4,6 +4,7 @@ const c = @import("ffi.zig").c;
 const glutil = @import("glutil.zig");
 const options = @import("options.zig");
 
+const DrawTimerHandler = @import("DrawTimerHandler.zig");
 const OutputInfo = @import("OutputInfo.zig");
 const OutputWindow = @import("OutputWindow.zig");
 const PointerState = @import("PointerState.zig");
@@ -164,8 +165,11 @@ pub fn preDraw(
     pointer_state: *PointerState,
     outputs: []const OutputWindow,
     infos: []const OutputInfo,
+    dth: *DrawTimerHandler,
 ) !void {
-    for (self.cursor_positions, self.should_redraw, infos, outputs) |*pos, *redraw, inf, outp| {
+    for (self.cursor_positions, infos, outputs, 0..) |*pos, inf, outp, i| {
+        const lerp_amt = std.math.clamp(@as(f32, @floatFromInt(std.math.clamp(dt, 0, 10))) / 150.0, 0.0, 1.0);
+
         const target = if (pointer_state.surface == outp.surface)
             .{ pointer_state.x, pointer_state.y }
         else
@@ -174,16 +178,16 @@ pub fn preDraw(
         const new_x: c_int = @intFromFloat(std.math.lerp(
             @as(f32, @floatFromInt(pos[0])),
             @as(f32, @floatFromInt(target[0])),
-            std.math.clamp(@as(f32, @floatFromInt(dt)) / 250.0, 0.0, 1.0),
+            lerp_amt,
         ));
         const new_y: c_int = @intFromFloat(std.math.lerp(
             @as(f32, @floatFromInt(pos[1])),
             @as(f32, @floatFromInt(target[1])),
-            std.math.clamp(@as(f32, @floatFromInt(dt)) / 250.0, 0.0, 1.0),
+            lerp_amt,
         ));
 
         if (new_x != pos[0] or new_y != pos[1])
-            redraw.* = true;
+            dth.damage(i);
 
         pos[0] = new_x;
         pos[1] = new_y;
@@ -197,14 +201,12 @@ pub fn draw(
     output_idx: usize,
     outputs: []const OutputWindow,
     infos: []const OutputInfo,
+    dth: *DrawTimerHandler,
 ) !void {
     self.time += dt;
+    dth.should_redraw[output_idx] = false;
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0); // use default framebuffer
     c.glUseProgram(self.main_shader_program);
-
-    if (!self.should_redraw[output_idx])
-        return;
-    self.should_redraw[output_idx] = false;
 
     const vertices = [_]f32{
         -1.0, -1.0, 0.0, 0.0, 0.0,

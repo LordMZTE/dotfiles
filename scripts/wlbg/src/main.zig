@@ -5,6 +5,7 @@ const wayland = @import("wayland");
 const c = @import("ffi.zig").c;
 const options = @import("options.zig");
 
+const DrawTimerHandler = @import("DrawTimerHandler.zig");
 const Gfx = @import("Gfx.zig");
 const Globals = @import("Globals.zig");
 const OutputInfo = @import("OutputInfo.zig");
@@ -130,15 +131,32 @@ pub fn main() !void {
     }
     defer for (output_windows) |output| output.deinit(egl_ctx);
 
+    var r_timer_completion: xev.Completion = undefined;
+    var r_timer = try xev.Timer.init();
+    defer r_timer.deinit();
+
+    var dth = DrawTimerHandler{
+        .should_redraw = try std.heap.c_allocator.alloc(bool, output_info.len),
+        .completion = &r_timer_completion,
+        .loop = &loop,
+    };
+    defer std.heap.c_allocator.free(dth.should_redraw);
+
     var pointer_state = PointerState{
         .surface = null,
         .x = 0,
         .y = 0,
     };
 
+    var pointer_listener_data = PointerListenerData{
+        .pstate = &pointer_state,
+        .outputs = output_windows,
+        .dth = &dth,
+    };
+
     const pointer = try globs.seat.getPointer();
     defer pointer.destroy();
-    pointer.setListener(*PointerState, pointerListener, &pointer_state);
+    pointer.setListener(*PointerListenerData, pointerListener, &pointer_listener_data);
 
     const base_offset: [2]i32 = off: {
         if (comptime options.multihead_mode == .individual) break :off .{ 0, 0 };
@@ -180,6 +198,7 @@ pub fn main() !void {
         .last_time = loop.now(),
         .base_offset = base_offset,
         .pointer_state = &pointer_state,
+        .dth = &dth,
     };
 
     var rbg_timer_completion: xev.Completion = undefined;
@@ -194,10 +213,6 @@ pub fn main() !void {
         &rdata,
         renderBackgroundCb,
     );
-
-    var r_timer_completion: xev.Completion = undefined;
-    var r_timer = try xev.Timer.init();
-    defer r_timer.deinit();
 
     r_timer.run(
         &loop,
@@ -228,6 +243,7 @@ const RenderData = struct {
     last_time: isize,
     base_offset: [2]c_int,
     pointer_state: *PointerState,
+    dth: *DrawTimerHandler,
 };
 
 fn renderCb(
@@ -236,19 +252,21 @@ fn renderCb(
     completion: *xev.Completion,
     result: xev.Timer.RunError!void,
 ) xev.CallbackAction {
+    _ = completion;
     result catch unreachable;
 
     const now = loop.now();
     const delta_time = now - data.?.last_time;
     data.?.last_time = now;
 
-    resetXevTimerCompletion(completion, now, 1000 / options.fps);
+    data.?.dth.resetTimer();
 
     data.?.gfx.preDraw(
         delta_time,
         data.?.pointer_state,
         data.?.outputs,
         data.?.output_info,
+        data.?.dth,
     ) catch |e| {
         std.log.err("running preDraw: {}", .{e});
         loop.stop();
@@ -256,6 +274,9 @@ fn renderCb(
     };
 
     for (data.?.outputs, 0..) |output, i| {
+        if (!data.?.dth.should_redraw[i])
+            continue;
+
         if (c.eglMakeCurrent(
             data.?.egl_dpy,
             output.egl_surface,
@@ -273,6 +294,7 @@ fn renderCb(
             i,
             data.?.outputs,
             data.?.output_info,
+            data.?.dth,
         ) catch |e| {
             std.log.err("drawing: {}", .{e});
             loop.stop();
@@ -280,7 +302,7 @@ fn renderCb(
         };
     }
 
-    return .rearm;
+    return data.?.dth.nextAction();
 }
 
 fn renderBackgroundCb(
@@ -359,14 +381,43 @@ fn xdgOutputListener(_: *zxdg.OutputV1, ev: zxdg.OutputV1.Event, info: *OutputIn
     }
 }
 
-fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, state: *PointerState) void {
+const PointerListenerData = struct {
+    pstate: *PointerState,
+    outputs: []const OutputWindow,
+    dth: *DrawTimerHandler,
+
+    fn damageCurrentWindow(self: *PointerListenerData) !void {
+        if (self.pstate.surface) |ps| {
+            for (self.outputs, 0..) |o, i| {
+                if (ps == o.surface) {
+                    self.dth.damage(i);
+                }
+            }
+        }
+    }
+};
+
+fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, d: *PointerListenerData) void {
     switch (ev) {
         .motion => |motion| {
-            state.x = motion.surface_x.toInt();
-            state.y = motion.surface_y.toInt();
+            d.pstate.x = motion.surface_x.toInt();
+            d.pstate.y = motion.surface_y.toInt();
+            d.damageCurrentWindow() catch |e| {
+                std.log.err("unable to damage window: {}", .{e});
+            };
         },
-        .enter => |enter| state.surface = enter.surface,
-        .leave => state.surface = null,
+        .enter => |enter| {
+            d.pstate.surface = enter.surface;
+            d.damageCurrentWindow() catch |e| {
+                std.log.err("unable to damage window: {}", .{e});
+            };
+        },
+        .leave => {
+            d.damageCurrentWindow() catch |e| {
+                std.log.err("unable to damage window: {}", .{e});
+            };
+            d.pstate.surface = null;
+        },
         else => {},
     }
 }
