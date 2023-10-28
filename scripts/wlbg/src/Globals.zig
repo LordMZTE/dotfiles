@@ -7,6 +7,7 @@ const zwlr = wayland.client.zwlr;
 
 const log = std.log.scoped(.globals);
 
+seat: *wl.Seat,
 compositor: *wl.Compositor,
 layer_shell: *zwlr.LayerShellV1,
 xdg_output_manager: *zxdg.OutputManagerV1,

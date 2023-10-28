@@ -7,10 +7,18 @@ const c = @import("ffi.zig").c;
 const Gfx = @import("Gfx.zig");
 const Globals = @import("Globals.zig");
 const OutputInfo = @import("OutputInfo.zig");
+const OutputWindow = @import("OutputWindow.zig");
+const PointerState = @import("PointerState.zig");
 
 const wl = wayland.client.wl;
 const zwlr = wayland.client.zwlr;
 const zxdg = wayland.client.zxdg;
+
+pub const std_options = struct {
+    pub const log_level = .debug;
+};
+
+const fps = 15;
 
 pub fn main() !void {
     std.log.info("initializing event loop", .{});
@@ -118,9 +126,20 @@ pub fn main() !void {
         output_window.* = .{
             .egl_win = egl_win,
             .egl_surface = egl_surface,
+            .surface = surface,
         };
     }
     defer for (output_windows) |output| output.deinit(egl_ctx);
+
+    var pointer_state = PointerState{
+        .surface = null,
+        .x = 0,
+        .y = 0,
+    };
+
+    const pointer = try globs.seat.getPointer();
+    defer pointer.destroy();
+    pointer.setListener(*PointerState, pointerListener, &pointer_state);
 
     var total_width: i32 = 0;
     var total_height: i32 = 0;
@@ -145,10 +164,10 @@ pub fn main() !void {
         egl_ctx,
     ) != c.EGL_TRUE) return error.EGLError;
 
-    var gfx = try Gfx.init(egl_dpy);
+    var gfx = try Gfx.init(egl_dpy, output_info);
     defer gfx.deinit();
 
-    var rbgdata = RenderBackgroundData{
+    var rdata = RenderData{
         .gfx = &gfx,
         .egl_dpy = egl_dpy,
         .egl_ctx = egl_ctx,
@@ -156,6 +175,7 @@ pub fn main() !void {
         .output_info = output_info,
         .last_time = loop.now(),
         .base_offset = .{ base_xoff, base_yoff },
+        .pointer_state = &pointer_state,
     };
 
     var rbg_timer_completion: xev.Completion = undefined;
@@ -166,9 +186,22 @@ pub fn main() !void {
         &loop,
         &rbg_timer_completion,
         0,
-        RenderBackgroundData,
-        &rbgdata,
+        RenderData,
+        &rdata,
         renderBackgroundCb,
+    );
+
+    var r_timer_completion: xev.Completion = undefined;
+    var r_timer = try xev.Timer.init();
+    defer r_timer.deinit();
+
+    r_timer.run(
+        &loop,
+        &r_timer_completion,
+        0,
+        RenderData,
+        &rdata,
+        renderCb,
     );
 
     var wl_poll_completion = xev.Completion{
@@ -182,7 +215,7 @@ pub fn main() !void {
     try loop.run(.until_done);
 }
 
-const RenderBackgroundData = struct {
+const RenderData = struct {
     gfx: *Gfx,
     egl_dpy: c.EGLDisplay,
     egl_ctx: c.EGLContext,
@@ -190,10 +223,11 @@ const RenderBackgroundData = struct {
     output_info: []const OutputInfo,
     last_time: isize,
     base_offset: [2]c_int,
+    pointer_state: *PointerState,
 };
 
-fn renderBackgroundCb(
-    data: ?*RenderBackgroundData,
+fn renderCb(
+    data: ?*RenderData,
     loop: *xev.Loop,
     completion: *xev.Completion,
     result: xev.Timer.RunError!void,
@@ -201,16 +235,12 @@ fn renderBackgroundCb(
     result catch unreachable;
 
     const now = loop.now();
-
     const delta_time = now - data.?.last_time;
     data.?.last_time = now;
-    const next_time = now + std.time.ms_per_min;
-    completion.op.timer.reset = .{
-        .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
-        .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
-    };
 
-    for (data.?.outputs, data.?.output_info) |output, info| {
+    resetXevTimerCompletion(completion, now, 1000 / fps);
+
+    for (data.?.outputs, 0..) |output, i| {
         if (c.eglMakeCurrent(
             data.?.egl_dpy,
             output.egl_surface,
@@ -222,14 +252,42 @@ fn renderBackgroundCb(
             return .disarm;
         }
 
-        data.?.gfx.drawBackground(
+        data.?.gfx.draw(
             delta_time,
-            output.egl_surface,
-            info,
-            data.?.base_offset[0],
-            data.?.base_offset[1],
+            data.?.pointer_state,
+            i,
+            data.?.outputs,
+            data.?.output_info,
         ) catch |e| {
             std.log.err("drawing: {}", .{e});
+            loop.stop();
+            return .disarm;
+        };
+    }
+
+    return .rearm;
+}
+
+fn renderBackgroundCb(
+    data: ?*RenderData,
+    loop: *xev.Loop,
+    completion: *xev.Completion,
+    result: xev.Timer.RunError!void,
+) xev.CallbackAction {
+    result catch unreachable;
+
+    resetXevTimerCompletion(completion, loop.now(), std.time.ms_per_min);
+
+    const rand = std.crypto.random.float(f32);
+    for (data.?.outputs, data.?.output_info, 0..) |output, info, i| {
+        _ = output;
+        data.?.gfx.drawBackground(
+            info,
+            i,
+            data.?.base_offset,
+            rand,
+        ) catch |e| {
+            std.log.err("drawing background: {}", .{e});
             loop.stop();
             return .disarm;
         };
@@ -260,16 +318,6 @@ fn wlPollCb(
     return .rearm;
 }
 
-const OutputWindow = struct {
-    egl_win: *wl.EglWindow,
-    egl_surface: c.EGLSurface,
-
-    fn deinit(self: OutputWindow, egl_dpy: c.EGLDisplay) void {
-        self.egl_win.destroy();
-        _ = c.eglDestroySurface(egl_dpy, self.egl_surface);
-    }
-};
-
 fn layerSurfaceListener(lsurf: *zwlr.LayerSurfaceV1, ev: zwlr.LayerSurfaceV1.Event, winsize: *?[2]c_int) void {
     switch (ev) {
         .configure => |configure| {
@@ -293,4 +341,24 @@ fn xdgOutputListener(_: *zxdg.OutputV1, ev: zxdg.OutputV1.Event, info: *OutputIn
         },
         else => {},
     }
+}
+
+fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, state: *PointerState) void {
+    switch (ev) {
+        .motion => |motion| {
+            state.x = motion.surface_x.toInt();
+            state.y = motion.surface_y.toInt();
+        },
+        .enter => |enter| state.surface = enter.surface,
+        .leave => state.surface = null,
+        else => {},
+    }
+}
+
+fn resetXevTimerCompletion(completion: *xev.Completion, now: i64, in: i64) void {
+    const next_time = now + in;
+    completion.op.timer.reset = .{
+        .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
+        .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
+    };
 }
