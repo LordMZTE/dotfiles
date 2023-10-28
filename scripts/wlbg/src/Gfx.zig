@@ -13,6 +13,7 @@ main_shader_program: c_uint,
 bg_bufs: std.MultiArrayList(BgBuf),
 time: i64,
 cursor_positions: [][2]c_int,
+should_redraw: []bool,
 
 const Gfx = @This();
 
@@ -66,6 +67,10 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
     const cursor_positions = try std.heap.c_allocator.alloc([2]c_int, output_info.len);
     errdefer std.heap.c_allocator.free(cursor_positions);
     @memset(cursor_positions, .{ 0, 0 });
+
+    const should_redraw = try std.heap.c_allocator.alloc(bool, output_info.len);
+    errdefer std.heap.c_allocator.free(should_redraw);
+    @memset(should_redraw, true);
 
     var bg_bufs = std.MultiArrayList(BgBuf){};
     errdefer bg_bufs.deinit(std.heap.c_allocator);
@@ -132,6 +137,7 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
         .bg_bufs = bg_bufs,
         .time = 0,
         .cursor_positions = cursor_positions,
+        .should_redraw = should_redraw,
     };
 }
 
@@ -143,6 +149,11 @@ pub fn deinit(self: *Gfx) void {
     self.bg_bufs.deinit(std.heap.c_allocator);
 
     c.glDeleteProgram(self.bg_shader_program);
+    c.glDeleteProgram(self.main_shader_program);
+
+    std.heap.c_allocator.free(self.cursor_positions);
+    std.heap.c_allocator.free(self.should_redraw);
+
     self.* = undefined;
 }
 
@@ -158,23 +169,33 @@ pub fn draw(
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0); // use default framebuffer
     c.glUseProgram(self.main_shader_program);
 
-    for (self.cursor_positions, infos, outputs) |*pos, inf, outp| {
+    for (self.cursor_positions, self.should_redraw, infos, outputs) |*pos, *redraw, inf, outp| {
         const target = if (pointer_state.surface == outp.surface)
             .{ pointer_state.x, pointer_state.y }
         else
             .{ @divTrunc(inf.width, 2), @divTrunc(inf.height, 2) };
 
-        pos[0] = @intFromFloat(std.math.lerp(
+        const new_x: c_int = @intFromFloat(std.math.lerp(
             @as(f32, @floatFromInt(pos[0])),
             @as(f32, @floatFromInt(target[0])),
             std.math.clamp(@as(f32, @floatFromInt(dt)) / 1000.0, 0.0, 1.0),
         ));
-        pos[1] = @intFromFloat(std.math.lerp(
+        const new_y: c_int = @intFromFloat(std.math.lerp(
             @as(f32, @floatFromInt(pos[1])),
             @as(f32, @floatFromInt(target[1])),
             std.math.clamp(@as(f32, @floatFromInt(dt)) / 1000.0, 0.0, 1.0),
         ));
+
+        if (new_x != pos[0] or new_y != pos[1])
+            redraw.* = true;
+
+        pos[0] = new_x;
+        pos[1] = new_y;
     }
+
+    if (!self.should_redraw[output_idx])
+        return;
+    self.should_redraw[output_idx] = false;
 
     const vertices = [_]f32{
         -1.0, -1.0, 0.0, 0.0, 0.0,
@@ -230,7 +251,6 @@ pub fn drawBackground(
     base_off: [2]i32,
     rand: f32,
 ) !void {
-    std.log.info("draw bg", .{});
     // There's just about a 0% chance this works properly when monitors have different resolutions,
     // but I can't even begin thinking about that.
     const xoff = @as(f32, @floatFromInt(info.x - base_off[0])) / @as(f32, @floatFromInt(info.width));

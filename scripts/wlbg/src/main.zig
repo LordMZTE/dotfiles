@@ -291,6 +291,7 @@ fn renderBackgroundCb(
             loop.stop();
             return .disarm;
         };
+        @memset(data.?.gfx.should_redraw, true);
     }
 
     return .rearm;
