@@ -33,7 +33,7 @@
 (setup :eslint)
 (setup :haxe_language_server)
 (setup :html)
-(setup :jsonls)
+(setup :jsonls {:on_attach disable-formatter})
 (setup :lua_ls {:settings {:Lua {:runtime {:version :LuaJIT
                                            :path (do
                                                    (var p
