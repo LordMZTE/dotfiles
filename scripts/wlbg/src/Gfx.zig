@@ -105,8 +105,8 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
             c.GL_UNSIGNED_BYTE,
             null,
         );
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_NEAREST);
-        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_NEAREST);
+        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MAG_FILTER, c.GL_LINEAR);
+        c.glTexParameteri(c.GL_TEXTURE_2D, c.GL_TEXTURE_MIN_FILTER, c.GL_LINEAR);
 
         c.glFramebufferTexture2D(
             c.GL_FRAMEBUFFER,
