@@ -31,6 +31,9 @@
           (symbol=? valid-verb verb))
   (raise-user-error "Invalid verb" verb))
 
+(load-config)
+;; Load local config
+
 (match verb
   ['install-scripts
    (local-require "setup/commands/install-scripts.rkt")

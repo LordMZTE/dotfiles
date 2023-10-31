@@ -10,7 +10,20 @@
          install-zig
          install-rust
          install-roswell
-         build-haxe)
+         build-haxe
+         load-config
+         install-script?)
+
+;; A parameter containing a predicate string? -> boolean? for checking if a script should be installed.
+(define install-script? (make-parameter (λ (_) #t)))
+
+(define-namespace-anchor common-ns)
+(define (load-config)
+  (let ([path (expand-user-path "~/.config/mzte_localconf/setup-opts.rkts")])
+    (if (file-exists? path)
+      (parameterize ([current-namespace (namespace-anchor->namespace common-ns)])
+        (load path))
+      (fprintf (current-error-port) "no setup-opts found, skipping\n"))))
 
 ;; Whether to log calls or not
 (define log-calls (make-parameter #t))
@@ -28,8 +41,17 @@
 ;; Defines an alias to a function which will log it's parameters on invokation.
 (define-syntax-rule (define-logging name func)
   (define (name . args)
-    (display-function-call (quote name) args)
+    (display-function-call 'name args)
     (apply func args)))
+
+;; Defines a script installer with a backing function which will only run when install-script? returns #t.
+(define-syntax-rule (define-script-installer name func)
+  (define (name p)
+    (if ((install-script?) p)
+        (begin
+          (display-function-call 'name (list p))
+          (func p))
+        (fprintf (current-error-port) "skipping script ~s\n" p))))
 
 (define-logging cmd
   (λ (exe . args)
@@ -38,12 +60,13 @@
 (define-logging rm (λ (path) (delete-directory/files path #:must-exist? false)))
 (define-logging copy copy-directory/files)
 
-(define-logging install-zig
+(define-script-installer
+  install-zig
   (λ (path [mode "ReleaseFast"])
     (parameterize ([current-directory path] [log-calls #f])
       (cmd "zig" "build" "-p" (output-bin-path) (string-append "-Doptimize=" mode)))))
 
-(define-logging install-rust
+(define-script-installer install-rust
   (λ (path)
     (parameterize ([current-directory path] [log-calls #f])
       (cmd "cargo"
@@ -63,14 +86,14 @@
   (λ ()
     (unless (directory-exists? "cgout")
       (make-directory "cgout"))
-    (call-with-output-file*
-     #:exists 'truncate/replace
-     "cgout/opts.json"
-     (λ (outfile)
-       (parameterize ([log-calls #f] [current-output-port outfile])
-         (cmd "confgen" "--json-opt" "confgen.lua"))))))
+    (call-with-output-file* #:exists 'truncate/replace
+                            "cgout/opts.json"
+                            (λ (outfile)
+                              (parameterize ([log-calls #f]
+                                             [current-output-port outfile])
+                                (cmd "confgen" "--json-opt" "confgen.lua"))))))
 
-(define-logging
+(define-script-installer
   install-roswell
   (λ (path)
     (parameterize ([log-calls #f])
