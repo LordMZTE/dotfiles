@@ -1,5 +1,4 @@
 const wl = @import("wayland").client.wl;
 
-surface: ?*wl.Surface,
-x: c_int,
-y: c_int,
+active_surface_idx: ?usize,
+surface_positions: [][2]c_int,

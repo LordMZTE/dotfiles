@@ -144,10 +144,11 @@ pub fn main() !void {
     @memset(dth.should_redraw, true);
 
     var pointer_state = PointerState{
-        .surface = null,
-        .x = 0,
-        .y = 0,
+        .active_surface_idx = null,
+        .surface_positions = try std.heap.c_allocator.alloc([2]c_int, output_info.len),
     };
+    defer std.heap.c_allocator.free(pointer_state.surface_positions);
+    @memset(pointer_state.surface_positions, .{ 0, 0 });
 
     var pointer_listener_data = PointerListenerData{
         .pstate = &pointer_state,
@@ -265,7 +266,6 @@ fn renderCb(
     data.?.gfx.preDraw(
         delta_time,
         data.?.pointer_state,
-        data.?.outputs,
         data.?.output_info,
         data.?.dth,
     ) catch |e| {
@@ -387,38 +387,33 @@ const PointerListenerData = struct {
     pstate: *PointerState,
     outputs: []const OutputWindow,
     dth: *DrawTimerHandler,
-
-    fn damageCurrentWindow(self: *PointerListenerData) !void {
-        if (self.pstate.surface) |ps| {
-            for (self.outputs, 0..) |o, i| {
-                if (ps == o.surface) {
-                    self.dth.damage(i);
-                }
-            }
-        }
-    }
 };
 
 fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, d: *PointerListenerData) void {
     switch (ev) {
         .motion => |motion| {
-            d.pstate.x = motion.surface_x.toInt();
-            d.pstate.y = motion.surface_y.toInt();
-            d.damageCurrentWindow() catch |e| {
-                std.log.err("unable to damage window: {}", .{e});
-            };
+            if (d.pstate.active_surface_idx) |i| {
+                d.pstate.surface_positions[i] = .{
+                    motion.surface_x.toInt(),
+                    motion.surface_y.toInt(),
+                };
+                d.dth.damage(i);
+            }
         },
         .enter => |enter| {
-            d.pstate.surface = enter.surface;
-            d.damageCurrentWindow() catch |e| {
-                std.log.err("unable to damage window: {}", .{e});
-            };
+            for (d.outputs, 0..) |out, i| {
+                if (out.surface == enter.surface) {
+                    d.dth.damage(i);
+                    d.pstate.active_surface_idx = i;
+                    break;
+                }
+            }
         },
         .leave => {
-            d.damageCurrentWindow() catch |e| {
-                std.log.err("unable to damage window: {}", .{e});
-            };
-            d.pstate.surface = null;
+            if (d.pstate.active_surface_idx) |i| {
+                d.dth.damage(i);
+                d.pstate.active_surface_idx = null;
+            }
         },
         else => {},
     }

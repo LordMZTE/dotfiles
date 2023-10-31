@@ -156,15 +156,14 @@ pub fn preDraw(
     self: *Gfx,
     dt: i64,
     pointer_state: *PointerState,
-    outputs: []const OutputWindow,
     infos: []const OutputInfo,
     dth: *DrawTimerHandler,
 ) !void {
-    for (self.cursor_positions, infos, outputs, 0..) |*pos, inf, outp, i| {
+    for (self.cursor_positions, infos, 0..) |*pos, inf, i| {
         const lerp_amt = std.math.clamp(@as(f32, @floatFromInt(std.math.clamp(dt, 0, 10))) / 150.0, 0.0, 1.0);
 
-        const target = if (pointer_state.surface == outp.surface)
-            .{ pointer_state.x, pointer_state.y }
+        const target = if (pointer_state.active_surface_idx == i)
+            pointer_state.surface_positions[i]
         else
             .{ @divTrunc(inf.width, 2), @divTrunc(inf.height, 2) };
 
@@ -235,7 +234,7 @@ pub fn draw(
     );
     c.glUniform1f(
         c.glGetUniformLocation(self.main_shader_program, "hasCursor"),
-        if (outputs[output_idx].surface == pointer_state.surface) 1.0 else 0.0,
+        if (pointer_state.active_surface_idx == output_idx) 1.0 else 0.0,
     );
     //c.glUniform1f(
     //    c.glGetUniformLocation(self.main_shader_program, "time"),
