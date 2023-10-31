@@ -1,7 +1,5 @@
-;<!
-;  tmpl:setPostProcessor(opt.fennelCompile)
-;  local shell = os.getenv "SHELL"
-;!>
+;<! tmpl:setPostProcessor(opt.fennelCompile) !>
+;<! local shell = opt.system "mzteinitctl getenv SHELL" -- get shell from MZTEINIT daemon !>
 ; vim: filetype=fennel
 
 (local wt (require :wezterm))

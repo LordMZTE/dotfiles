@@ -4,6 +4,9 @@ const env = @import("env.zig");
 const command = @import("command.zig");
 const util = @import("util.zig");
 
+const Mutex = @import("mutex.zig").Mutex;
+const Server = @import("sock/Server.zig");
+
 const msg = @import("message.zig").msg;
 
 pub const std_options = struct {
@@ -86,11 +89,49 @@ fn tryMain() !void {
         try env.populateSysdaemonEnvironment(&env_map);
     }
 
+    var env_mtx = Mutex(std.process.EnvMap){ .data = env_map };
+
+    var srv: ?Server = null;
+    if (env_map.get("XDG_RUNTIME_DIR")) |xrd| {
+        const sockaddr = try std.fs.path.join(alloc, &.{ xrd, "mzteinit.sock" });
+        errdefer alloc.free(sockaddr);
+
+        try msg("starting socket server @ {s}...", .{sockaddr});
+
+        std.fs.cwd().deleteFile(sockaddr) catch |e| {
+            switch (e) {
+                error.FileNotFound => {},
+                else => return e,
+            }
+        };
+
+        srv = try Server.init(alloc, sockaddr, &env_mtx);
+        errdefer srv.?.ss.deinit();
+        (try std.Thread.spawn(.{}, Server.run, .{&srv.?})).detach();
+
+        std.log.info("socket server started @ {s}", .{sockaddr});
+
+        env_mtx.mtx.lock();
+        defer env_mtx.mtx.unlock();
+
+        const key_dup = try alloc.dupe(u8, "MZTEINIT_SOCKET");
+        errdefer alloc.free(key_dup);
+        try env_mtx.data.putMove(key_dup, sockaddr);
+    } else {
+        std.log.warn("XDG_RUNTIME_DIR is not set, no socket server will be started!", .{});
+    }
+    defer if (srv) |*s| s.ss.deinit();
+
     if (launch_cmd) |cmd| {
         try msg("using launch command", .{});
         var child = std.ChildProcess.init(cmd, alloc);
-        child.env_map = &env_map;
-        _ = try child.spawnAndWait();
+        {
+            env_mtx.mtx.lock();
+            defer env_mtx.mtx.unlock();
+            child.env_map = &env_map;
+            try child.spawn();
+        }
+        _ = try child.wait();
         return;
     }
 
@@ -126,7 +167,7 @@ fn tryMain() !void {
         try stdout.flush();
 
         var exit = util.ExitMode.run;
-        cmd.run(alloc, &exit, &env_map) catch |e| {
+        cmd.run(alloc, &exit, &env_mtx) catch |e| {
             try stdout.writer().print("Error running command: {}\n\n", .{e});
             continue;
         };

@@ -1,4 +1,7 @@
 const std = @import("std");
+
+const Mutex = @import("mutex.zig").Mutex;
+
 const log = std.log.scoped(.command);
 
 pub const Command = struct {
@@ -15,7 +18,7 @@ pub const Command = struct {
         self: Command,
         alloc: std.mem.Allocator,
         exit: *@import("util.zig").ExitMode,
-        env: *const std.process.EnvMap,
+        env: *Mutex(std.process.EnvMap),
     ) !void {
         if (std.mem.eql(u8, self.command[0], "!quit")) {
             exit.* = .delayed;
@@ -27,8 +30,13 @@ pub const Command = struct {
 
         log.info("run cmd: {s}", .{self.command});
         var child = std.ChildProcess.init(self.command, alloc);
-        child.env_map = env;
-        _ = try child.spawnAndWait();
+        {
+            env.mtx.lock();
+            defer env.mtx.unlock();
+            child.env_map = &env.data;
+            try child.spawn();
+        }
+        _ = try child.wait();
     }
 };
 

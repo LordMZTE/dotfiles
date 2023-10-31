@@ -3,18 +3,35 @@ const common = @import("build_common.zig");
 
 pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.standardOptimizeOption(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi-term");
+    const s2s_mod = b.dependency("s2s", .{}).module("s2s");
 
     const exe = b.addExecutable(.{
         .name = "mzteinit",
         .root_source_file = .{ .path = "src/main.zig" },
         .target = target,
-        .optimize = mode,
+        .optimize = optimize,
     });
 
-    exe.strip = mode != .Debug;
+    const mzteinitctl = b.addExecutable(.{
+        .name = "mzteinitctl",
+        .root_source_file = .{ .path = "src/mzteinitctl.zig" },
+        .target = target,
+        .optimize = optimize,
+    });
 
-    exe.addModule("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
+    exe.strip = switch (optimize) {
+        .ReleaseFast, .ReleaseSmall => true,
+        .ReleaseSafe, .Debug => false,
+    };
+    mzteinitctl.strip = exe.strip;
+
+    inline for (.{ mzteinitctl, exe }) |e| {
+        e.addModule("ansi-term", ansi_term_mod);
+        e.addModule("s2s", s2s_mod);
+    }
 
     const cg_opt = try common.confgenGet(struct {
         gtk_theme: []u8, // TODO: this being non-const is a workaround for an std bug
@@ -25,12 +42,21 @@ pub fn build(b: *std.build.Builder) !void {
     exe.addOptions("opts", opts);
 
     b.installArtifact(exe);
+    b.installArtifact(mzteinitctl);
+
+    const run_mzteinitctl = b.addRunArtifact(mzteinitctl);
+    run_mzteinitctl.step.dependOn(b.getInstallStep());
 
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
+
     if (b.args) |args| {
+        run_mzteinitctl.addArgs(args);
         run_cmd.addArgs(args);
     }
+
+    const run_mzteinitctl_step = b.step("run-mzteinitctl", "Run mzteinitctl");
+    run_mzteinitctl_step.dependOn(&run_mzteinitctl.step);
 
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
