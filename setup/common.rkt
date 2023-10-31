@@ -15,15 +15,17 @@
          install-script?)
 
 ;; A parameter containing a predicate string? -> boolean? for checking if a script should be installed.
-(define install-script? (make-parameter (λ (_) #t)))
+(define/contract install-script?
+  (parameter/c (string? . -> . boolean?))
+  (make-parameter (λ (_) #t)))
 
 (define-namespace-anchor common-ns)
 (define (load-config)
   (let ([path (expand-user-path "~/.config/mzte_localconf/setup-opts.rkts")])
     (if (file-exists? path)
-      (parameterize ([current-namespace (namespace-anchor->namespace common-ns)])
-        (load path))
-      (fprintf (current-error-port) "no setup-opts found, skipping\n"))))
+        (parameterize ([current-namespace (namespace-anchor->namespace common-ns)])
+          (load path))
+        (fprintf (current-error-port) "no setup-opts found, skipping\n"))))
 
 ;; Whether to log calls or not
 (define log-calls (make-parameter #t))
@@ -46,12 +48,12 @@
 
 ;; Defines a script installer with a backing function which will only run when install-script? returns #t.
 (define-syntax-rule (define-script-installer name func)
-  (define (name p)
-    (if ((install-script?) p)
+  (define (name . args)
+    (if ((install-script?) (car args))
         (begin
-          (display-function-call 'name (list p))
-          (func p))
-        (fprintf (current-error-port) "skipping script ~s\n" p))))
+          (display-function-call 'name args)
+          (apply func args))
+        (fprintf (current-error-port) "skipping script ~s\n" (car args)))))
 
 (define-logging cmd
   (λ (exe . args)
