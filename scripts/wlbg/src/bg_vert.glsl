@@ -4,7 +4,7 @@ precision mediump float;
 
 uniform vec2 offset;
 
-attribute vec4 vPos;
+in vec4 vPos;
 
 out vec2 fragCoord;
 

@@ -2,8 +2,8 @@
 
 precision mediump float;
 
-attribute vec4 vPos;
-attribute vec2 uv;
+in vec4 vPos;
+in vec2 uv;
 
 out vec2 fragCoord;
 out vec2 fragUv;

@@ -6,6 +6,8 @@ uniform float time;
 
 in vec2 fragCoord;
 
+out vec4 fragColor;
+
 // shader: https://www.shadertoy.com/view/Ms2SDc
 
 const float PI=3.14159265358979323846;
@@ -62,5 +64,5 @@ void main() {
     float c=(n.x+n.y+n.z)*0.1;
     vec3 color=vec3(c,c,c)-t*0.0625;
     //color*=0.6+0.4*rand(vec2(t,t),iTime); // noise!
-    gl_FragColor=vec4(vec3(c+t*0.08,c+t*0.02,c*1.5-t*0.01)+color*color,1.0);
+    fragColor=vec4(vec3(c+t*0.08,c+t*0.02,c*1.5-t*0.01)+color*color,1.0);
 }
