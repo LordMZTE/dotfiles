@@ -6,7 +6,6 @@ pub fn build(b: *std.build.Builder) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi-term");
-    const s2s_mod = b.dependency("s2s", .{}).module("s2s");
 
     const exe = b.addExecutable(.{
         .name = "mzteinit",
@@ -30,7 +29,6 @@ pub fn build(b: *std.build.Builder) !void {
 
     inline for (.{ mzteinitctl, exe }) |e| {
         e.addModule("ansi-term", ansi_term_mod);
-        e.addModule("s2s", s2s_mod);
     }
 
     const cg_opt = try common.confgenGet(struct {

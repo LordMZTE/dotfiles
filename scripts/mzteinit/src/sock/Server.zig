@@ -1,9 +1,10 @@
 const std = @import("std");
-const s2s = @import("s2s");
 
 const message = @import("message.zig");
 
 const Mutex = @import("../mutex.zig").Mutex;
+
+const log = std.log.scoped(.server);
 
 alloc: std.mem.Allocator,
 env: *Mutex(std.process.EnvMap),
@@ -26,29 +27,34 @@ pub fn run(self: *Server) !void {
 }
 
 pub fn handleConnection(self: *Server, con: std.net.StreamServer.Connection) !void {
+    defer con.stream.close();
     while (true) {
-        var msg = s2s.deserializeAlloc(con.stream.reader(), message.Serverbound, self.alloc) catch |e| {
+        const msg = message.Serverbound.read(con.stream.reader(), self.alloc) catch |e| {
             switch (e) {
-                error.EndOfStream => {
-                    con.stream.close();
-                    return;
-                },
+                error.EndOfStream => return,
                 else => return e,
             }
         };
-        defer s2s.free(self.alloc, message.Serverbound, &msg);
+        defer msg.deinit(self.alloc);
 
         switch (msg) {
-            .ping => try s2s.serialize(con.stream.writer(), message.Clientbound, .pong),
+            .ping => {
+                log.info("got ping!", .{});
+                try (message.Clientbound{ .pong = .{} }).write(con.stream.writer());
+            },
             .getenv => |key| {
                 self.env.mtx.lock();
                 defer self.env.mtx.unlock();
 
-                try s2s.serialize(
-                    con.stream.writer(),
-                    message.Clientbound,
-                    .{ .getenv_res = self.env.data.get(key) },
-                );
+                log.info("env var '{s}' requested", .{key.data});
+
+                const payload = message.Clientbound{ .getenv_res = .{
+                    .inner = if (self.env.data.get(key.data)) |v|
+                        .{ .data = v }
+                    else
+                        null,
+                } };
+                try payload.write(con.stream.writer());
             },
         }
     }
