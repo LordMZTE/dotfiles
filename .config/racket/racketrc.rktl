@@ -2,5 +2,5 @@
                  (cond
                    [(void? x) #f]
                    ;; Also show fractions as decimals.
-                   [(and (rational? x) (not (integer? x))) (printf "~a = ~a" x (exact->inexact x))]
+                   [(and (exact? x) (not (exact-integer? x))) (printf "~a = ~a" x (exact->inexact x))]
                    [else (pretty-print x)])))
