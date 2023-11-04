@@ -15,7 +15,6 @@
                          (src :formatting :fish_indent)
                          (src :formatting :fnlfmt)
                          (src :formatting :prettier)
-                         (src :formatting :raco_fmt)
                          (src :formatting :shfmt)
                          (src :formatting :stylua)
                          (src :formatting :tidy)]})
