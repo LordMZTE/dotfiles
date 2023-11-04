@@ -4,8 +4,6 @@ fish_vi_key_bindings
 # ALIASES
 alias clip="xclip -sel clip"
 alias nv="nvim"
-#alias nvide="rbg neovide --nofork --multigrid --"
-alias nvide="rbg neovide --nofork --"
 
 function rbg
     $argv &>/dev/null &

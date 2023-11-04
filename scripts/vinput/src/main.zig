@@ -40,7 +40,7 @@ pub fn main() !void {
 
     //const editor_argv = [_][]const u8{
     //    "neovide",
-    //    "--nofork",
+    //    "--no-fork",
     //    "--wayland_app_id",
     //    "vinput-editor",
     //    filename,
