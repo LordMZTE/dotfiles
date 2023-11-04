@@ -1,23 +1,24 @@
 #lang racket
 
-(provide define-logging
+(provide build-haxe
+         cmd
+         copy
+         define-logging
+         generate-cgopt-json
+         install-link
+         install-roswell
+         install-rust
+         install-script?
+         install-zig
+         load-config
          log-calls
          output-bin-path
-         cmd
-         rm
-         copy
-         generate-cgopt-json
-         install-zig
-         install-rust
-         install-roswell
-         build-haxe
-         load-config
-         install-script?)
+         rm)
 
 ;; A parameter containing a predicate string? -> boolean? for checking if a script should be installed.
 (define/contract install-script?
   (parameter/c (string? . -> . boolean?))
-  (make-parameter (λ (_) #t)))
+  (make-parameter (const #t)))
 
 (define-namespace-anchor common-ns)
 (define (load-config)
@@ -41,65 +42,102 @@
              (string-append (if (null? args) "" " ") (apply ~a #:separator " " args)))))
 
 ;; Defines an alias to a function which will log it's parameters on invokation.
-(define-syntax-rule (define-logging name func)
-  (define (name . args)
-    (display-function-call 'name args)
-    (apply func args)))
+(define-syntax (define-logging stx)
+  (syntax-case stx ()
+    [(_ (name arg ...) body ...)
+     (syntax-case (cons #'list
+                        (map (λ (a) (if (list? (syntax->list a)) (car (syntax->list a)) a))
+                             (syntax->list #'(arg ...))))
+       ()
+       [display-args
+        #'(define (name arg ...)
+            (display-function-call 'name display-args)
+            body ...)])]
+    [(_ (name arg ... . more) body ...)
+     (syntax-case (cons #'list
+                        (map (λ (a) (if (list? (syntax->list a)) (car (syntax->list a)) a))
+                             (syntax->list #'(arg ...))))
+       ()
+       [display-args
+        #'(define (name arg ... . more)
+            (display-function-call 'name (append display-args more))
+            body ...)])]
+    [(_ name val)
+     #'(define (name . args)
+         (display-function-call 'name args)
+         (apply val args))]))
 
 ;; Defines a script installer with a backing function which will only run when install-script? returns #t.
-(define-syntax-rule (define-script-installer name func)
-  (define (name . args)
-    (if ((install-script?) (car args))
-        (begin
-          (display-function-call 'name args)
-          (apply func args))
-        (fprintf (current-error-port) "skipping script ~s\n" (car args)))))
+(define-syntax (define-script-installer stx)
+  (syntax-case stx ()
+    [(_ (name script arg ...) body ...)
+     (syntax-case (cons #'list
+                        (map (λ (a) (if (list? (syntax->list a)) (car (syntax->list a)) a))
+                             (syntax->list #'(script arg ...))))
+       ()
+       [display-args
+        #'(define (name script arg ...)
+            (display-function-call 'name display-args)
+            (if ((install-script?) script)
+                (begin
+                  body ...)
+                (fprintf (current-error-port) "skipping script ~s\n" script)))])]
+    [(_ (name script arg ... . more) body ...)
+     (syntax-case (cons #'list
+                        (map (λ (a) (if (list? (syntax->list a)) (car (syntax->list a)) a))
+                             (syntax->list #'(script arg ...))))
+       ()
+       [display-args
+        #'(define (name script arg ... . more)
+            (display-function-call 'name (append display-args more))
+            (if ((install-script?) script)
+                (begin
+                  body ...)
+                (fprintf (current-error-port) "skipping script ~s\n" (car args))))])]))
 
-(define-logging cmd
-  (λ (exe . args)
-    (unless (apply system* (find-executable-path exe) args)
-      (raise-user-error "Command Failed"))))
-(define-logging rm (λ (path) (delete-directory/files path #:must-exist? false)))
+(define-logging (cmd exe . args)
+  (unless (apply system* (find-executable-path exe) args)
+    (raise-user-error "Command Failed")))
+
+(define-logging (rm path) (delete-directory/files path #:must-exist? false))
 (define-logging copy copy-directory/files)
 
 (define-script-installer
-  install-zig
-  (λ (path [mode "ReleaseFast"])
-    (parameterize ([current-directory path] [log-calls #f])
-      (cmd "zig" "build" "-p" (output-bin-path) (string-append "-Doptimize=" mode)))))
+  (install-zig path [mode "ReleaseFast"])
+  (parameterize ([current-directory path] [log-calls #f])
+    (cmd "zig" "build" "-p" (output-bin-path) (string-append "-Doptimize=" mode))))
 
-(define-script-installer install-rust
-  (λ (path)
-    (parameterize ([current-directory path] [log-calls #f])
-      (cmd "cargo"
-           "-Z"
-           "unstable-options"
-           "build"
-           "--release"
-           "--out-dir"
-           (build-path (output-bin-path) "bin")))))
+(define-script-installer (install-link from to)
+  (with-handlers ([exn:fail? (const #f)])
+    (delete-file to))
+  (make-file-or-directory-link (normalize-path from) to))
 
-(define-logging build-haxe
-  (λ (path)
-    (parameterize ([current-directory path] [log-calls #f])
-      (cmd "haxe" "build.hxml"))))
+(define-script-installer (install-rust path)
+  (parameterize ([current-directory path] [log-calls #f])
+    (cmd "cargo"
+         "-Z"
+         "unstable-options"
+         "build"
+         "--release"
+         "--out-dir"
+         (build-path (output-bin-path) "bin"))))
 
-(define-logging generate-cgopt-json
-  (λ ()
-    (unless (directory-exists? "cgout")
-      (make-directory "cgout"))
-    (call-with-output-file* #:exists 'truncate/replace
-                            "cgout/opts.json"
-                            (λ (outfile)
-                              (parameterize ([log-calls #f]
-                                             [current-output-port outfile])
-                                (cmd "confgen" "--json-opt" "confgen.lua"))))))
+(define-logging (build-haxe path)
+  (parameterize ([current-directory path] [log-calls #f])
+    (cmd "haxe" "build.hxml")))
 
-(define-script-installer
-  install-roswell
-  (λ (path)
-    (parameterize ([log-calls #f])
-      (match-let*-values ([(_ filename _) (split-path path)]
-                          [(outpath)
-                           (build-path (output-bin-path) "bin" (path-replace-extension filename ""))])
-                         (cmd "ros" "dump" "executable" path "-o" outpath)))))
+(define-logging (generate-cgopt-json)
+  (unless (directory-exists? "cgout")
+    (make-directory "cgout"))
+  (call-with-output-file* #:exists 'truncate/replace
+                          "cgout/opts.json"
+                          (λ (outfile)
+                            (parameterize ([log-calls #f] [current-output-port outfile])
+                              (cmd "confgen" "--json-opt" "confgen.lua")))))
+
+(define-script-installer (install-roswell path)
+  (parameterize ([log-calls #f])
+    (match-let*-values ([(_ filename _) (split-path path)]
+                        [(outpath)
+                         (build-path (output-bin-path) "bin" (path-replace-extension filename ""))])
+                       (cmd "ros" "dump" "executable" path "-o" outpath))))

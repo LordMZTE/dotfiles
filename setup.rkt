@@ -10,13 +10,13 @@
 (define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config confgen))
 
 (define verb
-  (command-line
-   #:program "setup.rkt"
-   #:usage-help "Sets up my dotfiles. Available verbs:"
-   "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, confgen"
-   #:once-each [("-o" "--bin-output") o "Output directory for executables" (output-bin-path o)]
-   #:args (verb)
-   (string->symbol verb)))
+  (command-line #:program "setup.rkt"
+                #:usage-help "Sets up my dotfiles. Available verbs:"
+                "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, confgen"
+                #:once-each
+                [("-o" "--bin-output") o "Output directory for executables" (output-bin-path o)]
+                #:args (verb)
+                (string->symbol verb)))
 
 ;; Disable random printing of top-level stuff
 (current-print void)
@@ -31,8 +31,8 @@
           (symbol=? valid-verb verb))
   (raise-user-error "Invalid verb" verb))
 
-(load-config)
 ;; Load local config
+(load-config)
 
 (match verb
   ['install-scripts

@@ -2,11 +2,6 @@
 (require "../common.rkt")
 (provide run)
 
-(define-logging mklink
-  (λ (from to)
-    (with-handlers ([exn:fail? (const #f)]) (delete-file to))
-    (make-file-or-directory-link (normalize-path from) to)))
-
 (define (run)
   (define (bin-path bin)
     (build-path (output-bin-path) "bin" bin))
@@ -14,11 +9,11 @@
   (generate-cgopt-json)
 
   ;; Symlink interpreted scripts
-  (mklink "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (mklink "scripts/startriver.sh" (bin-path "startriver"))
-  (mklink "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
-  (mklink "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
-  (mklink "scripts/videos-duration.sh" (bin-path "videos-duration"))
+  (install-link "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
+  (install-link "scripts/startriver.sh" (bin-path "startriver"))
+  (install-link "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
+  (install-link "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
+  (install-link "scripts/videos-duration.sh" (bin-path "videos-duration"))
 
   ;; Compile scripts
   (install-zig "scripts/alecor")
