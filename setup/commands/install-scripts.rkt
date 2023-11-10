@@ -21,6 +21,7 @@
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/openbrowser")
+  (install-zig "scripts/pacmanxfer")
   (install-zig "scripts/playtwitch")
   (install-zig "scripts/prompt")
   (install-zig "scripts/randomwallpaper")
