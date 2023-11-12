@@ -11,6 +11,11 @@
     (unless (void? retval)
       (display ((current-rash-top-level-print-formatter) retval)))
 
-    (readline-prompt #{prompt show (if (exn:fail? retval) 1 0) insert |> port->bytes})))
+    (parameterize ([current-environment-variables (environment-variables-copy (current-environment-variables))])
+      (putenv "MZPROMPT_STATUS" (if (exn:fail? retval) "1" "0"))
+      (putenv "MZPROMPT_FISH_MODE" "insert")
+      (putenv "MZPROMPT_DURATION" "0")
+      (putenv "MZPROMPT_JOBS" "0")
+      (readline-prompt #{prompt show |> port->bytes}))))
 
 (define-simple-pipeline-alias nv nvim)
