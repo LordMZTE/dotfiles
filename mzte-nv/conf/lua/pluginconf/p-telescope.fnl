@@ -21,6 +21,8 @@
 (let [mopt (. (require :mzte_nv) :utils :map_opt)]
   (macro nmap [map action]
     `(vim.keymap.set :n ,map ,action mopt))
+  ;; resume search
+  (nmap :fr builtin.resume)
   ;; file finding mappings
   (nmap :ff builtin.find_files)
   (nmap :fg builtin.live_grep)
