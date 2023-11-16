@@ -1,6 +1,7 @@
-(local (telescope builtin ext)
+(local (telescope builtin ext themes)
        (values (require :telescope) (require :telescope.builtin)
-               (. (require :telescope._extensions) :manager)))
+               (. (require :telescope._extensions) :manager)
+               (require :telescope.themes)))
 
 (telescope.setup {:defaults {:vimgrep_arguments [:rg
                                                  :--color=never
@@ -19,8 +20,8 @@
 (telescope.load_extension :harpoon)
 
 (let [mopt (. (require :mzte_nv) :utils :map_opt)]
-  (macro nmap [map action]
-    `(vim.keymap.set :n ,map ,action mopt))
+  (macro nmap [map action opt]
+    `(vim.keymap.set :n ,map #(,action (themes.get_ivy ,opt)) mopt))
   ;; resume search
   (nmap :fr builtin.resume)
   ;; file finding mappings
@@ -31,7 +32,7 @@
   (nmap :gi builtin.lsp_implementations)
   (nmap :gr builtin.lsp_references)
   (nmap :gs builtin.lsp_dynamic_workspace_symbols)
-  (nmap :gp #(builtin.diagnostics {:bufnr 0}))
+  (nmap :gp builtin.diagnostics {:bufnr 0})
   (nmap :gP builtin.diagnostics)
   ;; harpoon
   (nmap :gm ext.harpoon.marks))
