@@ -1,0 +1,18 @@
+User tor
+Log notice syslog
+DataDirectory /var/lib/tor
+
+ControlPort 9051
+
+ControlSocket /var/lib/tor/control_socket
+ControlSocketsGroupWritable 1
+DataDirectoryGroupReadable 1
+CacheDirectoryGroupReadable 1 # workaround for tor bug #26913
+
+<! if opt.tor_pw_hash then !>
+HashedControlPassword <% opt.tor_pw_hash %>
+<! end !>
+
+CookieAuthentication 1
+CookieAuthFile /var/lib/tor/control_auth_cookie
+CookieAuthFileGroupReadable 1
