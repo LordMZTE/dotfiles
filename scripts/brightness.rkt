@@ -20,9 +20,12 @@
 (when (sysfs)
   (for ([dir (directory-list "/sys/class/backlight")])
     (printf "sysfs: ~a\n" dir)
-    (let* ([max-brightness (string->number (file->string (build-path dir "max_brightness")))]
+    (let* ([max-brightness (string->number
+                            (string-trim
+                             (file->string
+                              (build-path "/sys/class/backlight" dir "max_brightness"))))]
            [rel-brightness (exact-round (* brightness (/ max-brightness 100)))]
-           [brightness-path (build-path dir "brightness")])
+           [brightness-path (build-path "/sys/class/backlight" dir "brightness")])
       (display-to-file rel-brightness brightness-path #:exists 'truncate))))
 
 (match* ((ddc) (find-executable-path "ddcutil"))
