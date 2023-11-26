@@ -15,9 +15,9 @@ pub fn main() !u8 {
     defer walker.deinit();
 
     try walker.walk(
-        try std.fs.openIterableDirAbsolute(
+        try std.fs.openDirAbsolute(
             "/usr/share/backgrounds/",
-            .{},
+            .{ .iterate = true },
         ),
     );
 
@@ -44,7 +44,7 @@ fn walkLocalWps(walker: *Walker, home_s: []const u8) !void {
     const wp_path = try std.fs.path.join(walker.files.allocator, &.{ home_s, ".local/share/backgrounds" });
     defer walker.files.allocator.free(wp_path);
 
-    var local_wp = std.fs.cwd().openIterableDir(wp_path, .{}) catch |e| switch (e) {
+    var local_wp = std.fs.cwd().openDir(wp_path, .{ .iterate = true }) catch |e| switch (e) {
         error.FileNotFound => {
             std.log.warn(
                 "No local wallpaper directory @ {s}, skipping local wallpapers",

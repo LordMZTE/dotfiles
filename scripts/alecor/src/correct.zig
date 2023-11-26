@@ -180,11 +180,11 @@ fn correctArgForReq(arena: *std.heap.ArenaAllocator, req: ArgRequirement, arg: *
                 const dirs = path_splits.items[0..cur_idx];
                 const dir_subpath = try std.fs.path.join(arena.allocator(), if (dirs.len == 0) &.{"."} else dirs);
 
-                var iterable_dir = try std.fs.cwd().openIterableDir(dir_subpath, .{});
+                var iterable_dir = try std.fs.cwd().openDir(dir_subpath, .{ .iterate = true });
                 defer iterable_dir.close();
 
                 // if the given file already exists, there's no point in iterating the dir
-                if (iterable_dir.dir.statFile(split.*)) |_| continue else |e| switch (e) {
+                if (iterable_dir.statFile(split.*)) |_| continue else |e| switch (e) {
                     error.FileNotFound => {},
                     else => return e,
                 }

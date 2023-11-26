@@ -13,7 +13,7 @@ pub const ProcessQuery = struct {
 };
 
 pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
-    var proc_dir = try std.fs.openIterableDirAbsolute("/proc", .{});
+    var proc_dir = try std.fs.openDirAbsolute("/proc", .{ .iterate = true });
     defer proc_dir.close();
 
     var proc_iter = proc_dir.iterate();

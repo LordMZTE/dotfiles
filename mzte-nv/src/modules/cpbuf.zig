@@ -24,7 +24,7 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
     // copy lines
     var lnum: i32 = 1;
     while (lnum < nvim.curbuf.*.b_ml.ml_line_count) : (lnum += 1) {
-        const line = nvim.ml_get_buf(nvim.curbuf, lnum, false) orelse return error.Buffer;
+        const line = nvim.ml_get_buf(nvim.curbuf, lnum) orelse return error.Buffer;
         if (nvim.ml_append_buf(newbuf, lnum - 1, line, 0, false) == nvim.FAIL)
             return error.Buffer;
     }

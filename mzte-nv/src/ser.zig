@@ -51,7 +51,7 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
         },
         .Array => luaPushAny(l, &x),
         .Struct => |S| {
-            if (comptime std.meta.trait.hasFn("luaPush")(T)) {
+            if (comptime std.meta.hasFn(T, "luaPush")) {
                 return x.luaPush(l);
             }
 

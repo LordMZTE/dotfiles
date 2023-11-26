@@ -4,12 +4,12 @@
     .paths = .{""},
     .dependencies = .{
         .wayland = .{
-            .url = "https://git.mzte.de/LordMZTE/zig-wayland/archive/85722422985f928087e56d90c3617ecb04232486.tar.gz",
-            .hash = "1220d992b223e473988d203d66d262e54141b59559c09587eb00231c800d46f9b408",
+            .url = "https://git.mzte.de/LordMZTE/zig-wayland/archive/cbd535c4666a04f20bb303dc6485ec51d7db8bf5.tar.gz",
+            .hash = "1220d3aa22102fa17a6870d241a9541e6810d79d2a69c1ccca71ac90c825b26dd9e1",
         },
         .xev = .{
-            .url = "https://github.com/mitchellh/libxev/archive/5ecbc871f3bfa80fb7bf0fa853866cb93b99bc18.tar.gz",
-            .hash = "1220416854e424601ecc9814afb461a5dc9cf95db5917d82f794594a58ffc723b82c",
+            .url = "https://github.com/mitchellh/libxev/archive/7eada4333c36b3e16f4dc2abad707149ef7b6de5.tar.gz",
+            .hash = "1220be2c7b3f3a07b9150720140c7038f454a9ce0cbc5d303767c1e4a50856ec1b01",
         },
     },
 }

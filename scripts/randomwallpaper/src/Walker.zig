@@ -17,23 +17,23 @@ pub fn deinit(self: *Self) void {
     self.files.deinit();
 }
 
-pub fn walk(self: *Self, dir: std.fs.IterableDir) anyerror!void {
+pub fn walk(self: *Self, dir: std.fs.Dir) anyerror!void {
     var iter = dir.iterate();
     while (try iter.next()) |e| {
         switch (e.kind) {
             .file => {
-                const path = try dir.dir.realpathAlloc(self.filename_arena.allocator(), e.name);
+                const path = try dir.realpathAlloc(self.filename_arena.allocator(), e.name);
                 try self.files.append(path);
             },
             .directory => {
-                var subdir = try dir.dir.openIterableDir(e.name, .{});
+                var subdir = try dir.openDir(e.name, .{ .iterate = true });
                 defer subdir.close();
                 try self.walk(subdir);
             },
             .sym_link => {
                 var p_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
-                const p = try dir.dir.readLink(e.name, &p_buf);
-                var subdir = dir.dir.openIterableDir(p, .{}) catch |err| {
+                const p = try dir.readLink(e.name, &p_buf);
+                var subdir = dir.openDir(p, .{ .iterate = true }) catch |err| {
                     switch (err) {
                         error.NotDir => {
                             const fpath = try self.filename_arena.allocator().dupe(u8, p);

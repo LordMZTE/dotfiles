@@ -76,7 +76,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     defer files.deinit();
 
     if ((try std.fs.cwd().statFile(path)).kind == .directory) {
-        var dir = try std.fs.cwd().openIterableDir(path, .{});
+        var dir = try std.fs.cwd().openDir(path, .{ .iterate = true });
         defer dir.close();
 
         var walker = try dir.walk(alloc);

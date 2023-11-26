@@ -19,7 +19,7 @@ pub fn launchChildren(state: *State, channel: []const u8) !void {
             []const u8,
             &.{ "chatty", "-connect", "-channel", channel_d },
         );
-        var chatty_child = std.ChildProcess.init(chatty_argv, std.heap.c_allocator);
+        const chatty_child = std.ChildProcess.init(chatty_argv, std.heap.c_allocator);
 
         const chatty_thread = try std.Thread.spawn(
             .{},

@@ -16,8 +16,8 @@ opts.good_internet = true
 -- Enable if stuck on garbage hardware. Enables wayland-related workarounds.
 opts.nvidia = false
 
-opts.font = "Iosevka Nerd Font"
-opts.term_font = "IosevkaTerm Nerd Font Mono"
+opts.font = "Iosevka NF"
+opts.term_font = "IosevkaTerm NFM"
 
 opts.term = {
     name = "Wezterm",

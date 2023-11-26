@@ -35,7 +35,7 @@ const runtime_map = [_]Runtime{
 };
 
 fn lFindRuntimes(l: *c.lua_State) !c_int {
-    var jvmdir = try std.fs.openIterableDirAbsolute("/usr/lib/jvm/", .{});
+    var jvmdir = try std.fs.openDirAbsolute("/usr/lib/jvm/", .{ .iterate = true });
     defer jvmdir.close();
 
     c.lua_newtable(l);
@@ -83,7 +83,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     );
     defer std.heap.c_allocator.free(bundle_path);
 
-    var dir = std.fs.cwd().openIterableDir(bundle_path, .{}) catch |e| {
+    var dir = std.fs.cwd().openDir(bundle_path, .{ .iterate = true }) catch |e| {
         if (e == error.FileNotFound) {
             // Just return an empty table if the bundles dir doesn't exist
             ser.luaPushAny(l, .{

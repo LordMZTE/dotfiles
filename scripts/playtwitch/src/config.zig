@@ -41,7 +41,7 @@ pub fn configLoaderThread(state: *State) !void {
         const comment_trimmed = blk: {
             const comment = line_iter.next() orelse break :blk null;
 
-            var comment_trimmed = std.mem.trim(u8, comment, " \n\r");
+            const comment_trimmed = std.mem.trim(u8, comment, " \n\r");
 
             if (comment_trimmed.len == 0)
                 break :blk null;

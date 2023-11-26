@@ -95,7 +95,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         icons: {
             try msg("building $ICONPATH...", .{});
             const path = "/usr/share/icons/candy-icons";
-            var dir = std.fs.openIterableDirAbsolute(path, .{}) catch {
+            var dir = std.fs.openDirAbsolute(path, .{ .iterate = true }) catch {
                 log.warn(
                     "Couldn't open candy-icons directory @ `{s}`, not setting ICONPATH",
                     .{path},

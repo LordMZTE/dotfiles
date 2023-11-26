@@ -39,7 +39,7 @@ fn fetchChannelsLive(s: *State) !void {
     @atomicStore(bool, &s.live_status_loading, true, .Unordered);
     defer @atomicStore(bool, &s.live_status_loading, false, .Unordered);
     log.info("initiaizing cURL", .{});
-    var curl = c.curl_easy_init();
+    const curl = c.curl_easy_init();
     if (curl == null)
         return error.CurlInitError;
     defer c.curl_easy_cleanup(curl);

@@ -5,8 +5,8 @@
 
     .dependencies = .{
         .wayland = .{
-            .url = "https://git.mzte.de/LordMZTE/zig-wayland/archive/85722422985f928087e56d90c3617ecb04232486.tar.gz",
-            .hash = "1220d992b223e473988d203d66d262e54141b59559c09587eb00231c800d46f9b408",
+            .url = "https://git.mzte.de/LordMZTE/zig-wayland/archive/cbd535c4666a04f20bb303dc6485ec51d7db8bf5.tar.gz",
+            .hash = "1220d3aa22102fa17a6870d241a9541e6810d79d2a69c1ccca71ac90c825b26dd9e1",
         }
     }
 }
