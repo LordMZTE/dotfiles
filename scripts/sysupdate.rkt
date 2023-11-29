@@ -18,11 +18,11 @@
      (unless (apply system* exepath args)
        (set! failures (cons argv failures)))]))
 
+(cmd "zupper" "update")
+(cmd "rustup" "update")
 (apply cmd (if (noint)
                '("paru" "-Syu" "--noconfirm")
                '("paru" "-Syu")))
-(cmd "zupper" "update")
-(cmd "rustup" "update")
 (cmd "update-nvim-plugins")
 (cmd "tldr" "--update")
 
