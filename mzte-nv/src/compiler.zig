@@ -126,7 +126,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             }
 
             // replace file extension
-            std.mem.copy(u8, outname[outname.len - 3 ..], "lua");
+            @memcpy(outname[outname.len - 3 ..], "lua");
 
             var file = try std.fs.cwd().openFile(luafile, .{});
             defer file.close();

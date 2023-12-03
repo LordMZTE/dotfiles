@@ -129,7 +129,7 @@ fn setWallpapersX(alloc: std.mem.Allocator, wps: []const []const u8) !u8 {
         feh_baseargs.len + @as(usize, @intCast(screens)),
     );
     defer alloc.free(feh_argv);
-    std.mem.copy([]const u8, feh_argv, &feh_baseargs);
+    @memcpy(feh_argv[0..feh_baseargs.len], &feh_baseargs);
 
     var prng = std.rand.DefaultPrng.init(std.crypto.random.int(u64));
     const rand = prng.random();

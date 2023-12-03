@@ -72,7 +72,7 @@ pub fn init(win: *c.GLFWwindow) !*Self {
         .live_status_loading = true,
     };
 
-    std.mem.copy(u8, &self.quality_buf, "best");
+    @memcpy(self.quality_buf[0..4], "best");
 
     const thread = try std.Thread.spawn(.{}, config.configLoaderThread, .{self});
     thread.detach();
