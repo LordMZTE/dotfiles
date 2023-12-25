@@ -19,29 +19,33 @@ bind = SUPER, T, fullscreen, 1 # maximize
 bind = SUPER SHIFT, F, exec, hyprtool fullerscreen
 bind = SUPER CTRL, F, fakefullscreen,
 
+<! for _, dirs in pairs {
+    { "left", "right", "up", "down" },
+    { "H", "L", "K", "J" },
+} do !>
 # Move focus with mainMod + arrow keys
-bind = SUPER, left, movefocus, l
-bind = SUPER, right, movefocus, r
-bind = SUPER, up, movefocus, u
-bind = SUPER, down, movefocus, d
-
-# HJKL
-bind = SUPER, H, movefocus, l
-bind = SUPER, L, movefocus, r
-bind = SUPER, K, movefocus, u
-bind = SUPER, J, movefocus, d
+bind = SUPER, <% dirs[1] %>, movefocus, l
+bind = SUPER, <% dirs[2] %>, movefocus, r
+bind = SUPER, <% dirs[3] %>, movefocus, u
+bind = SUPER, <% dirs[4] %>, movefocus, d
 
 # Window Moving
-bind = SUPER SHIFT, left, movewindow, l
-bind = SUPER SHIFT, right, movewindow, r
-bind = SUPER SHIFT, up, movewindow, u
-bind = SUPER SHIFT, down, movewindow, d
+bind = SUPER SHIFT, <% dirs[1] %>, movewindow, l
+bind = SUPER SHIFT, <% dirs[2] %>, movewindow, r
+bind = SUPER SHIFT, <% dirs[3] %>, movewindow, u
+bind = SUPER SHIFT, <% dirs[4] %>, movewindow, d
 
-# HJKL
-bind = SUPER SHIFT, H, movewindow, l
-bind = SUPER SHIFT, L, movewindow, r
-bind = SUPER SHIFT, K, movewindow, u
-bind = SUPER SHIFT, J, movewindow, d
+<! for mods, delta in pairs {
+    ["CTRL"] = 25,
+    ["CTRL SHIFT"] = 100,
+} do !>
+# Window Resize
+bind = SUPER <% mods %>, <% dirs[1] %>, resizeactive, -<% delta %> 0
+bind = SUPER <% mods %>, <% dirs[2] %>, resizeactive, <% delta %> 0
+bind = SUPER <% mods %>, <% dirs[3] %>, resizeactive, 0 -<% delta %>
+bind = SUPER <% mods %>, <% dirs[4] %>, resizeactive, 0 <% delta %>
+<! end !>
+<! end !>
 
 # Workspace keybinds
 <! for i = 1, 9 do !>
