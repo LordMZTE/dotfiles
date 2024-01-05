@@ -2,6 +2,11 @@
     return opt.catppuccin[c]:gsub("^#", "0x")
 end !>
 
+[general]
+corner-radius = 0;
+font-regular = <% opt.font %>:size=14;
+font-large = <% opt.font %>:size=20;
+
 [colours]
 background = <% col "mantle" %>;
 border = <% col "red" %>;

@@ -1,5 +1,4 @@
 cg.addPath ".config"
-cg.addPath ".gnupg"
 cg.addPath ".local"
 cg.addPath ".ssh"
 cg.addPath ".cargo"
