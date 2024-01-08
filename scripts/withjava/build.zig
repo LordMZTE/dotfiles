@@ -11,11 +11,6 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.strip = switch (optimize) {
-        .ReleaseSafe, .Debug => false,
-        .ReleaseFast, .ReleaseSmall => true,
-    };
-
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

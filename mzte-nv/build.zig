@@ -1,10 +1,10 @@
 const std = @import("std");
 const common = @import("build_common.zig");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
 
-    if (target.os_tag orelse @import("builtin").os.tag == .windows)
+    if (target.result.os.tag == .windows)
         // windows is an error in many ways
         return error.Windows;
 
@@ -25,21 +25,17 @@ pub fn build(b: *std.build.Builder) !void {
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "font", cg_opt.term_font);
-    lib.addOptions("opts", opts);
+    lib.root_module.addImport("opts", opts.createModule());
 
-    lib.addModule("nvim", znvim_dep.module("nvim_c"));
-    lib.addModule("znvim", znvim_dep.module("znvim"));
+    lib.root_module.addImport("nvim", znvim_dep.module("nvim_c"));
+    lib.root_module.addImport("znvim", znvim_dep.module("znvim"));
 
     lib.linkLibC();
     lib.linkSystemLibrary("luajit");
 
-    lib.strip = switch (mode) {
-        .Debug, .ReleaseSafe => false,
-        .ReleaseFast, .ReleaseSmall => true,
-    };
-    lib.unwind_tables = true;
+    lib.root_module.unwind_tables = true;
 
-    b.getInstallStep().dependOn(&b.addInstallFile(lib.getOutputSource(), "share/nvim/mzte-nv.so").step);
+    b.getInstallStep().dependOn(&b.addInstallFile(lib.getEmittedBin(), "share/nvim/mzte-nv.so").step);
 
     // this is the install step for the lua config compiler binary
     const compiler = b.addExecutable(.{
@@ -52,8 +48,7 @@ pub fn build(b: *std.build.Builder) !void {
     compiler.linkLibC();
     compiler.linkSystemLibrary("luajit");
 
-    compiler.strip = mode != .Debug;
-    compiler.unwind_tables = true;
+    compiler.root_module.unwind_tables = true;
 
     b.installArtifact(compiler);
 }

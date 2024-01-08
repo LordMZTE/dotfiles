@@ -4,12 +4,12 @@
 
     .dependencies = .{
         .ansi_term = .{
-            .url = "https://github.com/ziglibs/ansi-term/archive/1614b61486d567b59abe11a097d11aa6ce679819.tar.gz",
-            .hash = "1220647eea49d2c48d5e59354291e975f813be3cc5a9d9920a50bbfaa40a891a06ee",
+            .url = "git+https://github.com/LordMZTE/ansi-term.git#73c03175068679685535111dbea72cade075719e",
+            .hash = "1220ea86ace34b38e49c1d737c5f857d88346af10695a992b38e10cb0a73b6a19ef7",
         },
         .known_folders = .{
-            .url = "https://github.com/ziglibs/known-folders/archive/8bb4bf761bab20ffed74ffac83c3a9eb4456f28d.tar.gz",
-            .hash = "122002462f37b67a54fa1ab712d870d4637dae0d94437c0077b148e1fb75616c573d",
+            .url = "git+https://github.com/ziglibs/known-folders#806ba01b872820004c7dec3117cb0db66b206af6",
+            .hash = "122094b48dea08e241b48d0ec32e3df6965e814091e3cabaff942e62d053f3ff9b5f",
         },
     },
     .paths = .{""},

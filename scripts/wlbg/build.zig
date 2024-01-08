@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const scanner = Scanner.create(b, .{});
-    const wayland_mod = b.createModule(.{ .source_file = scanner.result });
+    const wayland_mod = scanner.mod;
 
     const exe = b.addExecutable(.{
         .name = "wlbg",
@@ -16,11 +16,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.addModule("xev", b.dependency("xev", .{
+    exe.root_module.addImport("xev", b.dependency("xev", .{
         .target = target,
         .optimize = optimize,
     }).module("xev"));
-    exe.addModule("wayland", wayland_mod);
+    exe.root_module.addImport("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
     scanner.addSystemProtocol("unstable/xdg-output/xdg-output-unstable-v1.xml");
@@ -34,12 +34,10 @@ pub fn build(b: *std.Build) void {
     scanner.generate("wl_seat", 8);
     scanner.generate("wl_output", 4);
 
-    exe.linkLibC();
-    exe.linkSystemLibrary("wayland-client");
-    exe.linkSystemLibrary("wayland-egl");
-    exe.linkSystemLibrary("EGL");
-    exe.linkSystemLibrary("GLESv2");
-    scanner.addCSource(exe);
+    exe.root_module.linkSystemLibrary("wayland-client", .{});
+    exe.root_module.linkSystemLibrary("wayland-egl", .{});
+    exe.root_module.linkSystemLibrary("EGL", .{});
+    exe.root_module.linkSystemLibrary("GLESv2", .{});
 
     b.installArtifact(exe);
     const run_cmd = b.addRunArtifact(exe);

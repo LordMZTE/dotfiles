@@ -2,11 +2,10 @@
     .name = "vinput",
     .version = "0.0.0",
     .paths = .{""},
-
     .dependencies = .{
         .wayland = .{
-            .url = "https://git.mzte.de/LordMZTE/zig-wayland/archive/cbd535c4666a04f20bb303dc6485ec51d7db8bf5.tar.gz",
-            .hash = "1220d3aa22102fa17a6870d241a9541e6810d79d2a69c1ccca71ac90c825b26dd9e1",
-        }
-    }
+            .url = "git+https://git.mzte.de/LordMZTE/zig-wayland#4de9f2d6d5fddae1fbb29e21fd1dae69e646ab7d",
+            .hash = "1220d6448c277e5c41348aa95ce2ba2fc92a92cb7a9e9783edf0f816cd0260122d31",
+        },
+    },
 }

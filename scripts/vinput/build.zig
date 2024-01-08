@@ -2,12 +2,12 @@ const std = @import("std");
 
 const Scanner = @import("wayland").Scanner;
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardOptimizeOption(.{});
 
     const scanner = Scanner.create(b, .{});
-    const wayland_mod = b.createModule(.{ .source_file = scanner.result });
+    const wayland_mod = scanner.mod;
 
     const exe = b.addExecutable(.{
         .name = "vinput",
@@ -16,7 +16,7 @@ pub fn build(b: *std.build.Builder) void {
         .optimize = mode,
     });
 
-    exe.addModule("wayland", wayland_mod);
+    exe.root_module.addImport("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
 
@@ -26,12 +26,7 @@ pub fn build(b: *std.build.Builder) void {
     scanner.generate("wl_shm", 1);
     scanner.generate("xdg_wm_base", 3);
 
-    exe.linkLibC();
-    exe.linkSystemLibrary("wayland-client");
-
-    exe.strip = mode != .Debug;
-
-    scanner.addCSource(exe);
+    exe.root_module.linkSystemLibrary("wayland-client", .{});
 
     b.installArtifact(exe);
 

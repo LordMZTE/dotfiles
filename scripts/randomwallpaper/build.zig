@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardOptimizeOption(.{});
 
@@ -14,8 +14,6 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkLibC();
     exe.linkSystemLibrary("xcb");
     exe.linkSystemLibrary("xcb-xinerama");
-
-    exe.strip = mode != .Debug;
 
     b.installArtifact(exe);
 

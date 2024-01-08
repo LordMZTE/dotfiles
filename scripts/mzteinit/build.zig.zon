@@ -4,8 +4,8 @@
 
     .dependencies = .{
         .ansi_term = .{
-            .url = "https://github.com/ziglibs/ansi-term/archive/1614b61486d567b59abe11a097d11aa6ce679819.tar.gz",
-            .hash = "1220647eea49d2c48d5e59354291e975f813be3cc5a9d9920a50bbfaa40a891a06ee",
+            .url = "git+https://github.com/LordMZTE/ansi-term.git#73c03175068679685535111dbea72cade075719e",
+            .hash = "1220ea86ace34b38e49c1d737c5f857d88346af10695a992b38e10cb0a73b6a19ef7",
         },
     },
     .paths = .{""},

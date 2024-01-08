@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardOptimizeOption(.{});
 
@@ -10,13 +10,12 @@ pub fn build(b: *std.build.Builder) void {
         .target = target,
         .optimize = mode,
     });
-    exe.strip = mode != .Debug;
 
     exe.linkLibC();
     exe.linkSystemLibrary("libgit2");
 
-    exe.addModule("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
-    exe.addModule("known-folders", b.dependency("known_folders", .{}).module("known-folders"));
+    exe.root_module.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
+    exe.root_module.addImport("known-folders", b.dependency("known_folders", .{}).module("known-folders"));
 
     b.installArtifact(exe);
 

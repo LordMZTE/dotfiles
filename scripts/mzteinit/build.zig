@@ -1,7 +1,7 @@
 const std = @import("std");
 const common = @import("build_common.zig");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -21,14 +21,8 @@ pub fn build(b: *std.build.Builder) !void {
         .optimize = optimize,
     });
 
-    exe.strip = switch (optimize) {
-        .ReleaseFast, .ReleaseSmall => true,
-        .ReleaseSafe, .Debug => false,
-    };
-    mzteinitctl.strip = exe.strip;
-
     inline for (.{ mzteinitctl, exe }) |e| {
-        e.addModule("ansi-term", ansi_term_mod);
+        e.root_module.addImport("ansi-term", ansi_term_mod);
     }
 
     const cg_opt = try common.confgenGet(struct {
@@ -37,7 +31,7 @@ pub fn build(b: *std.build.Builder) !void {
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "gtk_theme", cg_opt.gtk_theme);
-    exe.addOptions("opts", opts);
+    exe.root_module.addImport("opts", opts.createModule());
 
     b.installArtifact(exe);
     b.installArtifact(mzteinitctl);

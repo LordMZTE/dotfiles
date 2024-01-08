@@ -1,10 +1,9 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    //const exe = b.addExecutable("playtwitch", "src/main.zig");
     const exe = b.addExecutable(.{
         .name = "playtwitch",
         .root_source_file = .{ .path = "src/main.zig" },
@@ -17,8 +16,6 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkSystemLibrary("glfw3");
     exe.linkSystemLibrary("glew");
     exe.linkSystemLibrary("curl");
-
-    exe.strip = optimize != .Debug and optimize != .ReleaseSafe;
 
     b.installArtifact(exe);
 
