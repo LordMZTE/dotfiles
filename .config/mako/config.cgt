@@ -9,7 +9,7 @@ default-timeout=8000
 anchor=top-left
 
 # Colors
-background-color=<% opt.catppuccin.base %>E0
-text-color=<% opt.catppuccin.text %>FF
-border-color=<% opt.catppuccin.red %>FF
-progress-color=source <% opt.catppuccin.surface0 %>E0
+background-color=#<% opt.catppuccin.base %>E0
+text-color=#<% opt.catppuccin.text %>FF
+border-color=#<% opt.catppuccin.red %>FF
+progress-color=source #<% opt.catppuccin.surface0 %>E0
