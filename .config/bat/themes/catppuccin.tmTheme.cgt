@@ -1,6 +1,6 @@
-<!-- Yoinked from: https://github.com/catppuccin/bat/tree/main -->
+<! -- Yoinked from: https://github.com/catppuccin/bat/tree/main !>
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<% "<" .. "!" %>DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
     <key>name</key>
@@ -11,33 +11,33 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cdd6f4</string>
+          <string>#<% opt.catppuccin.text %></string>
           <key>background</key>
-          <string>#1e1e2e</string>
+          <string>#<% opt.catppuccin.base %></string>
           <key>caret</key>
-          <string>#bac2de</string>
+          <string>#<% opt.catppuccin.subtext1 %></string>
           <key>invisibles</key>
-          <string>#a6adc8</string>
+          <string>#<% opt.catppuccin.subtext0 %></string>
           <key>gutterForeground</key>
-          <string>#9399b2</string>
+          <string>#<% opt.catppuccin.overlay2 %></string>
           <key>gutterForegroundHighlight</key>
-          <string>#a6e3a1</string>
+          <string>#<% opt.catppuccin.green %></string>
           <key>lineHighlight</key>
-          <string>#585b70</string>
+          <string>#<% opt.catppuccin.surface2 %></string>
           <key>selection</key>
-          <string>#6c7086</string>
+          <string>#<% opt.catppuccin.overlay0 %></string>
           <key>selectionBorder</key>
-          <string>#1e1e2e</string>
+          <string>#<% opt.catppuccin.base %></string>
           <key>activeGuide</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>findHighlightForeground</key>
-          <string>#181825</string>
+          <string>#<% opt.catppuccin.mantle %></string>
           <key>findHighlight</key>
-          <string>#f9e2af</string>
+          <string>#<% opt.catppuccin.yellow %></string>
           <key>bracketsForeground</key>
-          <string>#9399b2</string>
+          <string>#<% opt.catppuccin.overlay2 %></string>
           <key>bracketContentsForeground</key>
-          <string>#9399b2</string>
+          <string>#<% opt.catppuccin.overlay2 %></string>
         </dict>
       </dict>
       <dict>
@@ -48,7 +48,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#6c7086</string>
+          <string>#<% opt.catppuccin.overlay0 %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -61,7 +61,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#a6e3a1</string>
+          <string>#<% opt.catppuccin.green %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -74,7 +74,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -87,7 +87,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -100,7 +100,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string>bold italic</string>
         </dict>
@@ -113,7 +113,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b4befe</string>
+          <string>#<% opt.catppuccin.lavender %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -126,7 +126,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -139,7 +139,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -160,7 +160,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -173,7 +173,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cba6f7</string>
+          <string>#<% opt.catppuccin.mauve %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -186,7 +186,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5c2e7</string>
+          <string>#<% opt.catppuccin.pink %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -199,7 +199,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -212,7 +212,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89dceb</string>
+          <string>#<% opt.catppuccin.sky %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -225,7 +225,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -238,7 +238,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -251,7 +251,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#9399b2</string>
+          <string>#<% opt.catppuccin.overlay2 %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -264,7 +264,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -277,7 +277,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -290,7 +290,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f9e2af</string>
+          <string>#<% opt.catppuccin.yellow %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -303,7 +303,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -316,7 +316,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -329,7 +329,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -342,7 +342,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -355,7 +355,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -368,7 +368,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89dceb</string>
+          <string>#<% opt.catppuccin.sky %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -381,7 +381,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89dceb</string>
+          <string>#<% opt.catppuccin.sky %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -394,7 +394,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -407,7 +407,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -420,7 +420,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -433,7 +433,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b4befe</string>
+          <string>#<% opt.catppuccin.lavender %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -446,7 +446,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -459,7 +459,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#eba0ac</string>
+          <string>#<% opt.catppuccin.maroon %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -472,7 +472,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89dceb</string>
+          <string>#<% opt.catppuccin.sky %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -485,7 +485,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -498,7 +498,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -522,7 +522,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -535,7 +535,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -548,7 +548,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cdd6f4</string>
+          <string>#<% opt.catppuccin.text %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -561,7 +561,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -574,7 +574,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -587,7 +587,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#fab387</string>
+          <string>#<% opt.catppuccin.peach %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -600,7 +600,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cba6f7</string>
+          <string>#<% opt.catppuccin.mauve %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -613,7 +613,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#eba0ac</string>
+          <string>#<% opt.catppuccin.maroon %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -626,7 +626,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5e0dc</string>
+          <string>#<% opt.catppuccin.rosewater %></string>
           <key>fontStyle</key>
           <string>italic underline</string>
         </dict>
@@ -639,7 +639,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b4befe</string>
+          <string>#<% opt.catppuccin.lavender %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -652,7 +652,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -665,7 +665,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#89b4fa</string>
+          <string>#<% opt.catppuccin.blue %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -678,7 +678,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#eba0ac</string>
+          <string>#<% opt.catppuccin.maroon %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -691,7 +691,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#eba0ac</string>
+          <string>#<% opt.catppuccin.maroon %></string>
           <key>fontStyle</key>
           <string>bold</string>
         </dict>
@@ -704,7 +704,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5c2e7</string>
+          <string>#<% opt.catppuccin.pink %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -717,7 +717,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f5c2e7</string>
+          <string>#<% opt.catppuccin.pink %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -730,7 +730,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -743,7 +743,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b4befe</string>
+          <string>#<% opt.catppuccin.lavender %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -756,7 +756,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f2cdcd</string>
+          <string>#<% opt.catppuccin.flamingo %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -769,7 +769,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -782,7 +782,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f2cdcd</string>
+          <string>#<% opt.catppuccin.flamingo %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -795,7 +795,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cdd6f4</string>
+          <string>#<% opt.catppuccin.text %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -808,7 +808,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string>italic</string>
         </dict>
@@ -821,7 +821,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -834,7 +834,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b4befe</string>
+          <string>#<% opt.catppuccin.lavender %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -847,7 +847,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#94e2d5</string>
+          <string>#<% opt.catppuccin.teal %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -860,9 +860,9 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cdd6f4</string>
+          <string>#<% opt.catppuccin.text %></string>
           <key>background</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -875,9 +875,9 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#cdd6f4</string>
+          <string>#<% opt.catppuccin.text %></string>
           <key>background</key>
-          <string>#cba6f7</string>
+          <string>#<% opt.catppuccin.mauve %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -890,7 +890,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#6c7086</string>
+          <string>#<% opt.catppuccin.overlay0 %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -903,7 +903,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -916,7 +916,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#a6e3a1</string>
+          <string>#<% opt.catppuccin.green %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -929,7 +929,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f9e2af</string>
+          <string>#<% opt.catppuccin.yellow %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>
@@ -942,7 +942,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#f38ba8</string>
+          <string>#<% opt.catppuccin.red %></string>
           <key>fontStyle</key>
           <string></string>
         </dict>

@@ -21,79 +21,79 @@ key_bindings:
 # CATPPUCCIN THEME
 colors:
     primary:
-        background: "#1E1E2E" # base
-        foreground: "#CDD6F4" # text
+        background: "#<% opt.catppuccin.base %>" # base
+        foreground: "#<% opt.catppuccin.text %>" # text
         # Bright and dim foreground colors
-        dim_foreground: "#CDD6F4" # text
-        bright_foreground: "#CDD6F4" # text
+        dim_foreground: "#<% opt.catppuccin.text %>" # text
+        bright_foreground: "#<% opt.catppuccin.text %>" # text
 
     # Cursor colors
     cursor:
-        text: "#1E1E2E" # base
-        cursor: "#F5E0DC" # rosewater
+        text: "#<% opt.catppuccin.base %>" # base
+        cursor: "#<% opt.catppuccin.rosewater %>" # rosewater
     vi_mode_cursor:
-        text: "#1E1E2E" # base
-        cursor: "#B4BEFE" # lavender
+        text: "#<% opt.catppuccin.base %>" # base
+        cursor: "#<% opt.catppuccin.lavender %>" # lavender
 
     # Search colors
     search:
         matches:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
+            foreground: "#<% opt.catppuccin.base %>" # base
+            background: "#<% opt.catppuccin.subtext0 %>" # subtext0
         focused_match:
-            foreground: "#1E1E2E" # base
-            background: "#A6E3A1" # green
+            foreground: "#<% opt.catppuccin.base %>" # base
+            background: "#<% opt.catppuccin.green %>" # green
         footer_bar:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
+            foreground: "#<% opt.catppuccin.base %>" # base
+            background: "#<% opt.catppuccin.subtext0 %>" # subtext0
 
     # Keyboard regex hints
     hints:
         start:
-            foreground: "#1E1E2E" # base
-            background: "#F9E2AF" # yellow
+            foreground: "#<% opt.catppuccin.base %>" # base
+            background: "#<% opt.catppuccin.yellow %>" # yellow
         end:
-            foreground: "#1E1E2E" # base
-            background: "#A6ADC8" # subtext0
+            foreground: "#<% opt.catppuccin.base %>" # base
+            background: "#<% opt.catppuccin.subtext0 %>" # subtext0
 
     # Selection colors
     selection:
-        text: "#1E1E2E" # base
-        background: "#F5E0DC" # rosewater
+        text: "#<% opt.catppuccin.base %>" # base
+        background: "#<% opt.catppuccin.rosewater %>" # rosewater
 
     # Normal colors
     normal:
-        black: "#45475A" # surface1
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
-        white: "#BAC2DE" # subtext1
+        black: "#<% opt.catppuccin.surface1 %>" # surface1
+        red: "#<% opt.catppuccin.red %>" # red
+        green: "#<% opt.catppuccin.green %>" # green
+        yellow: "#<% opt.catppuccin.yellow %>" # yellow
+        blue: "#<% opt.catppuccin.blue %>" # blue
+        magenta: "#<% opt.catppuccin.pink %>" # pink
+        cyan: "#<% opt.catppuccin.teal %>" # teal
+        white: "#<% opt.catppuccin.subtext1 %>" # subtext1
 
     # Bright colors
     bright:
-        black: "#585B70" # surface2
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
-        white: "#A6ADC8" # subtext0
+        black: "#<% opt.catppuccin.surface2 %>" # surface2
+        red: "#<% opt.catppuccin.red %>" # red
+        green: "#<% opt.catppuccin.green %>" # green
+        yellow: "#<% opt.catppuccin.yellow %>" # yellow
+        blue: "#<% opt.catppuccin.blue %>" # blue
+        magenta: "#<% opt.catppuccin.pink %>" # pink
+        cyan: "#<% opt.catppuccin.teal %>" # teal
+        white: "#<% opt.catppuccin.subtext0 %>" # subtext0
 
     # Dim colors
     dim:
-        black: "#45475A" # surface1
-        red: "#F38BA8" # red
-        green: "#A6E3A1" # green
-        yellow: "#F9E2AF" # yellow
-        blue: "#89B4FA" # blue
-        magenta: "#F5C2E7" # pink
-        cyan: "#94E2D5" # teal
-        white: "#BAC2DE" # subtext1
+        black: "#<% opt.catppuccin.surface1 %>" # surface1
+        red: "#<% opt.catppuccin.red %>" # red
+        green: "#<% opt.catppuccin.green %>" # green
+        yellow: "#<% opt.catppuccin.yellow %>" # yellow
+        blue: "#<% opt.catppuccin.blue %>" # blue
+        magenta: "#<% opt.catppuccin.pink %>" # pink
+        cyan: "#<% opt.catppuccin.teal %>" # teal
+        white: "#<% opt.catppuccin.subtext1 %>" # subtext1
 
     indexed_colors:
-        - { index: 16, color: "#FAB387" }
-        - { index: 17, color: "#F5E0DC" }
+        - { index: 16, color: "#<% opt.catppuccin.peach %>" }
+        - { index: 17, color: "#<% opt.catppuccin.rosewater %>" }

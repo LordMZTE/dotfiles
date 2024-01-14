@@ -4,13 +4,13 @@ font-regular = <% opt.font %>:size=14;
 font-large = <% opt.font %>:size=20;
 
 [colours]
-background = <% opt.catppuccin.mantle %>;
-border = <% opt.catppuccin.red %>;
-text = <% opt.catppuccin.text %>;
-error-text = <% opt.catppuccin.red %>;
-pin-background = <% opt.catppuccin.base %>;
-pin-border = <% opt.catppuccin.green %>;
-pin-square = <% opt.catppuccin.mauve %>;
-ok-button = <% opt.catppuccin.blue %>;
-not-ok-button = <% opt.catppuccin.maroon %>;
-cancel-button = <% opt.catppuccin.red %>;
+background = 0x<% opt.catppuccin.mantle %>;
+border = 0x<% opt.catppuccin.red %>;
+text = 0x<% opt.catppuccin.text %>;
+error-text = 0x<% opt.catppuccin.red %>;
+pin-background = 0x<% opt.catppuccin.base %>;
+pin-border = 0x<% opt.catppuccin.green %>;
+pin-square = 0x<% opt.catppuccin.mauve %>;
+ok-button = 0x<% opt.catppuccin.blue %>;
+not-ok-button = 0x<% opt.catppuccin.maroon %>;
+cancel-button = 0x<% opt.catppuccin.red %>;

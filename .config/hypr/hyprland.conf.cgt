@@ -14,8 +14,8 @@ general {
     gaps_in = 5
     gaps_out = 20
     border_size = 2.5 
-    col.active_border = rgba(f38ba8ee) rgba(a6e3a1ee) 45deg
-    col.inactive_border = rgba(11111baa)
+    col.active_border = rgba(<% opt.catppuccin.red %>ee) rgba(<% opt.catppuccin.green %>ee) 45deg
+    col.inactive_border = rgba(<% opt.catppuccin.crust %>aa)
 
     layout = dwindle
 }

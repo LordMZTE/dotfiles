@@ -1,0 +1,83 @@
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]="#<% opt.catppuccin.base %>"
+
+# Main text color
+theme[main_fg]="#<% opt.catppuccin.text %>"
+
+# Title color for boxes
+theme[title]="#<% opt.catppuccin.text %>"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#<% opt.catppuccin.blue %>"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#<% opt.catppuccin.surface1 %>"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#<% opt.catppuccin.blue %>"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#<% opt.catppuccin.overlay1 %>"
+
+# Color of text appearing on top of graphs, i.e uptime and current network graph scaling
+theme[graph_text]="#<% opt.catppuccin.rosewater %>"
+
+# Background color of the percentage meters
+theme[meter_bg]="#<% opt.catppuccin.surface1 %>"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#<% opt.catppuccin.rosewater %>"
+
+# CPU, Memory, Network, Proc box outline colors
+theme[cpu_box]="#<% opt.catppuccin.mauve %>" #Mauve
+theme[mem_box]="#<% opt.catppuccin.green %>" #Green
+theme[net_box]="#<% opt.catppuccin.maroon %>" #Maroon
+theme[proc_box]="#<% opt.catppuccin.blue %>" #Blue
+
+# Box divider line and small boxes line color
+theme[div_line]="#<% opt.catppuccin.overlay0 %>"
+
+# Temperature graph color (Green -> Yellow -> Red)
+theme[temp_start]="#<% opt.catppuccin.green %>"
+theme[temp_mid]="#<% opt.catppuccin.yellow %>"
+theme[temp_end]="#<% opt.catppuccin.red %>"
+
+# CPU graph colors (Teal -> Lavender)
+theme[cpu_start]="#<% opt.catppuccin.teal %>"
+theme[cpu_mid]="#<% opt.catppuccin.sapphire %>"
+theme[cpu_end]="#<% opt.catppuccin.lavender %>"
+
+# Mem/Disk free meter (Mauve -> Lavender -> Blue)
+theme[free_start]="#<% opt.catppuccin.mauve %>"
+theme[free_mid]="#<% opt.catppuccin.lavender %>"
+theme[free_end]="#<% opt.catppuccin.blue %>"
+
+# Mem/Disk cached meter (Sapphire -> Lavender)
+theme[cached_start]="#<% opt.catppuccin.sapphire %>"
+theme[cached_mid]="#<% opt.catppuccin.blue %>"
+theme[cached_end]="#<% opt.catppuccin.lavender %>"
+
+# Mem/Disk available meter (Peach -> Red)
+theme[available_start]="#<% opt.catppuccin.peach %>"
+theme[available_mid]="#<% opt.catppuccin.maroon %>"
+theme[available_end]="#<% opt.catppuccin.red %>"
+
+# Mem/Disk used meter (Green -> Sky)
+theme[used_start]="#<% opt.catppuccin.green %>"
+theme[used_mid]="#<% opt.catppuccin.teal %>"
+theme[used_end]="#<% opt.catppuccin.sky %>"
+
+# Download graph colors (Peach -> Red)
+theme[download_start]="#<% opt.catppuccin.peach %>"
+theme[download_mid]="#<% opt.catppuccin.maroon %>"
+theme[download_end]="#<% opt.catppuccin.red %>"
+
+# Upload graph colors (Green -> Sky)
+theme[upload_start]="#<% opt.catppuccin.green %>"
+theme[upload_mid]="#<% opt.catppuccin.teal %>"
+theme[upload_end]="#<% opt.catppuccin.sky %>"
+
+# Process box color gradient for threads, mem and cpu usage (Sapphire -> Mauve)
+theme[process_start]="#<% opt.catppuccin.sapphire %>"
+theme[process_mid]="#<% opt.catppuccin.sky %>"
+theme[process_end]="#<% opt.catppuccin.mauve %>"

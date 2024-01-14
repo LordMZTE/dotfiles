@@ -266,31 +266,31 @@ bindsym Shift+Print exec shotgun -s - | feh --class feh-float -
 for_window [class="feh-float"] floating enable
 
 # catppuccin mocha theme
-set $rosewater #f5e0dc
-set $flamingo  #f2cdcd
-set $pink      #f5c2e7
-set $mauve     #cba6f7
-set $red       #f38ba8
-set $maroon    #eba0ac
-set $peach     #fab387
-set $green     #a6e3a1
-set $teal      #94e2d5
-set $sky       #89dceb
-set $sapphire  #74c7ec
-set $blue      #89b4fa
-set $lavender  #b4befe
-set $text      #cdd6f4
-set $subtext1  #bac2de
-set $subtext0  #a6adc8
-set $overlay2  #9399b2
-set $overlay1  #7f849c
-set $overlay0  #6c7086
-set $surface2  #585b70
-set $surface1  #45475a
-set $surface0  #313244
-set $base      #1e1e2e
-set $mantle    #181825
-set $crust     #11111b
+set $rosewater #<% opt.catppuccin.rosewater %>
+set $flamingo  #<% opt.catppuccin.flamingo %>
+set $pink      #<% opt.catppuccin.pink %>
+set $mauve     #<% opt.catppuccin.mauve %>
+set $red       #<% opt.catppuccin.red %>
+set $maroon    #<% opt.catppuccin.maroon %>
+set $peach     #<% opt.catppuccin.peach %>
+set $green     #<% opt.catppuccin.green %>
+set $teal      #<% opt.catppuccin.teal %>
+set $sky       #<% opt.catppuccin.sky %>
+set $sapphire  #<% opt.catppuccin.sapphire %>
+set $blue      #<% opt.catppuccin.blue %>
+set $lavender  #<% opt.catppuccin.lavender %>
+set $text      #<% opt.catppuccin.text %>
+set $subtext1  #<% opt.catppuccin.subtext1 %>
+set $subtext0  #<% opt.catppuccin.subtext0 %>
+set $overlay2  #<% opt.catppuccin.overlay2 %>
+set $overlay1  #<% opt.catppuccin.overlay1 %>
+set $overlay0  #<% opt.catppuccin.overlay0 %>
+set $surface2  #<% opt.catppuccin.surface2 %>
+set $surface1  #<% opt.catppuccin.surface1 %>
+set $surface0  #<% opt.catppuccin.surface0 %>
+set $base      #<% opt.catppuccin.base %>
+set $mantle    #<% opt.catppuccin.mantle %>
+set $crust     #<% opt.catppuccin.crust %>
 
 client.focused           $red      $surface1 $text  $rosewater $red
 client.focused_inactive  $maroon   $base     $text  $rosewater $maroon

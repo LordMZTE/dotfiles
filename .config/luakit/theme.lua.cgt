@@ -1,16 +1,16 @@
 -- <! tmpl:setPostProcessor(opt.luaCompile) !>
 local catppuccin = {
-    bg = "#181825",
-    fg = "#cdd6f4",
-    bright_bg = "#1e1e2e",
-    very_bright_bg = "#313244",
-    cyan = "#89b4fa",
-    green = "#a6e3a1",
-    orange = "#fab387",
-    pink = "#f5c2e7",
-    purple = "#cba6f7",
-    red = "#f38ba8",
-    yellow = "#f9e2af",
+    bg = "#<% opt.catppuccin.mantle %>",
+    fg = "#<% opt.catppuccin.text %>",
+    bright_bg = "#<% opt.catppuccin.base %>",
+    very_bright_bg = "#<% opt.catppuccin.surface0 %>",
+    cyan = "#<% opt.catppuccin.blue %>",
+    green = "#<% opt.catppuccin.green %>",
+    orange = "#<% opt.catppuccin.peach %>",
+    pink = "#<% opt.catppuccin.pink %>",
+    purple = "#<% opt.catppuccin.mauve %>",
+    red = "#<% opt.catppuccin.red %>",
+    yellow = "#<% opt.catppuccin.yellow %>",
 }
 
 local theme = {}
