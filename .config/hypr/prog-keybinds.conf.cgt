@@ -1,4 +1,4 @@
-bind = SUPER, RETURN, exec, foot # need to hard-code foot here, because WezTerm is currently too incompetent for WL
+bind = SUPER, RETURN, exec, <% opt.term.command %>
 bind = SUPER CTRL, E, exec, <% opt.commands.file_manager %>
 bind = ALT, SPACE, exec, rofi -show combi
 bind = SUPER CTRL, B, exec, <% opt.commands.browser %>

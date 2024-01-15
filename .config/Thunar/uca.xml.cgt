@@ -3,7 +3,7 @@
 <action>
     <icon><% opt.term.icon_name %></icon>
     <name>Open <% opt.term.name %> Here</name>
-    <command><% opt.term.workdir_command %> %f</command>
+    <command><% opt.term.workdir_command %>%f</command>
 	<description></description>
 	<patterns>*</patterns>
 
