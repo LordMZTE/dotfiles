@@ -8,6 +8,9 @@ theme = "catppuccin-mocha"
 # Disable useless GTK bar
 gtk-titlebar = false
 
+# Use one Process
+gtk-single-instance = true
+
 window-save-state = "never"
 
 keybind = clear
