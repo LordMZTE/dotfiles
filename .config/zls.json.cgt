@@ -1,0 +1,3 @@
+;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
+;; vim: ft=fennel
+{:warn_style true :enable_build_on_save true :enable_autofix true}
