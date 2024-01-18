@@ -1,3 +1,4 @@
+(local mztenv (require :mzte_nv))
 (local lspc (require :lspconfig))
 (local lsp-configs (require :lspconfig.configs))
 
@@ -5,6 +6,10 @@
   (var args args)
   (when (not args)
     (set args {}))
+  (tset args :on_attach (if args.on_attach
+                            `(fn [client# bufnr#] (mztenv.lsp.onAttach client# bufnr#)
+                               (,args.on_attach client# bufnr#))
+                            `mztenv.lsp.onAttach))
   (tset args :capabilities `caps)
   `((. lspc ,conf :setup) ,args))
 
