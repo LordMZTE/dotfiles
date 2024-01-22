@@ -15,23 +15,36 @@ window-save-state = "never"
 
 keybind = clear
 
-keybind = ctrl+t=next_tab
-keybind = ctrl+shift+t=new_tab
+<! local function key(k, v) !>
+keybind = <% k %>=<% v %>
+<! end !>
 
-keybind = ctrl+physical:right_bracket=increase_font_size:2
-keybind = ctrl+minus=decrease_font_size:2
+<!
+    -- Prefix for window-management keybinds
+    local win_pref = "ctrl+alt+"
 
-keybind = ctrl+alt+d=jump_to_prompt:1
-keybind = ctrl+alt+u=jump_to_prompt:-1
+    -- Prefix for action keybinds
+    local act_pref = "ctrl+shift+"
 
-keybind = ctrl+alt+v=new_split:down
-keybind = ctrl+alt+s=new_split:right
+    key("ctrl+t", "next_tab")
+    key("ctrl+shift+t", "new_tab")
 
-keybind = ctrl+alt+h=goto_split:left
-keybind = ctrl+alt+j=goto_split:bottom
-keybind = ctrl+alt+k=goto_split:top
-keybind = ctrl+alt+l=goto_split:right
+    key("ctrl+plus", "increase_font_size:1")
+    key("ctrl+minus", "decrease_font_size:1")
 
-keybind = ctrl+shift+c=copy_to_clipboard
-keybind = ctrl+shift+v=paste_from_clipboard
+    key(win_pref .. "d", "jump_to_prompt:1")
+    key(win_pref .. "u", "jump_to_prompt:-1")
 
+    key(win_pref .. "v", "new_split:down")
+    key(win_pref .. "s", "new_split:right")
+
+    for k, v in pairs {
+        h = "left",
+        j = "bottom",
+        k = "top",
+        l = "right"
+    } do key(win_pref .. k, "goto_split:" .. v) end
+
+    key(act_pref .. "c", "copy_to_clipboard")
+    key(act_pref .. "v", "paste_from_clipboard")
+!>
