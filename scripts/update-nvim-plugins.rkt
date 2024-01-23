@@ -8,7 +8,9 @@
 
 (define dirs
   (map (λ (path) (match-let-values ([(p _ _) (split-path path)]) p))
-       (find-files (λ (path) (equal? (path->string (last (explode-path path))) ".git")) plugin-dir)))
+       (find-files (λ (path) (equal? (path->string (last (explode-path path))) ".git"))
+                   plugin-dir
+                   #:follow-links? #f)))
 
 (define git-path (find-executable-path "git"))
 
