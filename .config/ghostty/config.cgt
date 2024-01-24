@@ -35,8 +35,8 @@ keybind = <% k %>=<% v %>
     key(win_pref .. "d", "jump_to_prompt:1")
     key(win_pref .. "u", "jump_to_prompt:-1")
 
-    key(win_pref .. "v", "new_split:down")
-    key(win_pref .. "s", "new_split:right")
+    key(win_pref .. "s", "new_split:down")
+    key(win_pref .. "v", "new_split:right")
 
     for k, v in pairs {
         h = "left",
