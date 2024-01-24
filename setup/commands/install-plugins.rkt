@@ -3,5 +3,5 @@
 (provide run)
 
 (define (run)
-  (install-zig "plugins/mpv-sbskip")
+  (install-zig "plugins/mzte-mpv")
   (build-haxe "plugins/tampermonkey-mzte-css"))

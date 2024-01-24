@@ -1,6 +1,14 @@
 const std = @import("std");
-const ffi = @import("ffi.zig");
 const c = ffi.c;
+
+const ffi = @import("../ffi.zig");
+const util = @import("../util.zig");
+
+const ChapterSet = std.AutoHashMap(isize, void);
+
+skipped_chapters: ChapterSet,
+
+const SBSkip = @This();
 
 const blacklist = std.ComptimeStringMap(void, .{
     .{ "Endcards/Credits", {} },
@@ -12,77 +20,27 @@ const blacklist = std.ComptimeStringMap(void, .{
     .{ "Unpaid/Self Promotion", {} },
 });
 
-pub const std_options = struct {
-    pub const log_level = .debug;
-    pub fn logFn(
-        comptime message_level: std.log.Level,
-        comptime scope: @TypeOf(.enum_literal),
-        comptime format: []const u8,
-        args: anytype,
-    ) void {
-        _ = scope;
-
-        const stderr = std.io.getStdErr().writer();
-
-        stderr.print("[sbskip {s}] " ++ format ++ "\n", .{@tagName(message_level)} ++ args) catch return;
+pub fn onEvent(self: *SBSkip, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+    switch (ev.event_id) {
+        c.MPV_EVENT_PROPERTY_CHANGE => {
+            const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
+            if (std.mem.eql(u8, std.mem.span(evprop.name), "chapter")) {
+                const chapter_id_ptr = @as(?*i64, @ptrCast(@alignCast(evprop.data)));
+                if (chapter_id_ptr) |chptr|
+                    try self.onChapterChange(mpv, @intCast(chptr.*));
+            }
+        },
+        c.MPV_EVENT_FILE_LOADED => self.skipped_chapters.clearRetainingCapacity(),
+        else => {},
     }
-};
-
-export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {
-    tryMain(handle) catch |e| {
-        if (@errorReturnTrace()) |ert|
-            std.debug.dumpStackTrace(ert.*);
-        std.log.err("{}", .{e});
-        return -1;
-    };
-    return 0;
-}
-
-fn tryMain(mpv: *c.mpv_handle) !void {
-    var skipped_chapter_ids = std.AutoHashMap(isize, void).init(std.heap.c_allocator);
-    defer skipped_chapter_ids.deinit();
-
-    try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "chapter", c.MPV_FORMAT_INT64));
-
-    std.log.info("loaded with client name '{s}'", .{c.mpv_client_name(mpv)});
-
-    while (true) {
-        const ev = @as(*c.mpv_event, c.mpv_wait_event(mpv, -1));
-        try ffi.checkMpvError(ev.@"error");
-        switch (ev.event_id) {
-            c.MPV_EVENT_PROPERTY_CHANGE => {
-                const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
-                if (std.mem.eql(u8, "chapter", std.mem.span(evprop.name))) {
-                    std.debug.assert(evprop.format == c.MPV_FORMAT_INT64);
-                    const chapter_id_ptr = @as(?*i64, @ptrCast(@alignCast(evprop.data)));
-                    if (chapter_id_ptr) |chptr|
-                        try onChapterChange(mpv, @intCast(chptr.*), &skipped_chapter_ids);
-                }
-            },
-            c.MPV_EVENT_FILE_LOADED => skipped_chapter_ids.clearRetainingCapacity(),
-            c.MPV_EVENT_SHUTDOWN => break,
-            else => {},
-        }
-    }
-}
-
-fn msg(mpv: *c.mpv_handle, comptime fmt: []const u8, args: anytype) !void {
-    std.log.info(fmt, args);
-
-    var buf: [1024 * 4]u8 = undefined;
-    const osd_msg = try std.fmt.bufPrintZ(&buf, "[sbskip] " ++ fmt, args);
-    try ffi.checkMpvError(c.mpv_command(
-        mpv,
-        @constCast(&[_:null]?[*:0]const u8{ "show-text", osd_msg, "4000" }),
-    ));
 }
 
 fn onChapterChange(
+    self: *SBSkip,
     mpv: *c.mpv_handle,
     chapter_id: isize,
-    skipped: *std.AutoHashMap(isize, void),
 ) !void {
-    if (chapter_id < 0 or skipped.contains(chapter_id))
+    if (chapter_id < 0 or self.skipped_chapters.contains(chapter_id))
         return;
 
     // fuck these ubiquitous duck typing implementations everywhere! we have structs, for fuck's sake!
@@ -125,8 +83,8 @@ fn onChapterChange(
             c.MPV_FORMAT_DOUBLE,
             @constCast(&end_time),
         ));
-        try skipped.put(chapter_id, {});
-        try msg(mpv, "skipped: {s}", .{reason});
+        try self.skipped_chapters.put(chapter_id, {});
+        try util.msg(mpv, "skipped: {s}", .{reason});
     }
 }
 
@@ -168,3 +126,18 @@ const Chapter = struct {
         return null;
     }
 };
+
+pub fn setup(self: *SBSkip, mpv: *c.mpv_handle) !void {
+    _ = self;
+    try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "chapter", c.MPV_FORMAT_INT64));
+}
+
+pub fn create() SBSkip {
+    return .{
+        .skipped_chapters = ChapterSet.init(std.heap.c_allocator),
+    };
+}
+
+pub fn deinit(self: *SBSkip) void {
+    self.skipped_chapters.deinit();
+}
