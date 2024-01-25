@@ -42,6 +42,8 @@ pub fn main() !void {
 
     if (dpy.roundtrip() != .SUCCESS) return error.RoundtipFail;
 
+    if (c.eglBindAPI(c.EGL_OPENGL_API) == 0) return error.EGLError;
+
     const egl_dpy = c.eglGetDisplay(@ptrCast(dpy)) orelse return error.EGLError;
     if (c.eglInitialize(egl_dpy, null, null) != c.EGL_TRUE) return error.EGLError;
     defer _ = c.eglTerminate(egl_dpy);
@@ -53,7 +55,7 @@ pub fn main() !void {
             egl_dpy,
             &[_]i32{
                 c.EGL_SURFACE_TYPE,    c.EGL_WINDOW_BIT,
-                c.EGL_RENDERABLE_TYPE, c.EGL_OPENGL_ES2_BIT,
+                c.EGL_RENDERABLE_TYPE, c.EGL_OPENGL_BIT,
                 c.EGL_RED_SIZE,        8,
                 c.EGL_GREEN_SIZE,      8,
                 c.EGL_BLUE_SIZE,       8,
@@ -72,8 +74,10 @@ pub fn main() !void {
         config,
         c.EGL_NO_CONTEXT,
         &[_]i32{
-            c.EGL_CONTEXT_MAJOR_VERSION, 2,
-            c.EGL_CONTEXT_OPENGL_DEBUG,  1,
+            c.EGL_CONTEXT_MAJOR_VERSION,       4,
+            c.EGL_CONTEXT_MINOR_VERSION,       3,
+            c.EGL_CONTEXT_OPENGL_DEBUG,        c.EGL_TRUE,
+            c.EGL_CONTEXT_OPENGL_PROFILE_MASK, c.EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
             c.EGL_NONE,
         },
     ) orelse return error.EGLError;
@@ -188,7 +192,11 @@ pub fn main() !void {
         egl_ctx,
     ) != c.EGL_TRUE) return error.EGLError;
 
-    var gfx = try Gfx.init(egl_dpy, output_info);
+    c.glDebugMessageCallback(&glDebugCb, null);
+    c.glEnable(c.GL_DEBUG_OUTPUT);
+    std.log.info("initialized OpenGL {s}", .{c.glGetString(c.GL_VERSION)});
+
+    var gfx = try Gfx.init(dpy, egl_dpy, output_info);
     defer gfx.deinit();
 
     var rdata = RenderData{
@@ -231,6 +239,9 @@ pub fn main() !void {
         .callback = wlPollCb,
     };
     loop.add(&wl_poll_completion);
+
+    if (dpy.dispatchPending() != .SUCCESS) return error.RoundtipFail;
+    std.debug.assert(dpy.prepareRead());
 
     std.log.info("running event loop", .{});
     try loop.run(.until_done);
@@ -349,11 +360,17 @@ fn wlPollCb(
     };
 
     const dpy: *wl.Display = @ptrCast(@alignCast(userdata));
-    if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS) {
+    if (dpy.readEvents() != .SUCCESS or
+        dpy.dispatchPending() != .SUCCESS or
+        dpy.flush() != .SUCCESS)
+    {
         std.log.err("error processing wayland events", .{});
         loop.stop();
         return .disarm;
     }
+
+    // This is only false if the queue is not empty, but we just emptied the queue.
+    std.debug.assert(dpy.prepareRead());
 
     return .rearm;
 }
@@ -425,4 +442,28 @@ fn resetXevTimerCompletion(completion: *xev.Completion, now: i64, in: i64) void 
         .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
         .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
     };
+}
+
+fn glDebugCb(
+    source: c.GLenum,
+    @"type": c.GLenum,
+    id: c.GLuint,
+    severity: c.GLenum,
+    len: c.GLsizei,
+    msgp: ?[*:0]const u8,
+    udata: ?*const anyopaque,
+) callconv(.C) void {
+    _ = source;
+    _ = @"type";
+    _ = id;
+    _ = udata;
+    const log = std.log.scoped(.gl);
+    // Mesa likes to include trailing newlines sometimes
+    const msg = std.mem.trim(u8, msgp.?[0..@intCast(len)], &std.ascii.whitespace);
+    switch (severity) {
+        c.GL_DEBUG_SEVERITY_HIGH => log.err("{s}", .{msg}),
+        c.GL_DEBUG_SEVERITY_MEDIUM, c.GL_DEBUG_SEVERITY_LOW => log.warn("{s}", .{msg}),
+        c.GL_DEBUG_SEVERITY_NOTIFICATION => log.info("{s}", .{msg}),
+        else => unreachable,
+    }
 }

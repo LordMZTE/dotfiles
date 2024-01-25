@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.linkSystemLibrary("wayland-client", .{});
     exe.root_module.linkSystemLibrary("wayland-egl", .{});
     exe.root_module.linkSystemLibrary("EGL", .{});
-    exe.root_module.linkSystemLibrary("GLESv2", .{});
+    exe.root_module.linkSystemLibrary("GL", .{});
 
     b.installArtifact(exe);
     const run_cmd = b.addRunArtifact(exe);

@@ -1,6 +1,4 @@
-#version 300 es
-
-precision highp float;
+#version 430
 
 uniform sampler2D bg;
 

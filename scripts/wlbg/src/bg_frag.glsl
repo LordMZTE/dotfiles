@@ -1,6 +1,4 @@
-#version 300 es
-
-precision highp float;
+#version 430
 
 uniform float time;
 
@@ -20,7 +18,7 @@ void main() {
     vec2 R = vec2(1);
     ivec4 b = ivec4(o -= o);                   // Initialize b=0
     float t = .1*time, B, h, z;
-    vec4 g;
+    vec4 g = vec4(0);
 
     u =
         (5. + cos(t) * 1.5) *                        // * Camera push in/out 

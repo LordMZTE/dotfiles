@@ -1,5 +1,6 @@
 const std = @import("std");
 const c = @import("ffi.zig").c;
+const wayland = @import("wayland");
 
 const glutil = @import("glutil.zig");
 const options = @import("options.zig");
@@ -9,12 +10,17 @@ const OutputInfo = @import("OutputInfo.zig");
 const OutputWindow = @import("OutputWindow.zig");
 const PointerState = @import("PointerState.zig");
 
+const wl = wayland.client.wl;
+
+dpy: *wl.Display,
 egl_dpy: c.EGLDisplay,
 bg_shader_program: c_uint,
 main_shader_program: c_uint,
 bg_bufs: std.MultiArrayList(BgBuf),
 time: i64,
 cursor_positions: [][2]c_int,
+vao: c_uint,
+vbo: c_uint,
 
 const Gfx = @This();
 
@@ -24,7 +30,7 @@ const BgBuf = struct {
     zbuffer: c_uint,
 };
 
-pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
+pub fn init(dpy: *wl.Display, egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
     const bg_program = shader: {
         const vert_shader = try glutil.createShader(c.GL_VERTEX_SHADER, @embedFile("bg_vert.glsl"));
         defer c.glDeleteShader(vert_shader);
@@ -125,15 +131,24 @@ pub fn init(egl_dpy: c.EGLDisplay, output_info: []const OutputInfo) !Gfx {
 
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0);
     c.glBindTexture(c.GL_TEXTURE_2D, 0);
-    c.glBindRenderbuffer(c.GL_FRAMEBUFFER, 0);
+    c.glBindRenderbuffer(c.GL_RENDERBUFFER, 0);
+
+    var vao: c_uint = 0;
+    c.glGenVertexArrays(1, &vao);
+
+    var vbo: c_uint = 0;
+    c.glGenBuffers(1, &vbo);
 
     return .{
+        .dpy = dpy,
         .egl_dpy = egl_dpy,
         .bg_shader_program = bg_program,
         .main_shader_program = main_program,
         .bg_bufs = bg_bufs,
         .time = 0,
         .cursor_positions = cursor_positions,
+        .vao = vao,
+        .vbo = vbo,
     };
 }
 
@@ -197,6 +212,8 @@ pub fn draw(
 ) !void {
     self.time += dt;
     dth.should_redraw[output_idx] = false;
+    c.glBindVertexArray(self.vao);
+    c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, 0); // use default framebuffer
     c.glUseProgram(self.main_shader_program);
 
@@ -210,7 +227,8 @@ pub fn draw(
         -1.0, 1.0,  0.0, 0.0, 1.0,
     };
 
-    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, &vertices);
+    c.glBufferData(c.GL_ARRAY_BUFFER, @sizeOf(f32) * vertices.len, &vertices, c.GL_STATIC_DRAW);
+    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, @sizeOf(f32) * 5, null);
     c.glEnableVertexAttribArray(0);
     c.glVertexAttribPointer(
         1,
@@ -218,7 +236,7 @@ pub fn draw(
         c.GL_FLOAT,
         c.GL_FALSE,
         @sizeOf(f32) * 5,
-        @ptrFromInt(@intFromPtr(&vertices) + @sizeOf(f32) * 3),
+        @ptrFromInt(@sizeOf(f32) * 3),
     );
     c.glEnableVertexAttribArray(1);
 
@@ -243,8 +261,25 @@ pub fn draw(
 
     c.glDrawArrays(c.GL_TRIANGLES, 0, vertices.len / 3);
 
-    if (c.eglSwapInterval(self.egl_dpy, 0) != c.EGL_TRUE or
-        c.eglSwapBuffers(self.egl_dpy, outputs[output_idx].egl_surface) != c.EGL_TRUE) return error.EGLError;
+    // This is necessary because some EGL implementations (Mesa) will try reading the wayland
+    // socket from eglSwapBuffers.
+    // This causes a deadlock, is abysmal API design, and not preventable. It's gotten so bad
+    // that another suggested workaround on the archive linked below is to put this on another
+    // thread in order to force EGL to use its own wayland event queue.
+    //
+    // By cancelling the read operation first (which is always prep'd usually and handled by the
+    // event loop), we can ensure that EGL gets to do its nonsense here before making libwayland
+    // handle another read correctly by calling prepareRead again.
+    //
+    // Somehow the only trace of this BS on the entire internet and only reason I managed to figure
+    // this out: https://lists.freedesktop.org/archives/wayland-devel/2013-March/007739.html
+    self.dpy.cancelRead();
+    if (c.eglSwapBuffers(
+        self.egl_dpy,
+        outputs[output_idx].egl_surface,
+    ) != c.EGL_TRUE) return error.EGLError;
+    if (self.dpy.dispatchPending() != .SUCCESS) return error.RoundtipFail;
+    std.debug.assert(self.dpy.prepareRead());
 }
 
 pub fn drawBackground(
@@ -271,6 +306,8 @@ pub fn drawBackground(
         -1.0, 1.0,  0.0,
     };
 
+    c.glBindVertexArray(self.vao);
+    c.glBindBuffer(c.GL_ARRAY_BUFFER, self.vbo);
     c.glBindFramebuffer(c.GL_FRAMEBUFFER, self.bg_bufs.get(output_idx).framebuffer);
 
     c.glClearColor(1.0, 0.0, 0.0, 1.0);
@@ -278,7 +315,8 @@ pub fn drawBackground(
 
     c.glUseProgram(self.bg_shader_program);
 
-    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, 0, &vertices);
+    c.glBufferData(c.GL_ARRAY_BUFFER, @sizeOf(f32) * vertices.len, &vertices, c.GL_STATIC_DRAW);
+    c.glVertexAttribPointer(0, 3, c.GL_FLOAT, c.GL_FALSE, 0, null);
     c.glEnableVertexAttribArray(0);
 
     c.glUniform2f(c.glGetUniformLocation(self.bg_shader_program, "offset"), off.x, off.y);

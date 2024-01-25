@@ -1,6 +1,4 @@
-#version 300 es
-
-precision mediump float;
+#version 430
 
 in vec4 vPos;
 in vec2 uv;
