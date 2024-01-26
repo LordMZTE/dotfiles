@@ -36,6 +36,7 @@
 (setup :cssls)
 (setup :elixirls {:cmd [:elixir-ls]})
 (setup :eslint)
+(setup :glsl_analyzer)
 (setup :haxe_language_server)
 (setup :html)
 (setup :jsonls {:on_attach disable-formatter})
