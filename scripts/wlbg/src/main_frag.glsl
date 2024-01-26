@@ -17,4 +17,3 @@ void main() {
     vec2 zoomedUv = fragUv * .9 + (.1 / 2.0);
     fragColor = mix(texture(bg, zoomedUv + (cursorPos - .5) / 10.0), vec4(1.0), light * hasCursor);
 }
-

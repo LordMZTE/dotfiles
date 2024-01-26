@@ -360,17 +360,19 @@ fn wlPollCb(
     };
 
     const dpy: *wl.Display = @ptrCast(@alignCast(userdata));
-    if (dpy.readEvents() != .SUCCESS or
-        dpy.dispatchPending() != .SUCCESS or
-        dpy.flush() != .SUCCESS)
-    {
-        std.log.err("error processing wayland events", .{});
+    if (dpy.readEvents() != .SUCCESS) {
+        std.log.err("error reading wayland events", .{});
         loop.stop();
         return .disarm;
     }
 
-    // This is only false if the queue is not empty, but we just emptied the queue.
-    std.debug.assert(dpy.prepareRead());
+    while (!dpy.prepareRead()) {
+        if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS) {
+            std.log.err("error processing wayland events", .{});
+            loop.stop();
+            return .disarm;
+        }
+    }
 
     return .rearm;
 }
