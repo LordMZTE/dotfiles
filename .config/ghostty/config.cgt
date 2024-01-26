@@ -1,7 +1,5 @@
 font-family = "<% opt.term_font %>"
 
-theme = "catppuccin-mocha"
-
 # Broken thanks to GNOME's influence in the Linux desktop ecosystem (thanks!)
 #background-opacity = 0.8
 
@@ -48,3 +46,34 @@ keybind = <% k %>=<% v %>
     key(act_pref .. "c", "copy_to_clipboard")
     key(act_pref .. "v", "paste_from_clipboard")
 !>
+<! -- Cattpuccin palette.
+-- Implemented here instead of using the builtin theme to use my catppuccin
+-- palette in case of future changes.
+
+local pal = opt.catppuccin
+for i, col in ipairs {
+    pal.surface1,
+    pal.red,
+    pal.green,
+    pal.yellow,
+    pal.blue,
+    pal.pink,
+    pal.teal,
+    pal.subtext1,
+    pal.surface2,
+    pal.red,
+    pal.green,
+    pal.yellow,
+    pal.blue,
+    pal.pink,
+    pal.teal,
+    pal.subtext0,
+} do!>
+palette = <% i - 1 %>=#<% col %>
+<! end !>
+
+selection-background = <% pal.surface2 %>
+background = <% pal.base %>
+foreground = <% pal.text %>
+selection-foreground = <% pal.text %>
+cursor-color = <% pal.rosewater %>
