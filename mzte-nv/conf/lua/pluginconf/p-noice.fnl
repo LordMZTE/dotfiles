@@ -8,11 +8,12 @@
   (or ;; INFO level
       (= notif.level :info) (and notif.opts notif.opts.mzte_nv_mini)))
 
-(noice.setup {:cmdline {:format {:fnl {:pattern "^:%s*Fnl%s+"
+(noice.setup {:cmdline {:view :cmdline
+                        :format {:fnl {:pattern "^:%s*Fnl%s+"
                                        :icon "🌜"
                                        :lang :fennel
                                        :title :Fennel}}}
-              :messages {:view :mini}
+              :messages {:enabled false}
               :lsp {:override (collect [_ o (ipairs overrides)] (values o true))}
               :routes [;; Redirect DAP messages to mini view
                        {:filter {:event :notify :cond show-mini?} :view :mini}]
@@ -21,3 +22,4 @@
 ;; Shift-Enter to redirect cmdline
 (vim.keymap.set :c :<S-Enter> #(noice.redirect (vim.fn.getcmdline))
                 {:desc "Redirect Cmdline"})
+(set vim.o.cmdheight 0)
