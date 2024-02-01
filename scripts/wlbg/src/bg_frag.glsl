@@ -1,5 +1,7 @@
 #version 430
 
+precision highp float;
+
 uniform float time;
 
 in vec2 fragCoord;
