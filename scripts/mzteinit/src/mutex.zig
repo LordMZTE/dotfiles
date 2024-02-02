@@ -7,4 +7,3 @@ pub fn Mutex(comptime T: type) type {
         mtx: std.Thread.Mutex = .{},
     };
 }
-

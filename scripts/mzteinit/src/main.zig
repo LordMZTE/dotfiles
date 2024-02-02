@@ -42,6 +42,26 @@ pub fn main() void {
 
     tryMain() catch |e| {
         std.log.err("FATAL ERROR: {}", .{e});
+        if (@errorReturnTrace()) |trace| {
+            var buf: [1024 * 8]u8 = undefined;
+            const trace_s = s: {
+                const deb_inf = std.debug.getSelfDebugInfo() catch break :s null;
+
+                var fbs = std.io.fixedBufferStream(&buf);
+                std.debug.writeStackTrace(
+                    trace.*,
+                    fbs.writer(),
+                    std.heap.page_allocator,
+                    deb_inf,
+                    .no_color,
+                ) catch break :s null;
+                break :s fbs.getWritten();
+            };
+
+            if (trace_s) |s| {
+                std.log.err("ERT: {s}", .{s});
+            }
+        }
         std.debug.print("Encountered fatal error (check log), starting emergency shell!\n", .{});
 
         @panic(@errorName(std.os.execveZ(
