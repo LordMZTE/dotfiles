@@ -86,7 +86,7 @@ pub fn main() !void {
             null,
             stat.size,
             std.os.PROT.READ,
-            std.os.MAP.PRIVATE,
+            .{ .TYPE = .PRIVATE },
             tempfile.handle,
             0,
         );

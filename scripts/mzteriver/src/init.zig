@@ -1,0 +1,190 @@
+const std = @import("std");
+const opts = @import("opts");
+
+const Connection = @import("Connection.zig");
+
+pub fn init(alloc: std.mem.Allocator) !void {
+    const con = try Connection.init();
+    defer con.deinit();
+
+    // Normal-Mode keyboard mappings
+    inline for (.{
+        // "run command" maps
+        .{ "Super", "Return", "spawn", opts.term_command },
+        .{ "Super+Control", "E", "spawn", opts.file_manager_command },
+        .{ "Super+Control", "B", "spawn", opts.browser_command },
+        .{ "Super+Control", "V", "spawn", "vinput md" },
+        .{ "Super+Control", "L", "spawn", "swaylock --color 660000" },
+        .{ "Super+Shift", "P", "spawn", "gpower2" },
+        .{ "Alt", "Space", "spawn", "rofi -show combi" },
+        .{ "Super+Alt", "Space", "spawn", "rofi -show emoji" },
+        .{ "None", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png" },
+        .{ "Shift", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | feh -" },
+
+        // media keys
+        .{ "None", "XF86Eject", "spawn", "eject -T" },
+        .{ "None", "XF86AudioRaiseVolume", "spawn", "pactl set-sink-volume @DEFAULT_SINK@ +5%" },
+        .{ "None", "XF86AudioLowerVolume", "spawn", "pactl set-sink-volume @DEFAULT_SINK@ -5%" },
+        .{ "None", "XF86AudioMute", "spawn", "pactl set-sink-mute @DEFAULT_SINK@ toggle" },
+        .{ "None", "XF86AudioMicMute", "spawn", "pactl set-source-mute @DEFAULT_SINK@ toggle" },
+        .{ "None", "XF86AudioMedia", "spawn", "playerctl play-pause" },
+        .{ "None", "XF86AudioPlay", "spawn", "playerctl play-pause" },
+        .{ "None", "XF86AudioPrev", "spawn", "playerctl previous" },
+        .{ "None", "XF86AudioNext", "spawn", "playerctl next" },
+
+        // control maps
+        .{ "Super+Shift", "E", "exit" },
+        .{ "Super", "Space", "toggle-float" },
+        .{ "Super", "F", "toggle-fullscreen" },
+        .{ "Super+Shift", "Q", "close" },
+
+        // screenshot
+
+        // "irregular" focus & move maps
+        // (that is, they don't exist for all 4 directions)
+        .{ "Super", "J", "focus-view", "next" },
+        .{ "Super", "K", "focus-view", "previous" },
+        .{ "Super+Shift", "J", "swap", "next" },
+        .{ "Super+Shift", "K", "swap", "previous" },
+        .{ "Super", "Period", "focus-output", "next" },
+        .{ "Super", "Comma", "focus-output", "previous" },
+        .{ "Super+Shift", "Period", "send-to-output", "next" },
+        .{ "Super+Shift", "Comma", "send-to-output", "previous" },
+        .{ "Super+Shift", "Return", "zoom" },
+        .{ "Super", "H", "send-layout-cmd", "rivertile", "main-ratio -0.05" },
+        .{ "Super", "L", "send-layout-cmd", "rivertile", "main-ratio +0.05" },
+        .{ "Super+Shift", "H", "send-layout-cmd", "rivertile", "main-count -1" },
+        .{ "Super+Shift", "L", "send-layout-cmd", "rivertile", "main-count +1" },
+    }) |map_cmd| {
+        try con.runCommand(&(.{ "map", "normal" } ++ map_cmd));
+    }
+
+    inline for (.{
+        .{ .H, "left" },
+        .{ .J, "down" },
+        .{ .K, "up" },
+        .{ .L, "right" },
+    }) |kd| {
+        const key = kd.@"0";
+        const dir = kd.@"1";
+
+        // moving floating views
+        try con.runCommand(&.{ "map", "normal", "Super+Alt", @tagName(key), "move", dir, "100" });
+
+        // snapping floating views
+        try con.runCommand(&.{ "map", "normal", "Super+Alt+Control", @tagName(key), "snap", dir });
+
+        // resizing floating views
+        try con.runCommand(&.{ "map", "normal", "Super+Alt+Shift", @tagName(key), switch (key) {
+            .H, .L => "horizontal",
+            .J, .K => "vertical",
+            else => unreachable,
+        }, switch (key) {
+            .J, .L => "100",
+            .H, .K => "-100",
+            else => unreachable,
+        } });
+    }
+
+    // change layout orientation with arrow keys
+    inline for (.{
+        .{ "Up", "top" },
+        .{ "Right", "right" },
+        .{ "Down", "bottom" },
+        .{ "Left", "left" },
+    }) |kv| {
+        try con.runCommand(&.{
+            "map",
+            "normal",
+            "Super",
+            kv.@"0",
+            "send-layout-cmd",
+            "rivertile",
+            std.fmt.comptimePrint("main-location {s}", .{kv.@"1"}),
+        });
+    }
+
+    // moving & resizing with the mouse
+    try con.runCommand(&.{ "map-pointer", "normal", "Super", "BTN_LEFT", "move-view" });
+    try con.runCommand(&.{ "map-pointer", "normal", "Super", "BTN_RIGHT", "resize-view" });
+
+    // tag config
+    for (0..9) |i| {
+        var key_buf: [16]u8 = undefined;
+        var tags_buf: [16]u8 = undefined;
+        const key = try std.fmt.bufPrintZ(&key_buf, "{}", .{i + 1});
+        const tags = try std.fmt.bufPrintZ(&tags_buf, "{}", .{@as(u32, 1) << @intCast(i)});
+
+        try con.runCommand(&.{ "map", "normal", "Super", key, "set-focused-tags", tags });
+        try con.runCommand(&.{ "map", "normal", "Super+Shift", key, "set-view-tags", tags });
+        try con.runCommand(&.{ "map", "normal", "Super+Control", key, "toggle-focused-tags", tags });
+        try con.runCommand(&.{ "map", "normal", "Super+Shift+Control", key, "toggle-view-tags", tags });
+    }
+
+    // "0" acts as "all tags"
+    const all_tags_s = std.fmt.comptimePrint("{}", .{std.math.maxInt(u32)});
+    try con.runCommand(&.{ "map", "normal", "Super", "0", "set-focused-tags", all_tags_s });
+    try con.runCommand(&.{ "map", "normal", "Super+Shift", "0", "set-view-tags", all_tags_s });
+
+    // passthrough mode
+    const passthr_mode = "passthrough";
+    try con.runCommand(&.{ "declare-mode", passthr_mode });
+    try con.runCommand(&.{ "map", "normal", "Super", "F12", "enter-mode", passthr_mode });
+    try con.runCommand(&.{ "map", passthr_mode, "Super", "F12", "enter-mode", "normal" });
+
+    try con.runCommand(&.{ "set-repeat", "50", "300" });
+
+    try con.runCommand(&.{ "border-color-focused", "0x880000" });
+    try con.runCommand(&.{ "border-color-unfocused", "0x660000" });
+
+    try con.runCommand(&.{
+        "xcursor-theme",
+        opts.cursor_theme,
+        std.fmt.comptimePrint("{}", .{opts.cursor_size}),
+    });
+
+    try con.runCommand(&.{ "float-filter-add", "app-id", "vinput-editor" });
+
+    try con.runCommand(&.{ "default-layout", "rivertile" });
+
+    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+    const init_path = try std.fs.path.join(
+        alloc,
+        &.{ home, ".config", "mzte_localconf", "river_init" },
+    );
+    defer alloc.free(init_path);
+
+    var init_child = std.process.Child.init(&.{init_path}, alloc);
+    const term = init_child.spawnAndWait() catch |e| switch (e) {
+        error.FileNotFound => b: {
+            std.log.info("no river_init", .{});
+            break :b std.process.Child.Term{ .Exited = 0 };
+        },
+        else => return e,
+    };
+
+    if (!std.meta.eql(term, .{ .Exited = 0 })) {
+        std.log.err("river_init borked: {}", .{term});
+        return error.InitBorked;
+    }
+
+    std.log.info("configuration finished, spawning processes", .{});
+
+    var child_arena = std.heap.ArenaAllocator.init(alloc);
+    defer child_arena.deinit();
+
+    // spawn background processes
+    inline for (.{
+        .{"wlbg"},
+        .{"waybar"},
+        .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY" },
+        .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
+        .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" },
+    }) |argv| {
+        // TODO: wonk
+        // We use an arena here to prevent leaks because process.Child apparently doesn't support
+        // detaching.
+        var child = std.process.Child.init(&argv, child_arena.allocator());
+        try child.spawn();
+    }
+}

@@ -96,7 +96,7 @@ fn streamlinkThread(state: *State, channel: []const u8) !void {
         null,
         size,
         std.os.PROT.READ,
-        std.os.MAP.PRIVATE,
+        .{ .TYPE = .PRIVATE },
         memfd,
         0,
     );

@@ -33,7 +33,7 @@ window#waybar.PCSX2 #window {
 	background: @surface0;
 }
 
-#workspaces {
+#workspaces, #tags {
 	margin-top: 8px;
 	margin-left: 12px;
 	margin-bottom: 0;
@@ -41,19 +41,25 @@ window#waybar.PCSX2 #window {
 	transition: none;
 }
 
-#workspaces button {
+#workspaces button, #tags button {
 	transition: none;
 	color: @text;
 	background: @crust;
 	font-size: 16px;
+    padding: 0;
 }
 
-#workspaces button.active {
-	color: @lavender;
+#tags button.occupied {
+    color: @sky;
     background: @base;
 }
 
-#workspaces button:hover {
+#workspaces button.active, #tags button.focused {
+	color: @lavender;
+    background: @surface0;
+}
+
+#workspaces button:hover, #tags button:hover {
 	transition: none;
 	box-shadow: inherit;
 	text-shadow: inherit;

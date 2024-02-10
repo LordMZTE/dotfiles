@@ -6,5 +6,4 @@ bind = SUPER CTRL, B, exec, <% opt.commands.browser %>
 bind = SUPER SHIFT, P, exec, gpower2
 bind = ,PRINT, exec, grim -g "$(slurp; sleep 1)" ~/Downloads/screenshot.png
 bind = SHIFT, PRINT, exec, grim -g "$(slurp; sleep 1)" - | feh -
-bind = SUPER SHIFT, W, exec, randomwallpaper
 bind = SUPER CTRL, V, exec, vinput md

@@ -39,7 +39,7 @@ pub fn main() !void {
             null,
             (try cache_file.stat()).size,
             std.os.PROT.READ,
-            std.os.MAP.PRIVATE,
+            .{ .TYPE = .PRIVATE },
             cache_file.handle,
             0,
         );

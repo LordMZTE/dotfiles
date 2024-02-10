@@ -11,7 +11,6 @@
   ;; Symlink interpreted scripts
   (install-link "scripts/brightness.rkt" (bin-path "brightness"))
   (install-link "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (install-link "scripts/startriver.sh" (bin-path "startriver"))
   (install-link "scripts/sysupdate.rkt" (bin-path "sysupdate"))
   (install-link "scripts/update-nvim-plugins.rkt" (bin-path "update-nvim-plugins"))
   (install-link "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
@@ -22,6 +21,7 @@
   (install-zig "scripts/hyprtool")
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")
+  (install-zig "scripts/mzteriver")
   (install-zig "scripts/openbrowser")
   (install-zig "scripts/playtwitch")
   (install-zig "scripts/prompt")

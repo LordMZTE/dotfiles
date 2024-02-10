@@ -24,7 +24,7 @@ pub fn build(b: *std.Build) void {
     scanner.generate("wl_data_device_manager", 3);
     scanner.generate("wl_compositor", 4);
     scanner.generate("wl_shm", 1);
-    scanner.generate("xdg_wm_base", 3);
+    scanner.generate("xdg_wm_base", 2);
 
     exe.root_module.linkSystemLibrary("wayland-client", .{});
 
