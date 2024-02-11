@@ -1,7 +1,7 @@
 local opts = {}
 
 opts.mzteinit_entries = {
-    { key = "r", label = "river",    cmd = { "mzteriver" } },
+    { key = "r", label = "river",    cmd = { cg.opt.system "which mzteriver" } },
     { key = "h", label = "hyprland", cmd = { "Hyprland" } },
     { key = "s", label = "shell",    cmd = { "fish" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },

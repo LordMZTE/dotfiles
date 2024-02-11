@@ -18,7 +18,7 @@ cg.onDone(function(errors)
         cg.opt.system("gsettings set org.gnome.desktop.interface gtk-theme " .. cg.opt.gtk_theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
-        cg.opt.system("gsettings set org.gnome.desktop.interface font-name \"" .. cg.opt.font .. " 11\"")
+        cg.opt.system('gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"')
     end
 end)
 
@@ -38,14 +38,6 @@ local function merge(a, b)
         end
     end
     return a
-end
-
-cg.opt = merge(cg.opt, require "cg_opts")
-
-local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
-
-if local_opts then
-    cg.opt = merge(cg.opt, local_opts())
 end
 
 -- This function is called in templates to allow adding device-specific configs.
@@ -103,4 +95,12 @@ cg.opt.fileExists = function(path)
     end
 
     return false
+end
+
+cg.opt = merge(cg.opt, require "cg_opts")
+
+local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
+
+if local_opts then
+    cg.opt = merge(cg.opt, local_opts())
 end

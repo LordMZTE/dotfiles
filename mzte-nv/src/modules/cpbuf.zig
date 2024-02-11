@@ -31,7 +31,7 @@ fn lCopyBuf(l: *c.lua_State) !c_int {
 
     const ft_opt = znvim.OptionValue.get("filetype", .local);
 
-   // store previous window layout
+    // store previous window layout
     const cursor_pos = nvim.curwin.*.w_cursor;
     const topline = nvim.curwin.*.w_topline;
 

@@ -16,8 +16,8 @@ const wl = wayland.client.wl;
 const zwlr = wayland.client.zwlr;
 const zxdg = wayland.client.zxdg;
 
-pub const std_options = struct {
-    pub const log_level = .debug;
+pub const std_options = std.Options{
+    .log_level = .debug,
 };
 
 pub fn main() !void {

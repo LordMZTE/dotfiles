@@ -4,8 +4,8 @@ const gui = @import("gui.zig");
 const State = @import("State.zig");
 const log = std.log.scoped(.main);
 
-pub const std_options = struct {
-    pub const log_level = .debug;
+pub const std_options = std.Options{
+    .log_level = .debug,
 };
 
 pub fn main() !void {

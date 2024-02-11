@@ -1,8 +1,8 @@
 const std = @import("std");
 const info = @import("info.zig");
 
-pub const std_options = struct {
-    pub const log_level = .debug;
+pub const std_options = std.Options{
+    .log_level = .debug,
 };
 
 const browsers = &[_][]const u8{

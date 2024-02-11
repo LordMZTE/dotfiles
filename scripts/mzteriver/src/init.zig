@@ -137,13 +137,18 @@ pub fn init(alloc: std.mem.Allocator) !void {
     try con.runCommand(&.{ "border-color-focused", "0x880000" });
     try con.runCommand(&.{ "border-color-unfocused", "0x660000" });
 
+    try con.runCommand(&.{ "hide-cursor", "when-typing", "enabled" });
+
     try con.runCommand(&.{
         "xcursor-theme",
         opts.cursor_theme,
         std.fmt.comptimePrint("{}", .{opts.cursor_size}),
     });
 
-    try con.runCommand(&.{ "float-filter-add", "app-id", "vinput-editor" });
+    try con.runCommand(&.{ "rule-add", "-app-id", "vinput-editor", "float" });
+
+    // disable client-side decoration (completely stupid concept)
+    try con.runCommand(&.{ "rule-add", "-app-id", "*", "ssd" });
 
     try con.runCommand(&.{ "default-layout", "rivertile" });
 
@@ -177,7 +182,7 @@ pub fn init(alloc: std.mem.Allocator) !void {
     inline for (.{
         .{"wlbg"},
         .{"waybar"},
-        .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY" },
+        .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
         .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
         .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" },
     }) |argv| {

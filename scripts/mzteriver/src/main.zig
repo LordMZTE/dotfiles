@@ -1,11 +1,11 @@
 const std = @import("std");
 const opts = @import("opts");
 
-pub const std_options = struct {
-    pub const log_level = switch (@import("builtin").mode) {
+pub const std_options = std.Options{
+    .log_level = switch (@import("builtin").mode) {
         .Debug => .debug,
         else => .info,
-    };
+    },
 };
 
 pub fn main() !void {

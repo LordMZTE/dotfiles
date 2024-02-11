@@ -7,18 +7,13 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const cg_opt = try common.confgenGet(struct {
-        nvidia: bool = false,
-        term: struct { command: [:0]const u8 },
-        commands: struct {
-            file_manager: [:0]const u8,
-            browser: [:0]const u8,
-        },
-        cursor: struct {
-            theme: [:0]const u8,
-            size: u32,
-        }
-    }, "../..", b.allocator);
+    const cg_opt = try common.confgenGet(struct { nvidia: bool = false, term: struct { command: [:0]const u8 }, commands: struct {
+        file_manager: [:0]const u8,
+        browser: [:0]const u8,
+    }, cursor: struct {
+        theme: [:0]const u8,
+        size: u32,
+    } }, "../..", b.allocator);
 
     const opts = b.addOptions();
     opts.addOption(bool, "nvidia", cg_opt.nvidia);

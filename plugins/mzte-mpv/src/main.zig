@@ -4,20 +4,22 @@ const c = ffi.c;
 const ffi = @import("ffi.zig");
 const util = @import("util.zig");
 
-pub const std_options = struct {
-    pub const log_level = .debug;
-    pub fn logFn(
-        comptime message_level: std.log.Level,
-        comptime scope: @TypeOf(.enum_literal),
-        comptime format: []const u8,
-        args: anytype,
-    ) void {
-        _ = scope;
+pub const std_options = std.Options{
+    .log_level = .debug,
+    .logFn = struct {
+        fn logFn(
+            comptime message_level: std.log.Level,
+            comptime scope: @TypeOf(.enum_literal),
+            comptime format: []const u8,
+            args: anytype,
+        ) void {
+            _ = scope;
 
-        const stderr = std.io.getStdErr().writer();
+            const stderr = std.io.getStdErr().writer();
 
-        stderr.print("[mzte-mpv {s}] " ++ format ++ "\n", .{@tagName(message_level)} ++ args) catch return;
-    }
+            stderr.print("[mzte-mpv {s}] " ++ format ++ "\n", .{@tagName(message_level)} ++ args) catch return;
+        }
+    }.logFn,
 };
 
 export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {

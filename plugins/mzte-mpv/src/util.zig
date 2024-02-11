@@ -13,4 +13,3 @@ pub fn msg(mpv: *c.mpv_handle, comptime fmt: []const u8, args: anytype) !void {
         @constCast(&[_:null]?[*:0]const u8{ "show-text", osd_msg, "4000" }),
     ));
 }
-

@@ -2,8 +2,8 @@ const std = @import("std");
 
 const Client = @import("sock/Client.zig");
 
-pub const std_options = struct {
-    pub const log_level = .debug;
+pub const std_options = std.Options{
+    .log_level = .debug,
 };
 
 pub fn main() !void {
