@@ -11,6 +11,9 @@ gtk-single-instance = true
 
 window-save-state = "never"
 
+# Accidentally paste multiple commands with honor
+clipboard-paste-protection = false
+
 keybind = clear
 
 <! local function key(k, v) !>
