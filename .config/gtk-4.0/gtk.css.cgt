@@ -1,0 +1,18 @@
+<! if opt.wayland_compositor == "river" then !>
+/* GTK is to retarded to realize that some compositors that don't implement deprecated
+* protocols do not want client-side decoration. We completely disable titlebars here to compensate. */
+headerbar.titlebar.default-decoration {
+    background: transparent;
+    padding: 0;
+    margin: 0 0 -17px 0;
+    border: 0;
+    min-height: 0;
+    font-size: 0;
+    box-shadow: none;
+}
+
+window.csd,
+window.csd decoration {
+    box-shadow: none;
+}
+<! end !>

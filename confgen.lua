@@ -19,6 +19,11 @@ cg.onDone(function(errors)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
         cg.opt.system('gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"')
+        if cg.opt.wayland_compositor == "river" then
+            cg.opt.system 'gsettings set org.gnome.desktop.wm.preferences button-layout ""'
+        else
+            cg.opt.system "gsettings reset org.gnome.desktop.wm.preferences button-layout"
+        end
     end
 end)
 
