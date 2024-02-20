@@ -1,6 +1,8 @@
 const std = @import("std");
 const opts = @import("opts");
 
+const log = std.log.scoped(.mzteriver);
+
 pub const std_options = std.Options{
     .log_level = switch (@import("builtin").mode) {
         .Debug => .debug,
@@ -9,22 +11,53 @@ pub const std_options = std.Options{
 };
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const alloc = gpa.allocator();
+    var dbg_gpa = if (@import("builtin").mode == .Debug) std.heap.GeneralPurposeAllocator(.{}){} else {};
+    defer if (@TypeOf(dbg_gpa) != void) {
+        _ = dbg_gpa.deinit();
+    };
+    const alloc = if (@TypeOf(dbg_gpa) == void) std.heap.c_allocator else dbg_gpa.allocator();
 
     if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "init") or
         (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "init") == .eq))
     {
-        std.log.info("running in init mode", .{});
+        log.info("running in init mode", .{});
         try @import("init.zig").init(alloc);
     } else {
-        std.log.info("running in launch mode", .{});
+        log.info("running in launch mode", .{});
 
-        const envp = env: {
-            var env = try std.ArrayList(?[*:0]const u8)
-                .initCapacity(alloc, std.os.environ.len + 16);
-            errdefer env.deinit();
+        const logfd = logf: {
+            const logf_path = try std.fmt.allocPrintZ(
+                alloc,
+                "/tmp/mzteriver-{}-{}.log",
+                .{ std.os.linux.getuid(), std.os.linux.getpid() },
+            );
+            defer alloc.free(logf_path);
+
+            log.info("river log file: {s}", .{logf_path});
+
+            break :logf try std.os.openatZ(
+                std.os.AT.FDCWD,
+                logf_path.ptr,
+                // no CLOEXEC
+                .{
+                    .ACCMODE = .WRONLY,
+                    .CREAT = true,
+                    .TRUNC = true,
+                },
+                0o644,
+            );
+        };
+        {
+            errdefer std.os.close(logfd);
+
+            // redirect river's STDERR and STDOUT to log file
+            try std.os.dup2(logfd, std.os.STDOUT_FILENO);
+            try std.os.dup2(logfd, std.os.STDERR_FILENO);
+        }
+        std.os.close(logfd);
+
+        var env = std.BoundedArray(?[*:0]const u8, 0xff).init(0) catch unreachable;
+        const envp: [*:null]?[*:0]const u8 = env: {
             try env.appendSlice(std.os.environ);
 
             try env.append("XKB_DEFAULT_LAYOUT=de");
@@ -35,11 +68,10 @@ pub fn main() !void {
                 try env.append("WLR_NO_HARDWARE_CURSORS=1");
             }
 
-            break :env try env.toOwnedSliceSentinel(null);
+            // manually add sentinel
+            try env.append(null);
+            break :env @ptrCast(env.slice().ptr);
         };
-
-        // techncially unreachable
-        defer alloc.free(envp);
 
         return std.os.execvpeZ("river", &[_:null]?[*:0]const u8{"river"}, envp);
     }

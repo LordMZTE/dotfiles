@@ -1,6 +1,8 @@
 const std = @import("std");
 const opts = @import("opts");
 
+const log = std.log.scoped(.mzteriver);
+
 const Connection = @import("Connection.zig");
 
 pub fn init(alloc: std.mem.Allocator) !void {
@@ -162,18 +164,18 @@ pub fn init(alloc: std.mem.Allocator) !void {
     var init_child = std.process.Child.init(&.{init_path}, alloc);
     const term = init_child.spawnAndWait() catch |e| switch (e) {
         error.FileNotFound => b: {
-            std.log.info("no river_init", .{});
+            log.info("no river_init", .{});
             break :b std.process.Child.Term{ .Exited = 0 };
         },
         else => return e,
     };
 
     if (!std.meta.eql(term, .{ .Exited = 0 })) {
-        std.log.err("river_init borked: {}", .{term});
+        log.err("river_init borked: {}", .{term});
         return error.InitBorked;
     }
 
-    std.log.info("configuration finished, spawning processes", .{});
+    log.info("configuration finished, spawning processes", .{});
 
     var child_arena = std.heap.ArenaAllocator.init(alloc);
     defer child_arena.deinit();
