@@ -7,7 +7,8 @@
   (when (not args)
     (set args {}))
   (tset args :on_attach (if args.on_attach
-                            `(fn [client# bufnr#] (mztenv.lsp.onAttach client# bufnr#)
+                            `(fn [client# bufnr#]
+                               (mztenv.lsp.onAttach client# bufnr#)
                                (,args.on_attach client# bufnr#))
                             `mztenv.lsp.onAttach))
   (tset args :capabilities `caps)
@@ -53,6 +54,7 @@
                                                                             true)]
                                  :telemetry {:enable false}}}})
 
+(setup :nil_ls {:settings {:nil {:formatting {:command [:nixpkgs-fmt]}}}})
 (setup :ocamllsp)
 (setup :prosemd_lsp)
 (setup :racket_langserver)
