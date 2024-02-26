@@ -115,17 +115,14 @@ fn tryMain() !void {
 
     var srv: ?Server = null;
     if (env_map.get("XDG_RUNTIME_DIR")) |xrd| {
-        const sockaddr = try std.fs.path.join(alloc, &.{ xrd, "mzteinit.sock" });
-        errdefer alloc.free(sockaddr);
+        var sockaddr_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+        const sockaddr = try std.fmt.bufPrintZ(
+            &sockaddr_buf,
+            "{s}/mzteinit-{}-{}.sock",
+            .{ xrd, std.os.linux.getuid(), std.os.linux.getpid() },
+        );
 
         try msg("starting socket server @ {s}...", .{sockaddr});
-
-        std.fs.cwd().deleteFile(sockaddr) catch |e| {
-            switch (e) {
-                error.FileNotFound => {},
-                else => return e,
-            }
-        };
 
         srv = try Server.init(alloc, sockaddr, &env_mtx);
         errdefer srv.?.ss.deinit();
@@ -239,8 +236,8 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
 
     const old_termios = try std.os.tcgetattr(std.os.STDIN_FILENO);
     var new_termios = old_termios;
-    new_termios.lflag &= ~std.os.linux.ICANON; // No line buffering
-    new_termios.lflag &= ~std.os.linux.ECHO; // No echoing stuff
+    new_termios.lflag.ICANON = false; // No line buffering
+    new_termios.lflag.ECHO = false; // No echoing stuff
     try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, new_termios);
 
     var cmd: ?command.Command = null;
