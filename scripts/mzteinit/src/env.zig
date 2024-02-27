@@ -134,7 +134,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         var b = delimitedWriter(bufstream.writer(), ':');
 
         for ([_][]const u8{
-            ".nix-profile/bin",
+            ".local/mzte-nix/bin",
             ".mix/escripts",
             ".cargo/bin",
             ".local/bin",

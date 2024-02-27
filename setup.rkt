@@ -7,7 +7,7 @@
          "setup/common.rkt")
 
 ;; Valid verbs
-(define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config confgen))
+(define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config setup-nix confgen))
 
 (define verb
   (command-line #:program "setup.rkt"
@@ -46,6 +46,9 @@
    (run)]
   ['setup-nvim-config
    (local-require "setup/commands/setup-nvim-config.rkt")
+   (run)]
+  ['setup-nix
+   (local-require "setup/commands/setup-nix.rkt")
    (run)]
   ['confgen
    (local-require "setup/commands/confgen.rkt")
