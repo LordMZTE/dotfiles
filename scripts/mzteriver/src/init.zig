@@ -110,6 +110,15 @@ pub fn init(alloc: std.mem.Allocator) !void {
     try con.runCommand(&.{ "map-pointer", "normal", "Super", "BTN_LEFT", "move-view" });
     try con.runCommand(&.{ "map-pointer", "normal", "Super", "BTN_RIGHT", "resize-view" });
 
+    // touchpad config
+    inline for (.{
+        .{ "click-method", "clickfinger" },
+        .{ "tap-button-map", "left-right-middle" },
+        .{ "tap", "enabled" },
+    }) |cmd| {
+        try con.runCommand(&[_][:0]const u8{ "input", "*" } ++ cmd);
+    }
+
     // tag config
     for (0..9) |i| {
         var key_buf: [16]u8 = undefined;
