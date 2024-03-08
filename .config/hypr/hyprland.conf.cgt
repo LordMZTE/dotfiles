@@ -81,6 +81,8 @@ env = __GLX_VENDOR_LIBRARY_NAME, nvidia
 env = WLR_NO_HARDWARE_CURSORS, 1
 <! end !>
 
+exec-once = echo 'cg.opt.setCurrentWaylandCompositor "hyprland"' >~/confgenfs/_cgfs/eval
+
 exec-once = waybar
 exec-once = wlbg
 exec-once = sleep 1 && randomwallpaper

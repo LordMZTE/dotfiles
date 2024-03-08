@@ -19,11 +19,6 @@ cg.onDone(function(errors)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
         cg.opt.system('gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"')
-        if cg.opt.wayland_compositor == "river" then
-            cg.opt.system 'gsettings set org.gnome.desktop.wm.preferences button-layout ""'
-        else
-            cg.opt.system "gsettings reset org.gnome.desktop.wm.preferences button-layout"
-        end
     end
 end)
 
@@ -100,6 +95,16 @@ cg.opt.fileExists = function(path)
     end
 
     return false
+end
+
+-- Set the currently active wayland compositor. Updates options for templates as well as gsettings.
+cg.opt.setCurrentWaylandCompositor = function(comp)
+    cg.opt.wayland_compositor = comp
+    if comp == "river" then
+        cg.opt.system 'gsettings set org.gnome.desktop.wm.preferences button-layout ""'
+    else
+        cg.opt.system "gsettings reset org.gnome.desktop.wm.preferences button-layout"
+    end
 end
 
 cg.opt = merge(cg.opt, require "cg_opts")

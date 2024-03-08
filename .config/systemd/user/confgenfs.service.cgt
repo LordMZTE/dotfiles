@@ -1,0 +1,9 @@
+[Unit]
+Description=ConfgenFS dotfiles
+
+[Service]
+Type=exec
+ExecStart=<% opt.system "which confgenfs" %> "<% opt.dev_dir %>/dotfiles/confgen.lua" "<% os.getenv "HOME" %>/confgenfs"
+
+[Install]
+WantedBy=default.target

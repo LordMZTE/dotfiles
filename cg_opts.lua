@@ -41,9 +41,6 @@ opts.cursor = {
 -- hwmon temperature path for CPU temp used by waybar
 opts.cpu_temp_hwmon = "/sys/class/hwmon/hwmon0/temp1_input"
 
--- used in waybar config
-opts.wayland_compositor = nil
-
 opts.gtk_theme = "Catppuccin-Mocha-Standard-Red-Dark"
 opts.icon_theme = "candy-icons"
 
