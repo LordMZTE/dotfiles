@@ -1,0 +1,38 @@
+set default-fg                "#<% opt.catppuccin.text %>"
+set default-bg                "#<% opt.catppuccin.base %>"
+
+set completion-bg             "#<% opt.catppuccin.surface0 %>"
+set completion-fg             "#<% opt.catppuccin.text %>"
+set completion-highlight-bg   "#575268"
+set completion-highlight-fg   "#<% opt.catppuccin.text %>"
+set completion-group-bg       "#<% opt.catppuccin.surface0 %>"
+set completion-group-fg       "#<% opt.catppuccin.blue %>"
+
+set statusbar-fg              "#<% opt.catppuccin.text %>"
+set statusbar-bg              "#<% opt.catppuccin.surface0 %>"
+
+set notification-bg           "#<% opt.catppuccin.surface0 %>"
+set notification-fg           "#<% opt.catppuccin.text %>"
+set notification-error-bg     "#<% opt.catppuccin.surface0 %>"
+set notification-error-fg     "#<% opt.catppuccin.red %>"
+set notification-warning-bg   "#<% opt.catppuccin.surface0 %>"
+set notification-warning-fg   "#fae3b0"
+
+set inputbar-fg               "#<% opt.catppuccin.text %>"
+set inputbar-bg               "#<% opt.catppuccin.surface0 %>"
+
+set recolor                   "true"
+set recolor-lightcolor        "#<% opt.catppuccin.base %>"
+set recolor-darkcolor         "#<% opt.catppuccin.text %>"
+
+set index-fg                  "#<% opt.catppuccin.text %>"
+set index-bg                  "#<% opt.catppuccin.base %>"
+set index-active-fg           "#<% opt.catppuccin.text %>"
+set index-active-bg           "#<% opt.catppuccin.surface0 %>"
+
+set render-loading-bg         "#<% opt.catppuccin.base %>"
+set render-loading-fg         "#<% opt.catppuccin.text %>"
+
+set highlight-color           "#575268"
+set highlight-fg              "#<% opt.catppuccin.pink %>"
+set highlight-active-color    "#<% opt.catppuccin.pink %>"
