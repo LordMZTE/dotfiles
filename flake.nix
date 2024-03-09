@@ -43,7 +43,7 @@
           "install-lsps-paru"
           "setup-nvim-config"
           "setup-nix"
-          "confgen"
+          "run-confgen"
         ];
       };
     });

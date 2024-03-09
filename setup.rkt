@@ -7,12 +7,12 @@
          "setup/common.rkt")
 
 ;; Valid verbs
-(define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config setup-nix confgen))
+(define verbs '(install-scripts install-plugins install-lsps-paru setup-nvim-config setup-nix run-confgen))
 
 (define verb
   (command-line #:program "setup.rkt"
                 #:usage-help "Sets up my dotfiles. Available verbs:"
-                "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, confgen"
+                "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, run-confgen"
                 #:once-each
                 [("-o" "--bin-output") o "Output directory for executables" (output-bin-path o)]
                 #:args (verb)
@@ -50,6 +50,6 @@
   ['setup-nix
    (local-require "setup/commands/setup-nix.rkt")
    (run)]
-  ['confgen
-   (local-require "setup/commands/confgen.rkt")
+  ['run-confgen
+   (local-require "setup/commands/run-confgen.rkt")
    (run)])
