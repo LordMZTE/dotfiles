@@ -8,14 +8,16 @@ const log = std.log.scoped(.server);
 
 alloc: std.mem.Allocator,
 env: *Mutex(std.process.EnvMap),
-ss: std.net.StreamServer,
+ss: std.net.Server,
 
 const Server = @This();
 
 pub fn init(alloc: std.mem.Allocator, sockpath: []const u8, env: *Mutex(std.process.EnvMap)) !Server {
-    var ss = std.net.StreamServer.init(.{});
-    try ss.listen(try std.net.Address.initUnix(sockpath));
-    return .{ .alloc = alloc, .ss = ss, .env = env };
+    return .{
+        .alloc = alloc,
+        .ss = try (try std.net.Address.initUnix(sockpath)).listen(.{}),
+        .env = env,
+    };
 }
 
 pub fn run(self: *Server) !void {
@@ -26,7 +28,7 @@ pub fn run(self: *Server) !void {
     }
 }
 
-pub fn handleConnection(self: *Server, con: std.net.StreamServer.Connection) !void {
+pub fn handleConnection(self: *Server, con: std.net.Server.Connection) !void {
     defer con.stream.close();
     while (true) {
         const msg = message.Serverbound.read(con.stream.reader(), self.alloc) catch |e| {
