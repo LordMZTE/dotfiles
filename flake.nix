@@ -21,5 +21,30 @@
           (flakePkg "github:nix-community/zon2nix")
         ];
       };
+
+      devShells.default = nixpkgs.legacyPackages.${system}.mkShell {
+        buildInputs = with pkgs; [
+          # packages required to build scripts
+          # TODO: build scripts with nix instead
+          pkg-config
+          wayland
+          wayland-protocols
+          libgit2
+          libGL
+          roswell
+        ] ++
+        # shorthands for setup.rkt
+        builtins.map
+          (cmd: pkgs.writeShellScriptBin cmd ''
+            ./setup.rkt ${cmd}
+          '') [
+          "install-scripts"
+          "install-plugins"
+          "install-lsps-paru"
+          "setup-nvim-config"
+          "setup-nix"
+          "confgen"
+        ];
+      };
     });
 }
