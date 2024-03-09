@@ -1,4 +1,4 @@
-#!/usr/bin/racket
+#!/usr/bin/env racket
 #lang racket
 
 ;; Script for setting up the config.
