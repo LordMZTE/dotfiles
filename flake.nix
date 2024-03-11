@@ -30,13 +30,13 @@
       devShells.default = nixpkgs.legacyPackages.${system}.mkShell {
         buildInputs = with pkgs; [
           # packages required to build scripts
-          # TODO: build scripts with nix instead
           pkg-config
+          libGL
+          libgit2
+          luajit
+          roswell
           wayland
           wayland-protocols
-          libgit2
-          libGL
-          roswell
         ] ++
         # shorthands for setup.rkt
         builtins.map
