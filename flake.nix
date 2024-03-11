@@ -2,27 +2,19 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
-    confgen.url = "git+https://git.mzte.de/LordMZTE/confgen?rev=a6fbe3c79eeed1dbda04a0be501fa2b95450a03f";
-    nixpkgs-zig-0-12.url = "github:vancluever/nixpkgs/vancluever-zig-0-12";
   };
 
   outputs =
     { self
     , nixpkgs
     , utils
-    , confgen
-    , nixpkgs-zig-0-12
     }: utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs { inherit system; };
       flakePkg = ref: (builtins.getFlake ref).packages.${system}.default;
     in
     {
-      packages.mzteinit = import ./scripts/mzteinit/package.nix {
-        inherit pkgs;
-        confgen = confgen.packages.${system};
-        zig_0_12 = nixpkgs-zig-0-12.legacyPackages.${system}.zig_0_12;
-      };
+      mzteinit = pkgs.callPackage ./scripts/mzteinit/package.nix { };
       # Local user nix env
       packages.mzte-nix = pkgs.symlinkJoin {
         name = "mzte-nix";

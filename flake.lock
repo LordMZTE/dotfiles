@@ -1,81 +1,12 @@
 {
   "nodes": {
-    "confgen": {
-      "inputs": {
-        "nixpkgs": "nixpkgs",
-        "nixpkgs-zig-0-12": "nixpkgs-zig-0-12",
-        "utils": "utils"
-      },
-      "locked": {
-        "lastModified": 1710099294,
-        "narHash": "sha256-u4TQiW0IODAjGRGy1igEQsaZ6P/xI+RVyzZqrCR4vfI=",
-        "ref": "a6fbe3c79eeed1dbda04a0be501fa2b95450a03f",
-        "rev": "a6fbe3c79eeed1dbda04a0be501fa2b95450a03f",
-        "revCount": 43,
-        "type": "git",
-        "url": "https://git.mzte.de/LordMZTE/confgen"
-      },
-      "original": {
-        "rev": "a6fbe3c79eeed1dbda04a0be501fa2b95450a03f",
-        "type": "git",
-        "url": "https://git.mzte.de/LordMZTE/confgen"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1709961763,
         "narHash": "sha256-6H95HGJHhEZtyYA3rIQpvamMKAGoa8Yh2rFV29QnuGw=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "3030f185ba6a4bf4f18b87f345f104e6a6961f34",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-zig-0-12": {
-      "locked": {
-        "lastModified": 1710092316,
-        "narHash": "sha256-96pThxPueCevkteIFsx2lMDcCjDrQtBfEbIJR2g+C5Q=",
-        "owner": "vancluever",
-        "repo": "nixpkgs",
-        "rev": "add3752a30c1d9caa7614208afcb8e5502ce4407",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vancluever",
-        "ref": "vancluever-zig-0-12",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-zig-0-12_2": {
-      "locked": {
-        "lastModified": 1710092316,
-        "narHash": "sha256-96pThxPueCevkteIFsx2lMDcCjDrQtBfEbIJR2g+C5Q=",
-        "owner": "vancluever",
-        "repo": "nixpkgs",
-        "rev": "add3752a30c1d9caa7614208afcb8e5502ce4407",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vancluever",
-        "ref": "vancluever-zig-0-12",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1709703039,
-        "narHash": "sha256-6hqgQ8OK6gsMu1VtcGKBxKQInRLHtzulDo9Z5jxHEFY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9df3e30ce24fd28c7b3e2de0d986769db5d6225d",
+        "rev": "3030f185ba6a4bf4f18b87f345f104e6a6961f34",
         "type": "github"
       },
       "original": {
@@ -87,10 +18,8 @@
     },
     "root": {
       "inputs": {
-        "confgen": "confgen",
-        "nixpkgs": "nixpkgs_2",
-        "nixpkgs-zig-0-12": "nixpkgs-zig-0-12_2",
-        "utils": "utils_2"
+        "nixpkgs": "nixpkgs",
+        "utils": "utils"
       }
     },
     "systems": {
@@ -108,42 +37,9 @@
         "type": "github"
       }
     },
-    "systems_2": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
     "utils": {
       "inputs": {
         "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1709126324,
-        "narHash": "sha256-q6EQdSeUZOG26WelxqkmR7kArjgWCdw5sfJVHPH/7j8=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "d465f4819400de7c8d874d50b982301f28a84605",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "utils_2": {
-      "inputs": {
-        "systems": "systems_2"
       },
       "locked": {
         "lastModified": 1709126324,

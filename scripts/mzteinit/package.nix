@@ -1,47 +1,28 @@
-{ pkgs, confgen, zig_0_12 }:
-let
-  deps = pkgs.linkFarm "zig-packages" [
-    # ansi-term
-    {
-      name = "1220ea86ace34b38e49c1d737c5f857d88346af10695a992b38e10cb0a73b6a19ef7";
-      path = pkgs.fetchgit {
-        url = "https://github.com/LordMZTE/ansi-term.git";
-        rev = "73c03175068679685535111dbea72cade075719e";
-        hash = "sha256-YeCZPUNciJz141HSHk4kBIfVYW/JqLflkKCjRHhIORk=";
-      };
-    }
-  ];
-in
-pkgs.stdenv.mkDerivation {
+{ pkgs, lib }:
+{ setEnvironment ? null }:
+pkgs.writeShellApplication {
   name = "mzteinit";
-  # TODO: WTF
-  src = ./../..;
-  dontBuild = true;
-  dontFixup = true;
 
-  configurePhase = ''
-    mkdir cgout
-    # TODO: WTF
-    sed -i 's#/usr/share/lua/5.4/fennel.lua#${pkgs.luajitPackages.fennel}/share/lua/5.1/fennel.lua#' confgen.lua
-    ${confgen.default}/bin/confgen --json-opt confgen.lua > cgout/opts.json
+  # We need a wrapper script here because nix cannot build mzteinit while taking localconf into
+  # account, as the builder has no access to the home directory. Thus, the user must build
+  # mzteinit and we need to launch it here (before it's contained in $PATH, hence the absolute path).
+  text = ''
+    ${lib.optionalString (setEnvironment != null) ''
+    if [ -z "$__NIXOS_SET_ENVIRONMENT_DONE" ]; then
+      # shellcheck disable=SC1091
+      . ${setEnvironment}
+    fi
+    '' }
+    mzteinit_path="$HOME"/.local/bin/mzteinit
+    if [[ -f "$mzteinit_path" ]]; then
+      exec $mzteinit_path
+    else
+      echo "mzteinit not found, starting pre-launch emergency shell!"
+      exec ${pkgs.bash}/bin/bash
+    fi
   '';
 
-  postPatch = ''
-    cd scripts/mzteinit
-    export ZIG_LOCAL_CACHE_DIR=$(pwd)/zig-cache
-    export ZIG_GLOBAL_CACHE_DIR=$ZIG_LOCAL_CACHE_DIR
-    mkdir -p $ZIG_GLOBAL_CACHE_DIR
-    ln -s ${deps} $ZIG_GLOBAL_CACHE_DIR/p
-    cd ../..
-  '';
+  bashOptions = [ "errexit" "pipefail" ];
 
-  installPhase = ''
-    cd scripts/mzteinit
-    runHook preBuild
-    ${zig_0_12}/bin/zig build install --prefix $out
-    runHook postBuild
-    cd ../..
-  '';
-
-  passthru.shellPath = "/bin/mzteinit";
+  derivationArgs.passthru.shellPath = "/bin/mzteinit";
 }

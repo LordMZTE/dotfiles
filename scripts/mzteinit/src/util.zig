@@ -46,3 +46,30 @@ fn formatCommand(
 pub fn fmtCommand(cmd: []const []const u8) std.fmt.Formatter(formatCommand) {
     return .{ .data = cmd };
 }
+
+pub fn findInPath(alloc: std.mem.Allocator, bin: []const u8) !?[]const u8 {
+    const path = std.os.getenv("PATH") orelse return null;
+
+    var splits = std.mem.split(u8, path, ":");
+    while (splits.next()) |p| {
+        const trimmed = std.mem.trim(u8, p, " \n\r");
+        if (trimmed.len == 0)
+            continue;
+
+        const joined = try std.fs.path.joinZ(
+            alloc,
+            &.{ trimmed, bin },
+        );
+
+        _ = std.fs.cwd().statFile(joined) catch |e| {
+            alloc.free(joined);
+            switch (e) {
+                error.FileNotFound, error.AccessDenied => continue,
+                else => return e,
+            }
+        };
+
+        return joined;
+    }
+    return null;
+}

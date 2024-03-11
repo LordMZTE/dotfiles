@@ -42,7 +42,13 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     }
 
     // set shell to fish to prevent anything from defaulting to mzteinit
-    try env.put("SHELL", "/usr/bin/fish");
+    if (try util.findInPath(alloc, "fish")) |fish| {
+        defer alloc.free(fish);
+        try env.put("SHELL", fish);
+    } else {
+        log.warn("fish not found! setting $SHELL to /bin/sh", .{});
+        try env.put("SHELL", "/bin/sh");
+    }
 
     // mix (elixir package manager) should respect XDG
     try env.put("MIX_XDG", "1");
