@@ -1,2 +1,5 @@
 # confgen output
 cgout
+
+# reproducible builds: no thanks
+flake.lock
