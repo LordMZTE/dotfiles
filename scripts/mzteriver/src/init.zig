@@ -16,7 +16,7 @@ pub fn init(alloc: std.mem.Allocator) !void {
         .{ "Super+Control", "E", "spawn", opts.file_manager_command },
         .{ "Super+Control", "B", "spawn", opts.browser_command },
         .{ "Super+Control", "V", "spawn", "vinput md" },
-        .{ "Super+Control", "L", "spawn", "swaylock --color 660000" },
+        .{ "Super+Control", "L", "spawn", "physlock" },
         .{ "Super+Shift", "P", "spawn", "gpower2" },
         .{ "Alt", "Space", "spawn", "rofi -show combi" },
         .{ "Super+Alt", "Space", "spawn", "rofi -show emoji" },
