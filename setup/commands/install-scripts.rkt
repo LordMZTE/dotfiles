@@ -24,6 +24,7 @@
   (install-zig "scripts/mzteriver")
   (install-zig "scripts/openbrowser")
   (install-zig "scripts/playtwitch")
+  (install-zig "scripts/playvid")
   (install-zig "scripts/prompt")
   (install-zig "scripts/randomwallpaper")
   (install-zig "scripts/vinput")
@@ -31,5 +32,4 @@
   (install-zig "scripts/wlbg")
 
   (install-roswell "scripts/launchmenu.ros")
-  (install-roswell "scripts/playvid.ros")
   null)
