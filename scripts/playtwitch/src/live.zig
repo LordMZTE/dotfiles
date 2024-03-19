@@ -36,8 +36,8 @@ pub fn tryFetchChannelsLive(s: *State) void {
 }
 
 fn fetchChannelsLive(s: *State) !void {
-    @atomicStore(bool, &s.live_status_loading, true, .Unordered);
-    defer @atomicStore(bool, &s.live_status_loading, false, .Unordered);
+    @atomicStore(bool, &s.live_status_loading, true, .unordered);
+    defer @atomicStore(bool, &s.live_status_loading, false, .unordered);
     log.info("initiaizing cURL", .{});
     const curl = c.curl_easy_init();
     if (curl == null)
@@ -96,12 +96,12 @@ fn fetchChannelsLive(s: *State) !void {
         }
 
         if (tries == 0) {
-            @atomicStore(State.Live, &chan.live, .err, .Unordered);
+            @atomicStore(State.Live, &chan.live, .err, .unordered);
         }
         if (std.mem.containsAtLeast(u8, page_buf.items, 1, "live_user")) {
-            @atomicStore(State.Live, &chan.live, .live, .Unordered);
+            @atomicStore(State.Live, &chan.live, .live, .unordered);
         } else {
-            @atomicStore(State.Live, &chan.live, .offline, .Unordered);
+            @atomicStore(State.Live, &chan.live, .offline, .unordered);
         }
     }
 }

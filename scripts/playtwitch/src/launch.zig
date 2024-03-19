@@ -120,8 +120,8 @@ fn streamlinkThread(state: *State, channel: []const u8) !void {
 
 fn chattyThread(state: *State, child: std.ChildProcess, arena: std.heap.ArenaAllocator) !void {
     // no need to get the mutex here, chatty_alive is atomic
-    @atomicStore(bool, &state.chatty_alive, true, .Unordered);
-    defer @atomicStore(bool, &state.chatty_alive, false, .Unordered);
+    @atomicStore(bool, &state.chatty_alive, true, .unordered);
+    defer @atomicStore(bool, &state.chatty_alive, false, .unordered);
 
     var ch = child;
     defer arena.deinit();

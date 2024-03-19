@@ -28,7 +28,7 @@ const Collector = col: {
         }};
     }
     break :col @Type(.{ .Struct = .{
-        .layout = .Auto,
+        .layout = .auto,
         .fields = fields,
         .decls = &.{},
         .is_tuple = false,
