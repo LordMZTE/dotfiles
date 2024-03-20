@@ -1,5 +1,10 @@
 const std = @import("std");
 
+pub const std_options = std.Options{
+    .log_level = .debug,
+    .logFn = @import("common").logFn,
+};
+
 pub fn main() !u8 {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();

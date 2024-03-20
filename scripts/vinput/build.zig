@@ -16,6 +16,7 @@ pub fn build(b: *std.Build) void {
         .optimize = mode,
     });
 
+    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
     exe.root_module.addImport("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");

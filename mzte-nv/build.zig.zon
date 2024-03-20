@@ -3,6 +3,7 @@
     .version = "0.0.0",
 
     .dependencies = .{
+        .common = .{ .path = "../lib/common-zig" },
         .znvim = .{
             .url = "git+https://git.mzte.de/LordMZTE/znvim.git#8e52c461dc071e6b88c8e77e49aa2805f225e7da",
             .hash = "122029929d792aa32a71c0b98bb67d344d971d269d6fea5b8f8693e29f0f45924951",

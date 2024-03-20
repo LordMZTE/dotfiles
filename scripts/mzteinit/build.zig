@@ -1,11 +1,12 @@
 const std = @import("std");
-const common = @import("build_common.zig");
+const common = @import("common");
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi-term");
+    const common_mod = b.dependency("common", .{}).module("common");
 
     const exe = b.addExecutable(.{
         .name = "mzteinit",
@@ -23,11 +24,12 @@ pub fn build(b: *std.Build) !void {
 
     inline for (.{ mzteinitctl, exe }) |e| {
         e.root_module.addImport("ansi-term", ansi_term_mod);
+        e.root_module.addImport("common", common_mod);
     }
 
     const cg_opt = try common.confgenGet(struct {
         gtk_theme: []u8, // TODO: this being non-const is a workaround for an std bug
-    }, "../..", b.allocator);
+    }, b.allocator);
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "gtk_theme", cg_opt.gtk_theme);

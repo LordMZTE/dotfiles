@@ -4,6 +4,7 @@ const Client = @import("sock/Client.zig");
 
 pub const std_options = std.Options{
     .log_level = .debug,
+    .logFn = @import("common").logFn,
 };
 
 pub fn main() !void {

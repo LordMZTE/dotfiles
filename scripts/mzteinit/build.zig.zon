@@ -3,6 +3,7 @@
     .version = "0.0.0",
 
     .dependencies = .{
+        .common = .{ .path = "../../lib/common-zig" },
         .ansi_term = .{
             .url = "git+https://github.com/LordMZTE/ansi-term.git#73c03175068679685535111dbea72cade075719e",
             .hash = "1220ea86ace34b38e49c1d737c5f857d88346af10695a992b38e10cb0a73b6a19ef7",

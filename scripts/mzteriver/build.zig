@@ -1,5 +1,5 @@
 const std = @import("std");
-const common = @import("build_common.zig");
+const common = @import("common");
 
 const Scanner = @import("wayland").Scanner;
 
@@ -22,7 +22,7 @@ pub fn build(b: *std.Build) !void {
             theme: [:0]const u8,
             size: u32,
         },
-    }, "../..", b.allocator);
+    }, b.allocator);
 
     const opts = b.addOptions();
     opts.addOption([:0]const u8, "catppuccin_red", cg_opt.catppuccin.red);
@@ -43,6 +43,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
 
+    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
     exe.root_module.addImport("opts", opts.createModule());
     exe.root_module.addImport("wayland", scanner.mod);
 

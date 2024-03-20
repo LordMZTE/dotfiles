@@ -11,6 +11,8 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

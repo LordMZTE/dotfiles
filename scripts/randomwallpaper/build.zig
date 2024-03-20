@@ -15,6 +15,8 @@ pub fn build(b: *std.Build) void {
     exe.linkSystemLibrary("xcb");
     exe.linkSystemLibrary("xcb-xinerama");
 
+    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

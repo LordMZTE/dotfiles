@@ -1,5 +1,7 @@
 const std = @import("std");
 const at = @import("ansi-term");
+const common = @import("common");
+
 const env = @import("env.zig");
 const command = @import("command.zig");
 const util = @import("util.zig");
@@ -11,36 +13,12 @@ const msg = @import("message.zig").msg;
 
 pub const std_options = std.Options{
     .log_level = .debug,
-    .logFn = struct {
-        pub fn logFn(
-            comptime msg_level: std.log.Level,
-            comptime scope: @TypeOf(.enum_literal),
-            comptime fmt: []const u8,
-            args: anytype,
-        ) void {
-            const logfile = log_file orelse return;
-
-            if (scope != .default) {
-                logfile.writer().print("[{s}] ", .{@tagName(scope)}) catch return;
-            }
-
-            logfile.writer().writeAll(switch (msg_level) {
-                .err => "E: ",
-                .warn => "W: ",
-                .info => "I: ",
-                .debug => "D: ",
-            }) catch return;
-
-            logfile.writer().print(fmt ++ "\n", args) catch return;
-        }
-    }.logFn,
+    .logFn = common.logFn,
 };
 
-var log_file: ?std.fs.File = null;
-
 pub fn main() void {
-    log_file = createLogFile() catch null;
-    defer if (log_file) |lf| lf.close();
+    common.log_file = createLogFile() catch null;
+    defer if (common.log_file) |lf| lf.close();
 
     tryMain() catch |e| {
         std.log.err("FATAL ERROR: {}", .{e});

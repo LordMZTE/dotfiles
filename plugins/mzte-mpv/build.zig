@@ -7,11 +7,11 @@ pub fn build(b: *std.Build) void {
     const lib = b.addSharedLibrary(.{
         .name = "mzte-mpv",
         .root_source_file = .{ .path = "src/main.zig" },
+        .link_libc = true,
         .target = target,
         .optimize = optimize,
     });
-
-    lib.linkLibC();
+    lib.root_module.addImport("common", b.dependency("common", .{}).module("common"));
 
     const install_step = b.addInstallArtifact(lib, .{
         // this is not a standard MPV installation path, but instead one that makes sense.

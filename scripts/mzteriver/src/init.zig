@@ -1,7 +1,7 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const log = std.log.scoped(.mzteriver);
+const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
@@ -198,7 +198,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         defer alloc.free(cgfs_eval_path);
 
         const evalf = std.fs.cwd().openFile(cgfs_eval_path, .{ .mode = .write_only }) catch {
-            std.log.warn("unable to open confgenfs eval file", .{});
+            log.warn("unable to open confgenfs eval file", .{});
             break :confgenfs;
         };
         defer evalf.close();
@@ -209,7 +209,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     }
 
     if (initial) {
-        std.log.info("spawning processes", .{});
+        log.info("spawning processes", .{});
 
         var child_arena = std.heap.ArenaAllocator.init(alloc);
         defer child_arena.deinit();

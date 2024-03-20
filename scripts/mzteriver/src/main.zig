@@ -1,8 +1,6 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const log = std.log.scoped(.mzteriver);
-
 const init = @import("init.zig").init;
 
 pub const std_options = std.Options{
@@ -10,7 +8,10 @@ pub const std_options = std.Options{
         .Debug => .debug,
         else => .info,
     },
+    .logFn = @import("common").logFn,
 };
+
+pub const mztecommon_log_pfx = "mzteriver";
 
 pub fn main() !void {
     var dbg_gpa = if (@import("builtin").mode == .Debug) std.heap.GeneralPurposeAllocator(.{}){} else {};
@@ -22,15 +23,15 @@ pub fn main() !void {
     if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "init") or
         (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "init") == .eq))
     {
-        log.info("running in init mode", .{});
+        std.log.info("running in init mode", .{});
         try init(alloc, true);
     } else if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "reinit") or
         (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "reinit") == .eq))
     {
-        log.info("running in reinit mode", .{});
+        std.log.info("running in reinit mode", .{});
         try init(alloc, false);
     } else {
-        log.info("running in launch mode", .{});
+        std.log.info("running in launch mode", .{});
 
         const logfd = logf: {
             const logf_path = try std.fmt.allocPrintZ(
@@ -40,7 +41,7 @@ pub fn main() !void {
             );
             defer alloc.free(logf_path);
 
-            log.info("river log file: {s}", .{logf_path});
+            std.log.info("river log file: {s}", .{logf_path});
 
             break :logf try std.os.openatZ(
                 std.os.AT.FDCWD,

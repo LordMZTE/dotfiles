@@ -35,7 +35,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 errdefer file.close();
                 std.log.info("initializing subtitle transcoder: {s}", .{fname});
 
-                const pipe = try std.os.pipe2(0);
+                const pipe = try std.os.pipe2(.{});
 
                 // This needs to be done here instead of the separate thread. MPV will instantly
                 // give up if there's nothing to be read from the pipe when the command is called.

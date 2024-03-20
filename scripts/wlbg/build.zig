@@ -16,6 +16,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
     exe.root_module.addImport("xev", b.dependency("xev", .{
         .target = target,
         .optimize = optimize,

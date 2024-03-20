@@ -1,5 +1,5 @@
 const std = @import("std");
-const common = @import("build_common.zig");
+const common = @import("common");
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
@@ -21,7 +21,7 @@ pub fn build(b: *std.Build) !void {
 
     const cg_opt = try common.confgenGet(struct {
         term_font: []u8, // TODO: this being non-const is a workaround for an std bug
-    }, "..", b.allocator);
+    }, b.allocator);
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "font", cg_opt.term_font);

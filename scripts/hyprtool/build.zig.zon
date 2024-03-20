@@ -1,0 +1,8 @@
+.{
+    .name = "hyprtool",
+    .version = "0.0.0",
+    .paths = .{""},
+    .dependencies = .{
+        .common = .{ .path = "../../lib/common-zig" },
+    },
+}

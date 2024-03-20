@@ -18,6 +18,7 @@ const zxdg = wayland.client.zxdg;
 
 pub const std_options = std.Options{
     .log_level = .debug,
+    .logFn = @import("common").logFn,
 };
 
 pub fn main() !void {

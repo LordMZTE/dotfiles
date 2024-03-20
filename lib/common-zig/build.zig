@@ -1,15 +1,19 @@
-//! Shared code for script build scripts
 const std = @import("std");
 
 pub const confgen_json_opt = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
+pub fn build(b: *std.Build) void {
+    _ = b.addModule("common", .{
+        .root_source_file = .{ .path = "src/main.zig" },
+    });
+}
+
+// TODO: make confgen generate zon and delete
 /// Retrieve some confgen options given a relative path to the dotfile root and a struct type
 /// with a field for each option.
-pub fn confgenGet(comptime T: type, root_path: []const u8, alloc: std.mem.Allocator) !T {
-    const optsjson = try std.fs.path.join(alloc, &.{ root_path, "cgout", "opts.json" });
-    defer alloc.free(optsjson);
-
-    var file = try std.fs.cwd().openFile(optsjson, .{});
+pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
+    const optjson_path = comptime std.fs.path.dirname(@src().file).? ++ "/../../cgout/opts.json";
+    var file = try std.fs.cwd().openFile(optjson_path, .{});
     defer file.close();
     var buf_reader = std.io.bufferedReader(file.reader());
 

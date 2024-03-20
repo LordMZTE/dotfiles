@@ -3,6 +3,7 @@ const info = @import("info.zig");
 
 pub const std_options = std.Options{
     .log_level = .debug,
+    .logFn = @import("common").logFn,
 };
 
 const browsers = &[_][]const u8{
