@@ -23,7 +23,6 @@
   (install-zig "scripts/mzteinit")
   (install-zig "scripts/mzteriver")
   (install-zig "scripts/openbrowser")
-  (install-zig "scripts/playtwitch")
   (install-zig "scripts/playvid")
   (install-zig "scripts/prompt")
   (install-zig "scripts/randomwallpaper")
