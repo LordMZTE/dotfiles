@@ -5,7 +5,7 @@ const log = std.log.scoped(.mzteriver);
 
 const Connection = @import("Connection.zig");
 
-pub fn init(alloc: std.mem.Allocator) !void {
+pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     const con = try Connection.init();
     defer con.deinit();
 
@@ -145,8 +145,8 @@ pub fn init(alloc: std.mem.Allocator) !void {
 
     try con.runCommand(&.{ "set-repeat", "50", "300" });
 
-    try con.runCommand(&.{ "border-color-focused", "0x880000" });
-    try con.runCommand(&.{ "border-color-unfocused", "0x660000" });
+    try con.runCommand(&.{ "border-color-focused", "0x" ++ opts.catppuccin_red });
+    try con.runCommand(&.{ "border-color-unfocused", "0x" ++ opts.catppuccin_sky });
 
     try con.runCommand(&.{ "hide-cursor", "when-typing", "enabled" });
 
@@ -170,7 +170,10 @@ pub fn init(alloc: std.mem.Allocator) !void {
     );
     defer alloc.free(init_path);
 
-    var init_child = std.process.Child.init(&.{init_path}, alloc);
+    var init_child = std.process.Child.init(
+        &.{ init_path, if (initial) "init" else "reinit" },
+        alloc,
+    );
     const term = init_child.spawnAndWait() catch |e| switch (e) {
         error.FileNotFound => b: {
             log.info("no river_init", .{});
@@ -184,7 +187,7 @@ pub fn init(alloc: std.mem.Allocator) !void {
         return error.InitBorked;
     }
 
-    log.info("configuration finished, spawning processes", .{});
+    log.info("configuration finished, initial: {}", .{initial});
 
     // tell confgenfs we're now using river
     confgenfs: {
@@ -205,21 +208,25 @@ pub fn init(alloc: std.mem.Allocator) !void {
         );
     }
 
-    var child_arena = std.heap.ArenaAllocator.init(alloc);
-    defer child_arena.deinit();
+    if (initial) {
+        std.log.info("spawning processes", .{});
 
-    // spawn background processes
-    inline for (.{
-        .{"wlbg"},
-        .{"waybar"},
-        .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
-        .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
-        .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" },
-    }) |argv| {
-        // TODO: wonk
-        // We use an arena here to prevent leaks because process.Child apparently doesn't support
-        // detaching.
-        var child = std.process.Child.init(&argv, child_arena.allocator());
-        try child.spawn();
+        var child_arena = std.heap.ArenaAllocator.init(alloc);
+        defer child_arena.deinit();
+
+        // spawn background processes
+        inline for (.{
+            .{"wlbg"},
+            .{"waybar"},
+            .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
+            .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
+            .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" },
+        }) |argv| {
+            // TODO: wonk
+            // We use an arena here to prevent leaks because process.Child apparently doesn't support
+            // detaching.
+            var child = std.process.Child.init(&argv, child_arena.allocator());
+            try child.spawn();
+        }
     }
 }

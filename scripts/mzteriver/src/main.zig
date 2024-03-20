@@ -3,6 +3,8 @@ const opts = @import("opts");
 
 const log = std.log.scoped(.mzteriver);
 
+const init = @import("init.zig").init;
+
 pub const std_options = std.Options{
     .log_level = switch (@import("builtin").mode) {
         .Debug => .debug,
@@ -21,7 +23,12 @@ pub fn main() !void {
         (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "init") == .eq))
     {
         log.info("running in init mode", .{});
-        try @import("init.zig").init(alloc);
+        try init(alloc, true);
+    } else if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "reinit") or
+        (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "reinit") == .eq))
+    {
+        log.info("running in reinit mode", .{});
+        try init(alloc, false);
     } else {
         log.info("running in launch mode", .{});
 
