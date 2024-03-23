@@ -48,6 +48,8 @@ pub fn build(b: *std.Build) !void {
     compiler.linkLibC();
     compiler.linkSystemLibrary("luajit");
 
+    compiler.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+
     compiler.root_module.unwind_tables = true;
 
     b.installArtifact(compiler);

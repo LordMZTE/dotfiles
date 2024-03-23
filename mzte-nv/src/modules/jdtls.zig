@@ -74,7 +74,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
 /// https://github.com/dgileadi/vscode-java-decompiler/tree/master/server
 // TODO: add command to download these maybe?
 fn lGetBundleInfo(l: *c.lua_State) !c_int {
-    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
 
     const bundle_path = try std.fs.path.join(
         std.heap.c_allocator,
@@ -137,10 +137,10 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
 }
 
 fn lGetDirs(l: *c.lua_State) !c_int {
-    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
 
     var cwd_buf: [256]u8 = undefined;
-    const cwd_basename = std.fs.path.basename(try std.os.getcwd(&cwd_buf));
+    const cwd_basename = std.fs.path.basename(try std.posix.getcwd(&cwd_buf));
 
     const config_path = try std.fs.path.joinZ(
         std.heap.c_allocator,

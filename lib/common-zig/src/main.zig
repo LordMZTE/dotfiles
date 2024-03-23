@@ -16,7 +16,7 @@ pub fn logFn(
         null;
 
     const color = log_file == null and stderr_isatty orelse blk: {
-        const isatty = std.os.isatty(std.os.STDERR_FILENO);
+        const isatty = std.posix.isatty(std.posix.STDERR_FILENO);
         stderr_isatty = isatty;
         break :blk isatty;
     };

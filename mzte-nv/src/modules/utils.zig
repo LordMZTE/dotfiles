@@ -14,7 +14,7 @@ pub fn luaPush(l: *c.lua_State) void {
 /// This is basically a reimplementation of `which`.
 fn lFindInPath(l: *c.lua_State) !c_int {
     const bin = ffi.luaCheckstring(l, 1);
-    const path = std.os.getenv("PATH") orelse return error.PathNotSet;
+    const path = std.posix.getenv("PATH") orelse return error.PathNotSet;
 
     var splits = std.mem.split(u8, path, ":");
     while (splits.next()) |p| {

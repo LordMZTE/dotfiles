@@ -65,6 +65,7 @@
   (use/mztegit :promise-async)
   (use/pconf :nvim-ufo :ufo {:after :nvim-lspconfig})
   (use/pconf :aerial.nvim :aerial)
+  (use/mztegit :nvim-nio) ;; dep of dap-ui
   (use/mztegit :nvim-dap-ui)
   (use/pconf :nvim-dap :dap)
   (use/pconf :harpoon :harpoon)
