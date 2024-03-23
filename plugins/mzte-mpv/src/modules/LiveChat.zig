@@ -7,6 +7,8 @@ const c = ffi.c;
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
 
+const log = std.log.scoped(.@"live-chat");
+
 // Zig segfaults when this is a ZST
 padding: u1 = 0,
 
@@ -33,9 +35,9 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                     else => return e,
                 };
                 errdefer file.close();
-                std.log.info("initializing subtitle transcoder: {s}", .{fname});
+                log.info("initializing subtitle transcoder: {s}", .{fname});
 
-                const pipe = try std.os.pipe2(.{});
+                const pipe = try std.posix.pipe2(.{});
 
                 // This needs to be done here instead of the separate thread. MPV will instantly
                 // give up if there's nothing to be read from the pipe when the command is called.
@@ -85,7 +87,7 @@ fn transcoderThread(jsonf: std.fs.File, pipefd: std.c.fd_t) !void {
             else => return e,
         };
         processLine(line_buf.items, pipe.writer()) catch |e| {
-            std.log.warn("failed to parse chat entry: {}", .{e});
+            log.warn("failed to parse chat entry: {}", .{e});
         };
     }
 

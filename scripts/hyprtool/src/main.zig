@@ -9,7 +9,7 @@ pub fn main() !void {
     if (std.os.argv.len != 2 or !std.mem.eql(u8, std.mem.span(std.os.argv[1]), "fullerscreen"))
         return error.InvalidArgs;
 
-    const inst_sig = std.os.getenv("HYPRLAND_INSTANCE_SIGNATURE") orelse
+    const inst_sig = std.posix.getenv("HYPRLAND_INSTANCE_SIGNATURE") orelse
         return error.MissingInstanceSignature;
 
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};

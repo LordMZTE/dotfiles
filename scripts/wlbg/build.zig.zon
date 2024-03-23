@@ -5,12 +5,12 @@
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
         .wayland = .{
-            .url = "git+https://git.mzte.de/LordMZTE/zig-wayland#4de9f2d6d5fddae1fbb29e21fd1dae69e646ab7d",
-            .hash = "1220d6448c277e5c41348aa95ce2ba2fc92a92cb7a9e9783edf0f816cd0260122d31",
+            .url = "git+https://git.mzte.de/LordMZTE/zig-wayland#4f4ade382d582845b092de450527e3e7e0133f07",
+            .hash = "122087ee3bdff43049bf1d58513622c5f3c1430308665af0ee8961a22b60c4c10c1a",
         },
         .xev = .{
-            .url = "git+https://github.com/mitchellh/libxev#418cac65473668b02cc5a85194042bdaf04acd00",
-            .hash = "12203116ff408eb48f81c947dfeb06f7feebf6a9efa962a560ac69463098b2c04a96",
+            .url = "git+https://github.com/mitchellh/libxev#0f73adfda1cff9c740160717b5431ebada6b8755",
+            .hash = "12203dcbe098ee49ea242432cd198b1ca557626988f056bea86630dcfe8660244407",
         },
     },
 }

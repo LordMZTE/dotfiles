@@ -50,9 +50,9 @@ const PopupWindow = struct {
         const stride = width * 4;
         const size = stride * height; // 1x1x4 bytes
 
-        const memfd = try std.os.memfd_create("surface_shm", 0);
-        defer std.os.close(memfd);
-        try std.os.ftruncate(memfd, size);
+        const memfd = try std.posix.memfd_create("surface_shm", 0);
+        defer std.posix.close(memfd);
+        try std.posix.ftruncate(memfd, size);
 
         const shm_pool = try cc.shm.createPool(memfd, size);
         errdefer shm_pool.destroy();
@@ -123,9 +123,9 @@ pub fn deinit(self: *ClipboardConnection) void {
     self.* = undefined;
 }
 
-pub fn getContent(self: *ClipboardConnection, out_fd: std.os.fd_t) !void {
+pub fn getContent(self: *ClipboardConnection, out_fd: std.posix.fd_t) !void {
     const DataDeviceListener = struct {
-        out_fd: std.os.fd_t,
+        out_fd: std.posix.fd_t,
         display: *wl.Display,
 
         fn onEvent(_: *wl.DataDevice, ev: wl.DataDevice.Event, ddl: *@This()) void {

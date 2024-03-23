@@ -10,7 +10,7 @@ pub fn main() !u8 {
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
-    var file_buf: [std.os.PATH_MAX]u8 = undefined;
+    var file_buf: [std.posix.PATH_MAX]u8 = undefined;
     const file = try findVideoFile(alloc, &file_buf);
 
     try std.io.getStdOut().writer().print("playing: `{s}`\n", .{file});
@@ -68,11 +68,11 @@ fn findVideoFile(alloc: std.mem.Allocator, out_buf: []u8) ![]const u8 {
 fn promtForDeletion(file: []const u8) !bool {
     try std.io.getStdOut().writer().print("delete file `{s}`? [Y/N] ", .{file});
 
-    const old_termios = try std.os.tcgetattr(std.os.STDIN_FILENO);
+    const old_termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     var new_termios = old_termios;
     new_termios.lflag.ICANON = false; // No line buffering
-    try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, new_termios);
-    defer std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, old_termios) catch {};
+    try std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, new_termios);
+    defer std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, old_termios) catch {};
 
     const answer = try std.io.getStdIn().reader().readByte();
     const ret = switch (answer) {

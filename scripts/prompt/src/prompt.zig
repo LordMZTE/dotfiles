@@ -149,7 +149,7 @@ fn Renderer(comptime Writer: type) type {
 
         fn renderCwd(self: *Self) !void {
             var cwd_buf: [512]u8 = undefined;
-            const cwd = try std.os.getcwd(&cwd_buf);
+            const cwd = try std.posix.getcwd(&cwd_buf);
 
             const home_path = (try known_folders.getPath(std.heap.c_allocator, .home));
 

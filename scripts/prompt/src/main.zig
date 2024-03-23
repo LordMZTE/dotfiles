@@ -31,23 +31,23 @@ pub fn main() !void {
         const options = prompt.Options{
             .status = try std.fmt.parseInt(
                 i16,
-                std.os.getenv("MZPROMPT_STATUS") orelse
+                std.posix.getenv("MZPROMPT_STATUS") orelse
                     return error.MissingEnv,
                 10,
             ),
             .mode = FishMode.parse(
-                std.os.getenv("MZPROMPT_FISH_MODE") orelse
+                std.posix.getenv("MZPROMPT_FISH_MODE") orelse
                     return error.MissingEnv,
             ),
             .duration = try std.fmt.parseInt(
                 u32,
-                std.os.getenv("MZPROMPT_DURATION") orelse
+                std.posix.getenv("MZPROMPT_DURATION") orelse
                     return error.MissingEnv,
                 10,
             ),
             .jobs = try std.fmt.parseInt(
                 u32,
-                std.os.getenv("MZPROMPT_JOBS") orelse
+                std.posix.getenv("MZPROMPT_JOBS") orelse
                     return error.MissingEnv,
                 10,
             ),

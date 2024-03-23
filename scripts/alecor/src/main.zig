@@ -36,15 +36,15 @@ pub fn main() !void {
         var cache_file = try std.fs.cwd().openFile(cache_path, .{});
         defer cache_file.close();
 
-        const cache_content = try std.os.mmap(
+        const cache_content = try std.posix.mmap(
             null,
             (try cache_file.stat()).size,
-            std.os.PROT.READ,
+            std.posix.PROT.READ,
             .{ .TYPE = .PRIVATE },
             cache_file.handle,
             0,
         );
-        defer std.os.munmap(cache_content);
+        defer std.posix.munmap(cache_content);
 
         var command_set = std.StringHashMap(void).init(alloc);
         defer command_set.deinit();

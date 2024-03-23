@@ -163,7 +163,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
     try con.runCommand(&.{ "default-layout", "rivertile" });
 
-    const home = std.os.getenv("HOME") orelse return error.HomeNotSet;
+    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
     const init_path = try std.fs.path.join(
         alloc,
         &.{ home, ".config", "mzte_localconf", "river_init" },

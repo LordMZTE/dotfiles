@@ -9,8 +9,8 @@ pub const std_options = std.Options{
 
 pub fn main() !u8 {
     const alloc = std.heap.c_allocator;
-    const home_s = std.os.getenv("HOME") orelse return error.HomeNotSet;
-    const runtime_dir = std.os.getenv("XDG_RUNTIME_DIR") orelse return error.MissingRuntimeDir;
+    const home_s = std.posix.getenv("HOME") orelse return error.HomeNotSet;
+    const runtime_dir = std.posix.getenv("XDG_RUNTIME_DIR") orelse return error.MissingRuntimeDir;
 
     var walker = Walker.init(alloc);
     defer walker.deinit();

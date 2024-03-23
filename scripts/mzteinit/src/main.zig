@@ -44,7 +44,7 @@ pub fn main() void {
         }
         std.debug.print("Encountered fatal error (check log), starting emergency shell!\n", .{});
 
-        @panic(@errorName(std.os.execveZ(
+        @panic(@errorName(std.posix.execveZ(
             "/bin/sh",
             &[_:null]?[*:0]const u8{"/bin/sh"},
             &[_:null]?[*:0]const u8{},
@@ -187,7 +187,7 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
     var style: ?at.style.Style = null;
 
     try @import("figlet.zig").writeFiglet(w);
-    const uname = std.os.uname();
+    const uname = std.posix.uname();
     try updateStyle(w, .{ .foreground = .Yellow }, &style);
     try w.print(
         "\n {s} {s} {s}\n\n",
@@ -212,11 +212,11 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
 
     try buf_writer.flush();
 
-    const old_termios = try std.os.tcgetattr(std.os.STDIN_FILENO);
+    const old_termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     var new_termios = old_termios;
     new_termios.lflag.ICANON = false; // No line buffering
     new_termios.lflag.ECHO = false; // No echoing stuff
-    try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, new_termios);
+    try std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, new_termios);
 
     var cmd: ?command.Command = null;
     var c: [1]u8 = undefined;
@@ -233,7 +233,7 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
             try buf_writer.flush();
         }
     }
-    try std.os.tcsetattr(std.os.STDIN_FILENO, .NOW, old_termios);
+    try std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, old_termios);
 
     return cmd.?;
 }

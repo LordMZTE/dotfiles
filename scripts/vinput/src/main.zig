@@ -83,15 +83,15 @@ pub fn main() !void {
 
         std.log.info("mmapping tempfile", .{});
 
-        const fcontent = try std.os.mmap(
+        const fcontent = try std.posix.mmap(
             null,
             stat.size,
-            std.os.PROT.READ,
+            std.posix.PROT.READ,
             .{ .TYPE = .PRIVATE },
             tempfile.handle,
             0,
         );
-        defer std.os.munmap(fcontent);
+        defer std.posix.munmap(fcontent);
 
         try cp.serveContent(std.mem.trim(u8, fcontent, " \n\r"));
     }

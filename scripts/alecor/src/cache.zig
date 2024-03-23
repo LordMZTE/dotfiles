@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn commandsCachePath(alloc: std.mem.Allocator) ![]const u8 {
     return try std.fs.path.join(alloc, &.{
-        std.os.getenv("HOME") orelse return error.HomeNotSet,
+        std.posix.getenv("HOME") orelse return error.HomeNotSet,
         ".cache",
         "alecor",
         "commands",
@@ -20,26 +20,26 @@ pub fn generate(alloc: std.mem.Allocator) !void {
     var cache_file = try std.fs.cwd().createFile(cache_path, .{});
     defer cache_file.close();
 
-    const pipefds = try std.os.pipe();
-    defer std.os.close(pipefds[0]);
+    const pipefds = try std.posix.pipe();
+    defer std.posix.close(pipefds[0]);
 
     var stdout_buf_reader = std.io.bufferedReader((std.fs.File{ .handle = pipefds[0] }).reader());
 
     // ChildProcess being useless again...
-    const pid = try std.os.fork();
+    const pid = try std.posix.fork();
     if (pid == 0) {
-        errdefer std.os.exit(1);
-        try std.os.dup2(pipefds[1], 1);
-        std.os.close(pipefds[0]);
-        std.os.close(pipefds[1]);
-        return std.os.execvpeZ(
+        errdefer std.posix.exit(1);
+        try std.posix.dup2(pipefds[1], 1);
+        std.posix.close(pipefds[0]);
+        std.posix.close(pipefds[1]);
+        return std.posix.execvpeZ(
             "fish",
             &[_:null]?[*:0]const u8{ "fish", "-c", "complete -C ''" },
             @ptrCast(std.os.environ.ptr),
         );
     }
 
-    std.os.close(pipefds[1]);
+    std.posix.close(pipefds[1]);
 
     var cmd_buf: [1024]u8 = undefined;
     var fbs = std.io.fixedBufferStream(&cmd_buf);
@@ -56,5 +56,5 @@ pub fn generate(alloc: std.mem.Allocator) !void {
         try cache_file.writer().writeByte('\n');
     }
 
-    _ = std.os.waitpid(pid, 0);
+    _ = std.posix.waitpid(pid, 0);
 }

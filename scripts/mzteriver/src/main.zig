@@ -43,8 +43,8 @@ pub fn main() !void {
 
             std.log.info("river log file: {s}", .{logf_path});
 
-            break :logf try std.os.openatZ(
-                std.os.AT.FDCWD,
+            break :logf try std.posix.openatZ(
+                std.posix.AT.FDCWD,
                 logf_path.ptr,
                 // no CLOEXEC
                 .{
@@ -56,13 +56,13 @@ pub fn main() !void {
             );
         };
         {
-            errdefer std.os.close(logfd);
+            errdefer std.posix.close(logfd);
 
             // redirect river's STDERR and STDOUT to log file
-            try std.os.dup2(logfd, std.os.STDOUT_FILENO);
-            try std.os.dup2(logfd, std.os.STDERR_FILENO);
+            try std.posix.dup2(logfd, std.posix.STDOUT_FILENO);
+            try std.posix.dup2(logfd, std.posix.STDERR_FILENO);
         }
-        std.os.close(logfd);
+        std.posix.close(logfd);
 
         var env = std.BoundedArray(?[*:0]const u8, 0xff).init(0) catch unreachable;
         const envp: [*:null]?[*:0]const u8 = env: {
@@ -81,6 +81,6 @@ pub fn main() !void {
             break :env @ptrCast(env.slice().ptr);
         };
 
-        return std.os.execvpeZ("river", &[_:null]?[*:0]const u8{"river"}, envp);
+        return std.posix.execvpeZ("river", &[_:null]?[*:0]const u8{"river"}, envp);
     }
 }

@@ -170,7 +170,7 @@ fn correctArgForReq(arena: *std.heap.ArenaAllocator, req: ArgRequirement, arg: *
 
             while (path_spliter.next()) |split| {
                 if (std.mem.eql(u8, split, "~")) {
-                    try path_splits.append(std.os.getenv("HOME") orelse return error.HomeNotSet);
+                    try path_splits.append(std.posix.getenv("HOME") orelse return error.HomeNotSet);
                 } else {
                     try path_splits.append(split);
                 }

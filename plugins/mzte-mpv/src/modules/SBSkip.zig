@@ -4,6 +4,8 @@ const c = ffi.c;
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
 
+const log = std.log.scoped(.@"sb-skip");
+
 const ChapterSet = std.AutoHashMap(isize, void);
 
 skipped_chapters: ChapterSet,
@@ -84,7 +86,7 @@ fn onChapterChange(
             @constCast(&end_time),
         ));
         try self.skipped_chapters.put(chapter_id, {});
-        try util.msg(mpv, "skipped: {s}", .{reason});
+        try util.msg(mpv, .@"sb-skip", "skipped: {s}", .{reason});
     }
 }
 

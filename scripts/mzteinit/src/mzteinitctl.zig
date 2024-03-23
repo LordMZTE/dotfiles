@@ -19,7 +19,7 @@ pub fn main() !void {
 
     if (std.mem.eql(u8, verb, "ping")) {
         const client = try Client.connect(
-            std.os.getenv("MZTEINIT_SOCKET") orelse return error.SocketPathUnknown,
+            std.posix.getenv("MZTEINIT_SOCKET") orelse return error.SocketPathUnknown,
         );
         defer client.deinit();
 
@@ -28,7 +28,7 @@ pub fn main() !void {
         if (std.os.argv.len < 3)
             return error.InvalidArgs;
 
-        const client = if (std.os.getenv("MZTEINIT_SOCKET")) |sockpath|
+        const client = if (std.posix.getenv("MZTEINIT_SOCKET")) |sockpath|
             try Client.connect(sockpath)
         else nosock: {
             std.log.warn("MZTEINIT_SOCKET not set", .{});
@@ -44,7 +44,7 @@ pub fn main() !void {
 
         const val = mzteinit_val orelse getenv: {
             std.log.warn("Variable not known to MZTEINIT, falling back to current environment.", .{});
-            break :getenv std.os.getenv(std.mem.span(std.os.argv[2]));
+            break :getenv std.posix.getenv(std.mem.span(std.os.argv[2]));
         };
 
         if (val) |v| {
