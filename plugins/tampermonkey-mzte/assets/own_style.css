@@ -1,0 +1,15 @@
+.tampermonkey_mzte_notif {
+    position: fixed;
+    z-index: 100000;
+    right: 0;
+    bottom: 0;
+    font-family: "Iosevka Nerd Font", monospace;
+    color: #cdd6f4;
+    font-size: 20px;
+    background-color: #1e1e2e;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #f38ba8;
+}

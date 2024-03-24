@@ -1,8 +1,0 @@
-// ==UserScript==
-// @name         MZTE CSS
-// @version      0.1.0
-// @description  Injects some CSS into every page
-// @author       LordMZTE
-// @include      *
-// @run-at       document-start
-// ==/UserScript==
