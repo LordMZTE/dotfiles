@@ -1,13 +1,18 @@
+import actions.ClearCookiesAction;
+import actions.ToggleStyleAction;
+import actions.InfoAction;
 import js.Browser;
+
+using Lambda;
 
 function main() {
     var siteStyles = Macro.siteStyles();
 
     var ownStyle = Browser.document.createStyleElement();
-    ownStyle.innerHTML = Macro.fileContent("assets/own_style.css");
+    ownStyle.innerHTML = Macro.fileContent("own_style.css");
 
     var style = Browser.document.createStyleElement();
-    style.innerHTML = Macro.fileContent("assets/style.css");
+    style.innerHTML = Macro.fileContent("style.css");
 
     Browser.document.addEventListener("DOMContentLoaded", () -> {
         Browser.document.body.appendChild(ownStyle);
@@ -25,7 +30,9 @@ function main() {
         }
     });
 
-    new actions.InfoAction().register();
-    new actions.ToggleStyleAction(style).register();
-    new actions.ClearCookiesAction().register();
+    [
+        new InfoAction(),
+        new ToggleStyleAction(style),
+        new ClearCookiesAction(),
+    ].iter(a -> a.register());
 }

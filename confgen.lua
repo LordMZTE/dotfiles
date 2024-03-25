@@ -1,3 +1,5 @@
+cg.addPath "cgassets"
+
 cg.addPath ".config"
 cg.addPath ".local"
 cg.addPath ".ssh"

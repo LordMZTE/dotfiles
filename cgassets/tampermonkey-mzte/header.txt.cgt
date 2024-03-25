@@ -1,0 +1,22 @@
+<! local fields = {
+  name = "MZTE",
+  version = "0.1.0",
+  description = "Random Stuff",
+  author = "LordMZTE",
+  include = "*",
+  ["run-at"] = "document-start",
+  grant = {
+    "GM_registerMenuCommand",
+    "GM_getValue",
+    "GM_setValue",
+  },
+} !>
+
+<! -- IMPLEMENTATION !>
+// ==UserScript==
+<! for k, v in pairs(fields) do
+local arr = v[1] and v or {v}
+for _, val in ipairs(arr) do !>
+// @<% k %> <% val %>
+<! end end !>
+// ==/UserScript==

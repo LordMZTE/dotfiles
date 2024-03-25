@@ -1,14 +1,4 @@
-/*
-* Based on catppuccin mocha with minor changes.
-* Use BeautifulDiscord to inject this.
-*/
-
 /* === MZTE === */
-:root * {
-    font-family: "<% opt.font %>" !important;
-    border-radius: 0 !important;
-}
-
 /* Hide the stupid rounding masks on server icons */
 :root foreignObject {
     mask: none !important;

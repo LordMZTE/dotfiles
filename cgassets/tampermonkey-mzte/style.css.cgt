@@ -1,0 +1,4 @@
+:root * {
+  border-radius: 0 !important;
+  font-family: "<% opt.font %>", monospace !important;
+}
