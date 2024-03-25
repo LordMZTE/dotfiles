@@ -2,4 +2,5 @@
 -main Main
 --macro Macro.init()
 
+-D js-es=6
 -js script.js

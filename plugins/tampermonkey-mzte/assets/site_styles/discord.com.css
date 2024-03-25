@@ -1,0 +1,4 @@
+/* Hide the stupid rounding masks on server icons */
+:root foreignObject {
+    mask: none !important;
+}
