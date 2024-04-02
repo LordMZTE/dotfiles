@@ -4,4 +4,4 @@
 
 (define (run)
   (install-zig "plugins/mzte-mpv")
-  (build-haxe "plugins/tampermonkey-mzte-css"))
+  (build-haxe "plugins/tampermonkey-mzte"))

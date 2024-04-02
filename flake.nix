@@ -38,6 +38,8 @@
           roswell
           wayland
           wayland-protocols
+          haxe
+          mpv-unwrapped
         ] ++
         # shorthands for setup.rkt
         builtins.map
