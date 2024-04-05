@@ -12,7 +12,7 @@
 (define verb
   (command-line #:program "setup.rkt"
                 #:usage-help "Sets up my dotfiles. Available verbs:"
-                "install-scripts, install-plugins, install-lsps-paru, setup-nvim-config, run-confgen"
+                "install-scripts, install-plugins, setup-nix, setup-nvim-config, run-confgen"
                 #:once-each
                 [("-o" "--bin-output") o "Output directory for executables" (output-bin-path o)]
                 #:args (verb)
@@ -40,9 +40,6 @@
    (run)]
   ['install-plugins
    (local-require "setup/commands/install-plugins.rkt")
-   (run)]
-  ['install-lsps-paru
-   (local-require "setup/commands/install-lsps-paru.rkt")
    (run)]
   ['setup-nvim-config
    (local-require "setup/commands/setup-nvim-config.rkt")

@@ -1,4 +1,6 @@
 const std = @import("std");
+const opts = @import("opts");
+
 const ffi = @import("ffi.zig");
 const c = ffi.c;
 const ser = @import("ser.zig");
@@ -42,7 +44,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     // fennel is made to run on lua 5.4, but ends up working with LJ too
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "package");
     c.lua_getfield(l, -1, "path");
-    ffi.luaPushString(l, ";" ++ "/usr/share/lua/5.4/fennel.lua");
+    ffi.luaPushString(l, ";" ++ (opts.@"fennel.lua" orelse "/usr/share/lua/5.4/fennel.lua"));
     c.lua_concat(l, 2);
     c.lua_setfield(l, -2, "path");
     c.lua_pop(l, 1);

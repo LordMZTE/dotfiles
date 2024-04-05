@@ -1,6 +1,8 @@
 const std = @import("std");
 const nvim = @import("nvim");
 const znvim = @import("znvim");
+const opts = @import("opts");
+
 const ffi = @import("ffi.zig");
 const ser = @import("ser.zig");
 const c = ffi.c;
@@ -99,8 +101,16 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
 }
 
 fn lOnInit(l: *c.lua_State) !c_int {
-    _ = l;
     try @import("options.zig").initOptions();
+
+    c.lua_getfield(l, c.LUA_REGISTRYINDEX, reg_key);
+    defer c.lua_pop(l, 1);
+    inline for (.{ "tree_sitter_parsers", "nvim_tools" }) |fname| {
+        if (@field(opts, fname)) |x| {
+            ffi.luaPushString(l, x);
+            c.lua_setfield(l, -2, fname);
+        }
+    }
 
     std.log.info(
         "MZTE-NV v{s} Initialized on {s}",

@@ -1,4 +1,6 @@
 const std = @import("std");
+const opts = @import("opts");
+
 const ffi = @import("../ffi.zig");
 const ser = @import("../ser.zig");
 const c = ffi.c;
@@ -21,7 +23,7 @@ fn loadFennel(l: *c.lua_State) !void {
 
     std.log.debug("loading fennel", .{});
 
-    if (c.luaL_loadfile(l, "/usr/share/lua/5.4/fennel.lua") != 0) {
+    if (c.luaL_loadfile(l, opts.@"fennel.lua" orelse "/usr/share/lua/5.4/fennel.lua") != 0) {
         return error.FennelLoad;
     }
 

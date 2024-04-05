@@ -1,0 +1,7 @@
+# Alias ls to use exa
+<! local base_cmd = "exa --icons --group-directories-first --classify --octal-permissions" !>
+alias ls "<% base_cmd %>"
+alias ll "<% base_cmd %> --long"
+alias la "<% base_cmd %> --long --all"
+alias lt "<% base_cmd %> --long --tree"
+alias lta "<% base_cmd %> --long --all --tree"

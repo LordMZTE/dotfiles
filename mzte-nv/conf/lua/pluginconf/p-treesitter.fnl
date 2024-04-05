@@ -1,7 +1,13 @@
-(local (configs parsers ts-utils)
-       (values (require :nvim-treesitter.configs)
+(local (mztenv configs parsers ts-utils)
+       (values (require :mzte_nv)
+               (require :nvim-treesitter.configs)
                (require :nvim-treesitter.parsers)
                (require :nvim-treesitter.ts_utils)))
+
+;; Nix based parsers
+(let [path mztenv.reg.tree_sitter_parsers]
+  (when path
+    (vim.opt.runtimepath:append path)))
 
 (var parser-config (parsers.get_parser_configs))
 
