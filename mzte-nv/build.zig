@@ -24,6 +24,7 @@ pub fn build(b: *std.Build) !void {
         nix: struct {
             tree_sitter_parsers: ?[:0]u8 = null,
             nvim_tools: ?[:0]u8 = null,
+            jvm: ?[:0]u8 = null,
             @"fennel.lua": ?[:0]u8 = null,
         },
     }, b.allocator);
@@ -32,6 +33,7 @@ pub fn build(b: *std.Build) !void {
     opts.addOption([]const u8, "font", cg_opt.term_font);
     opts.addOption(?[:0]const u8, "tree_sitter_parsers", cg_opt.nix.tree_sitter_parsers);
     opts.addOption(?[:0]const u8, "nvim_tools", cg_opt.nix.nvim_tools);
+    opts.addOption(?[:0]const u8, "jvm", cg_opt.nix.jvm);
     opts.addOption(?[:0]const u8, "fennel.lua", cg_opt.nix.@"fennel.lua");
 
     lib.root_module.addImport("opts", opts.createModule());

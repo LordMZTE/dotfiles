@@ -1,6 +1,8 @@
 //! Module for the JDTLS java language server, including utilities
 //! for setting up nvim-jdtls
 const std = @import("std");
+const opts = @import("opts");
+
 const ser = @import("../ser.zig");
 const ffi = @import("../ffi.zig");
 const c = ffi.c;
@@ -17,7 +19,11 @@ const Runtime = struct {
     version: [:0]const u8,
     name: [:0]const u8,
 };
+
+// Name is not arbitrary and must match `enum ExecutionEnvironment`.
+// See: https://github.com/eclipse-jdtls/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
 const runtime_map = [_]Runtime{
+    .{ .version = "19", .name = "JavaSE-19" },
     .{ .version = "18", .name = "JavaSE-18" },
     .{ .version = "17", .name = "JavaSE-17" },
     .{ .version = "16", .name = "JavaSE-16" },
@@ -35,7 +41,15 @@ const runtime_map = [_]Runtime{
 };
 
 fn lFindRuntimes(l: *c.lua_State) !c_int {
-    var jvmdir = try std.fs.openDirAbsolute("/usr/lib/jvm/", .{ .iterate = true });
+    const jvmpath = opts.jvm orelse "/usr/lib/jvm";
+    var jvmdir = std.fs.openDirAbsolute(jvmpath, .{ .iterate = true }) catch |e| switch (e) {
+        error.FileNotFound => {
+            std.log.warn("JVM Path @ '{s}' does not exist! Not registering any runtimes!", .{jvmpath});
+            c.lua_newtable(l);
+            return 1;
+        },
+        else => return e,
+    };
     defer jvmdir.close();
 
     c.lua_newtable(l);
@@ -44,7 +58,8 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
     var idx: c_int = 1;
     var iter = jvmdir.iterate();
     while (try iter.next()) |jvm| {
-        if (jvm.kind != .directory or !std.mem.startsWith(u8, jvm.name, "java-"))
+        if ((jvm.kind != .directory and jvm.kind != .sym_link) or
+            !std.mem.startsWith(u8, jvm.name, "java-"))
             continue;
 
         for (runtime_map) |rt| {
@@ -55,7 +70,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
             // and a path field (path to the runtime's home)
             ser.luaPushAny(l, .{
                 .name = rt.name,
-                .path = try std.fmt.bufPrintZ(&buf, "/usr/lib/jvm/{s}/", .{jvm.name}),
+                .path = try std.fmt.bufPrintZ(&buf, jvmpath ++ "/{s}/", .{jvm.name}),
             });
 
             // append table to list

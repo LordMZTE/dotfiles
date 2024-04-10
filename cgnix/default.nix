@@ -4,7 +4,11 @@
 , ...
 }:
 {
-  imports = [ ./nvim-tools.nix ./tree-sitter-parsers.nix ];
+  imports = [
+    ./jvm.nix
+    ./nvim-tools.nix
+    ./tree-sitter-parsers.nix
+  ];
 
   options.cgnix.entries = lib.mkOption {
     default = { };
@@ -16,7 +20,7 @@
     name = "nix.lua";
     text = ''
       return {
-        ${builtins.concatStringsSep "\n" (lib.mapAttrsToList (k: v: ''["${k}"] = "${v}",'') config.cgnix.entries)}
+        ${builtins.concatStringsSep "\n  " (lib.mapAttrsToList (k: v: ''["${k}"] = "${v}",'') config.cgnix.entries)}
       }
     '';
   };

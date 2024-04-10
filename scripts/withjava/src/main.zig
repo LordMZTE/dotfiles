@@ -1,4 +1,5 @@
 const std = @import("std");
+const opts = @import("opts");
 
 pub const std_options = std.Options{
     .log_level = .debug,
@@ -21,7 +22,7 @@ pub fn main() !u8 {
     if (env.getPtr("PATH")) |path_p| {
         const newpath = try std.fmt.allocPrint(
             alloc,
-            "/usr/lib/jvm/{s}/bin:{s}",
+            (opts.jvm orelse "/usr/lib/jvm") ++ "/{s}/bin:{s}",
             .{ std.os.argv[1], path_p.* },
         );
         alloc.free(path_p.*);

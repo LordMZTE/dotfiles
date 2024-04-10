@@ -5,7 +5,9 @@ let
     # MISSING: glsl_analyzer, haxe_language_server, prosemd_lsp, racket_langserver, yamlls, zls
     # Language Servers
     (flakePkg "github:oxalica/nil")
-    (pkgs.linkFarm "clangd" [{ name = "bin/clangd"; path = "${clang-tools}/bin/clangd"; }]) # only clangd
+    (pkgs.linkFarm "clang-nvim" (map
+      (bin: { name = "bin/${bin}"; path = "${clang-tools}/bin/${bin}"; })
+      [ "clangd" "clang-format" ])) # Don't include everything from clang-tools
     elixir-ls
     jdt-language-server
     lua-language-server
