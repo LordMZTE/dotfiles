@@ -19,22 +19,24 @@ pub fn main() !u8 {
     var env = try std.process.getEnvMap(alloc);
     defer env.deinit();
 
+    const jvm_basepath = opts.jvm orelse "/usr/lib/jvm";
+
     if (env.getPtr("PATH")) |path_p| {
         const newpath = try std.fmt.allocPrint(
             alloc,
-            (opts.jvm orelse "/usr/lib/jvm") ++ "/{s}/bin:{s}",
+            jvm_basepath ++ "/{s}/bin:{s}",
             .{ std.os.argv[1], path_p.* },
         );
         alloc.free(path_p.*);
         path_p.* = newpath;
     } else {
-        const newpath = try std.fmt.allocPrint(alloc, "/usr/lib/jvm/{s}/bin", .{std.os.argv[1]});
+        const newpath = try std.fmt.allocPrint(alloc, jvm_basepath ++ "/{s}/bin", .{std.os.argv[1]});
         errdefer alloc.free(newpath);
         try env.putMove(try alloc.dupe(u8, "PATH"), newpath);
     }
 
     {
-        const java_home = try std.fmt.allocPrint(alloc, "/usr/lib/jvm/{s}", .{std.os.argv[1]});
+        const java_home = try std.fmt.allocPrint(alloc, jvm_basepath ++ "/{s}", .{std.os.argv[1]});
         errdefer alloc.free(java_home);
         try env.putMove(try alloc.dupe(u8, "JAVA_HOME"), java_home);
     }

@@ -24,7 +24,10 @@ cg.onDone(function(errors)
     end
 end)
 
-local nix = (loadfile "cgnix/nix.lua" or function() return {} end)()
+local nix = (loadfile "nix/cgnix/nix.lua" or function()
+    print "no cgnix file!"
+    return {}
+end)()
 
 cg.opt.nix = nix
 
