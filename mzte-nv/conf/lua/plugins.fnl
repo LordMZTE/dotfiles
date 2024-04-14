@@ -4,7 +4,8 @@
 
 (let [path mztenv.reg.nvim_plugins]
   (when path
-    (vim.opt.runtimepath:append (.. path "/*"))))
+    (vim.opt.runtimepath:prepend (.. path "/*"))
+    (vim.opt.runtimepath:append (.. path "/*/after"))))
 
 ;; Plugins to load before nvim finishes startup
 (local startup-plugins [])

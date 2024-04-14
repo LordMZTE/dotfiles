@@ -4,61 +4,61 @@ let
 
   plugins = {
     # LSP
-    lspconfig = plugin "nvim-lspconfig";
-    nullls = plugin "null-ls.nvim";
-    jdtls = plugin "nvim-jdtls";
+    "20-lspconfig" = plugin "nvim-lspconfig";
+    "20-nullls" = plugin "null-ls.nvim";
+    "20-jdtls" = plugin "nvim-jdtls";
 
     # CMP
-    cmp = plugin "nvim-cmp";
-    cmp-nvim-lsp = plugin "cmp-nvim-lsp";
-    cmp-buffer = plugin "cmp-buffer";
-    cmp-path = plugin "cmp-path";
-    cmp-cmdline = plugin "cmp-cmdline";
-    cmp-luasnip = plugin "cmp_luasnip";
-    friendly-snippets = plugin "friendly-snippets";
-    luasnip = plugin "LuaSnip";
-    cmp-treesitter = plugin "cmp-treesitter";
+    "45-cmp" = plugin "nvim-cmp";
+    "50-cmp-nvim-lsp" = plugin "cmp-nvim-lsp";
+    "50-cmp-buffer" = plugin "cmp-buffer";
+    "50-cmp-path" = plugin "cmp-path";
+    "50-cmp-cmdline" = plugin "cmp-cmdline";
+    "50-cmp-luasnip" = plugin "cmp_luasnip";
+    "50-friendly-snippets" = plugin "friendly-snippets";
+    "50-luasnip" = plugin "LuaSnip";
+    "50-cmp-treesitter" = plugin "cmp-treesitter";
 
     # Treesitter
-    treesitter = plugin "nvim-treesitter";
-    autopairs = plugin "nvim-autopairs";
-    ts-autotag = plugin "nvim-ts-autotag";
-    ts-context = plugin "nvim-treesitter-context";
-    tsn-actions = plugin "ts-node-action";
-    ts-playground = plugin "playground";
+    "30-treesitter" = plugin "nvim-treesitter";
+    "30-autopairs" = plugin "nvim-autopairs";
+    "30-ts-autotag" = plugin "nvim-ts-autotag";
+    "30-ts-context" = plugin "nvim-treesitter-context";
+    "30-tsn-actions" = plugin "ts-node-action";
+    "30-ts-playground" = plugin "playground";
 
     # Language Support
-    fish = plugin "vim-fish";
-    wgsl = plugin "wgsl.vim";
-    nu = plugin "nvim-nu";
-    crafttweaker = plugin "crafttweaker-vim-highlighting";
-    vaxe = plugin "vaxe";
+    "30-fish" = plugin "vim-fish";
+    "30-wgsl" = plugin "wgsl.vim";
+    "30-nu" = plugin "nvim-nu";
+    "30-crafttweaker" = plugin "crafttweaker-vim-highlighting";
+    "30-vaxe" = plugin "vaxe";
 
     # Misc
-    catppuccin = plugin "catppuccin";
-    gitsigns = plugin "gitsigns.nvim";
-    lualine = plugin "lualine.nvim";
-    tree = plugin "nvim-tree.lua";
-    neogit = fetchGit { url = "https://git.mzte.de/nvim-plugins/neogit.git?rev=nightly"; };
-    telescope = plugin "telescope.nvim";
-    toggleterm = plugin "toggleterm.nvim";
-    notify = plugin "nvim-notify";
-    dressing = plugin "dressing.nvim"; # TODO: remove once noice gets support for ui.select
-    ufo = plugin "nvim-ufo";
-    aerial = plugin "aerial.nvim";
-    dap = plugin "nvim-dap";
-    dapui = plugin "nvim-dap-ui";
-    harpoon = plugin "harpoon";
-    recorder = plugin "nvim-recorder";
-    noice = plugin "noice.nvim";
-    lightbulb = plugin "nvim-lightbulb";
+    "50-catppuccin" = plugin "catppuccin";
+    "50-gitsigns" = plugin "gitsigns.nvim";
+    "50-lualine" = plugin "lualine.nvim";
+    "50-tree" = plugin "nvim-tree.lua";
+    "50-neogit" = fetchGit { url = "https://git.mzte.de/nvim-plugins/neogit.git?rev=nightly"; };
+    "50-telescope" = plugin "telescope.nvim";
+    "50-toggleterm" = plugin "toggleterm.nvim";
+    "50-notify" = plugin "nvim-notify";
+    "50-dressing" = plugin "dressing.nvim"; # TODO: remove once noice gets support for ui.select
+    "50-ufo" = plugin "nvim-ufo";
+    "50-aerial" = plugin "aerial.nvim";
+    "50-dap" = plugin "nvim-dap";
+    "50-dapui" = plugin "nvim-dap-ui";
+    "50-harpoon" = plugin "harpoon";
+    "50-recorder" = plugin "nvim-recorder";
+    "50-noice" = plugin "noice.nvim";
+    "50-lightbulb" = plugin "nvim-lightbulb";
 
     # Libraries
-    plenary = plugin "plenary.nvim";
-    devicons = plugin "nvim-web-devicons";
-    promise-async = plugin "promise-async";
-    nio = plugin "nvim-nio";
-    nui = plugin "nui.nvim";
+    "10-plenary" = plugin "plenary.nvim";
+    "10-devicons" = plugin "nvim-web-devicons";
+    "10-promise-async" = plugin "promise-async";
+    "10-nio" = plugin "nvim-nio";
+    "10-nui" = plugin "nui.nvim";
   };
 
   mzte-nv-compiler =
