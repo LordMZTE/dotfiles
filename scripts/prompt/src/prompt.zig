@@ -22,6 +22,7 @@ const symbols = struct {
     const root = "";
     const watch = "";
     const jobs = "";
+    const nix = "󱄅";
 };
 
 pub const Options = struct {
@@ -29,6 +30,7 @@ pub const Options = struct {
     mode: FishMode,
     duration: u32,
     jobs: u32,
+    nix_name: ?[]const u8,
 };
 
 pub fn render(writer: anytype, options: Options) !void {
@@ -56,6 +58,7 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .background = left_color });
             try self.renderDuration();
             try self.renderJobs();
+            try self.renderNix();
             try self.renderCwd();
             self.renderGit() catch |err| {
                 switch (err) {
@@ -145,6 +148,15 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .background = .Cyan, .foreground = .Black });
 
             try self.writer.print(" {s} {}", .{ symbols.jobs, self.options.jobs });
+        }
+
+        fn renderNix(self: *Self) !void {
+            if (self.options.nix_name) |name| {
+                try self.drawLeftSep(.Blue);
+                try self.setStyle(.{ .background = .Blue, .foreground = .Black});
+
+                try self.writer.print(" {s} {s}", .{symbols.nix, name });
+            }
         }
 
         fn renderCwd(self: *Self) !void {

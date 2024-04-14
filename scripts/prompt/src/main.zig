@@ -51,6 +51,7 @@ pub fn main() !void {
                     return error.MissingEnv,
                 10,
             ),
+            .nix_name = @import("nix.zig").findNixShellName(),
         };
 
         var buf: [1024 * 8]u8 = undefined;
