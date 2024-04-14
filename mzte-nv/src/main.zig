@@ -105,7 +105,7 @@ fn lOnInit(l: *c.lua_State) !c_int {
 
     c.lua_getfield(l, c.LUA_REGISTRYINDEX, reg_key);
     defer c.lua_pop(l, 1);
-    inline for (.{ "tree_sitter_parsers", "nvim_tools" }) |fname| {
+    inline for (.{ "nvim_plugins", "tree_sitter_parsers", "nvim_tools" }) |fname| {
         if (@field(opts, fname)) |x| {
             ffi.luaPushString(l, x);
             c.lua_setfield(l, -2, fname);

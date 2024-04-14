@@ -30,10 +30,7 @@
 (nmap :<C-k> vim.lsp.buf.signature_help)
 (nmap :<space>e vim.diagnostic.open_float)
 
-(nmap :K (fn []
-           (if ((. (require :conjure.client) :get))
-               ((. (require :conjure.eval) :doc-word))
-               (vim.lsp.buf.hover))))
+(nmap :K vim.lsp.buf.hover)
 
 ;; command to stop LSPs
 (vim.api.nvim_create_user_command :StopLsps

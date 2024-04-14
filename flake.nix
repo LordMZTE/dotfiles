@@ -8,7 +8,8 @@
     { self
     , nixpkgs
     , utils
-    }: utils.lib.eachDefaultSystem
+    , ...
+    }@inputs: utils.lib.eachDefaultSystem
       (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -20,6 +21,7 @@
           options.dev-shells = nixpkgs.lib.mkOption { };
 
           config._module.args = {
+            inherit inputs;
             inherit pkgs system;
             inherit (pkgs) lib stdenv;
           };
@@ -71,6 +73,7 @@
         };
       in
       {
+        config = modopt;
         mzteinit = pkgs.callPackage ./scripts/mzteinit/package.nix { };
         packages = modopt.config.packages;
         devShells = modopt.config.dev-shells;

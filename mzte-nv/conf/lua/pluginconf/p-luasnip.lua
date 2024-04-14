@@ -10,8 +10,8 @@ local t = ls.text_node
 local fmt = require("luasnip.extras.fmt").fmt
 local rep = require("luasnip.extras").rep
 
-require("luasnip.loaders.from_vscode").load()
-require("luasnip.loaders.from_snipmate").load()
+require("luasnip.loaders.from_vscode").lazy_load()
+require("luasnip.loaders.from_snipmate").lazy_load()
 
 ls.add_snippets("markdown", {
     s("shrug", {

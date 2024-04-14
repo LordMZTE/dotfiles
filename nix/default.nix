@@ -1,4 +1,7 @@
 { ... }:
 {
-  imports = [ ./cgnix ./mcdev.nix ];
+  imports = [
+    ./cgnix
+    ./mcdev.nix
+  ];
 }

@@ -48,7 +48,11 @@ fn lPathTransformerClosure(l: *c.lua_State) !c_int {
 fn transformJdtlsURI(uri_str: []const u8, writer: anytype) !void {
     // We do a full-on URI parse here because JDTLS often appends parameters and other garbage data.
     const uri = try std.Uri.parse(uri_str);
-    var fname_iter = std.fs.path.ComponentIterator(.posix, u8).init(uri.path) catch
+    var fname_iter = std.fs.path.ComponentIterator(.posix, u8).init(
+        switch (uri.path) {
+            inline else => |s| s,
+        },
+    ) catch
         unreachable; // this can only error on windows lol
 
     _ = fname_iter.next() orelse return error.InvalidPath; // name of the JAR

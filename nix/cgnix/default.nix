@@ -6,6 +6,7 @@
 {
   imports = [
     ./jvm.nix
+    ./nvim-plugins.nix
     ./nvim-tools.nix
     ./tree-sitter-parsers.nix
   ];

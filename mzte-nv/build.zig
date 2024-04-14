@@ -22,6 +22,7 @@ pub fn build(b: *std.Build) !void {
     const cg_opt = try common.confgenGet(struct {
         term_font: []u8, // TODO: this being non-const is a workaround for an std bug
         nix: struct {
+            nvim_plugins: ?[:0]u8 = null,
             tree_sitter_parsers: ?[:0]u8 = null,
             nvim_tools: ?[:0]u8 = null,
             jvm: ?[:0]u8 = null,
@@ -31,6 +32,7 @@ pub fn build(b: *std.Build) !void {
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "font", cg_opt.term_font);
+    opts.addOption(?[:0]const u8, "nvim_plugins", cg_opt.nix.nvim_plugins);
     opts.addOption(?[:0]const u8, "tree_sitter_parsers", cg_opt.nix.tree_sitter_parsers);
     opts.addOption(?[:0]const u8, "nvim_tools", cg_opt.nix.nvim_tools);
     opts.addOption(?[:0]const u8, "jvm", cg_opt.nix.jvm);
