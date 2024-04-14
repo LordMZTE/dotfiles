@@ -34,7 +34,7 @@
     (tset opt k v))
   `(do
      (nmap ,(.. :g suffix) ,action ,opt)
-     (nmap ,(.. :gt suffix) ,action
+     (nmap ,(.. :gn suffix) ,action
            ,(doto (collect [k v (pairs opt)] k v)
               (tset :jump_type :tab)))
      (nmap ,(.. :gs suffix) ,action
