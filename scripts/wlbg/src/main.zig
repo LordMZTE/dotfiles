@@ -1,5 +1,4 @@
 const std = @import("std");
-const xev = @import("xev");
 const wayland = @import("wayland");
 
 const c = @import("ffi.zig").c;
@@ -22,10 +21,6 @@ pub const std_options = std.Options{
 };
 
 pub fn main() !void {
-    std.log.info("initializing event loop", .{});
-    var loop = try xev.Loop.init(.{});
-    defer loop.deinit();
-
     std.log.info("connecting to wayland display", .{});
     const dpy = try wl.Display.connect(null);
     defer dpy.disconnect();
@@ -136,14 +131,12 @@ pub fn main() !void {
     }
     defer for (output_windows) |output| output.deinit(egl_ctx);
 
-    var r_timer_completion: xev.Completion = undefined;
-    var r_timer = try xev.Timer.init();
-    defer r_timer.deinit();
+    const r_timerfd = try std.posix.timerfd_create(std.posix.CLOCK.MONOTONIC, .{});
+    defer std.posix.close(r_timerfd);
 
     var dth = DrawTimerHandler{
         .should_redraw = try std.heap.c_allocator.alloc(bool, output_info.len),
-        .completion = &r_timer_completion,
-        .loop = &loop,
+        .timerfd = r_timerfd,
     };
     defer std.heap.c_allocator.free(dth.should_redraw);
     @memset(dth.should_redraw, true);
@@ -206,46 +199,56 @@ pub fn main() !void {
         .egl_ctx = egl_ctx,
         .outputs = output_windows,
         .output_info = output_info,
-        .last_time = loop.now(),
+        .last_time = std.time.milliTimestamp(),
         .base_offset = base_offset,
         .pointer_state = &pointer_state,
         .dth = &dth,
     };
 
-    var rbg_timer_completion: xev.Completion = undefined;
-    var rbg_timer = try xev.Timer.init();
-    defer rbg_timer.deinit();
+    const rbg_timerfd = try std.posix.timerfd_create(std.posix.CLOCK.MONOTONIC, .{});
+    defer std.posix.close(rbg_timerfd);
 
-    rbg_timer.run(
-        &loop,
-        &rbg_timer_completion,
-        0,
-        RenderData,
-        &rdata,
-        renderBackgroundCb,
-    );
-
-    r_timer.run(
-        &loop,
-        &r_timer_completion,
-        0,
-        RenderData,
-        &rdata,
-        renderCb,
-    );
-
-    var wl_poll_completion = xev.Completion{
-        .op = .{ .poll = .{ .fd = dpy.getFd() } },
-        .userdata = dpy,
-        .callback = wlPollCb,
-    };
-    loop.add(&wl_poll_completion);
+    try std.posix.timerfd_settime(r_timerfd, .{}, &DrawTimerHandler.timerspec, null);
+    try std.posix.timerfd_settime(rbg_timerfd, .{}, &.{
+        .it_value = .{ .tv_sec = 0, .tv_nsec = 1 },
+        .it_interval = .{
+            .tv_sec = @divTrunc(options.refresh_time, std.time.ms_per_s),
+            .tv_nsec = @mod(options.refresh_time, std.time.ms_per_s) * std.time.ns_per_ms,
+        },
+    }, null);
 
     if (dpy.dispatchPending() != .SUCCESS) return error.RoundtipFail;
     std.debug.assert(dpy.prepareRead());
 
+    const epfd = try std.posix.epoll_create1(0);
+    defer std.posix.close(epfd);
+
+    for ([_]std.posix.fd_t{ r_timerfd, rbg_timerfd, dpy.getFd() }) |fd| {
+        var ev = std.os.linux.epoll_event{
+            .data = .{ .fd = fd },
+            .events = std.os.linux.EPOLL.IN,
+        };
+
+        try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, fd, &ev);
+    }
+
     std.log.info("running event loop", .{});
-    try loop.run(.until_done);
+    var events: [32]std.os.linux.epoll_event = undefined;
+    while (true) {
+        const evs = events[0..std.posix.epoll_wait(epfd, &events, -1)];
+        for (evs) |ev| {
+            var tfd_buf: [@sizeOf(usize)]u8 = undefined;
+            if (ev.data.fd == dpy.getFd()) {
+                try wlPoll(dpy);
+            } else if (ev.data.fd == r_timerfd) {
+                std.debug.assert(try std.posix.read(r_timerfd, &tfd_buf) == tfd_buf.len);
+                try render(&rdata);
+            } else if (ev.data.fd == rbg_timerfd) {
+                std.debug.assert(try std.posix.read(rbg_timerfd, &tfd_buf) == tfd_buf.len);
+                try renderBackground(&rdata);
+            }
+        }
+    }
 }
 
 const RenderData = struct {
@@ -254,128 +257,83 @@ const RenderData = struct {
     egl_ctx: c.EGLContext,
     outputs: []const OutputWindow,
     output_info: []const OutputInfo,
-    last_time: isize,
+    last_time: i64,
     base_offset: [2]c_int,
     pointer_state: *PointerState,
     dth: *DrawTimerHandler,
 };
 
-fn renderCb(
-    data: ?*RenderData,
-    loop: *xev.Loop,
-    completion: *xev.Completion,
-    result: xev.Timer.RunError!void,
-) xev.CallbackAction {
-    _ = completion;
-    result catch unreachable;
+fn render(data: *RenderData) !void {
+    const now = std.time.milliTimestamp();
+    const delta_time = now - data.last_time;
+    data.last_time = now;
 
-    const now = loop.now();
-    const delta_time = now - data.?.last_time;
-    data.?.last_time = now;
-
-    data.?.dth.resetTimer();
-
-    data.?.gfx.preDraw(
+    try data.gfx.preDraw(
         delta_time,
-        data.?.pointer_state,
-        data.?.output_info,
-        data.?.dth,
-    ) catch |e| {
-        std.log.err("running preDraw: {}", .{e});
-        loop.stop();
-        return .disarm;
-    };
+        data.pointer_state,
+        data.output_info,
+        data.dth,
+    );
 
-    for (data.?.outputs, 0..) |output, i| {
-        if (!data.?.dth.should_redraw[i])
+    const should_disarm = data.dth.shouldDisarm();
+
+    for (data.outputs, 0..) |output, i| {
+        if (!data.dth.should_redraw[i])
             continue;
 
         if (c.eglMakeCurrent(
-            data.?.egl_dpy,
+            data.egl_dpy,
             output.egl_surface,
             output.egl_surface,
-            data.?.egl_ctx,
+            data.egl_ctx,
         ) != c.EGL_TRUE) {
             std.log.err("failed to set EGL context", .{});
-            loop.stop();
-            return .disarm;
+            return error.EGLError;
         }
 
-        data.?.gfx.draw(
+        try data.gfx.draw(
             delta_time,
-            data.?.pointer_state,
+            data.pointer_state,
             i,
-            data.?.outputs,
-            data.?.output_info,
-            data.?.dth,
-        ) catch |e| {
-            std.log.err("drawing: {}", .{e});
-            loop.stop();
-            return .disarm;
-        };
+            data.outputs,
+            data.output_info,
+            data.dth,
+        );
     }
 
-    return data.?.dth.nextAction();
+    if (data.dth.timerfd_active and should_disarm) {
+        try std.posix.timerfd_settime(
+            data.dth.timerfd,
+            .{},
+            &std.mem.zeroInit(std.os.linux.itimerspec, .{}),
+            null,
+        );
+        data.dth.timerfd_active = false;
+    }
 }
 
-fn renderBackgroundCb(
-    data: ?*RenderData,
-    loop: *xev.Loop,
-    completion: *xev.Completion,
-    result: xev.Timer.RunError!void,
-) xev.CallbackAction {
-    result catch unreachable;
-
-    resetXevTimerCompletion(completion, loop.now(), options.refresh_time);
-
+fn renderBackground(data: *RenderData) !void {
     var rand: f32 = if (options.multihead_mode == .combined) std.crypto.random.float(f32) else 0.0;
-    for (data.?.output_info, 0..) |info, i| {
+    for (data.output_info, 0..) |info, i| {
         if (options.multihead_mode == .individual) rand = std.crypto.random.float(f32);
-        data.?.gfx.drawBackground(
+        try data.gfx.drawBackground(
             info,
             i,
-            data.?.base_offset,
+            data.base_offset,
             rand,
-        ) catch |e| {
-            std.log.err("drawing background: {}", .{e});
-            loop.stop();
-            return .disarm;
-        };
+        );
     }
 
-    data.?.dth.damageAll();
-
-    return .rearm;
+    try data.dth.damageAll();
 }
 
-fn wlPollCb(
-    userdata: ?*anyopaque,
-    loop: *xev.Loop,
-    _: *xev.Completion,
-    result: xev.Result,
-) xev.CallbackAction {
-    result.poll catch |e| {
-        std.log.err("unable to poll wayland FD: {}", .{e});
-        loop.stop();
-        return .disarm;
-    };
+fn wlPoll(dpy: *wl.Display) !void {
+    if (dpy.readEvents() != .SUCCESS)
+        return error.DispatchFail;
 
-    const dpy: *wl.Display = @ptrCast(@alignCast(userdata));
-    if (dpy.readEvents() != .SUCCESS) {
-        std.log.err("error reading wayland events", .{});
-        loop.stop();
-        return .disarm;
-    }
-
-    while (!dpy.prepareRead()) {
-        if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS) {
-            std.log.err("error processing wayland events", .{});
-            loop.stop();
-            return .disarm;
-        }
-    }
-
-    return .rearm;
+    while (!dpy.prepareRead())
+        if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS)
+            return error.DispatchFail;
 }
 
 fn layerSurfaceListener(lsurf: *zwlr.LayerSurfaceV1, ev: zwlr.LayerSurfaceV1.Event, winsize: *?[2]c_int) void {
@@ -417,13 +375,13 @@ fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, d: *PointerListenerData
                     motion.surface_x.toInt(),
                     motion.surface_y.toInt(),
                 };
-                d.dth.damage(i);
+                d.dth.damage(i) catch {};
             }
         },
         .enter => |enter| {
             for (d.outputs, 0..) |out, i| {
                 if (out.surface == enter.surface) {
-                    d.dth.damage(i);
+                    d.dth.damage(i) catch {};
                     d.pstate.active_surface_idx = i;
                     break;
                 }
@@ -431,20 +389,12 @@ fn pointerListener(_: *wl.Pointer, ev: wl.Pointer.Event, d: *PointerListenerData
         },
         .leave => {
             if (d.pstate.active_surface_idx) |i| {
-                d.dth.damage(i);
+                d.dth.damage(i) catch {};
                 d.pstate.active_surface_idx = null;
             }
         },
         else => {},
     }
-}
-
-fn resetXevTimerCompletion(completion: *xev.Completion, now: i64, in: i64) void {
-    const next_time = now + in;
-    completion.op.timer.reset = .{
-        .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
-        .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
-    };
 }
 
 fn glDebugCb(

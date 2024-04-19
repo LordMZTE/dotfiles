@@ -1,45 +1,46 @@
 const std = @import("std");
-const xev = @import("xev");
 
 const options = @import("options.zig");
 
-loop: *xev.Loop,
-
-/// Completion of the main redraw timer
-completion: *xev.Completion,
+timerfd: std.posix.fd_t,
+timerfd_active: bool = false,
 
 /// Contains a bool for each output, true if needs redraw
 should_redraw: []bool,
 
 const DrawTimerHandler = @This();
 
-pub fn nextAction(self: *DrawTimerHandler) xev.CallbackAction {
+pub const timerspec: std.os.linux.itimerspec = spec: {
+    const interval = 1000 / options.fps;
+
+    break :spec .{
+        .it_value = .{ .tv_sec = 0, .tv_nsec = 1 },
+        .it_interval = .{
+            .tv_sec = @divTrunc(interval, std.time.ms_per_s),
+            .tv_nsec = @mod(interval, std.time.ms_per_s) * std.time.ns_per_ms,
+        },
+    };
+};
+
+pub fn shouldDisarm(self: *DrawTimerHandler) bool {
     for (self.should_redraw) |ro|
-        if (ro) return .rearm;
-    return .disarm;
+        if (ro) return false;
+    return true;
 }
 
-pub fn maybeWake(self: *DrawTimerHandler) void {
-    if (self.completion.flags.state == .dead and self.nextAction() == .rearm) {
-        self.resetTimer();
-        self.loop.add(self.completion);
+pub fn maybeWake(self: *DrawTimerHandler) !void {
+    if (!self.timerfd_active and !self.shouldDisarm()) {
+        try std.posix.timerfd_settime(self.timerfd, .{}, &timerspec, null);
+        self.timerfd_active = true;
     }
 }
 
-pub fn resetTimer(self: *DrawTimerHandler) void {
-    const next_time = self.loop.now() + 1000 / options.fps;
-    self.completion.op.timer.reset = .{
-        .tv_sec = @divTrunc(next_time, std.time.ms_per_s),
-        .tv_nsec = @mod(next_time, std.time.ms_per_s) * std.time.ns_per_ms,
-    };
-}
-
-pub fn damage(self: *DrawTimerHandler, idx: usize) void {
+pub fn damage(self: *DrawTimerHandler, idx: usize) !void {
     self.should_redraw[idx] = true;
-    self.maybeWake();
+    try self.maybeWake();
 }
 
-pub fn damageAll(self: *DrawTimerHandler) void {
+pub fn damageAll(self: *DrawTimerHandler) !void {
     @memset(self.should_redraw, true);
-    self.maybeWake();
+    try self.maybeWake();
 }

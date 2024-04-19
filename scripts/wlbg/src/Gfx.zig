@@ -194,7 +194,7 @@ pub fn preDraw(
         ));
 
         if (new_x != pos[0] or new_y != pos[1])
-            dth.damage(i);
+            try dth.damage(i);
 
         pos[0] = new_x;
         pos[1] = new_y;
@@ -278,8 +278,8 @@ pub fn draw(
         self.egl_dpy,
         outputs[output_idx].egl_surface,
     ) != c.EGL_TRUE) return error.EGLError;
-    if (self.dpy.dispatchPending() != .SUCCESS) return error.RoundtipFail;
-    std.debug.assert(self.dpy.prepareRead());
+    while (!self.dpy.prepareRead())
+        if (self.dpy.dispatchPending() != .SUCCESS) return error.RoundtipFail;
 }
 
 pub fn drawBackground(
