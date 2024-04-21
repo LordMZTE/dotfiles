@@ -5,6 +5,19 @@ const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
+fn keybindCommand(comptime base: []const u8) [:0]const u8 {
+    return "systemd-cat --level-prefix=false -- " ++ base;
+}
+
+fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
+    return &[_][:0]const u8{
+        "systemd-cat",
+        "--level-prefix=false",
+        "--identifier=" ++ argv[0],
+        "--",
+    } ++ argv;
+}
+
 pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     const con = try Connection.init();
     defer con.deinit();
@@ -12,27 +25,27 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     // Normal-Mode keyboard mappings
     inline for (.{
         // "run command" maps
-        .{ "Super", "Return", "spawn", opts.term_command },
-        .{ "Super+Control", "E", "spawn", opts.file_manager_command },
-        .{ "Super+Control", "B", "spawn", opts.browser_command },
-        .{ "Super+Control", "V", "spawn", "vinput md" },
-        .{ "Super+Control", "L", "spawn", "physlock" },
-        .{ "Super+Shift", "P", "spawn", "gpower2" },
-        .{ "Alt", "Space", "spawn", "rofi -show combi" },
-        .{ "Super+Alt", "Space", "spawn", "rofi -show emoji" },
-        .{ "None", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png" },
-        .{ "Shift", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | feh -" },
+        .{ "Super", "Return", "spawn", keybindCommand(opts.term_command) },
+        .{ "Super+Control", "E", "spawn", keybindCommand(opts.file_manager_command) },
+        .{ "Super+Control", "B", "spawn", keybindCommand(opts.browser_command) },
+        .{ "Super+Control", "V", "spawn", keybindCommand("vinput md") },
+        .{ "Super+Control", "L", "spawn", keybindCommand("physlock") },
+        .{ "Super+Shift", "P", "spawn", keybindCommand("gpower2") },
+        .{ "Alt", "Space", "spawn", keybindCommand("rofi -show combi") },
+        .{ "Super+Alt", "Space", "spawn", keybindCommand("rofi -show emoji") },
+        .{ "None", "Print", "spawn", keybindCommand("grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png") },
+        .{ "Shift", "Print", "spawn", keybindCommand("grim -g \"$(slurp; sleep 1)\" - | feh -") },
 
         // media keys
-        .{ "None", "XF86Eject", "spawn", "eject -T" },
-        .{ "None", "XF86AudioRaiseVolume", "spawn", "pactl set-sink-volume @DEFAULT_SINK@ +5%" },
-        .{ "None", "XF86AudioLowerVolume", "spawn", "pactl set-sink-volume @DEFAULT_SINK@ -5%" },
-        .{ "None", "XF86AudioMute", "spawn", "pactl set-sink-mute @DEFAULT_SINK@ toggle" },
-        .{ "None", "XF86AudioMicMute", "spawn", "pactl set-source-mute @DEFAULT_SINK@ toggle" },
-        .{ "None", "XF86AudioMedia", "spawn", "playerctl play-pause" },
-        .{ "None", "XF86AudioPlay", "spawn", "playerctl play-pause" },
-        .{ "None", "XF86AudioPrev", "spawn", "playerctl previous" },
-        .{ "None", "XF86AudioNext", "spawn", "playerctl next" },
+        .{ "None", "XF86Eject", "spawn", keybindCommand("eject -T") },
+        .{ "None", "XF86AudioRaiseVolume", "spawn", keybindCommand("pactl set-sink-volume @DEFAULT_SINK@ +5%") },
+        .{ "None", "XF86AudioLowerVolume", "spawn", keybindCommand("pactl set-sink-volume @DEFAULT_SINK@ -5%") },
+        .{ "None", "XF86AudioMute", "spawn", keybindCommand("pactl set-sink-mute @DEFAULT_SINK@ toggle") },
+        .{ "None", "XF86AudioMicMute", "spawn", keybindCommand("pactl set-source-mute @DEFAULT_SINK@ toggle") },
+        .{ "None", "XF86AudioMedia", "spawn", keybindCommand("playerctl play-pause") },
+        .{ "None", "XF86AudioPlay", "spawn", keybindCommand("playerctl play-pause") },
+        .{ "None", "XF86AudioPrev", "spawn", keybindCommand("playerctl previous") },
+        .{ "None", "XF86AudioNext", "spawn", keybindCommand("playerctl next") },
 
         // control maps
         .{ "Super+Shift", "E", "exit" },
@@ -225,7 +238,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
             // TODO: wonk
             // We use an arena here to prevent leaks because process.Child apparently doesn't support
             // detaching.
-            var child = std.process.Child.init(&argv, child_arena.allocator());
+            var child = std.process.Child.init(initCommand(&argv), child_arena.allocator());
             try child.spawn();
         }
     }
