@@ -23,7 +23,7 @@
           config._module.args = {
             inherit inputs;
             inherit pkgs system;
-            inherit (pkgs) lib stdenv;
+            inherit (pkgs) lib stdenv stdenvNoCC;
           };
 
           # Local user nix env
