@@ -1,7 +1,6 @@
 (local gitsigns (require :gitsigns))
 
 (fn on-attach [bufnr]
-  (print :attached bufnr)
   (vim.keymap.set :n :gV
                   (fn []
                     (gitsigns.toggle_deleted)

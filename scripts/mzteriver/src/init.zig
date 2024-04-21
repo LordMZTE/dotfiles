@@ -5,9 +5,7 @@ const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
-fn keybindCommand(comptime base: []const u8) [:0]const u8 {
-    return "systemd-cat --level-prefix=false -- " ++ base;
-}
+const journal_prefix = "systemd-cat --level-prefix=false -- ";
 
 fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
@@ -25,27 +23,27 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     // Normal-Mode keyboard mappings
     inline for (.{
         // "run command" maps
-        .{ "Super", "Return", "spawn", keybindCommand(opts.term_command) },
-        .{ "Super+Control", "E", "spawn", keybindCommand(opts.file_manager_command) },
-        .{ "Super+Control", "B", "spawn", keybindCommand(opts.browser_command) },
-        .{ "Super+Control", "V", "spawn", keybindCommand("vinput md") },
-        .{ "Super+Control", "L", "spawn", keybindCommand("physlock") },
-        .{ "Super+Shift", "P", "spawn", keybindCommand("gpower2") },
-        .{ "Alt", "Space", "spawn", keybindCommand("rofi -show combi") },
-        .{ "Super+Alt", "Space", "spawn", keybindCommand("rofi -show emoji") },
-        .{ "None", "Print", "spawn", keybindCommand("grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png") },
-        .{ "Shift", "Print", "spawn", keybindCommand("grim -g \"$(slurp; sleep 1)\" - | feh -") },
+        .{ "Super", "Return", "spawn", journal_prefix ++ opts.term_command },
+        .{ "Super+Control", "E", "spawn", journal_prefix ++ opts.file_manager_command },
+        .{ "Super+Control", "B", "spawn", journal_prefix ++ opts.browser_command },
+        .{ "Super+Control", "V", "spawn", journal_prefix ++ "vinput md" },
+        .{ "Super+Control", "L", "spawn", journal_prefix ++ "physlock" },
+        .{ "Super+Shift", "P", "spawn", journal_prefix ++ "gpower2" },
+        .{ "Alt", "Space", "spawn", journal_prefix ++ "rofi -show combi" },
+        .{ "Super+Alt", "Space", "spawn", journal_prefix ++ "rofi -show emoji" },
+        .{ "None", "Print", "spawn", journal_prefix ++ "grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png" },
+        .{ "Shift", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | " ++ journal_prefix ++ " feh -" },
 
         // media keys
-        .{ "None", "XF86Eject", "spawn", keybindCommand("eject -T") },
-        .{ "None", "XF86AudioRaiseVolume", "spawn", keybindCommand("pactl set-sink-volume @DEFAULT_SINK@ +5%") },
-        .{ "None", "XF86AudioLowerVolume", "spawn", keybindCommand("pactl set-sink-volume @DEFAULT_SINK@ -5%") },
-        .{ "None", "XF86AudioMute", "spawn", keybindCommand("pactl set-sink-mute @DEFAULT_SINK@ toggle") },
-        .{ "None", "XF86AudioMicMute", "spawn", keybindCommand("pactl set-source-mute @DEFAULT_SINK@ toggle") },
-        .{ "None", "XF86AudioMedia", "spawn", keybindCommand("playerctl play-pause") },
-        .{ "None", "XF86AudioPlay", "spawn", keybindCommand("playerctl play-pause") },
-        .{ "None", "XF86AudioPrev", "spawn", keybindCommand("playerctl previous") },
-        .{ "None", "XF86AudioNext", "spawn", keybindCommand("playerctl next") },
+        .{ "None", "XF86Eject", "spawn", journal_prefix ++ "eject -T" },
+        .{ "None", "XF86AudioRaiseVolume", "spawn", journal_prefix ++ "pactl set-sink-volume @DEFAULT_SINK@ +5%" },
+        .{ "None", "XF86AudioLowerVolume", "spawn", journal_prefix ++ "pactl set-sink-volume @DEFAULT_SINK@ -5%" },
+        .{ "None", "XF86AudioMute", "spawn", journal_prefix ++ "pactl set-sink-mute @DEFAULT_SINK@ toggle" },
+        .{ "None", "XF86AudioMicMute", "spawn", journal_prefix ++ "pactl set-source-mute @DEFAULT_SINK@ toggle" },
+        .{ "None", "XF86AudioMedia", "spawn", journal_prefix ++ "playerctl play-pause" },
+        .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ "playerctl play-pause" },
+        .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ "playerctl previous" },
+        .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ "playerctl next" },
 
         // control maps
         .{ "Super+Shift", "E", "exit" },
