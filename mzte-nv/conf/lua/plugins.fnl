@@ -33,7 +33,8 @@
                          :noice
                          :tsn-actions
                          :lightbulb
-                         :dressing])
+                         :dressing
+                         :gitsigns])
 
 (local errors {})
 
