@@ -41,8 +41,8 @@ fn lPathTransformerClosure(l: *c.lua_State) !c_int {
         ffi.luaPushString(l, path);
     }
 
-    c.lua_call(l, 2, 1);
-    return 1;
+    c.lua_call(l, 2, 2);
+    return 2;
 }
 
 fn transformJdtlsURI(uri_str: []const u8, writer: anytype) !void {
