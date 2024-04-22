@@ -26,7 +26,10 @@
  :tray {:spacing 10}
  :clock {:tooltip-format "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
          :format-alt "{:%Y-%m-%d}"}
- :cpu {:format "{usage}% "}
+ :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.system :nproc) 1)]
+                     (.. s "{icon" i "}")) " {usage}% ")
+       :format-icons ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"]
+       :interval 2}
  :memory {:format "{}% "}
  :temperature {:hwmon-path "<% opt.cpu_temp_hwmon %>"
                :critical-threshold 80
