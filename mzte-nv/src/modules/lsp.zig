@@ -24,16 +24,23 @@ fn lOnAttach(l: *c.lua_State) !c_int {
     };
 
     if (has_inlay_hints) {
+        // func: vim.lsp.inlay_hint.enable
         c.lua_getglobal(l, "vim");
-        defer c.lua_pop(l, 1);
         c.lua_getfield(l, -1, "lsp");
-        defer c.lua_pop(l, 1);
         c.lua_getfield(l, -1, "inlay_hint");
-        defer c.lua_pop(l, 1);
         c.lua_getfield(l, -1, "enable");
-        c.lua_pushnumber(l, bufnr);
+
+        // arg 1: true
         c.lua_pushboolean(l, 1);
+
+        // arg 2: table w/ bufnr
+        c.lua_createtable(l, 0, 1);
+        c.lua_pushnumber(l, bufnr);
+        c.lua_setfield(l, -2, "bufnr");
+
         c.lua_call(l, 2, 0);
+
+        c.lua_pop(l, 3);
     }
 
     return 0;
