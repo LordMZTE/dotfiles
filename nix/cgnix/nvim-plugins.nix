@@ -1,4 +1,4 @@
-{ config, pkgs, lib, stdenv, ... }:
+{ config, pkgs, lib, stdenvNoCC, ... }:
 let
   plugin = name: fetchGit { url = "https://git.mzte.de/nvim-plugins/${name}.git"; };
 
@@ -67,7 +67,7 @@ let
     in
     if (builtins.pathExists path) then
     # This derivation exists to patch a potentially mismatched dynamic linker.
-      stdenv.mkDerivation
+      stdenvNoCC.mkDerivation
         {
           name = "mzte-nv-compiler-patched";
           nativeBuildInputs = [ pkgs.autoPatchelfHook ];
@@ -82,27 +82,51 @@ in
   options.cgnix.nvim-plugins = lib.mkOption { };
   config.cgnix.nvim-plugins = plugins;
 
-  config.cgnix.entries.nvim_plugins = pkgs.linkFarm "nvim-plugins"
-    (lib.mapAttrsToList
-      (name: src: {
-        name = name;
-        path = stdenv.mkDerivation {
-          name = "${name}-compiled";
-          inherit src;
+  config.cgnix.entries.nvim_plugins = stdenvNoCC.mkDerivation {
+    name = "nvim-plugins";
 
-          nativeBuildInputs = with pkgs; [ luajit luajitPackages.fennel ];
+    nativeBuildInputs = with pkgs; [ luajit luajitPackages.fennel ];
 
-          buildPhase = ''
-            # Compile source with mzte-nv-compile
-            ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} ." else ""}
-          '';
+    unpackPhase = ''
+      # Copy plugins sources here
+      ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
+                                        (name: src: "cp -r ${src} ${name}")
+                                        config.cgnix.nvim-plugins)}
+      chmod -R +rw .
+    '';
 
-          installPhase = ''
-            mkdir -p "$out"
-            mv * .* "$out"
-          '';
-        };
-      })
-      config.cgnix.nvim-plugins
-    );
+    buildPhase = ''
+      # Compile
+      ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} ." else ""}
+    '';
+
+    installPhase = ''
+      mkdir -p "$out"
+      mv * .* "$out"
+    '';
+  };
+
+  #pkgs.linkFarm "nvim-plugins"
+  #  (lib.mapAttrsToList
+  #    (name: src: {
+  #      name = name;
+  #      path = stdenv.mkDerivation {
+  #        name = "${name}-compiled";
+  #        inherit src;
+
+  #        nativeBuildInputs = with pkgs; [ luajit luajitPackages.fennel ];
+
+  #        buildPhase = ''
+  #          # Compile source with mzte-nv-compile
+  #          ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} ." else ""}
+  #        '';
+
+  #        installPhase = ''
+  #          mkdir -p "$out"
+  #          mv * .* "$out"
+  #        '';
+  #      };
+  #    })
+  #    config.cgnix.nvim-plugins
+  #  );
 }

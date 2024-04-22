@@ -3,6 +3,9 @@
 , pkgs
 , ...
 }:
+let
+  luaExpr = val: if val == null then "nil" else "[[${val}]]";
+in 
 {
   imports = [
     ./jvm.nix
@@ -21,7 +24,7 @@
     name = "nix.lua";
     text = ''
       return {
-        ${builtins.concatStringsSep "\n  " (lib.mapAttrsToList (k: v: ''["${k}"] = "${v}",'') config.cgnix.entries)}
+        ${builtins.concatStringsSep "\n  " (lib.mapAttrsToList (k: v: ''["${k}"] = ${luaExpr v},'') config.cgnix.entries)}
       }
     '';
   };
