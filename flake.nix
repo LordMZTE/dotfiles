@@ -14,7 +14,6 @@
       let
         pkgs = import nixpkgs { inherit system; };
         common = pkgs.callPackage ./lib/common-nix { };
-        flakePkg = ref: (builtins.getFlake ref).packages.${system}.default;
 
         root-mod = {
           options.packages = nixpkgs.lib.mkOption { };
@@ -24,16 +23,6 @@
             inherit inputs;
             inherit pkgs system;
             inherit (pkgs) lib stdenv stdenvNoCC;
-          };
-
-          # Local user nix env
-          config.packages.mzte-nix = pkgs.symlinkJoin {
-            name = "mzte-nix";
-            paths = [
-              pkgs.nix-output-monitor
-              pkgs.nix-du
-              (flakePkg "github:nix-community/zon2nix")
-            ];
           };
 
           # devshell for the dotfiles

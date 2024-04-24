@@ -3,6 +3,6 @@
   imports = [
     ./cgnix
     ./mcdev.nix
-    ./userstyles.nix
+    ./mzte-nix.nix
   ];
 }
