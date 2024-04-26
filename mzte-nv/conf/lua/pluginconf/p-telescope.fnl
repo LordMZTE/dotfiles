@@ -12,7 +12,7 @@
                                                  :--column
                                                  :--smart-case
                                                  :--hidden]
-                             :path_display [:truncate]}
+                             :path_display [:truncate :filename_first]}
                   :pickers {:find_files {:find_command [:fd
                                                         :--type
                                                         :f
