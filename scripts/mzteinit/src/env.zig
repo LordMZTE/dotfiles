@@ -7,7 +7,7 @@ const msg = @import("message.zig").msg;
 
 const log = std.log.scoped(.env);
 
-const delimitedWriter = @import("delimited_writer.zig").delimitedWriter;
+const delimitedWriter = @import("common").delimitedWriter;
 
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.

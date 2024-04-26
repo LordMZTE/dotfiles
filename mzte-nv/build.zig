@@ -18,6 +18,7 @@ pub fn build(b: *std.Build) !void {
     });
 
     const znvim_dep = b.dependency("znvim", .{ .target = target, .optimize = mode });
+    const common_dep = b.dependency("common", .{});
 
     const cg_opt = try common.confgenGet(struct {
         term_font: []u8, // TODO: this being non-const is a workaround for an std bug
@@ -40,6 +41,7 @@ pub fn build(b: *std.Build) !void {
 
     lib.root_module.addImport("opts", opts.createModule());
 
+    lib.root_module.addImport("common", common_dep.module("common"));
     lib.root_module.addImport("nvim", znvim_dep.module("nvim_c"));
     lib.root_module.addImport("znvim", znvim_dep.module("znvim"));
 

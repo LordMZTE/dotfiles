@@ -42,16 +42,15 @@ let
     "50-neogit" = fetchGit { url = "https://git.mzte.de/nvim-plugins/neogit.git?rev=nightly"; };
     "50-telescope" = plugin "telescope.nvim";
     "50-toggleterm" = plugin "toggleterm.nvim";
-    "50-notify" = plugin "nvim-notify";
-    "50-dressing" = plugin "dressing.nvim"; # TODO: remove once noice gets support for ui.select
+    "50-dressing" = plugin "dressing.nvim";
     "50-ufo" = plugin "nvim-ufo";
     "50-aerial" = plugin "aerial.nvim";
     "50-dap" = plugin "nvim-dap";
     "50-dapui" = plugin "nvim-dap-ui";
     "50-harpoon" = plugin "harpoon";
     "50-recorder" = plugin "nvim-recorder";
-    "50-noice" = plugin "noice.nvim";
     "50-lightbulb" = plugin "nvim-lightbulb";
+    "50-lsp-progress" = plugin "lsp-progress.nvim";
 
     # Libraries
     "10-plenary" = plugin "plenary.nvim";

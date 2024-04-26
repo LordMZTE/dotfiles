@@ -16,6 +16,7 @@
                          :luasnip
                          :nullls
                          :catppuccin
+                         :lspprogress
                          :line
                          :treesitter
                          :nvimtree
@@ -30,7 +31,6 @@
                          :dap
                          :harpoon
                          :recorder
-                         :noice
                          :tsn-actions
                          :lightbulb
                          :dressing

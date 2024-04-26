@@ -1,5 +1,7 @@
 const std = @import("std");
 
+pub usingnamespace @import("delimited_writer.zig");
+
 var stderr_isatty: ?bool = null;
 
 pub var log_file: ?std.fs.File = null;

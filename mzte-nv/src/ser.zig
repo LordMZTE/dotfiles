@@ -27,11 +27,11 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                     if (P.child == u8) {
                         ffi.luaPushString(l, x);
                     } else {
-                        c.lua_createtable(l, x.len, 0);
+                        c.lua_createtable(l, @intCast(x.len), 0);
 
                         for (x, 1..) |element, i| {
                             luaPushAny(l, element);
-                            c.lua_rawseti(l, -2, i);
+                            c.lua_rawseti(l, -2, @intCast(i));
                         }
                     }
                 },

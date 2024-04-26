@@ -30,5 +30,14 @@ pub fn DelimitedWriter(comptime Writer: type) type {
 
             try self.writer.writeAll(str);
         }
+
+        pub fn print(self: *Self, comptime fmt: []const u8, args: anytype) !void {
+            if (self.has_written) {
+                try self.writer.writeByte(self.delimeter);
+            }
+            self.has_written = true;
+
+            try self.writer.print(fmt, args);
+        }
     };
 }
