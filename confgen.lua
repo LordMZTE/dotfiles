@@ -31,7 +31,7 @@ end)()
 
 cg.opt.nix = nix
 
-local fennel = (loadfile(nix["fennel.lua"] or"/usr/share/lua/5.4/fennel.lua") ())
+local fennel = (loadfile(nix["fennel.lua"] or "/usr/share/lua/5.4/fennel.lua")())
 
 -- Recursively merge 2 tables
 local function merge(a, b)

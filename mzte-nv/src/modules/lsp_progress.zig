@@ -51,8 +51,7 @@ fn lFormatSeries(l: *c.lua_State) !c_int {
     if (percentage != 0)
         try del.print("%#NONE#(%#Number#{d}%%%#NONE#)", .{percentage});
 
-    if (done)
-        try del.push("- %#DiagnosticOk#󰸞");
+    try del.push(if (done) "%#DiagnosticOk#󰸞" else "%#DiagnosticInfo#");
 
     try del.writer.writeAll("%#NONE#");
 
