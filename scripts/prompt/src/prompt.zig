@@ -4,7 +4,8 @@ const known_folders = @import("known-folders");
 const ffi = @import("ffi.zig");
 const checkGitError = ffi.checkGitError;
 const c = ffi.c;
-const FishMode = @import("FishMode.zig");
+const ViMode = @import("vi_mode.zig").ViMode;
+const Shell = @import("shell.zig").Shell;
 
 const Style = at.style.Style;
 const Color = at.style.Color;
@@ -23,14 +24,16 @@ const symbols = struct {
     const watch = "";
     const jobs = "";
     const nix = "󱄅";
+    const bash = "";
 };
 
 pub const Options = struct {
-    status: i16,
-    mode: FishMode,
+    status: i32,
+    mode: ViMode,
     duration: u32,
     jobs: u32,
     nix_name: ?[]const u8,
+    shell: Shell,
 };
 
 pub fn render(writer: anytype, options: Options) !void {
@@ -56,10 +59,11 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .foreground = left_color });
             try self.writer.writeAll(symbols.top_left);
             try self.setStyle(.{ .background = left_color });
+            try self.renderShell();
             try self.renderDuration();
             try self.renderJobs();
-            try self.renderNix();
             try self.renderCwd();
+            try self.renderNix();
             self.renderGit() catch |err| {
                 switch (err) {
                     error.GitError => {}, // git error will be printed
@@ -76,24 +80,44 @@ fn Renderer(comptime Writer: type) type {
             try self.setStyle(.{ .foreground = left_color, .background = left_color });
             try self.writer.writeAll(" ");
 
-            const mode_color = self.options.mode.getColor();
+            if (self.options.mode != ._none) {
+                const mode_color = self.options.mode.getColor();
 
-            try self.setStyle(.{
-                .foreground = left_color,
-                .background = mode_color,
-                .font_style = .{ .bold = true },
-            });
-            try self.writer.writeAll(symbols.right_separator ++ " ");
-            try self.setStyle(.{
-                .foreground = .Black,
-                .background = mode_color,
-                .font_style = .{ .bold = true },
-            });
-            try self.writer.writeAll(self.options.mode.getText());
-            try self.writer.writeAll(" ");
-            try self.setStyle(.{ .foreground = mode_color });
+                try self.setStyle(.{
+                    .foreground = left_color,
+                    .background = mode_color,
+                    .font_style = .{ .bold = true },
+                });
+                try self.writer.writeAll(symbols.right_separator ++ " ");
+                try self.setStyle(.{
+                    .foreground = .Black,
+                    .background = mode_color,
+                    .font_style = .{ .bold = true },
+                });
+                try self.writer.writeByte(self.options.mode.getChar());
+                try self.writer.writeByte(' ');
+                try self.setStyle(.{ .foreground = mode_color });
+            } else {
+                try self.writer.writeByte(' ');
+                try self.setStyle(.{ .foreground = left_color });
+            }
+
             try self.writer.writeAll(symbols.right_separator ++ " ");
             try self.setStyle(.{});
+        }
+
+        fn renderShell(self: *Self) !void {
+            switch (self.options.shell) {
+                .fish => {},
+                .bash => {
+                    const bgcol = Color{ .Grey = 150 };
+                    const fgcol = Color.Black;
+                    try self.drawLeftSep(bgcol);
+                    try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
+
+                    try self.writer.writeAll(" " ++ symbols.bash);
+                },
+            }
         }
 
         fn renderDuration(self: *Self) !void {
@@ -150,15 +174,6 @@ fn Renderer(comptime Writer: type) type {
             try self.writer.print(" {s} {}", .{ symbols.jobs, self.options.jobs });
         }
 
-        fn renderNix(self: *Self) !void {
-            if (self.options.nix_name) |name| {
-                try self.drawLeftSep(.Blue);
-                try self.setStyle(.{ .background = .Blue, .foreground = .Black});
-
-                try self.writer.print(" {s} {s}", .{symbols.nix, name });
-            }
-        }
-
         fn renderCwd(self: *Self) !void {
             var cwd_buf: [512]u8 = undefined;
             const cwd = try std.posix.getcwd(&cwd_buf);
@@ -196,6 +211,15 @@ fn Renderer(comptime Writer: type) type {
                     try self.renderPathSep();
                     try self.renderPath(cwd[1..]);
                 }
+            }
+        }
+
+        fn renderNix(self: *Self) !void {
+            if (self.options.nix_name) |name| {
+                try self.drawLeftSep(.Blue);
+                try self.setStyle(.{ .background = .Blue, .foreground = .Black });
+
+                try self.writer.print(" {s} {s}", .{ symbols.nix, name });
             }
         }
 

@@ -6,6 +6,7 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
+cg.addFile ".bashrc"
 cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".Xresources.cgt"
 cg.addFile ".replrc"

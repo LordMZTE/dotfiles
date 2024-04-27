@@ -1,17 +1,7 @@
 const std = @import("std");
-const FishMode = @import("FishMode.zig");
+const ViMode = @import("vi_mode.zig").ViMode;
+const Shell = @import("shell.zig").Shell;
 const prompt = @import("prompt.zig");
-
-const fish_code =
-    \\functions -e fish_mode_prompt
-    \\function fish_prompt
-    \\    set -x MZPROMPT_STATUS $status
-    \\    set -x MZPROMPT_FISH_MODE $fish_bind_mode
-    \\    set -x MZPROMPT_DURATION $CMD_DURATION
-    \\    set -x MZPROMPT_JOBS (count (jobs))
-    \\    {s} show
-    \\end
-;
 
 pub const std_options = std.Options{
     .log_level = .debug,
@@ -24,19 +14,25 @@ pub fn main() !void {
 
     const verb = std.mem.span(std.os.argv[1]);
 
-    if (std.mem.eql(u8, verb, "printfish")) {
-        const stdout = std.io.getStdOut();
-        try stdout.writer().print(fish_code ++ "\n", .{std.os.argv[0]});
+    const stdout = std.io.getStdOut();
+    if (std.mem.eql(u8, verb, "setup")) {
+        if (std.os.argv.len < 3)
+            return error.NotEnoughArguments;
+
+        const shell = std.meta.stringToEnum(Shell, std.mem.span(std.os.argv[2])) orelse
+            return error.InvalidShell;
+
+        try shell.writeInitCode(std.mem.span(std.os.argv[0]), stdout.writer());
     } else if (std.mem.eql(u8, verb, "show")) {
         const options = prompt.Options{
             .status = try std.fmt.parseInt(
-                i16,
+                i32,
                 std.posix.getenv("MZPROMPT_STATUS") orelse
                     return error.MissingEnv,
                 10,
             ),
-            .mode = FishMode.parse(
-                std.posix.getenv("MZPROMPT_FISH_MODE") orelse
+            .mode = ViMode.parse(
+                std.posix.getenv("MZPROMPT_VI_MODE") orelse
                     return error.MissingEnv,
             ),
             .duration = try std.fmt.parseInt(
@@ -52,15 +48,19 @@ pub fn main() !void {
                 10,
             ),
             .nix_name = @import("nix.zig").findNixShellName(),
+            .shell = std.meta.stringToEnum(Shell, std.posix.getenv(
+                "MZPROMPT_SHELL",
+            ) orelse return error.MissingEnv) orelse return error.InvalidShell,
         };
 
         var buf: [1024 * 8]u8 = undefined;
         var fbs = std.io.fixedBufferStream(&buf);
         prompt.render(fbs.writer(), options) catch |e| {
             fbs.reset();
-            fbs.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch unreachable;
+            fbs.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch
+                @panic("emergency prompt failed to print");
         };
-        try std.io.getStdOut().writeAll(fbs.getWritten());
+        try stdout.writeAll(fbs.getWritten());
     } else {
         return error.UnknownCommand;
     }
