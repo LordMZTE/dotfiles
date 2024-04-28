@@ -5,7 +5,7 @@
 (let [path mztenv.reg.nvim_plugins]
   (when path
     (vim.opt.runtimepath:prepend (.. path "/*"))
-    (vim.opt.runtimepath:append (.. path "/*/after"))))
+    (vim.opt.runtimepath:append (.. path :/*/after))))
 
 ;; Plugins to load before nvim finishes startup
 (local startup-plugins [])
@@ -41,7 +41,7 @@
 (fn load-plugin [plugin]
   (let [(success ret) (pcall require (.. :pluginconf/p- plugin))]
     (when (not success)
-      (tset errors p ret))))
+      (tset errors plugin ret))))
 
 (each [_ p (ipairs startup-plugins)]
   (load-plugin p))
@@ -55,7 +55,7 @@
         (do
           (when (next errors)
             (vim.notify (accumulate [text "Errors loading plugin configs:\n" plugin err (pairs errors)]
-                          (.. text "  - " plugin ": " err))
+                          (.. text "  - " plugin ": " err "\n"))
                         vim.log.levels.error))
           (each [_ cb (ipairs mztenv.reg.plugin_load_callbacks)]
             (pcall cb))))))

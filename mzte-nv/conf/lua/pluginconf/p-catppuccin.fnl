@@ -5,19 +5,36 @@
 (local flavour :mocha)
 
 (catppuccin.setup {: flavour
+                   :term_colors true
+                   :dim_inactive {:enabled true}
                    ;; Enable all relevant integrations
+                   :default_integrations false
                    :integrations {:aerial true
                                   :cmp true
-                                  :dap {:enabled true :enable_ui true}
+                                  :dap true
+                                  :dap_ui true
                                   :gitsigns true
                                   :harpoon true
-                                  :native_lsp {:enabled true}
+                                  :markdown true
+                                  :native_lsp {:enabled true
+                                               :virtual_text (collect [_ diag (ipairs [:errors
+                                                                                       :hints
+                                                                                       :warnings
+                                                                                       :information])]
+                                                               (values diag
+                                                                       [:italic]))
+                                               :underlines (collect [_ diag (ipairs [:errors
+                                                                                     :hints
+                                                                                     :warnings
+                                                                                     :information])]
+                                                             (values diag
+                                                                     [:underline]))
+                                               :inlay_hints {:background true}}
                                   :neogit true
-                                  :noice true
-                                  :notify true
                                   :nvimtree true
                                   :rainbow_delimiters true
-                                  :telescope true
+                                  :semantic_tokens true
+                                  :telescope {:enabled true}
                                   :treesitter true
                                   :treesitter_context true}})
 
