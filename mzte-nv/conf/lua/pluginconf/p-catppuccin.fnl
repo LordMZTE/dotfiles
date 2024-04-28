@@ -9,12 +9,12 @@
                    :dim_inactive {:enabled true}
                    ;; Enable all relevant integrations
                    :default_integrations false
-                   :integrations {:aerial true
-                                  :cmp true
+                   :integrations {:cmp true
                                   :dap true
                                   :dap_ui true
                                   :gitsigns true
                                   :harpoon true
+                                  :lsp_saga true
                                   :markdown true
                                   :native_lsp {:enabled true
                                                :virtual_text (collect [_ diag (ipairs [:errors

@@ -118,15 +118,15 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     // bundles
     c.lua_newtable(l);
 
-    var has_fernflower = false;
+    var has_cfr = false;
     var iter = dir.iterate();
     var idx: c_int = 1;
     while (try iter.next()) |f| {
         if (f.kind != .file or !std.mem.endsWith(u8, f.name, ".jar"))
             continue;
 
-        if (!has_fernflower and std.mem.containsAtLeast(u8, f.name, 1, "fernflower"))
-            has_fernflower = true;
+        if (!has_cfr and std.mem.containsAtLeast(u8, f.name, 1, "cfr"))
+            has_cfr = true;
 
         const path = try std.fs.path.joinZ(std.heap.c_allocator, &.{ bundle_path, f.name });
         defer std.heap.c_allocator.free(path);
@@ -141,8 +141,8 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     // content_provider
     c.lua_newtable(l);
 
-    if (has_fernflower) {
-        c.lua_pushstring(l, "fernflower");
+    if (has_cfr) {
+        c.lua_pushstring(l, "cfr");
         c.lua_setfield(l, -2, "preferred");
     }
 

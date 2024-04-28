@@ -11,11 +11,12 @@
 (local startup-plugins [])
 
 ;; Plugins to load in the background
-(local deferred-plugins [:lspconf
+(local deferred-plugins [:catppuccin
+                         :lspconf
+                         :lsp-saga
                          :cmp
                          :luasnip
                          :nullls
-                         :catppuccin
                          :lspprogress
                          :line
                          :treesitter
@@ -27,12 +28,10 @@
                          :tterm
                          :ts-context
                          :ufo
-                         :aerial
                          :dap
                          :harpoon
                          :recorder
                          :tsn-actions
-                         :lightbulb
                          :dressing
                          :gitsigns])
 

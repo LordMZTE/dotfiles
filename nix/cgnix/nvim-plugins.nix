@@ -7,6 +7,7 @@ let
     "20-lspconfig" = plugin "nvim-lspconfig";
     "20-nullls" = plugin "null-ls.nvim";
     "20-jdtls" = plugin "nvim-jdtls";
+    "20-lsp-saga" = plugin "lspsaga.nvim";
 
     # CMP
     "45-cmp" = plugin "nvim-cmp";
@@ -44,12 +45,10 @@ let
     "50-toggleterm" = plugin "toggleterm.nvim";
     "50-dressing" = plugin "dressing.nvim";
     "50-ufo" = plugin "nvim-ufo";
-    "50-aerial" = plugin "aerial.nvim";
     "50-dap" = plugin "nvim-dap";
     "50-dapui" = plugin "nvim-dap-ui";
     "50-harpoon" = plugin "harpoon";
     "50-recorder" = plugin "nvim-recorder";
-    "50-lightbulb" = plugin "nvim-lightbulb";
     "50-lsp-progress" = plugin "lsp-progress.nvim";
 
     # Libraries
