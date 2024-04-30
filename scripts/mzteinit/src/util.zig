@@ -56,7 +56,7 @@ pub fn findInPath(alloc: std.mem.Allocator, bin: []const u8) !?[]const u8 {
         if (trimmed.len == 0)
             continue;
 
-        const joined = try std.fs.path.joinZ(
+        const joined = try std.fs.path.join(
             alloc,
             &.{ trimmed, bin },
         );

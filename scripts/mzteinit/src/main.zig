@@ -72,27 +72,27 @@ fn tryMain() !void {
         }
     }
 
-    var env_map = try std.process.getEnvMap(alloc);
-    defer env_map.deinit();
+    var env_map = Mutex(std.process.EnvMap){
+        .data = try std.process.getEnvMap(alloc),
+    };
+    defer env_map.data.deinit();
 
-    if (env_map.get("MZTEINIT")) |_| {
+    if (env_map.data.get("MZTEINIT")) |_| {
         try stdout.writer().writeAll("mzteinit running already, starting shell\n");
         try stdout.flush();
         var child = std.ChildProcess.init(launch_cmd orelse &.{"fish"}, alloc);
         _ = try child.spawnAndWait();
         return;
     } else {
-        try env_map.put("MZTEINIT", "1");
+        try env_map.data.put("MZTEINIT", "1");
     }
 
-    if (try env.populateEnvironment(&env_map)) {
-        try env.populateSysdaemonEnvironment(&env_map);
+    if (try env.populateEnvironment(&env_map.data)) {
+        try env.populateSysdaemonEnvironment(&env_map.data);
     }
-
-    var env_mtx = Mutex(std.process.EnvMap){ .data = env_map };
 
     var srv: ?Server = null;
-    if (env_map.get("XDG_RUNTIME_DIR")) |xrd| {
+    if (env_map.data.get("XDG_RUNTIME_DIR")) |xrd| {
         var sockaddr_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
         const sockaddr = try std.fmt.bufPrintZ(
             &sockaddr_buf,
@@ -102,18 +102,16 @@ fn tryMain() !void {
 
         try msg("starting socket server @ {s}...", .{sockaddr});
 
-        srv = try Server.init(alloc, sockaddr, &env_mtx);
+        srv = try Server.init(alloc, sockaddr, &env_map);
         errdefer srv.?.ss.deinit();
         (try std.Thread.spawn(.{}, Server.run, .{&srv.?})).detach();
 
         std.log.info("socket server started @ {s}", .{sockaddr});
 
-        env_mtx.mtx.lock();
-        defer env_mtx.mtx.unlock();
+        env_map.mtx.lock();
+        defer env_map.mtx.unlock();
 
-        const key_dup = try alloc.dupe(u8, "MZTEINIT_SOCKET");
-        errdefer alloc.free(key_dup);
-        try env_mtx.data.putMove(key_dup, sockaddr);
+        try env_map.data.put("MZTEINIT_SOCKET", sockaddr);
     } else {
         std.log.warn("XDG_RUNTIME_DIR is not set, no socket server will be started!", .{});
     }
@@ -123,9 +121,9 @@ fn tryMain() !void {
         try msg("using launch command", .{});
         var child = std.ChildProcess.init(cmd, alloc);
         {
-            env_mtx.mtx.lock();
-            defer env_mtx.mtx.unlock();
-            child.env_map = &env_map;
+            env_map.mtx.lock();
+            defer env_map.mtx.unlock();
+            child.env_map = &env_map.data;
             try child.spawn();
         }
         _ = try child.wait();
@@ -133,7 +131,7 @@ fn tryMain() !void {
     }
 
     const entries_config_path = try std.fs.path.join(alloc, &.{
-        env_map.get("XDG_CONFIG_HOME") orelse @panic("bork"),
+        env_map.data.get("XDG_CONFIG_HOME") orelse @panic("bork"),
         "mzteinit",
         "entries.cfg",
     });
@@ -164,7 +162,7 @@ fn tryMain() !void {
         try stdout.flush();
 
         var exit = util.ExitMode.run;
-        cmd.run(alloc, &exit, &env_mtx) catch |e| {
+        cmd.run(alloc, &exit, &env_map) catch |e| {
             try stdout.writer().print("Error running command: {}\n\n", .{e});
             continue;
         };
