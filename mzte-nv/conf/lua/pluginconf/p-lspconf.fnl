@@ -63,5 +63,4 @@
        {:settings {:rust-analyzer {:checkOnSave {:command :clippy}}}})
 
 (setup :taplo)
-(setup :yamlls)
 (setup :zls)
