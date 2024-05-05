@@ -70,16 +70,23 @@ fn lFormatClient(l: *c.lua_State) !c_int {
 
     try del.print("%#Special#[{s}] %#Comment#{s}", .{ client_name, spinner });
 
+    const max_msgs = 2;
+
     const nmsgs = c.lua_objlen(l, 3);
-    for (1..nmsgs + 1) |i| {
+    const nshown = @min(nmsgs, max_msgs);
+    for (1..nshown + 1) |i| {
         _ = c.lua_rawgeti(l, 3, @intCast(i));
         defer c.lua_pop(l, 1);
 
         const msg = ffi.luaToString(l, -1);
         try del.push(msg);
-        if (i != nmsgs) {
+        if (i != nshown) {
             try del.writer.writeAll("%#Operator#,");
         }
+    }
+
+    if (nmsgs > max_msgs) {
+        try del.push("%#Comment#󰇘");
     }
 
     ffi.luaPushString(l, buf.slice());
