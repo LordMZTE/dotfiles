@@ -87,7 +87,6 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
 /// Returns a list of JDTLS bundles (plugins basically) and the preferred content provider
 ///
 /// https://github.com/dgileadi/vscode-java-decompiler/tree/master/server
-// TODO: add command to download these maybe?
 fn lGetBundleInfo(l: *c.lua_State) !c_int {
     const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
 
@@ -122,7 +121,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     var iter = dir.iterate();
     var idx: c_int = 1;
     while (try iter.next()) |f| {
-        if (f.kind != .file or !std.mem.endsWith(u8, f.name, ".jar"))
+        if (!std.mem.endsWith(u8, f.name, ".jar"))
             continue;
 
         if (!has_cfr and std.mem.containsAtLeast(u8, f.name, 1, "cfr"))

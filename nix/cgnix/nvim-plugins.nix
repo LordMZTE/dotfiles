@@ -103,28 +103,4 @@ in
       mv * .* "$out"
     '';
   };
-
-  #pkgs.linkFarm "nvim-plugins"
-  #  (lib.mapAttrsToList
-  #    (name: src: {
-  #      name = name;
-  #      path = stdenv.mkDerivation {
-  #        name = "${name}-compiled";
-  #        inherit src;
-
-  #        nativeBuildInputs = with pkgs; [ luajit luajitPackages.fennel ];
-
-  #        buildPhase = ''
-  #          # Compile source with mzte-nv-compile
-  #          ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} ." else ""}
-  #        '';
-
-  #        installPhase = ''
-  #          mkdir -p "$out"
-  #          mv * .* "$out"
-  #        '';
-  #      };
-  #    })
-  #    config.cgnix.nvim-plugins
-  #  );
 }

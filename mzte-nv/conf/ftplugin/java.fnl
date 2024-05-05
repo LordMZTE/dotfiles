@@ -39,7 +39,10 @@
                               :implementationsCodeLens {:enabled true}
                               :references {:includeDecompiledSources true}
                               :referencesCodeLens {:enabled true}
-                              :updateBuildConfiguration :interactive}}
+                              :updateBuildConfiguration :interactive
+                              :decompilers {:cfr {:rename true
+                                                  :antiobf true
+                                                  :trackbytecodeloc true}}}}
             :init_options {:bundles bundle-info.bundles
                            :extendedClientCapabilities (let [cap jdtls.extendedClientCapabilities]
                                                          (set cap.resolveAdditionalTextEditsSupport
