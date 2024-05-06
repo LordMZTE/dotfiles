@@ -2,7 +2,7 @@
 let
   flakePkg = ref: (builtins.getFlake ref).packages.${system}.default;
   default-packages = with pkgs; [
-    # MISSING: haxe_language_server, racket_langserver, zls
+    # MISSING: racket_langserver
     # Language Servers
     (pkgs.linkFarm "clang-nvim" (map
       (bin: { name = "bin/${bin}"; path = "${clang-tools}/bin/${bin}"; })
@@ -22,6 +22,7 @@ let
 
       nativeBuildInputs = with pkgs; [ zig_0_12.hook git ];
     })
+    (pkgs.callPackage ./haxe-language-server.nix { })
     jdt-language-server
     lua-language-server
     (flakePkg "github:oxalica/nil")
@@ -40,6 +41,7 @@ let
     })
     taplo
     vscode-langservers-extracted # cssls, eslint, html, jsonls
+    zls
 
     # Formatters
     (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${nodePackages.prettier}/bin/prettier"; }]) # needed due to symlink shenanigans
