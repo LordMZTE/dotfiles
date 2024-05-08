@@ -8,8 +8,8 @@ pub const std_options = std.Options{
 
 const browsers = &[_][]const u8{
     "brave",
-    "firefox",
     "luakit",
+    "firefox",
     "chromium",
 };
 
@@ -44,8 +44,17 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
     defer alloc.free(argv);
     argv[0] = browser;
 
-    for (std.os.argv[1..], 0..) |arg, i| {
-        argv[i + 1] = std.mem.span(arg);
+    for (std.os.argv[1..], argv[1..]) |arg, *childarg| {
+        childarg.* = std.mem.span(arg);
+    }
+
+    // Luakit doesn't support conventional 'app' mode, so instead, we just open the page normally.
+    if (std.mem.eql(u8, browser, "luakit")) {
+        for (argv) |*arg| {
+            if (arg.len > 6 and std.mem.startsWith(u8, arg.*, "--app=")) {
+                arg.* = arg.*[6..];
+            }
+        }
     }
 
     std.log.info("child argv: {s}", .{argv});
