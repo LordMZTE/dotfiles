@@ -17,6 +17,7 @@
                  :clock
                  :tray]
  :mpris {:format "{status_icon} {dynamic}"
+         :interval 5
          :dynamic-order [:title :artist :position :length]
          :dynamic-importance-order [:position :length :artist :album]
          :status-icons {:playing "󰏤" :paused "󰐊" :stopped "󰓛"}
