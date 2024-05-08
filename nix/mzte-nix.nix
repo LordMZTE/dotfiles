@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }:
+{ common, lib, pkgs, config, ... }:
 let
   flakePkg = ref: (builtins.getFlake ref).packages.${pkgs.system}.default;
 in
@@ -8,6 +8,9 @@ in
   config.mzte-nix-packages = [
     pkgs.nix-output-monitor
     pkgs.nix-du
+    (pkgs.nsxiv.overrideAttrs {
+      patches = [ (common.confgenFile "cgassets/nix/nsxiv-config.patch") ];
+    })
     (flakePkg "github:nix-community/zon2nix")
   ];
 
