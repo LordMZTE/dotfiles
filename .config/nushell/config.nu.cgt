@@ -20,10 +20,32 @@ $env.config = {
     shell_integration: true
     use_kitty_protocol: true
     highlight_resolved_externals: true
+
+    history: {
+        file_format: "sqlite"
+        isolation: true
+    }
+
+    keybindings: [
+        {
+            name: new_line_shift
+            modifier: shift
+            keycode: enter
+            mode: vi_insert
+            event: { edit: insertnewline }
+        },
+    ]
 }
 
-def l [] { ls | sort-by type }
-def ll [] { ls -la | sort-by type }
-def la [] { ls -a | sort-by type }
+# Run-in-Background function
+def rbg [...argv] {
+    # TODO: Use a plugin to track number of running jobs
+    systemd-run --user ...$argv
+}
+
+# Aliases
+def l [path: glob = "."] { ls $path | sort-by type }
+def ll [path: glob = "."] { ls -la $path | sort-by type }
+def la [path: glob = "."] { ls -a $path | sort-by type }
 alias nv = nvim
 alias nvide = neovide
