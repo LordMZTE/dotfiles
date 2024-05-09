@@ -1,0 +1,25 @@
+# The default config record. This is where much of your global configuration is setup.
+$env.config = {
+    show_banner: false
+
+    table: {
+        mode: reinforced
+        index_mode: always # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
+        padding: { left: 0, right: 0 }
+        header_on_separator: true
+    }
+
+    completions: {
+        algorithm: "fuzzy"
+    }
+
+    cursor_shape: {
+        vi_insert: line
+        vi_normal: block
+    }
+
+    edit_mode: vi
+    shell_integration: true
+    use_kitty_protocol: true
+    highlight_resolved_externals: true
+}

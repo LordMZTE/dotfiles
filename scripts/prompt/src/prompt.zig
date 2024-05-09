@@ -108,7 +108,7 @@ fn Renderer(comptime Writer: type) type {
 
         fn renderShell(self: *Self) !void {
             switch (self.options.shell) {
-                .fish => {},
+                .fish, .nu => {},
                 .bash => {
                     const bgcol = Color{ .Grey = 150 };
                     const fgcol = Color.Black;

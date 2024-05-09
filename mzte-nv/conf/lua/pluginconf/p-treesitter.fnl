@@ -7,7 +7,7 @@
 ;; Nix based parsers
 (let [path mztenv.reg.tree_sitter_parsers]
   (when path
-    (vim.opt.runtimepath:append path)))
+    (vim.opt.runtimepath:prepend path)))
 
 (var parser-config (parsers.get_parser_configs))
 
@@ -16,7 +16,11 @@
                                           :branch :main}
                            :filetype :haxe})
 
-(configs.setup {:highlight {:enable true}
+(local install-dir (.. (vim.loop.os_homedir) :/.local/share/nvim/ts-parsers))
+(vim.opt.runtimepath:append install-dir)
+
+(configs.setup {:parser_install_dir install-dir
+                :highlight {:enable true}
                 :autotag {:enable true}
                 :indent {:enable true}
                 :playground {:enable true}

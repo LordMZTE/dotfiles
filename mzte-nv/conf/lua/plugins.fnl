@@ -33,7 +33,8 @@
                          :recorder
                          :tsn-actions
                          :dressing
-                         :gitsigns])
+                         :gitsigns
+                         :nu])
 
 (local errors {})
 

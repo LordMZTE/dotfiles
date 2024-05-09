@@ -11,6 +11,25 @@ const setup_fmtstrs = struct {
         \\end
         \\
     ;
+    const nu =
+        \\$env.PROMPT_COMMAND = {{ ||
+        \\    $env.MZPROMPT_SHELL = "nu"
+        \\    $env.MZPROMPT_STATUS = $env.LAST_EXIT_CODE
+        \\    $env.MZPROMPT_VI_MODE = "_none"
+        \\    $env.MZPROMPT_DURATION = $env.CMD_DURATION_MS
+        \\    $env.MZPROMPT_JOBS = 0
+        \\    {[argv0]s} show
+        \\}}
+        \\
+        \\$env.PROMPT_COMMAND_RIGHT = ""
+        \\
+        \\$env.PROMPT_INDICATOR = ""
+        \\$env.PROMPT_INDICATOR_VI_INSERT = ""
+        \\$env.PROMPT_INDICATOR_VI_NORMAL = "〉"
+        \\$env.PROMPT_MULTILINE_INDICATOR = "::: "
+        \\$env.PROMPT_INDICATOR = ""
+        \\
+    ;
     const bash =
         \\__mzprompt_show() {{
         \\    export MZPROMPT_STATUS="$?"
@@ -27,6 +46,7 @@ const setup_fmtstrs = struct {
 
 pub const Shell = enum {
     fish,
+    nu,
     bash,
 
     pub fn writeInitCode(self: Shell, argv0: []const u8, writer: anytype) !void {
