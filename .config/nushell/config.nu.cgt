@@ -1,10 +1,8 @@
-# The default config record. This is where much of your global configuration is setup.
 $env.config = {
     show_banner: false
 
     table: {
         mode: reinforced
-        index_mode: always # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
         padding: { left: 0, right: 0 }
         header_on_separator: true
     }
@@ -23,3 +21,9 @@ $env.config = {
     use_kitty_protocol: true
     highlight_resolved_externals: true
 }
+
+def l [] { ls | sort-by type }
+def ll [] { ls -la | sort-by type }
+def la [] { ls -a | sort-by type }
+alias nv = nvim
+alias nvide = neovide
