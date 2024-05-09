@@ -261,9 +261,9 @@ bindsym $mod+Shift+Ctrl+space exec wired --show 1
 bindsym Ctrl+Shift+F11 exec xdotool click --delay 10 --repeat 100 1
 bindsym Ctrl+Shift+F12 exec xdotool click --delay 10 --repeat 100 3
 
-# capture current screen and open in feh
-bindsym Shift+Print exec shotgun -s - | feh --class feh-float -
-for_window [class="feh-float"] floating enable
+# capture current screen and open in nsxiv
+bindsym Shift+Print exec shotgun -s - | nsxiv-pipe -e nsxiv-float
+for_window [class="nsxiv-float"] floating enable
 
 # catppuccin mocha theme
 set $rosewater #<% opt.catppuccin.rosewater %>

@@ -5,6 +5,6 @@ bind = SUPER ALT, SPACE, exec, rofi -show emoji
 bind = SUPER CTRL, B, exec, <% opt.commands.browser %>
 bind = SUPER SHIFT, P, exec, gpower2
 bind = ,PRINT, exec, grim -g "$(slurp; sleep 1)" ~/Downloads/screenshot.png
-bind = SHIFT, PRINT, exec, grim -g "$(slurp; sleep 1)" - | feh -
+bind = SHIFT, PRINT, exec, grim -g "$(slurp; sleep 1)" - | nsxiv-pipe
 bind = SUPER CTRL, V, exec, vinput md
 bind = SUPER CTRL, L, exec, physlock

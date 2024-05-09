@@ -32,7 +32,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Alt", "Space", "spawn", journal_prefix ++ "rofi -show combi" },
         .{ "Super+Alt", "Space", "spawn", journal_prefix ++ "rofi -show emoji" },
         .{ "None", "Print", "spawn", journal_prefix ++ "grim -g \"$(slurp; sleep 1)\" ~/Downloads/screenshot.png" },
-        .{ "Shift", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | " ++ journal_prefix ++ " feh -" },
+        .{ "Shift", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | " ++ journal_prefix ++ " nsxiv-pipe" },
 
         // media keys
         .{ "None", "XF86Eject", "spawn", journal_prefix ++ "eject -T" },

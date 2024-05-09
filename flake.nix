@@ -12,16 +12,18 @@
     }@inputs: utils.lib.eachDefaultSystem
       (system:
       let
-        pkgs = import nixpkgs { inherit system; };
-        common = pkgs.callPackage ./lib/common-nix { };
+        base-pkgs = (import nixpkgs { inherit system; });
+        common = base-pkgs.callPackage ./lib/common-nix { };
 
-        root-mod = {
+        root-mod = { config, pkgs, ... }: {
           options.packages = nixpkgs.lib.mkOption { };
           options.dev-shells = nixpkgs.lib.mkOption { };
+          options.nixpkgs.overlays = nixpkgs.lib.mkOption { default = []; };
 
-          config._module.args = {
+          config._module.args = rec {
+            pkgs = base-pkgs.appendOverlays config.nixpkgs.overlays;
             inherit inputs;
-            inherit pkgs system;
+            inherit system;
             inherit (pkgs) lib stdenv stdenvNoCC;
           };
 
@@ -64,7 +66,7 @@
       in
       {
         config = modopt;
-        mzteinit = pkgs.callPackage ./scripts/mzteinit/package.nix { };
+        mzteinit = base-pkgs.callPackage ./scripts/mzteinit/package.nix { };
         packages = modopt.config.packages;
         devShells = modopt.config.dev-shells;
       });
