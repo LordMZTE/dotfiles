@@ -13,7 +13,7 @@ pub fn initOptions() !void {
     var buf: [512]u8 = undefined;
 
     // Shell (defaults to mzteinit since that's my login shell)
-    try opt("fish").setLog("shell", .both);
+    try opt("nu").setLog("shell", .both);
 
     try cmd("syntax on");
 

@@ -1,6 +1,6 @@
 [main]
 opener = xdg-open;
-shell = /usr/bin/fish -c;
+shell = <% opt.system "which nu" %> -c;
 theme = catppuccin-mocha;
 show-hidden = true;
 mouse-support = true;

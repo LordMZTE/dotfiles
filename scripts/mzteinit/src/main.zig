@@ -80,7 +80,7 @@ fn tryMain() !void {
     if (env_map.data.get("MZTEINIT")) |_| {
         try stdout.writer().writeAll("mzteinit running already, starting shell\n");
         try stdout.flush();
-        var child = std.ChildProcess.init(launch_cmd orelse &.{"fish"}, alloc);
+        var child = std.ChildProcess.init(launch_cmd orelse &.{"nu"}, alloc);
         _ = try child.spawnAndWait();
         return;
     } else {

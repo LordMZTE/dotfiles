@@ -3,7 +3,7 @@ local opts = {}
 opts.mzteinit_entries = {
     { key = "z", label = "river",    cmd = { cg.opt.system "which mzteriver" } },
     { key = "h", label = "hyprland", cmd = { "Hyprland" } },
-    { key = "s", label = "shell",    cmd = { "fish" } },
+    { key = "s", label = "shell",    cmd = { "nu" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },
     { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
     { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },   quit = true },

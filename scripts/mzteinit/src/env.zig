@@ -41,12 +41,12 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         try env.put(kv[0], try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, kv[1] }));
     }
 
-    // set shell to fish to prevent anything from defaulting to mzteinit
-    if (try util.findInPath(alloc, "fish")) |fish| {
+    // set shell to nu to prevent anything from defaulting to mzteinit
+    if (try util.findInPath(alloc, "nu")) |fish| {
         defer alloc.free(fish);
         try env.put("SHELL", fish);
     } else {
-        log.warn("fish not found! setting $SHELL to /bin/sh", .{});
+        log.warn("nu not found! setting $SHELL to /bin/sh", .{});
         try env.put("SHELL", "/bin/sh");
     }
 
