@@ -44,6 +44,6 @@ in
 
   config.packages.mzte-nix = pkgs.symlinkJoin {
     name = "mzte-nix";
-    paths = config.mzte-nix-packages;
+    paths = lib.concatMap (p: map (o: p.${o}) p.outputs) config.mzte-nix-packages;
   };
 }

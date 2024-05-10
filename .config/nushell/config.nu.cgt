@@ -38,7 +38,7 @@ $env.config = {
 }
 
 # Run-in-Background function
-def rbg [...argv] {
+def & [...argv] {
     # TODO: Use a plugin to track number of running jobs
     systemd-run --user ...$argv
 }
