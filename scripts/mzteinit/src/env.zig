@@ -29,6 +29,50 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     };
     defer alloc.free(home);
 
+    // PATH
+    {
+        var bufstream = std.io.fixedBufferStream(&buf);
+        var b = delimitedWriter(bufstream.writer(), ':');
+
+        for ([_][]const u8{
+            ".nix-profile/bin",
+            ".mix/escripts",
+            ".cargo/bin",
+            ".local/bin",
+            "go/bin",
+            ".roswell/bin",
+        }) |fixed| {
+            try b.push(try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, fixed }));
+        }
+
+        // racket bins
+        racket: {
+            try msg("acquiring racket binary path...", .{});
+            const res = std.process.Child.run(.{
+                .allocator = alloc,
+                .argv = &.{
+                    "racket",
+                    "-l",
+                    "racket/base",
+                    "-e",
+                    "(require setup/dirs) (display (path->string (find-user-console-bin-dir)))",
+                },
+            }) catch break :racket;
+            defer alloc.free(res.stdout);
+            defer alloc.free(res.stderr);
+
+            try b.push(res.stdout);
+
+            log.info("racket binary path registered", .{});
+        }
+
+        if (env.get("PATH")) |system_path| {
+            try b.push(system_path);
+        }
+
+        try env.put("PATH", bufstream.getWritten());
+    }
+
     try env.put("MZTE_ENV_SET", "1");
 
     // XDG vars
@@ -42,9 +86,13 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     }
 
     // set shell to nu to prevent anything from defaulting to mzteinit
-    if (try util.findInPath(alloc, "nu")) |fish| {
-        defer alloc.free(fish);
-        try env.put("SHELL", fish);
+    if (try util.findInPath(
+        alloc,
+        env.get("PATH") orelse unreachable,
+        "nu",
+    )) |nu| {
+        defer alloc.free(nu);
+        try env.put("SHELL", nu);
     } else {
         log.warn("nu not found! setting $SHELL to /bin/sh", .{});
         try env.put("SHELL", "/bin/sh");
@@ -133,50 +181,6 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         "ROFI_PLUGIN_PATH",
         try std.fmt.bufPrint(&sbuf, "/usr/lib/rofi:{s}/.local/lib/rofi", .{home}),
     );
-
-    // PATH
-    {
-        var bufstream = std.io.fixedBufferStream(&buf);
-        var b = delimitedWriter(bufstream.writer(), ':');
-
-        for ([_][]const u8{
-            ".nix-profile/bin",
-            ".mix/escripts",
-            ".cargo/bin",
-            ".local/bin",
-            "go/bin",
-            ".roswell/bin",
-        }) |fixed| {
-            try b.push(try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, fixed }));
-        }
-
-        // racket bins
-        racket: {
-            try msg("acquiring racket binary path...", .{});
-            const res = std.process.Child.run(.{
-                .allocator = alloc,
-                .argv = &.{
-                    "racket",
-                    "-l",
-                    "racket/base",
-                    "-e",
-                    "(require setup/dirs) (display (path->string (find-user-console-bin-dir)))",
-                },
-            }) catch break :racket;
-            defer alloc.free(res.stdout);
-            defer alloc.free(res.stderr);
-
-            try b.push(res.stdout);
-
-            log.info("racket binary path registered", .{});
-        }
-
-        if (env.get("PATH")) |system_path| {
-            try b.push(system_path);
-        }
-
-        try env.put("PATH", bufstream.getWritten());
-    }
 
     // LUA_CPATH
     {
