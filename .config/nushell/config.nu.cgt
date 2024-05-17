@@ -40,7 +40,7 @@ $env.config = {
 # Run-in-Background function
 def & [...argv] {
     # TODO: Use a plugin to track number of running jobs
-    systemd-run --user ...$argv
+    systemd-run --user --same-dir ...$argv
 }
 
 # Aliases
@@ -48,4 +48,4 @@ def l [path: glob = "."] { ls $path | sort-by type }
 def ll [path: glob = "."] { ls -la $path | sort-by type }
 def la [path: glob = "."] { ls -a $path | sort-by type }
 alias nv = nvim
-alias nvide = neovide
+alias nvide = & neovide "--no-fork"

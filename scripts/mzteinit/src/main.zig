@@ -88,7 +88,9 @@ fn tryMain() !void {
     }
 
     if (try env.populateEnvironment(&env_map.data)) {
-        try env.populateSysdaemonEnvironment(&env_map.data);
+        env.populateSysdaemonEnvironment(&env_map.data) catch |e| {
+            std.log.err("failed to set sysdaemon environment: {}", .{e});
+        };
     }
 
     var srv: ?Server = null;
@@ -136,6 +138,8 @@ fn tryMain() !void {
         "entries.cfg",
     });
     defer alloc.free(entries_config_path);
+
+    std.log.info("entries file: {s}", .{entries_config_path});
 
     var entries_config_file = try std.fs.cwd().openFile(entries_config_path, .{});
     defer entries_config_file.close();

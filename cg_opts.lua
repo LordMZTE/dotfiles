@@ -1,9 +1,11 @@
 local opts = {}
 
 opts.mzteinit_entries = {
+    -- TODO: the `which` invocations here are a workaround in case the relevant binaries
+    -- are installed in a directory that mzteinit adds to $PATH, which it currently doesn't handle.
     { key = "z", label = "river",    cmd = { cg.opt.system "which mzteriver" } },
     { key = "h", label = "hyprland", cmd = { "Hyprland" } },
-    { key = "s", label = "shell",    cmd = { "nu" } },
+    { key = "s", label = "shell",    cmd = { cg.opt.system "which nu" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },
     { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
     { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },   quit = true },
