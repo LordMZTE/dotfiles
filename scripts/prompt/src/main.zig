@@ -22,7 +22,9 @@ pub fn main() !void {
         const shell = std.meta.stringToEnum(Shell, std.mem.span(std.os.argv[2])) orelse
             return error.InvalidShell;
 
-        try shell.writeInitCode(std.mem.span(std.os.argv[0]), stdout.writer());
+        var stdout_buf = std.io.bufferedWriter(stdout.writer());
+        try shell.writeInitCode(std.mem.span(std.os.argv[0]), stdout_buf.writer());
+        try stdout_buf.flush();
     } else if (std.mem.eql(u8, verb, "show")) {
         const options = prompt.Options{
             .status = try std.fmt.parseInt(

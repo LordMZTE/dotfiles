@@ -12,12 +12,14 @@ const setup_fmtstrs = struct {
         \\
     ;
     const nu =
+        // https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol
+        \\let mzprompt_has_jobcontrol = (which jobs | length) > 0
         \\$env.PROMPT_COMMAND = {{ ||
         \\    $env.MZPROMPT_SHELL = "nu"
         \\    $env.MZPROMPT_STATUS = $env.LAST_EXIT_CODE
         \\    $env.MZPROMPT_VI_MODE = "_none"
         \\    $env.MZPROMPT_DURATION = $env.CMD_DURATION_MS
-        \\    $env.MZPROMPT_JOBS = 0
+        \\    $env.MZPROMPT_JOBS = if $mzprompt_has_jobcontrol {{ jobs | length }} else {{ 0 }} 
         \\    {[argv0]s} show
         \\}}
         \\
@@ -26,7 +28,7 @@ const setup_fmtstrs = struct {
         \\$env.PROMPT_INDICATOR = ""
         \\$env.PROMPT_INDICATOR_VI_INSERT = ""
         \\$env.PROMPT_INDICATOR_VI_NORMAL = "〉"
-        \\$env.PROMPT_MULTILINE_INDICATOR = "::: "
+        \\$env.PROMPT_MULTILINE_INDICATOR = "   | "
         \\$env.PROMPT_INDICATOR = ""
         \\
     ;
