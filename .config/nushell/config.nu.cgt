@@ -43,3 +43,11 @@ def ll [path: glob = "."] { ls -la $path | sort-by type }
 def la [path: glob = "."] { ls -a $path | sort-by type }
 alias nv = nvim
 alias nvide = & neovide "--no-fork"
+
+# Misc functions
+def wldd [path: string] {
+    match (which $path) {
+        [{ path: $p }] => { ldd $p },
+        _ => { error make { msg: $"No external command ($path)" } },
+    }
+}
