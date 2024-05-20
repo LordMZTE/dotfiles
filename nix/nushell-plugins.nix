@@ -40,18 +40,27 @@
     })
   ];
 
-  config.packages.nushell-plugins = pkgs.writeTextFile {
-    name = "add-plugins.nu";
-    text = builtins.concatStringsSep "\n"
-      (map
-        (d:
-          let
-            plugin-name = lib.removePrefix "nu-plugin-" d.name;
-          in
-          ''
-            if (plugin list | any { |p| $p.name == "${plugin-name}" }) { plugin rm ${plugin-name} }
-            plugin add ${lib.getBin d}/bin/${builtins.replaceStrings ["-"] ["_"] d.name}
-          '')
-        config.nushell-plugins);
-  };
+  config.packages.nushell-plugins =
+    let
+      pluginName = d: lib.removePrefix "nu-plugin-" d.name;
+
+      # This needs to be a separate file because `plugin use` is a parser keyword in Nu,
+      # thus it would be evaluated before `plugin add` in `add-plugins.nu`.
+      use-plugins-script = pkgs.writeTextFile {
+        name = "use-plugins.nu";
+        text = builtins.concatStringsSep "\n"
+          (map (d: "plugin use ${pluginName d}") config.nushell-plugins);
+      };
+    in
+    pkgs.writeTextFile {
+      name = "add-plugins.nu";
+      text = builtins.concatStringsSep "\n"
+        ((map
+          (d:
+            ''
+              if (plugin list | any { |p| $p.name == "${pluginName d}" }) { plugin rm ${pluginName d} }
+              plugin add ${lib.getBin d}/bin/${builtins.replaceStrings ["-"] ["_"] d.name}
+            '')
+          config.nushell-plugins) ++ [ "source ${use-plugins-script}" ]);
+    };
 }
