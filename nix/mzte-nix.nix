@@ -35,10 +35,11 @@ in
   ];
 
   config.mzte-nix-packages = with pkgs; [
-    nix-output-monitor
     nix-du
+    nix-output-monitor
     nsxiv
     nsxiv-pipe
+    nurl
     (flakePkg "github:nix-community/zon2nix")
   ];
 
