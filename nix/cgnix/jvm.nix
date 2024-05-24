@@ -3,6 +3,7 @@ let
   default-jvms = with pkgs; {
     java-8-openjdk = jdk8;
     java-17-openjdk = jdk17;
+    java-21-openjdk = jdk21; # Useless, but jdtls needs it anyways
   };
 in
 {
