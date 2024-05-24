@@ -87,20 +87,20 @@ in
 
     unpackPhase = ''
       # Copy plugins sources here
+      mkdir plugins
       ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
-                                        (name: src: "cp -r ${src} ${name}")
+                                        (name: src: "cp -r ${src} plugins/${name}")
                                         config.cgnix.nvim-plugins)}
-      chmod -R +rw .
+      chmod -R +rw plugins
     '';
 
     buildPhase = ''
       # Compile
-      ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} ." else ""}
+      ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} plugins" else ""}
     '';
 
     installPhase = ''
-      mkdir -p "$out"
-      mv * .* "$out"
+      mv plugins "$out"
     '';
   };
 }
