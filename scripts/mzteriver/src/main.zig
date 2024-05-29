@@ -72,7 +72,7 @@ pub fn main() !void {
             try env.append("QT_QPA_PLATFORM=wayland");
             try env.append("XDG_CURRENT_DESKTOP=river");
 
-            if (opts.nvidia) {
+            if (opts.cg.nvidia) {
                 try env.append("WLR_NO_HARDWARE_CURSORS=1");
             }
 

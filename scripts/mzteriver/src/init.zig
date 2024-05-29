@@ -1,5 +1,5 @@
 const std = @import("std");
-const opts = @import("opts");
+const opt = @import("opts").cg;
 
 const log = std.log.scoped(.init);
 
@@ -23,9 +23,9 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     // Normal-Mode keyboard mappings
     inline for (.{
         // "run command" maps
-        .{ "Super", "Return", "spawn", journal_prefix ++ opts.term_command },
-        .{ "Super+Control", "E", "spawn", journal_prefix ++ opts.file_manager_command },
-        .{ "Super+Control", "B", "spawn", journal_prefix ++ opts.browser_command },
+        .{ "Super", "Return", "spawn", journal_prefix ++ opt.term.command },
+        .{ "Super+Control", "E", "spawn", journal_prefix ++ opt.commands.file_manager },
+        .{ "Super+Control", "B", "spawn", journal_prefix ++ opt.commands.browser },
         .{ "Super+Control", "V", "spawn", journal_prefix ++ "vinput md" },
         .{ "Super+Control", "L", "spawn", journal_prefix ++ "physlock" },
         .{ "Super+Shift", "P", "spawn", journal_prefix ++ "gpower2" },
@@ -36,14 +36,14 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
         // media keys
         .{ "None", "XF86Eject", "spawn", journal_prefix ++ "eject -T" },
-        .{ "None", "XF86AudioRaiseVolume", "spawn", journal_prefix ++ "pactl set-sink-volume @DEFAULT_SINK@ +5%" },
-        .{ "None", "XF86AudioLowerVolume", "spawn", journal_prefix ++ "pactl set-sink-volume @DEFAULT_SINK@ -5%" },
-        .{ "None", "XF86AudioMute", "spawn", journal_prefix ++ "pactl set-sink-mute @DEFAULT_SINK@ toggle" },
-        .{ "None", "XF86AudioMicMute", "spawn", journal_prefix ++ "pactl set-source-mute @DEFAULT_SINK@ toggle" },
-        .{ "None", "XF86AudioMedia", "spawn", journal_prefix ++ "playerctl play-pause" },
-        .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ "playerctl play-pause" },
-        .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ "playerctl previous" },
-        .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ "playerctl next" },
+        .{ "None", "XF86AudioRaiseVolume", "spawn", journal_prefix ++ opt.commands.media.volume_up },
+        .{ "None", "XF86AudioLowerVolume", "spawn", journal_prefix ++ opt.commands.media.volume_down },
+        .{ "None", "XF86AudioMute", "spawn", journal_prefix ++ opt.commands.media.mute_sink },
+        .{ "None", "XF86AudioMicMute", "spawn", journal_prefix ++ opt.commands.media.mute_source },
+        .{ "None", "XF86AudioMedia", "spawn", journal_prefix ++ opt.commands.media.play_pause },
+        .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ opt.commands.media.play_pause },
+        .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ opt.commands.media.prev },
+        .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ opt.commands.media.next },
 
         // control maps
         .{ "Super+Shift", "E", "exit" },
@@ -156,15 +156,15 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
     try con.runCommand(&.{ "set-repeat", "50", "300" });
 
-    try con.runCommand(&.{ "border-color-focused", "0x" ++ opts.catppuccin_red });
-    try con.runCommand(&.{ "border-color-unfocused", "0x" ++ opts.catppuccin_sky });
+    try con.runCommand(&.{ "border-color-focused", "0x" ++ opt.catppuccin.red });
+    try con.runCommand(&.{ "border-color-unfocused", "0x" ++ opt.catppuccin.sky });
 
     try con.runCommand(&.{ "hide-cursor", "when-typing", "enabled" });
 
     try con.runCommand(&.{
         "xcursor-theme",
-        opts.cursor_theme,
-        std.fmt.comptimePrint("{}", .{opts.cursor_size}),
+        opt.cursor.theme,
+        std.fmt.comptimePrint("{}", .{opt.cursor.size}),
     });
 
     try con.runCommand(&.{ "rule-add", "-app-id", "vinput-editor", "float" });

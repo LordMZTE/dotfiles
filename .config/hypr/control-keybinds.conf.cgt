@@ -1,12 +1,12 @@
 # Media keys
-bind = ,XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
-bind = ,XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
-bind = ,XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle
-bind = ,XF86AudioMicMute, exec, pactl set-source-mute @DEFAULT_SOURCE@ toggle
-bind = ,XF86AudioPlay, exec, playerctl play-pause
-bind = ,XF86AudioStop, exec, playerctl stop
-bind = ,XF86AudioNext, exec, playerctl next
-bind = ,XF86AudioPrev, exec, playerctl previous
+bind = ,XF86AudioRaiseVolume, exec, <% opt.commands.media.volume_up %>
+bind = ,XF86AudioLowerVolume, exec, <% opt.commands.media.volume_down %>
+bind = ,XF86AudioMute, exec, <% opt.commands.media.mute_sink %>
+bind = ,XF86AudioMicMute, exec, <% opt.commands.media.mute_source %>
+bind = ,XF86AudioPlay, exec, <% opt.commands.media.play_pause %>
+bind = ,XF86AudioStop, exec, <% opt.commands.media.stop %>
+bind = ,XF86AudioNext, exec, <% opt.commands.media.next %>
+bind = ,XF86AudioPrev, exec, <% opt.commands.media.prev %>
 
 # Control keys
 bind = SUPER SHIFT, E, exit,

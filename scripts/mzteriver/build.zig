@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const cg_opt = try common.confgenGet(struct {
+    const CgOpt = struct {
         catppuccin: struct {
             red: [:0]const u8,
             sky: [:0]const u8,
@@ -17,22 +17,27 @@ pub fn build(b: *std.Build) !void {
         commands: struct {
             file_manager: [:0]const u8,
             browser: [:0]const u8,
+            media: struct {
+                volume_up: [:0]const u8,
+                volume_down: [:0]const u8,
+                mute_sink: [:0]const u8,
+                mute_source: [:0]const u8,
+
+                play_pause: [:0]const u8,
+                stop: [:0]const u8,
+                next: [:0]const u8,
+                prev: [:0]const u8,
+            },
         },
         cursor: struct {
             theme: [:0]const u8,
             size: u32,
         },
-    }, b.allocator);
+    };
+    const cg_opt = try common.confgenGet(CgOpt, b.allocator);
 
     const opts = b.addOptions();
-    opts.addOption([:0]const u8, "catppuccin_red", cg_opt.catppuccin.red);
-    opts.addOption([:0]const u8, "catppuccin_sky", cg_opt.catppuccin.sky);
-    opts.addOption(bool, "nvidia", cg_opt.nvidia);
-    opts.addOption([:0]const u8, "term_command", cg_opt.term.command);
-    opts.addOption([:0]const u8, "file_manager_command", cg_opt.commands.file_manager);
-    opts.addOption([:0]const u8, "browser_command", cg_opt.commands.browser);
-    opts.addOption([:0]const u8, "cursor_theme", cg_opt.cursor.theme);
-    opts.addOption(u32, "cursor_size", cg_opt.cursor.size);
+    opts.addOption(CgOpt, "cg", cg_opt);
 
     const scanner = Scanner.create(b, .{});
 

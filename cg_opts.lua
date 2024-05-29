@@ -66,6 +66,17 @@ opts.commands = {
         wl = "mako",
     },
     screen_lock = string.format("i3lock -ti %s/.local/share/backgrounds/mzte.png", os.getenv "HOME"),
+    media = {
+        volume_up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+        volume_down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        mute_sink = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        mute_source = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+
+        play_pause = "playerctl play-pause",
+        stop = "playerctl stop",
+        next = "playerctl next",
+        prev = "playerctl previous",
+    },
 }
 
 opts.gamemode = {
