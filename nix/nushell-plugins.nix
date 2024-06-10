@@ -7,11 +7,11 @@
       name = "nu-plugin-dbus";
       src = pkgs.fetchCrate {
         pname = "nu_plugin_dbus";
-        version = "0.6.1";
-        hash = "sha256-AqAtTpJWH0s3t7PrRXlgIHXwkaWsoFlOIouaiUaIQKg=";
+        version = "0.7.0";
+        hash = "sha256-Xw8/8ROem+9fTRwFxr4p1ZKFVdRnsUwFhmyu87OylKY=";
       };
 
-      cargoSha256 = "sha256-goDlrTU1XZVRQ8xvonY07n0FPZgheBm9y7chsZ3ZTKQ=";
+      cargoSha256 = "sha256-Rg6YCPUPib2U9FHHgKrTPyyWblj9QEbiKmQom3MpXPU=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
@@ -20,21 +20,21 @@
       name = "nu-plugin-formats";
       src = pkgs.fetchCrate {
         pname = "nu_plugin_formats";
-        version = "0.93.0";
-        hash = "sha256-1nvSPH+1wdEDlSXf/nW2+A3S/VaumhFucM5zCXIgh58=";
+        version = "0.94.2";
+        hash = "sha256-MqE6iD8MjavdSIxGZFGtuuzjZFcwtW7upFBlwOR08+o=";
       };
 
-      cargoSha256 = "sha256-RjYeJFPCttUs1kUkiuWzIhBl6pfZmsKJNvsH8w3+r6A=";
+      cargoSha256 = "sha256-7EBD4WtKHRX+34fao3oXOlb1UPpejxEL6Vagy9iH92I=";
     })
     (pkgs.rustPlatform.buildRustPackage {
       name = "nu-plugin-polars";
       src = pkgs.fetchCrate {
         pname = "nu_plugin_polars";
-        version = "0.93.0";
-        hash = "sha256-6Cjfa4vDex2XYE8PGV80P/ciMBcDN1gkA8vl5X7Lux0=";
+        version = "0.94.2";
+        hash = "sha256-rSwJImUi9k+MLPKaBxgV8UU1gTWoxCJHAtkUtYVvbyA=";
       };
 
-      cargoSha256 = "sha256-ziXLe2kdk4CSeE9M4m86PMvXcwJLgjypYEWcfw+yTg0=";
+      cargoSha256 = "sha256-llJGgqaoM1fJ9bdA0ohlf/TQqYOWjrl1RoONgSeTDHo=";
 
       doCheck = false; # Needs OpenSSL, which build doesn't for some reason.
     })

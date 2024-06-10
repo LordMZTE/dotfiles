@@ -17,7 +17,6 @@ $env.config = {
     }
 
     edit_mode: vi
-    shell_integration: true
     use_kitty_protocol: true
     highlight_resolved_externals: true
 
