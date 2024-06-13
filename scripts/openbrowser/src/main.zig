@@ -7,9 +7,10 @@ pub const std_options = std.Options{
 };
 
 const browsers = &[_][]const u8{
+    "librewolf",
+    "firefox",
     "brave",
     "luakit",
-    "firefox",
     "chromium",
 };
 

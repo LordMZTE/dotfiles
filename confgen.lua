@@ -1,6 +1,7 @@
 cg.addPath "cgassets"
 
 cg.addPath ".config"
+cg.addPath ".librewolf"
 cg.addPath ".local"
 cg.addPath ".ssh"
 cg.addPath ".cargo"
