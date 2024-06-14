@@ -1,0 +1,11 @@
+[Appearance]
+color_scheme_path=/nix/store/a0ynl33ql76nd9jzc5yjscyn05zrlwvi-qt5ct-1.8/share/qt5ct/colors/airy.conf
+custom_palette=false
+icon_theme=<% opt.icon_theme %>
+standard_dialogs=xdgdesktopportal
+style=kvantum-dark
+
+[Fonts]
+fixed="<% opt.font %>,12,-1,5,50,0,0,0,0,0"
+general="<% opt.font %>,12,-1,5,50,0,0,0,0,0"
+
