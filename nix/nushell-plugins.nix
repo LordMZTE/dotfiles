@@ -40,7 +40,7 @@
     })
   ];
 
-  config.packages.nushell-plugins =
+  config.output.packages.nushell-plugins =
     let
       pluginName = d: lib.removePrefix "nu-plugin-" d.name;
     in

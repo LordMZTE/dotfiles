@@ -19,7 +19,7 @@ let
   ];
 in
 {
-  dev-shells = builtins.mapAttrs
+  output.devShells = builtins.mapAttrs
     (_: extra-pkgs:
       let
         shpgks = libs ++ xorg-libs ++ extra-pkgs;

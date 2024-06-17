@@ -45,7 +45,7 @@ in
     (flakePkg "github:zhaofengli/attic")
   ];
 
-  config.packages.mzte-nix = pkgs.symlinkJoin {
+  config.output.packages.mzte-nix = pkgs.symlinkJoin {
     name = "mzte-nix";
     paths = lib.concatMap (p: map (o: p.${o}) p.outputs) config.mzte-nix-packages;
   };

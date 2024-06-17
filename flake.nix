@@ -16,9 +16,11 @@
         common = base-pkgs.callPackage ./lib/common-nix { };
 
         root-mod = { config, pkgs, ... }: {
-          options.packages = nixpkgs.lib.mkOption { };
-          options.dev-shells = nixpkgs.lib.mkOption { };
-          options.nixpkgs.overlays = nixpkgs.lib.mkOption { default = []; };
+          options.nixpkgs.overlays = nixpkgs.lib.mkOption { default = [ ]; };
+          options.output = nixpkgs.lib.mkOption {
+            default = { };
+            type = with nixpkgs.lib.types; attrsOf anything;
+          };
 
           config._module.args = rec {
             pkgs = base-pkgs.appendOverlays config.nixpkgs.overlays;
@@ -28,7 +30,7 @@
           };
 
           # devshell for the dotfiles
-          config.dev-shells.default = nixpkgs.legacyPackages.${system}.mkShell {
+          config.output.devShells.default = nixpkgs.legacyPackages.${system}.mkShell {
             buildInputs = with pkgs;
               [
                 # packages required to build scripts
@@ -57,6 +59,10 @@
                 "run-confgen"
               ];
           };
+
+          config.output.mzteinit = base-pkgs.callPackage ./scripts/mzteinit/package.nix { };
+
+          config.output.overlay = final: prev: config.output.packages;
         };
 
         modopt = nixpkgs.lib.evalModules {
@@ -64,10 +70,7 @@
           specialArgs = { inherit common; };
         };
       in
-      {
+      modopt.config.output // {
         config = modopt;
-        mzteinit = base-pkgs.callPackage ./scripts/mzteinit/package.nix { };
-        packages = modopt.config.packages;
-        devShells = modopt.config.dev-shells;
       });
 }

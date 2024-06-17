@@ -1,5 +1,7 @@
 ;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
 ;; vim: ft=fennel
+(local format-icons ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
+
 {:spacing 4
  :layer :top
  ;<! if opt.wayland_compositor == "river" then !>
@@ -8,6 +10,7 @@
  :modules-left [:hyprland/workspaces :hyprland/window]
  ;<! end !>
  :modules-right [:mpris
+                 :cava
                  :cpu
                  :memory
                  :pulseaudio
@@ -16,6 +19,11 @@
                  :battery
                  :clock
                  :tray]
+ :cava {:hide_on_silence true
+        :bars 16
+        :bar_delimiter 0
+        :method :pipewire
+        : format-icons}
  :mpris {:format "{status_icon} {dynamic}"
          :interval 5
          :dynamic-order [:title :artist :position :length]
@@ -29,8 +37,8 @@
          :format-alt "{:%Y-%m-%d}"}
  :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.system :nproc) 1)]
                      (.. s "{icon" i "}")) " {usage}% ")
-       :format-icons ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"]
-       :interval 2}
+       :interval 2
+       : format-icons}
  :memory {:format "{}% "}
  :temperature {:hwmon-path "<% opt.cpu_temp_hwmon %>"
                :critical-threshold 80
