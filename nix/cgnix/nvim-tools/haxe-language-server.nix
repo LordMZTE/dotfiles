@@ -193,8 +193,8 @@ pkgs.stdenvNoCC.mkDerivation {
 
   configurePhase = ''
     runHook preConfigure
-    export HOME=/build
-    echo '${deps}' > /build/.haxelib
+    export HOME="$(pwd)"
+    echo '${deps}' > .haxelib
     runHook postConfigure
   '';
 
