@@ -80,7 +80,7 @@ fn tryMain() !void {
     if (env_map.data.get("MZTEINIT")) |_| {
         try stdout.writer().writeAll("mzteinit running already, starting shell\n");
         try stdout.flush();
-        var child = std.ChildProcess.init(launch_cmd orelse &.{"nu"}, alloc);
+        var child = std.process.Child.init(launch_cmd orelse &.{"nu"}, alloc);
         _ = try child.spawnAndWait();
         return;
     } else {
@@ -121,7 +121,7 @@ fn tryMain() !void {
 
     if (launch_cmd) |cmd| {
         try msg("using launch command", .{});
-        var child = std.ChildProcess.init(cmd, alloc);
+        var child = std.process.Child.init(cmd, alloc);
         {
             env_map.mtx.lock();
             defer env_map.mtx.unlock();

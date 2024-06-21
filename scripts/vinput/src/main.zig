@@ -60,7 +60,7 @@ pub fn main() !void {
 
     std.log.info("invoking editor with command {s}", .{&editor_argv});
 
-    var nvide_child = std.ChildProcess.init(&editor_argv, alloc);
+    var nvide_child = std.process.Child.init(&editor_argv, alloc);
     _ = try nvide_child.spawnAndWait();
 
     const stat = std.fs.cwd().statFile(filename) catch |e| {

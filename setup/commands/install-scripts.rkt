@@ -16,7 +16,6 @@
   (install-link "scripts/videos-duration.sh" (bin-path "videos-duration"))
 
   ;; Compiled scripts
-  (install-zig "scripts/alecor")
   (install-zig "scripts/hyprtool")
   (install-rust "scripts/i3status")
   (install-zig "scripts/mzteinit")

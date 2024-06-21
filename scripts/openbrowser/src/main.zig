@@ -60,6 +60,6 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
 
     std.log.info("child argv: {s}", .{argv});
 
-    var child = std.ChildProcess.init(argv, alloc);
+    var child = std.process.Child.init(argv, alloc);
     _ = try child.spawnAndWait();
 }

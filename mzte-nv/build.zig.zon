@@ -5,8 +5,8 @@
     .dependencies = .{
         .common = .{ .path = "../lib/common-zig" },
         .znvim = .{
-            .url = "git+https://git.mzte.de/LordMZTE/znvim.git#8e52c461dc071e6b88c8e77e49aa2805f225e7da",
-            .hash = "122029929d792aa32a71c0b98bb67d344d971d269d6fea5b8f8693e29f0f45924951",
+            .url = "git+https://git.mzte.de/LordMZTE/znvim.git#593576ab90fe7745acef03b88849aa904c399731",
+            .hash = "122036fae770b609b5eca343a07dd735522f90c93f9ae1a5f89bc24480f5906cd777",
         },
     },
     .paths = .{""},

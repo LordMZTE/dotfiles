@@ -4,7 +4,7 @@ pub const confgen_json_opt = std.json.ParseOptions{ .ignore_unknown_fields = tru
 
 pub fn build(b: *std.Build) void {
     _ = b.addModule("common", .{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
     });
 }
 

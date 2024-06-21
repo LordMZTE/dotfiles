@@ -10,14 +10,14 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "mzteinit",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const mzteinitctl = b.addExecutable(.{
         .name = "mzteinitctl",
-        .root_source_file = .{ .path = "src/mzteinitctl.zig" },
+        .root_source_file = b.path("src/mzteinitctl.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -28,7 +28,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     const cg_opt = try common.confgenGet(struct {
-        gtk_theme: []u8, // TODO: this being non-const is a workaround for an std bug
+        gtk_theme: []const u8,
     }, b.allocator);
 
     const opts = b.addOptions();

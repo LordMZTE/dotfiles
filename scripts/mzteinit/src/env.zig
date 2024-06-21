@@ -227,7 +227,7 @@ pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
 
     log.debug("sysdaemon env cmd: {}", .{util.fmtCommand(argv.items)});
 
-    var child = std.ChildProcess.init(argv.items, env.hash_map.allocator);
+    var child = std.process.Child.init(argv.items, env.hash_map.allocator);
     const term = try child.spawnAndWait();
 
     if (!std.meta.eql(term, .{ .Exited = 0 })) {

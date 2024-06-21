@@ -6,7 +6,7 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "openbrowser",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = mode,
     });
@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(exe);
 
     const desktop_install_step = b.addInstallFile(
-        .{ .path = "assets/openbrowser.desktop" },
+        b.path("assets/openbrowser.desktop"),
         "share/applications/openbrowser.desktop",
     );
     b.getInstallStep().dependOn(&desktop_install_step.step);

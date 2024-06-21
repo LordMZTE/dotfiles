@@ -6,7 +6,7 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addSharedLibrary(.{
         .name = "mzte-mpv",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .link_libc = true,
         .target = target,
         .optimize = optimize,

@@ -29,7 +29,7 @@ pub const Command = struct {
         if (self.exit) exit.* = .immediate;
 
         log.info("run cmd: {s}", .{self.command});
-        var child = std.ChildProcess.init(self.command, alloc);
+        var child = std.process.Child.init(self.command, alloc);
         {
             env.mtx.lock();
             defer env.mtx.unlock();

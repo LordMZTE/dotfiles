@@ -23,7 +23,6 @@
 (apply cmd (if (noint)
                '("paru" "-Syu" "--noconfirm")
                '("paru" "-Syu")))
-(cmd "alecor" "mkcache")
 (cmd "tldr" "--update")
 
 (unless (empty? failures)

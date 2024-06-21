@@ -43,14 +43,17 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "mzteriver",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
+
+    scanner.addCSource(exe);
 
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
     exe.root_module.addImport("opts", opts.createModule());
-    exe.root_module.addImport("wayland", scanner.mod);
+    exe.root_module.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
     scanner.addCustomProtocol("river-control-unstable-v1.xml");
 

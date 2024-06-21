@@ -12,7 +12,7 @@ skipped_chapters: ChapterSet,
 
 const SBSkip = @This();
 
-const blacklist = std.ComptimeStringMap(void, .{
+const blacklist = std.StaticStringMap(void).initComptime(.{
     .{ "Endcards/Credits", {} },
     .{ "Interaction Reminder", {} },
     .{ "Intermission/Intro Animation", {} },

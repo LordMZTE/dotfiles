@@ -47,7 +47,7 @@ pub fn main() !u8 {
     for (std.os.argv[2..], child_argv) |a1, *a2|
         a2.* = std.mem.span(a1);
 
-    var child = std.ChildProcess.init(child_argv, alloc);
+    var child = std.process.Child.init(child_argv, alloc);
     child.env_map = &env;
     const term = try child.spawnAndWait();
 

@@ -1,2 +1,6 @@
 # confgen output
 cgout
+
+# Zig build outputs
+**/zig-out
+**/.zig-cache

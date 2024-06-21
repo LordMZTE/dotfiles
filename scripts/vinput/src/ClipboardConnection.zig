@@ -137,7 +137,7 @@ pub fn getContent(self: *ClipboardConnection, out_fd: std.posix.fd_t) !void {
                         t: ?[:0]const u8 = null,
 
                         fn offerListener(_: *wl.DataOffer, event: wl.DataOffer.Event, mt: *@This()) void {
-                            const text_types = std.ComptimeStringMap(void, .{
+                            const text_types = std.StaticStringMap(void).initComptime(.{
                                 .{ "TEXT", {} },
                                 .{ "STRING", {} },
                                 .{ "UTF8_STRING", {} },

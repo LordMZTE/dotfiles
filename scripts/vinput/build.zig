@@ -7,13 +7,14 @@ pub fn build(b: *std.Build) void {
     const mode = b.standardOptimizeOption(.{});
 
     const scanner = Scanner.create(b, .{});
-    const wayland_mod = scanner.mod;
+    const wayland_mod = b.createModule(.{ .root_source_file = scanner.result });
 
     const exe = b.addExecutable(.{
         .name = "vinput",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = mode,
+        .link_libc = true,
     });
 
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
@@ -26,6 +27,8 @@ pub fn build(b: *std.Build) void {
     scanner.generate("wl_compositor", 4);
     scanner.generate("wl_shm", 1);
     scanner.generate("xdg_wm_base", 2);
+
+    scanner.addCSource(exe);
 
     exe.root_module.linkSystemLibrary("wayland-client", .{});
 

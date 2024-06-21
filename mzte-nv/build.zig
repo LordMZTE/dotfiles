@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) !void {
 
     const lib = b.addSharedLibrary(.{
         .name = "mzte-nv",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = mode,
     });
@@ -55,7 +55,7 @@ pub fn build(b: *std.Build) !void {
     // this is the install step for the lua config compiler binary
     const compiler = b.addExecutable(.{
         .name = "mzte-nv-compile",
-        .root_source_file = .{ .path = "src/compiler.zig" },
+        .root_source_file = b.path("src/compiler.zig"),
         .target = target,
         .optimize = mode,
     });
