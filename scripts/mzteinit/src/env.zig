@@ -85,6 +85,26 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         try env.put(kv[0], try std.fmt.bufPrint(&sbuf, "{s}/{s}", .{ home, kv[1] }));
     }
 
+    // XDG_DATA_DIRS
+    {
+        var bufstream = std.io.fixedBufferStream(&buf);
+        var b = delimitedWriter(bufstream.writer(), ':');
+
+        // Default value taken from archwiki.
+        // https://wiki.archlinux.org/title/XDG_Base_Directory
+        try b.push(env.get("XDG_DATA_DIRS") orelse "/usr/local/share:/usr/share");
+
+        inline for (.{ ".nix-profile/share", ".local/share" }) |base| {
+            const full = try std.fmt.bufPrint(&sbuf, "{s}/" ++ base, .{home});
+            if (!std.mem.containsAtLeast(u8, bufstream.getWritten(), 1, full)) {
+                log.info("adding " ++ base ++ " to XDG_DATA_DIRS", .{});
+                try b.push(full);
+            }
+        }
+
+        try env.put("XDG_DATA_DIRS", bufstream.getWritten());
+    }
+
     // set shell to nu to prevent anything from defaulting to mzteinit
     if (try util.findInPath(
         alloc,
