@@ -28,6 +28,8 @@ pub fn build(b: *std.Build) !void {
                 next: [:0]const u8,
                 prev: [:0]const u8,
             },
+            backlight_up: [:0]const u8,
+            backlight_down: [:0]const u8,
         },
         cursor: struct {
             theme: [:0]const u8,

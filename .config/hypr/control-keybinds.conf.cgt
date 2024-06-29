@@ -8,6 +8,10 @@ bind = ,XF86AudioStop, exec, <% opt.commands.media.stop %>
 bind = ,XF86AudioNext, exec, <% opt.commands.media.next %>
 bind = ,XF86AudioPrev, exec, <% opt.commands.media.prev %>
 
+# Backlight keys
+bind = ,XF86MonBrightnessUp, exec, <% opt.commands.backlight_up %>
+bind = ,XF86MonBrightnessDown, exec, <% opt.commands.backlight_down %>
+
 # Control keys
 bind = SUPER SHIFT, E, exit,
 bind = SUPER SHIFT, Q, killactive,

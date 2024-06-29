@@ -44,6 +44,10 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ opt.commands.media.play_pause },
         .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ opt.commands.media.prev },
         .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ opt.commands.media.next },
+         
+        // light control
+        .{ "None", "XF86MonBrightnessUp", "spawn", journal_prefix ++ opt.commands.backlight_up },
+        .{ "None", "XF86MonBrightnessDown", "spawn", journal_prefix ++ opt.commands.backlight_down },
 
         // control maps
         .{ "Super+Shift", "E", "exit" },

@@ -26,16 +26,20 @@ exec --no-startup-id nm-applet
 # layout manager
 exec --no-startup-id i3man
 
+# media keys
 bindsym XF86AudioRaiseVolume exec <% opt.commands.media.volume_up %>
 bindsym XF86AudioLowerVolume exec <% opt.commands.media.volume_down %>
 bindsym XF86AudioMute exec <% opt.commands.media.mute_sink %>
 bindsym XF86AudioMicMute exec <% opt.commands.media.mute_source %>
 
-# media keys
 bindsym XF86AudioPlay exec <% opt.commands.media.play_pause %>
 bindsym XF86AudioStop exec <% opt.commands.media.stop %>
 bindsym XF86AudioNext exec <% opt.commands.media.next %>
 bindsym XF86AudioPrev exec <% opt.commands.media.prev %>
+
+# Backlight keys
+bindsym XF86MonBrightnessUp exec <% opt.commands.backlight_up %>
+bindsym XF86MonBrightnessDown exec <% opt.commands.backlight_down %>
 
 # other fancy keys
 bindsym XF86Mail exec <% opt.commands.email %>

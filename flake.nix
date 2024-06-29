@@ -44,7 +44,7 @@
                 wayland-protocols
                 haxe
                 mpv-unwrapped
-                zig_0_12
+                zig_0_13
               ] ++
               # shorthands for setup.rkt
               builtins.map

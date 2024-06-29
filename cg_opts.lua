@@ -77,6 +77,8 @@ opts.commands = {
         next = "playerctl next",
         prev = "playerctl previous",
     },
+    backlight_up = "light -A 15";
+    backlight_down = "light -U 15";
 }
 
 opts.gamemode = {

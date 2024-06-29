@@ -127,10 +127,9 @@
     (cmd "haxe" "build.hxml")))
 
 (define-logging (generate-cgopt-json)
-  (unless (directory-exists? "cgout")
-    (make-directory "cgout"))
+  (make-directory* "cgout/_cgfs")
   (call-with-output-file* #:exists 'truncate/replace
-                          "cgout/opts.json"
+                          "cgout/_cgfs/opts.json"
                           (λ (outfile)
                             (parameterize ([log-calls #f] [current-output-port outfile])
                               (cmd "confgen" "--json-opt" "confgen.lua")))))

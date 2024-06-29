@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
 /// Retrieve some confgen options given a relative path to the dotfile root and a struct type
 /// with a field for each option.
 pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
-    const optjson_path = comptime std.fs.path.dirname(@src().file).? ++ "/../../cgout/opts.json";
+    const optjson_path = comptime std.fs.path.dirname(@src().file).? ++ "/../../cgout/_cgfs/opts.json";
     var file = try std.fs.cwd().openFile(optjson_path, .{});
     defer file.close();
     var buf_reader = std.io.bufferedReader(file.reader());
