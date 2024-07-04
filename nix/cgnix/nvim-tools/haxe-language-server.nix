@@ -189,7 +189,7 @@ pkgs.stdenvNoCC.mkDerivation {
     hash = "sha256-rKzyeLbXNBL3wGXYtb3n9YNU0Qwm1Tsl2XPJYXMEjAo=";
   };
 
-  nativeBuildInputs = with pkgs; [ haxe nodePackages.uglify-js ];
+  nativeBuildInputs = with pkgs; [ haxe ];
 
   configurePhase = ''
     runHook preConfigure
