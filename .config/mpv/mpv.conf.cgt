@@ -1,0 +1,18 @@
+<!
+local opts = {
+  -- Enable hardware decoding
+  vo = "gpu-next",
+  profile = "gpu-hq",
+  hwdec = "auto",
+  ["hwdec-codecs"] = "all",
+
+  -- YTDL: Don't go over 1080p
+  ["ytdl-format"] = "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+
+  -- YTDL: Mark Sponsorblock segments (YT-DLP Only, also doesn't work lol)
+  --["ytdl-raw-options"] = "sponsorblock-mark=all",
+}
+!>
+<! for k, v in pairs(opts) do !>
+<% k %>=<% v %>
+<! end !>
