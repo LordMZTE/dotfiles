@@ -1,4 +1,6 @@
 const std = @import("std");
+const cg = @import("opts").cg;
+
 const sysdaemon = @import("sysdaemon.zig");
 
 const util = @import("util.zig");
@@ -156,7 +158,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // GUI options
     {
         try env.put("QT_QPA_PLATFORMTHEME", "qt5ct");
-        try env.put("GTK_THEME", @import("opts").gtk_theme); // gtk theme from confgen
+        try env.put("GTK_THEME", cg.gtk_theme); // gtk theme from confgen
 
         // this stops GTK from dbus-launching the mid-bogglingly pointless at-spi daemon
         try env.put("NO_AT_BRIDGE", "1");

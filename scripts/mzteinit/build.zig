@@ -27,12 +27,23 @@ pub fn build(b: *std.Build) !void {
         e.root_module.addImport("common", common_mod);
     }
 
+    // TODO: Broken, see: https://github.com/ziglang/zig/issues/20525
+    //const cg_opt = try common.confgenGet(struct {
+    //    gtk_theme: []const u8,
+    //    mzteinit_entries: []const struct {
+    //        key: []const u8,
+    //        label: []const u8,
+    //        cmd: []const []const u8,
+    //        quit: bool = false,
+    //    },
+    //}, b.allocator);
+
     const cg_opt = try common.confgenGet(struct {
         gtk_theme: []const u8,
     }, b.allocator);
 
     const opts = b.addOptions();
-    opts.addOption([]const u8, "gtk_theme", cg_opt.gtk_theme);
+    opts.addOption(@TypeOf(cg_opt), "cg", cg_opt);
     exe.root_module.addImport("opts", opts.createModule());
 
     b.installArtifact(exe);
