@@ -1,3 +1,10 @@
+# See: https://www.nushell.sh/cookbook/external_completers.html#fish-completer
+let fish_completer = {|spans|
+    fish --command $'complete "--do-complete=($spans | str join " ")"'
+    | $"value(char tab)description(char newline)" + $in
+    | from tsv --flexible --no-infer
+}
+
 $env.config = {
     show_banner: false
 
@@ -8,7 +15,10 @@ $env.config = {
     }
 
     completions: {
-        algorithm: "fuzzy"
+        external: (if (which fish | is-not-empty) { {
+            enable: true
+            completer: $fish_completer
+        } } else { {} })
     }
 
     cursor_shape: {
