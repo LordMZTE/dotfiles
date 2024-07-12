@@ -1,0 +1,17 @@
+<! function gitalias(new, old) !>
+def --wrapped "git <% new %>" [...rest] {
+  git <% old %> ...$rest
+}
+<! end !>
+
+<!
+  gitalias("a", "add")
+  gitalias("c", "commit")
+  gitalias("ch", "checkout")
+  gitalias("l", "log")
+  gitalias("p", "push")
+  gitalias("s", "status")
+
+  gitalias("schieb", "push")
+  gitalias("zieh", "pull")
+!>
