@@ -1,8 +1,14 @@
-# See: https://www.nushell.sh/cookbook/external_completers.html#fish-completer
-let fish_completer = {|spans|
+let completer = {|spans|
     fish --command $'complete "--do-complete=($spans | str join " ")"'
     | $"value(char tab)description(char newline)" + $in
     | from tsv --flexible --no-infer
+    | each { |comp|
+        let escaped = $comp.value | str replace --all '"' '\"'
+        {
+            value: (if ($escaped | str contains " ") { $'"($escaped)"' } else { $escaped })
+            description: $comp.description
+        }
+    }
 }
 
 $env.config = {
@@ -15,9 +21,10 @@ $env.config = {
     }
 
     completions: {
+        algorithm: "fuzzy"
         external: (if (which fish | is-not-empty) { {
             enable: true
-            completer: $fish_completer
+            completer: $completer
         } } else { {} })
     }
 
