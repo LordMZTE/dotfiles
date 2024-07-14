@@ -4,8 +4,11 @@ def --wrapped "git <% new %>" [...rest] {
 }
 <! end !>
 
+def --wrapped "git a" [p: path, ...rest] {
+    git add $p ...$rest
+}
+
 <!
-  gitalias("a", "add")
   gitalias("c", "commit")
   gitalias("ch", "checkout")
   gitalias("l", "log")
