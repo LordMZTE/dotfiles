@@ -93,7 +93,7 @@ cg.opt.fennelCompile = fennel.compileString
 
 -- Evaluate fennel code and JSONify the result. Meant to be used as a post-processor.
 cg.opt.fennelToJSON = function(str)
-    return cg.toJSON(fennel.eval(str))
+    return cg.fmt.json.serialize(fennel.eval(str))
 end
 
 -- Check if the given file exists
