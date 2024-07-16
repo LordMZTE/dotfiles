@@ -13,8 +13,8 @@ in
       nsxiv-pipe = prev.stdenvNoCC.mkDerivation {
         name = "nsxiv-pipe";
         src = prev.fetchurl {
-          url = "https://codeberg.org/nsxiv/nsxiv-extra/raw/commit/7cdf1a8dba145f2aaf5734b3d084b1d56bea6554/scripts/nsxiv-pipe/nsxiv-pipe";
-          hash = "sha256-fphucoQzR5gWG78xr68AkclMDF6l9BsgVOVQzjK6vrU=";
+          url = "https://codeberg.org/nsxiv/nsxiv-extra/raw/commit/f7d1efe3495949e2e88fdfef37aed5a40400acea/scripts/nsxiv-pipe/nsxiv-pipe";
+          sha256 = "sha256-q651YZlot/lEKyIqVBvvXWUTsdpUbIvg9BGH0dZ77u8=";
         };
 
         dontUnpack = true;

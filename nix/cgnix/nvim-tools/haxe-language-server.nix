@@ -37,8 +37,8 @@ let
         src = pkgs.fetchFromGitHub {
           owner = "HaxeFoundation";
           repo = "hxnodejs";
-          rev = "504066dc1ba5ad543afa5f6c3ea019f06136a82b";
-          hash = "sha256-/QTwm7oKdPnTYFMaEZ6q3FwqBBu++rcf0SbaKJ6KjuA=";
+          rev = "c9450595b2337587bcdaeacf159019531925f25d";
+          hash = "sha256-hwxzewlWF0IAEDACB4R6ELKcOxzF/2CcdBoPP3leijk=";
         };
       };
     }
