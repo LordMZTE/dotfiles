@@ -8,7 +8,7 @@ def "udisksctl lockumount" [--block-device (-b): path] {
 
     # This is borked on the udisksctl side
     #udisksctl unmount -p $plain_dev
-    (dbus call --system
+    (dbus call --system --timeout 356day
       --dest org.freedesktop.UDisks2
       $plain_dev
       org.freedesktop.UDisks2.Filesystem
