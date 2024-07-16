@@ -34,7 +34,8 @@
                          :tsn-actions
                          :dressing
                          :gitsigns
-                         :nu])
+                         :nu
+                         :nix-update])
 
 (local errors {})
 

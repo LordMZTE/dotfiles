@@ -34,6 +34,7 @@ let
     "30-nu" = plugin "nvim-nu";
     "30-crafttweaker" = plugin "crafttweaker-vim-highlighting";
     "30-vaxe" = plugin "vaxe";
+    "30-nix-update" = plugin "nix-update.nvim";
 
     # Misc
     "50-catppuccin" = plugin "catppuccin";
