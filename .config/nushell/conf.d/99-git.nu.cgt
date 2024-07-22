@@ -1,6 +1,6 @@
 <! function gitalias(new, old) !>
 def --wrapped "git <% new %>" [...rest] {
-  git <% old %> ...$rest
+    git <% old %> ...$rest
 }
 <! end !>
 
