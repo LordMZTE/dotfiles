@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   nu-ver = "0.95.0";
-in 
+in
 {
   options.nushell-plugins = lib.mkOption { };
 
@@ -57,19 +57,14 @@ in
     })
   ];
 
-  config.output.packages.nushell-plugins =
-    let
-      pluginName = d: lib.removePrefix "nu-plugin-" d.name;
-    in
-    pkgs.writeTextFile {
-      name = "add-plugins.nu";
-      text = builtins.concatStringsSep "\n"
-        (map
-          (d:
-            ''
-              if (plugin list | any { |p| $p.name == "${pluginName d}" }) { plugin rm ${pluginName d} }
-              plugin add ${lib.getBin d}/bin/${builtins.replaceStrings ["-"] ["_"] d.name}
-            '')
-          config.nushell-plugins);
-    };
+  config.output.packages.nushell-plugins = pkgs.writeTextFile {
+    name = "add-plugins.nu";
+    text = builtins.concatStringsSep "\n"
+      (map
+        (d:
+          ''
+            plugin add ${lib.getBin d}/bin/${builtins.replaceStrings ["-"] ["_"] d.name}
+          '')
+        config.nushell-plugins);
+  };
 }
