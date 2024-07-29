@@ -23,7 +23,7 @@ let
       nativeBuildInputs = with pkgs; [ zig_0_12.hook git ];
     })
     (pkgs.callPackage ./haxe-language-server.nix { })
-    jdt-language-server
+    config.output.packages.jdtls-wrapped
     lua-language-server
     (flakePkg "github:oxalica/nil")
     ocamlPackages.ocaml-lsp
