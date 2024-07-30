@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nu-ver = "0.95.0";
+  nu-ver = "0.96.0";
 in
 {
   options.nushell-plugins = lib.mkOption { };
@@ -8,14 +8,14 @@ in
   config.nushell-plugins = [
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-dbus";
-      version = "0.8.0";
+      version = "0.9.0";
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_dbus";
-        hash = "sha256-Ogc4iw0LIDoxyQnoTXzbNaQ6jHtkjmWja/a3TB1TZjk=";
+        hash = "sha256-tIXwOuKAUhtFujChNtDHu8GnO+l+HbXiVZn5Ui7K4UE=";
       };
 
-      cargoSha256 = "sha256-Q7ASOcS/d2YM02kaIwRzIegGcESU3mr/qRpxwv4KGHo=";
+      cargoSha256 = "sha256-IDKTztcdBS4pMj/x85sEvvpe68RppnioJssQsRpDpp0=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
@@ -26,10 +26,10 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_formats";
-        hash = "sha256-nwfLQxVzzUfBn7m1F669NThqzG9bAXlM/lCAVGDKY8o=";
+        hash = "sha256-UHGSctwyDfQfzUwK4+5gSGgx3rKM/ANZ7YwhGkZ9+KY=";
       };
 
-      cargoSha256 = "sha256-e8VcSJYH5P4LR1bFbmeiiF+fSfRlqTEzfnkPtUFmB2I=";
+      cargoSha256 = "sha256-SU3aeX/yYLXsD8ljQ4obAzAesSaxaI6RULfQQNR1bg4=";
     })
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-polars";
@@ -37,10 +37,10 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_polars";
-        hash = "sha256-d2giFOByeX/lLc6k3e4cf/RodwV2yLjqeZD+cmVIwK8=";
+        hash = "sha256-G+wjEzUeiJfKfO5KdrnOATqG2MmQxFaDjN7eEPKEmgo=";
       };
 
-      cargoSha256 = "sha256-e0r693pJJM3IjKjjwxvoIUi3y6avUI9m2qQ9rpSAtLU=";
+      cargoSha256 = "sha256-LNdfMpAar2OVGlQjTJKfsSC2WuxtIshEMPmHQDjzMYE=";
 
       doCheck = false; # Needs OpenSSL, which build doesn't for some reason.
     })
@@ -50,10 +50,13 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_query";
-        hash = "sha256-3lWBqP3ZeHsQApvZmvAsVgseZWrIPDfgm+lZxkDO1JE=";
+        hash = "sha256-APZC+sna64ptfxIcvXWto456Z7xuIxmzvxfCK1EbW+c=";
       };
 
-      cargoSha256 = "sha256-BOAzv7N9UfIxIA0YGYLc/DfU5VSowYtxe6UYZjQ/rf4=";
+      cargoSha256 = "sha256-5LACp9sF/Qc/1ORCXq34NTMZaMBThkvKsnTjR2+zCt0=";
+
+      nativeBuildInputs = with pkgs; [ pkg-config ];
+      buildInputs = with pkgs; [ openssl ];
     })
   ];
 
