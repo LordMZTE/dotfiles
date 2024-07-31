@@ -6,6 +6,10 @@ in
   options.nushell-plugins = lib.mkOption { };
 
   config.nushell-plugins = [
+    (builtins.getFlake
+      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=852ce5e15c4fb3e45cd9fdd36afcce0df293b92b"
+    ).outputs.packages.${pkgs.system}.default
+
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-dbus";
       version = "0.9.0";
