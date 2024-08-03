@@ -39,6 +39,7 @@ let
 
       cargoSha256 = "sha256-/jx1hC/98v5L8XLG3ecFkk5H60HDtaKede+a8HDeFk4=";
     })
+    rust-analyzer
     taplo
     vscode-langservers-extracted # cssls, eslint, html, jsonls
     zls
@@ -47,6 +48,7 @@ let
     (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${nodePackages.prettier}/bin/prettier"; }]) # needed due to symlink shenanigans
     fnlfmt
     nixpkgs-fmt
+    rustfmt
     shfmt
     stylua
 

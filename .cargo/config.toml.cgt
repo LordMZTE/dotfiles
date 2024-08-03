@@ -1,8 +1,4 @@
 <! local ncpus = tonumber(opt.system "nproc") !>
-[target.x86_64-unknown-linux-gnu]
-linker = "/usr/bin/clang"
-rustflags = ["-Clink-arg=-fuse-ld=lld"]
-
 [profile.release]
 lto = true
 opt-level = 3
@@ -10,3 +6,9 @@ codegen-units = <% math.min(ncpus, 4) %>
 
 [profile.debug]
 codegen-units = <% ncpus %>
+
+[registry]
+default = "mzte"
+
+[registries.mzte]
+index = "sparse+https://git.mzte.de/api/packages/LordMZTE/cargo/"
