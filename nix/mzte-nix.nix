@@ -36,7 +36,7 @@ in
 
   config.mzte-nix-packages = with pkgs; [
     comma
-    nix-du
+    #nix-du
     nix-output-monitor
     nsxiv
     nsxiv-pipe
