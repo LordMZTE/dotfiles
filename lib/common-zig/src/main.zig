@@ -1,6 +1,14 @@
 const std = @import("std");
+const root = @import("root");
 
 pub usingnamespace @import("delimited_writer.zig");
+
+pub const Opts = struct {
+    log_pfx: ?[]const u8 = null,
+    log_clear_line: bool = false,
+};
+
+const opts: Opts = if (@hasDecl(root, "mztecommon_opts")) root.mztecommon_opts else .{};
 
 var stderr_isatty: ?bool = null;
 
@@ -12,11 +20,6 @@ pub fn logFn(
     comptime fmt: []const u8,
     args: anytype,
 ) void {
-    const log_pfx: ?[]const u8 = if (@hasDecl(@import("root"), "mztecommon_log_pfx"))
-        @import("root").mztecommon_log_pfx
-    else
-        null;
-
     const color = log_file == null and stderr_isatty orelse blk: {
         const isatty = std.posix.isatty(std.posix.STDERR_FILENO);
         stderr_isatty = isatty;
@@ -25,7 +28,11 @@ pub fn logFn(
 
     const logfile = log_file orelse std.io.getStdErr();
 
-    const scope_prefix = if (log_pfx) |lpfx|
+    if (opts.log_clear_line) {
+        logfile.writer().writeAll("\x1b[2K\r") catch {};
+    }
+
+    const scope_prefix = if (opts.log_pfx) |lpfx|
         if (scope != .default)
             "[" ++ lpfx ++ " " ++ @tagName(scope) ++ "] "
         else

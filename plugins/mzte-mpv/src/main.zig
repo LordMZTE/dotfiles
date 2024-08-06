@@ -1,4 +1,5 @@
 const std = @import("std");
+const common = @import("common");
 const c = ffi.c;
 
 const ffi = @import("ffi.zig");
@@ -6,10 +7,13 @@ const util = @import("util.zig");
 
 pub const std_options = std.Options{
     .log_level = .debug,
-    .logFn = @import("common").logFn,
+    .logFn = common.logFn,
 };
 
-pub const mztecommon_log_pfx = "mzte-mpv";
+pub const mztecommon_opts = common.Opts{
+    .log_pfx = "mzte-mpv",
+    .log_clear_line = true,
+};
 
 export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {
     tryMain(handle) catch |e| {

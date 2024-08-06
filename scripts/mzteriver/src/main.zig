@@ -1,4 +1,5 @@
 const std = @import("std");
+const common = @import("common");
 const opts = @import("opts");
 
 const init = @import("init.zig").init;
@@ -11,7 +12,9 @@ pub const std_options = std.Options{
     .logFn = @import("common").logFn,
 };
 
-pub const mztecommon_log_pfx = "mzteriver";
+pub const mztecommon_opts = common.Opts{
+    .log_pfx = "mzteriver",
+};
 
 pub fn main() !void {
     var dbg_gpa = if (@import("builtin").mode == .Debug) std.heap.GeneralPurposeAllocator(.{}){} else {};
