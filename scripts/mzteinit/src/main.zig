@@ -209,6 +209,11 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
         try updateStyle(w, .{ .foreground = .Green }, &style);
         try w.print("{s}\n", .{entry.label});
     }
+    try updateStyle(w, .{
+        .foreground = .Red,
+        .font_style = .{ .bold = true },
+    }, &style);
+    try w.writeAll("\n[#] EMERGENCY SHELL\n");
     try at.format.resetStyle(w);
     style = .{};
 
@@ -224,6 +229,10 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
     var c: [1]u8 = undefined;
     while (cmd == null) {
         std.debug.assert(try std.io.getStdIn().read(&c) == 1);
+        if (c[0] == '#') {
+            return error.ManualEmergency;
+        }
+
         const key_upper = std.ascii.toUpper(c[0]);
         for (entries) |entry| {
             if (entry.key == key_upper) {
