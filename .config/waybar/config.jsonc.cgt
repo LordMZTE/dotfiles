@@ -13,6 +13,7 @@
                  :cava
                  :cpu
                  :memory
+                 :network
                  :pulseaudio
                  :gamemode
                  :temperature
@@ -29,7 +30,7 @@
          :dynamic-order [:title :artist :position :length]
          :dynamic-importance-order [:position :length :artist :album]
          :status-icons {:playing "󰏤" :paused "󰐊" :stopped "󰓛"}
-         :dynamic-len 50
+         :dynamic-len 24
          :dynamic-separators " 󱓜 "}
  :gamemode {:format "{glyph} {count}"}
  :tray {:spacing 10}
@@ -67,4 +68,10 @@
                                :portable ""
                                :car ""
                                :default ["" "" ""]}
-                :on-click :pavucontrol})}
+                :on-click :pavucontrol})
+ :network {:interval 10
+           :format "{bandwidthDownBytes}  {bandwidthUpBytes} "
+           :tooltip-format-ethernet "{ifname} {ipaddr}"
+           :tooltip-format-wifi "{essid} {ipaddr}"
+           :on-click "<% opt.term.command %> nmtui"
+           :on-click-right "<% opt.term.command %> doas nmtui"}}
