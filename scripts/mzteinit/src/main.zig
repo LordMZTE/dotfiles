@@ -95,7 +95,7 @@ fn tryMain() !void {
 
     var srv: ?Server = null;
     if (env_map.data.get("XDG_RUNTIME_DIR")) |xrd| {
-        var sockaddr_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+        var sockaddr_buf: [std.fs.max_path_bytes]u8 = undefined;
         const sockaddr = try std.fmt.bufPrintZ(
             &sockaddr_buf,
             "{s}/mzteinit-{}-{}.sock",

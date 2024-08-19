@@ -20,7 +20,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
         c.MPV_EVENT_PROPERTY_CHANGE => {
             const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
             if (std.mem.eql(u8, std.mem.span(evprop.name), "stream-open-filename")) {
-                var buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+                var buf: [std.fs.max_path_bytes]u8 = undefined;
 
                 const str = std.mem.span((@as(?*[*:0]const u8, @ptrCast(@alignCast(evprop.data))) orelse return).*);
 

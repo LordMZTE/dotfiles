@@ -10,7 +10,7 @@ pub fn main() !u8 {
     defer _ = gpa.deinit();
     const alloc = gpa.allocator();
 
-    var file_buf: [std.posix.PATH_MAX]u8 = undefined;
+    var file_buf: [std.fs.max_path_bytes]u8 = undefined;
     const file = try findVideoFile(alloc, &file_buf);
 
     try std.io.getStdOut().writer().print("playing: `{s}`\n", .{file});
@@ -22,6 +22,21 @@ pub fn main() !u8 {
     if (try promtForDeletion(file)) {
         try std.io.getStdOut().writer().print("deleting: `{s}`\n", .{file});
         try std.fs.cwd().deleteFile(file);
+
+        // Also delete the live_chat file from yt-dlp if present
+        if (std.mem.lastIndexOfScalar(u8, file, '.')) |dot_idx| {
+            var fname_buf: [std.fs.max_path_bytes]u8 = undefined;
+            const livechat_fname = try std.fmt.bufPrintZ(
+                &fname_buf,
+                "{s}.live_chat.json",
+                .{file[0..dot_idx]},
+            );
+
+            std.fs.cwd().deleteFile(livechat_fname) catch |e| switch (e) {
+                error.FileNotFound => {},
+                else => return e,
+            };
+        }
     }
 
     return 0;

@@ -23,7 +23,7 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
             if (!std.ascii.isDigit(c))
                 continue :procs;
 
-        var buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+        var buf: [std.fs.max_path_bytes]u8 = undefined;
         const cmdline_f = std.fs.openFileAbsolute(
             try std.fmt.bufPrint(&buf, "/proc/{s}/cmdline", .{proc.name}),
             .{},

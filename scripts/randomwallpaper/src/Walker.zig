@@ -31,7 +31,7 @@ pub fn walk(self: *Self, dir: std.fs.Dir) anyerror!void {
                 try self.walk(subdir);
             },
             .sym_link => {
-                var p_buf: [std.fs.MAX_PATH_BYTES]u8 = undefined;
+                var p_buf: [std.fs.max_path_bytes]u8 = undefined;
                 const p = try dir.readLink(e.name, &p_buf);
                 var subdir = dir.openDir(p, .{ .iterate = true }) catch |err| {
                     switch (err) {
