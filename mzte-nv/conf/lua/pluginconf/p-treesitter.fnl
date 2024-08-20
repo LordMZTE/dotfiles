@@ -12,7 +12,7 @@
 (var parser-config (parsers.get_parser_configs))
 
 (tset parser-config :haxe {:install_info {:url "https://github.com/vantreeseba/tree-sitter-haxe"
-                                          :files [:src/parser.c]
+                                          :files [:src/parser.c :src/scanner.c]
                                           :branch :main}
                            :filetype :haxe})
 

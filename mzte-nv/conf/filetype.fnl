@@ -11,4 +11,7 @@
                                ;; Default to Common Lisp instead of just using generic Lisp
                                :lisp :commonlisp
                                ;; Roswell scripts
-                               :ros :commonlisp}})
+                               :ros :commonlisp
+                               ;; Haxe
+                               :hx :haxe
+                               :hxml :hxml}})
