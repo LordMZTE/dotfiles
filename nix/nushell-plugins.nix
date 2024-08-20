@@ -19,7 +19,7 @@ in
         hash = "sha256-tIXwOuKAUhtFujChNtDHu8GnO+l+HbXiVZn5Ui7K4UE=";
       };
 
-      cargoSha256 = "sha256-IDKTztcdBS4pMj/x85sEvvpe68RppnioJssQsRpDpp0=";
+      cargoHash = "sha256-IDKTztcdBS4pMj/x85sEvvpe68RppnioJssQsRpDpp0=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
@@ -33,7 +33,7 @@ in
         hash = "sha256-UHGSctwyDfQfzUwK4+5gSGgx3rKM/ANZ7YwhGkZ9+KY=";
       };
 
-      cargoSha256 = "sha256-SU3aeX/yYLXsD8ljQ4obAzAesSaxaI6RULfQQNR1bg4=";
+      cargoHash = "sha256-SU3aeX/yYLXsD8ljQ4obAzAesSaxaI6RULfQQNR1bg4=";
     })
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-polars";
@@ -44,7 +44,7 @@ in
         hash = "sha256-G+wjEzUeiJfKfO5KdrnOATqG2MmQxFaDjN7eEPKEmgo=";
       };
 
-      cargoSha256 = "sha256-LNdfMpAar2OVGlQjTJKfsSC2WuxtIshEMPmHQDjzMYE=";
+      cargoHash = "sha256-LNdfMpAar2OVGlQjTJKfsSC2WuxtIshEMPmHQDjzMYE=";
 
       doCheck = false; # Needs OpenSSL, which build doesn't for some reason.
     })
@@ -57,7 +57,7 @@ in
         hash = "sha256-APZC+sna64ptfxIcvXWto456Z7xuIxmzvxfCK1EbW+c=";
       };
 
-      cargoSha256 = "sha256-5LACp9sF/Qc/1ORCXq34NTMZaMBThkvKsnTjR2+zCt0=";
+      cargoHash = "sha256-5LACp9sF/Qc/1ORCXq34NTMZaMBThkvKsnTjR2+zCt0=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ openssl ];
