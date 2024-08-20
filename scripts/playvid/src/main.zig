@@ -67,6 +67,9 @@ fn findVideoFile(alloc: std.mem.Allocator, out_buf: []u8) ![]const u8 {
     while (try iter.next()) |entry| {
         switch (entry.kind) {
             .file => {
+                if (std.mem.endsWith(u8, entry.name, ".live_chat.json"))
+                    continue;
+
                 try files.append(try fname_arena.allocator().dupe(u8, entry.name));
             },
             else => {},
