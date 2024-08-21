@@ -22,7 +22,7 @@ let
 
       nativeBuildInputs = with pkgs; [ zig_0_12.hook git ];
     })
-    (pkgs.callPackage ./haxe-language-server.nix { })
+    (flakePkg "git+https://git.mzte.de/LordMZTE/haxe-language-server.git")
     config.output.packages.jdtls-wrapped
     lua-language-server
     (flakePkg "github:oxalica/nil")
@@ -37,7 +37,7 @@ let
         hash = "sha256-Mkbl8wT04sNjV7fpDJh9HbEqnCdi6SMXdlPCbT2801c=";
       };
 
-      cargoSha256 = "sha256-/jx1hC/98v5L8XLG3ecFkk5H60HDtaKede+a8HDeFk4=";
+      cargoHash = "sha256-/jx1hC/98v5L8XLG3ecFkk5H60HDtaKede+a8HDeFk4=";
     })
     rust-analyzer
     taplo

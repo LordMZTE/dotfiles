@@ -4,6 +4,7 @@ def "nix rbuild" [
     host:string,       # The remote host to build on
     flakeref:string,   # A flake reference to build
     ...nixargs:string, # Additional arguments to pass to the eval command
+    --drv(-d),         # Don't eval but treat flakeref as path to .drv file
     --no-link(-n),     # Don't create a `result` link
     --nom,             # Invoke `nom` on the remote machine instead of `nix`
     --remote-eval(-r), # Evaluate the derivation on the remote. Note that this will incorrectly handle path-based flake references.
@@ -12,15 +13,17 @@ def "nix rbuild" [
         print "Eval & Build on Remote..."
         ssh $host $"(if $nom { "nom" } else { "nix" }) build --no-link --print-out-paths '($flakeref)' ($nixargs | str join ' ')" | lines
     } else {
-        print "Eval..."
-        let eval_output = nix eval $flakeref ...$nixargs
-        if $eval_output =~ "error:" {
-            error make {
-                msg: "Derivation evaluation failed!",
-                help: $eval_output,
-            } | return $in
+        let drv_path = if $drv { $flakeref } else {
+            print "Eval..."
+            let eval_output = nix eval $flakeref ...$nixargs
+            if $eval_output =~ "error:" {
+                error make {
+                    msg: "Derivation evaluation failed!",
+                    help: $eval_output,
+                } | return $in
+            }
+            $eval_output | parse "«derivation {drv}»" | get 0.drv
         }
-        let drv_path = $eval_output | parse "«derivation {drv}»" | get 0.drv
 
         print "Copy drv to Remote..."
         nix copy --substitute-on-destination --derivation --to $"ssh://($host)" $drv_path
