@@ -15,7 +15,7 @@
 
 ;; Quick system register access
 (each [_ p (ipairs ["+" "*"])]
-  (each [_ r (ipairs [:y :p :d])]
+  (each [_ r (ipairs [:y :p :P :d])]
     (nmap (.. p r) (.. "\"" p r))))
 
 ;; Vimgrep
