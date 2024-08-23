@@ -7,7 +7,7 @@ in
 
   config.nushell-plugins = [
     (builtins.getFlake
-      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=e6795955c0cf8a5fe18babfe43fdc92282515532"
+      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=9ffb0e3b3d4415035b1406f3d2f981bd9ac09579"
     ).outputs.packages.${pkgs.system}.default
 
     (pkgs.rustPlatform.buildRustPackage rec {
