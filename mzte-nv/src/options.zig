@@ -31,7 +31,7 @@ pub fn initOptions() !void {
 
     // Window Config
     try opt("100").setLog("colorcolumn", .both);
-    try opt("100").setLog("textwidth", .both);
+    try opt(100).setLog("textwidth", .both);
     try opt(true).setLog("cursorcolumn", .both);
     try opt(true).setLog("cursorline", .both);
     try opt(try std.fmt.bufPrintZ(&buf, "{s}:h10", .{opts.font})).setLog("guifont", .both);
