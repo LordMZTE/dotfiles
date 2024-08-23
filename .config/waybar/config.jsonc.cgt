@@ -44,7 +44,8 @@ end
          :dynamic-order [:title :artist :position :length]
          :dynamic-importance-order [:position :length :artist :album]
          :status-icons {:playing "󰏤" :paused "󰐊" :stopped "󰓛"}
-         :dynamic-len 24
+         :title-len 32
+         :dynamic-len 64
          :dynamic-separators " 󱓜 "}
  :gamemode {:format "{glyph} {count}"}
  :tray {:spacing 10}
