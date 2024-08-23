@@ -37,6 +37,7 @@
                 libGL
                 libgit2
                 luajit
+                luajitPackages.luafilesystem
                 pkg-config
                 racket
                 roswell

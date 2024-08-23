@@ -1,5 +1,19 @@
 ;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
 ;; vim: ft=fennel
+<!
+local cpu_temp_hwmon = nil
+for d in require("lfs").dir("/sys/class/hwmon") do
+  if d ~= "." and d ~= ".." then
+    local namef = io.open("/sys/class/hwmon/" .. d .. "/name", "r")
+
+    if namef:read("*a"):gsub("%s+", "") == "coretemp" then
+      cpu_temp_hwmon = "/sys/class/hwmon/" .. d .. "/temp1_input"
+    end
+
+    namef:close()
+  end
+end
+!>
 (local format-icons ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
 
 {:spacing 4
@@ -41,7 +55,7 @@
        :interval 2
        : format-icons}
  :memory {:format "{}% "}
- :temperature {:hwmon-path "<% opt.cpu_temp_hwmon %>"
+ :temperature {:hwmon-path "<% cpu_temp_hwmon %>"
                :critical-threshold 80
                :format "{temperatureC}°C {icon}"
                :format-icons ["" "" ""]}
