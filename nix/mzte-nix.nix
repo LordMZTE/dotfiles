@@ -35,14 +35,8 @@ in
   ];
 
   config.mzte-nix-packages = with pkgs; [
-    comma
-    #nix-du
-    nix-output-monitor
     nsxiv
     nsxiv-pipe
-    nurl
-    (flakePkg "github:nix-community/zon2nix")
-    (flakePkg "github:zhaofengli/attic")
   ];
 
   config.output.packages.mzte-nix = pkgs.symlinkJoin {
