@@ -89,4 +89,4 @@ end
            :tooltip-format-ethernet "{ifname} {ipaddr}"
            :tooltip-format-wifi "{essid} {ipaddr}"
            :on-click "<% opt.term.command %> nmtui"
-           :on-click-right "<% opt.term.command %> doas nmtui"}}
+           :on-click-right "<% opt.term.command %> nmtui"}}
