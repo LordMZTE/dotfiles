@@ -13,17 +13,11 @@ in
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-dbus";
       version = "0.10.0";
-      src = pkgs.fetchFromGitHub {
-        owner = "LordMZTE";
-        repo = "nu_plugin_dbus";
-        rev = "195c5d4c447a8b64c4c1f2818af63595c1990a53";
-        hash = "sha256-XVLX0tCgpf5Vfr00kbQZPWMolzHpkMVYKoBHYylpz48=";
+      src = pkgs.fetchCrate {
+        inherit version;
+        pname = "nu_plugin_dbus";
+        hash = "sha256-PrZ8iZIqcxzrtAVo8GnYQdbnbNphpJvqmd51/4UBF60=";
       };
-      #src = pkgs.fetchCrate {
-      #  inherit version;
-      #  pname = "nu_plugin_dbus";
-      #  hash = "";
-      #};
 
       cargoHash = "sha256-0i5OxunUT1K3hP9n496SCXe24lry4ModkspGlphkmBI=";
 
