@@ -14,18 +14,26 @@ window-save-state = "never"
 # Accidentally paste multiple commands with honor
 clipboard-paste-protection = false
 
+# Disable redundant resize overlays
+resize-overlay = "never"
+
 keybind = clear
 
 <! local function key(k, v) !>
-keybind = <% k %>=<% v %>
-<! end !>
+keybind = <% k %>=<% v %><! end !>
 
 <!
     -- Prefix for window-management keybinds
     local win_pref = "ctrl+alt+"
 
+    -- Prefix for resize keybinds
+    local res_pref = "ctrl+shift+alt+"
+
     -- Prefix for action keybinds
     local act_pref = "ctrl+shift+"
+
+    -- Amount to resize by
+    local res_amnt = 24
 
     key("ctrl+t", "next_tab")
     key("ctrl+shift+t", "new_tab")
@@ -40,11 +48,14 @@ keybind = <% k %>=<% v %>
     key(win_pref .. "v", "new_split:right")
 
     for k, v in pairs {
-        h = "left",
-        j = "bottom",
-        k = "top",
-        l = "right"
-    } do key(win_pref .. k, "goto_split:" .. v) end
+        h = { "left",   "left" },
+        j = { "bottom", "down" },
+        k = { "top",    "up" },
+        l = { "right",  "right" },
+    } do
+        key(win_pref .. k, "goto_split:" .. v[1])
+        key(res_pref .. k, "resize_split:" .. v[2] .. "," .. res_amnt)
+    end
 
     key(act_pref .. "c", "copy_to_clipboard")
     key(act_pref .. "v", "paste_from_clipboard")
@@ -71,9 +82,8 @@ for i, col in ipairs {
     pal.pink,
     pal.teal,
     pal.subtext0,
-} do!>
-palette = <% i - 1 %>=#<% col %>
-<! end !>
+} do !>
+palette = <% i - 1 %>=#<% col %><! end !>
 
 selection-background = <% pal.surface2 %>
 background = <% pal.base %>
