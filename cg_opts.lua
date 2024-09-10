@@ -28,19 +28,19 @@ opts.term_font = "IosevkaTerm NFM"
 --    icon_name = "org.wezfurlong.wezterm",
 --}
 
---opts.term = {
---    name = "Ghostty",
---    command = "ghostty",
---    workdir_command = "ghostty --working-directory=",
---    icon_name = "com.mitchellh.ghostty",
---}
-
 opts.term = {
-    name = "foot",
-    command = "foot",
-    workdir_command = "foot --working-directory=",
-    icon_name = "foot",
+    name = "Ghostty",
+    command = "ghostty",
+    workdir_command = "ghostty --working-directory=",
+    icon_name = "com.mitchellh.ghostty",
 }
+
+--opts.term = {
+--    name = "foot",
+--    command = "foot",
+--    workdir_command = "foot --working-directory=",
+--    icon_name = "foot",
+--}
 
 opts.cursor = {
     theme = "LyraQ-cursors",
