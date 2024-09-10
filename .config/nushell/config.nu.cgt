@@ -33,6 +33,12 @@ $env.config = {
         vi_normal: block
     }
 
+    shell_integration: {
+        osc2: true # title
+        osc7: true # path
+        osc133: true # location markers for fancy terminals
+    }
+
     edit_mode: vi
     use_kitty_protocol: true
     highlight_resolved_externals: true
