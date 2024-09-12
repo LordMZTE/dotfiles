@@ -1,7 +1,7 @@
 font-family = "<% opt.term_font %>"
 
-# Broken thanks to GNOME's influence in the Linux desktop ecosystem (thanks!)
-#background-opacity = 0.8
+# Translucent Background
+background-opacity = 0.8
 
 # Disable useless GTK bar
 gtk-titlebar = false
