@@ -4,17 +4,9 @@ local modi = {
     "drun",
     "combi",
 }
--- Only enable nheko mode if rofi-nheko is installed.
-if opt.fileExists(
-    os.getenv "HOME"
-    .. "/.local/lib/rofi/librofi_nheko.so"
-) then
-    table.insert(modi, "nheko")
-end
 
--- Only enable rofi-emoji if installed.
-if opt.fileExists "/usr/lib/rofi/emoji.so" then
-    table.insert(modi, "emoji")
+for _, m in ipairs(opt.extra_rofi_modes or {}) do
+    table.insert(modi, m)
 end
 !>
 configuration {
