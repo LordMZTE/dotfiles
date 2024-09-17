@@ -10,3 +10,7 @@ alias ns = enter .
 # "quit shell"
 alias qs = dexit
 
+# SSH wrapper to use a more common TERM
+def --wrapped ssh [...args] {
+    TERM=xterm-256color ^ssh ...$args
+}
