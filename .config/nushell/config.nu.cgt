@@ -48,6 +48,11 @@ $env.config = {
         isolation: true
     }
 
+    display_errors: {
+        # Hide noisy external command fail errors
+        exit_code: false
+    }
+
     keybindings: [
         {
             name: new_line_shift
