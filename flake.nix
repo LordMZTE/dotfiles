@@ -43,6 +43,7 @@
                 roswell
                 wayland
                 wayland-protocols
+                wayland-scanner
                 haxe
                 mpv-unwrapped
                 zig_0_13
