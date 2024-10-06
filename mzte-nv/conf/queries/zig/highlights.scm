@@ -18,12 +18,12 @@
 (("comptime" @keyword) (#set! conceal "󰟾"))
 
 ;; Functions
-((BUILTINIDENTIFIER) @include
+((builtin_identifier) @include
   (#any-of? @include "@import" "@cImport")
   (#set! conceal ""))
 
 ;; Common Variables
-(((IDENTIFIER) @variable
+(((identifier) @variable
  (#eq? @variable "self"))
     (#set! conceal ""))
 

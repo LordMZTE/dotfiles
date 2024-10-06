@@ -1,6 +1,5 @@
 (local (mztenv configs parsers ts-utils)
-       (values (require :mzte_nv)
-               (require :nvim-treesitter.configs)
+       (values (require :mzte_nv) (require :nvim-treesitter.configs)
                (require :nvim-treesitter.parsers)
                (require :nvim-treesitter.ts_utils)))
 

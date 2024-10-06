@@ -57,7 +57,7 @@ pub fn build(b: *std.Build) !void {
     exe.root_module.addImport("opts", opts.createModule());
     exe.root_module.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
-    scanner.addCustomProtocol("river-control-unstable-v1.xml");
+    scanner.addCustomProtocol(b.pathFromRoot("river-control-unstable-v1.xml"));
 
     scanner.generate("zriver_control_v1", 1);
     scanner.generate("wl_seat", 7);

@@ -22,7 +22,7 @@ pub fn build(b: *std.Build) void {
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
     scanner.addSystemProtocol("unstable/xdg-output/xdg-output-unstable-v1.xml");
-    scanner.addCustomProtocol("wlr-layer-shell-unstable-v1.xml");
+    scanner.addCustomProtocol(b.pathFromRoot("wlr-layer-shell-unstable-v1.xml"));
 
     scanner.generate("wl_compositor", 5);
     scanner.generate("wl_shm", 1);

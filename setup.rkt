@@ -38,9 +38,6 @@
   ['install-scripts
    (local-require "setup/commands/install-scripts.rkt")
    (run)]
-  ['install-plugins
-   (local-require "setup/commands/install-plugins.rkt")
-   (run)]
   ['setup-nvim-config
    (local-require "setup/commands/setup-nvim-config.rkt")
    (run)]

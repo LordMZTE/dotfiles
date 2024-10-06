@@ -14,4 +14,8 @@
                                :ros :commonlisp
                                ;; Haxe
                                :hx :haxe
-                               :hxml :hxml}})
+                               :hxml :hxml
+                               ;; Ziggy
+                               :ziggy :ziggy
+                               :ziggy-schema :ziggy_schema}})
+

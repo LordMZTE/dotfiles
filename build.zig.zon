@@ -1,0 +1,28 @@
+.{
+    .name = "dotfiles",
+    .version = "0.0.0",
+    .paths = .{""},
+
+    .dependencies = .{
+        // Setup Deps
+        .ziggy = .{
+            .url = "git+https://github.com/kristoff-it/ziggy.git#42b6f5d7320340bc5903c4c29d34065e8517a549",
+            .hash = "12200b69baf035d0474e04b131862d36b2657fbce88a5c9dc657af861430e5fc7e3d",
+        },
+
+        // Scripts
+        .hyprtool = .{ .path = "scripts/hyprtool" },
+        .mzteinit = .{ .path = "scripts/mzteinit" },
+        .mzteriver = .{ .path = "scripts/mzteriver" },
+        .openbrowser = .{ .path = "scripts/openbrowser" },
+        .playvid = .{ .path = "scripts/playvid" },
+        .prompt = .{ .path = "scripts/prompt" },
+        .randomwallpaper = .{ .path = "scripts/randomwallpaper" },
+        .vinput = .{ .path = "scripts/vinput" },
+        .withjava = .{ .path = "scripts/withjava" },
+        .wlbg = .{ .path = "scripts/wlbg" },
+
+        // Plugins
+        .@"mzte-mpv" = .{ .path = "plugins/mzte-mpv" },
+    },
+}

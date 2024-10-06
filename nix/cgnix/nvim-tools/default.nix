@@ -7,7 +7,6 @@ let
     (pkgs.linkFarm "clang-nvim" (map
       (bin: { name = "bin/${bin}"; path = "${clang-tools}/bin/${bin}"; })
       [ "clangd" "clang-format" ])) # Don't include everything from clang-tools
-    elixir-ls
     (pkgs.stdenv.mkDerivation {
       name = "glsl-analyzer";
       src = pkgs.fetchFromGitHub {
