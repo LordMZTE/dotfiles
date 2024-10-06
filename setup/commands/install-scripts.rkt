@@ -11,8 +11,7 @@
   ;; Symlink interpreted scripts
   (install-link "scripts/brightness.rkt" (bin-path "brightness"))
   (install-link "scripts/map-touch-display.rkt" (bin-path "map-touch-display"))
-  (install-link "scripts/sysupdate.rkt" (bin-path "sysupdate"))
-  (install-link "scripts/use-country-mirrors.sh" (bin-path "use-country-mirrors"))
+  (install-link "scripts/typstwatch.sh" (bin-path "typstwatch"))
   (install-link "scripts/videos-duration.sh" (bin-path "videos-duration"))
 
   ;; Compiled scripts
