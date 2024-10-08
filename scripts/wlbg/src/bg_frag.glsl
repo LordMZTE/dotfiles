@@ -184,7 +184,6 @@ void main()
     //get coords and direction
     vec2 uv = fragCoord.xy + 0.5;
     vec3 dir = vec3(uv * zoom, 1.);
-    float time = time * speed + .25;
 
     float coord_scale = 1.;
 
