@@ -8,17 +8,11 @@
          install-link
          install-roswell
          install-rust
-         install-script?
          install-zig
          load-config
          log-calls
          output-bin-path
          rm)
-
-;; A parameter containing a predicate string? -> boolean? for checking if a script should be installed.
-(define/contract install-script?
-  (parameter/c (string? . -> . boolean?))
-  (make-parameter (const #t)))
 
 (define-namespace-anchor common-ns)
 (define (load-config)
@@ -67,7 +61,7 @@
          (display-function-call 'name args)
          (apply val args))]))
 
-;; Defines a script installer with a backing function which will only run when install-script? returns #t.
+;; Defines a script installer with a backing function.
 (define-syntax (define-script-installer stx)
   (syntax-case stx ()
     [(_ (name script arg ...) body ...)
@@ -78,10 +72,7 @@
        [display-args
         #'(define (name script arg ...)
             (display-function-call 'name display-args)
-            (if ((install-script?) script)
-                (begin
-                  body ...)
-                (fprintf (current-error-port) "skipping script ~s\n" script)))])]
+            body ...)])]
     [(_ (name script arg ... . more) body ...)
      (syntax-case (cons #'list
                         (map (λ (a) (if (list? (syntax->list a)) (car (syntax->list a)) a))
@@ -90,10 +81,7 @@
        [display-args
         #'(define (name script arg ... . more)
             (display-function-call 'name (append display-args more))
-            (if ((install-script?) script)
-                (begin
-                  body ...)
-                (fprintf (current-error-port) "skipping script ~s\n" (car args))))])]))
+            body ...)])]))
 
 (define-logging (cmd exe . args)
   (unless (apply system* (find-executable-path exe) args)
