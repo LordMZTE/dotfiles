@@ -1,32 +1,25 @@
 { config, lib, pkgs, ... }:
 let
-  nu-ver = "0.98.0";
+  nu-ver = "0.99.0";
 in
 {
   options.nushell-plugins = lib.mkOption { };
 
   config.nushell-plugins = [
     (builtins.getFlake
-      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=40127dfa0573e0cc6c273d291f5423aa5964d76a"
+      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=6233ae712a945233389a440eecc612b94e2a16d5"
     ).outputs.packages.${pkgs.system}.default
 
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-dbus";
-      version = "0.11.0";
-      #src = pkgs.fetchCrate {
-      #  inherit version;
-      #  pname = "nu_plugin_dbus";
-      #  hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-      #};
-      src = pkgs.fetchFromGitHub {
-        # Updated Fork
-        owner = "Canvis-Me";
-        repo = "nu_plugin_dbus";
-        rev = "a0f8eb54355e4fbf121f5f8a0a7e7d67b07e33bd";
-        hash = "sha256-CrTVLbD7Q/swDCxiWcqoxkB8X6ydfxhTAZjoT0SoB4I=";
+      version = "0.12.0";
+      src = pkgs.fetchCrate {
+        inherit version;
+        pname = "nu_plugin_dbus";
+        hash = "sha256-UBpqgw6qqcEDW5bbSWJ/aaSSbEG5B/D6nvcbokX8aeA=";
       };
 
-      cargoHash = "sha256-zyoZc+ItEiWMBeu8Ulbn2lAzFH2DeBbP7Rs+QLsBo+Y=";
+      cargoHash = "sha256-OrrqvHyhGq8oFmU71/r7AerZhbhZKZBrtSeT3ckKujo=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
@@ -37,10 +30,10 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_formats";
-        hash = "sha256-/RJLHFlgKbshNeEF8YHdthZWTnJ8p1M2Xb1AJ44VvGs=";
+        hash = "sha256-ccOTLeisxz24ixTULhkbXhbnlcmPTarYl+zevh3/smc=";
       };
 
-      cargoHash = "sha256-FIqE8u8RBVhGUvssRGLhH7kNvEfQFkYLDujTVT4liNA=";
+      cargoHash = "sha256-iyAYHVO/JxGGbcD4LnDiI9B7yUfv+mVRpsJs6HUW4DY=";
     })
     (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-polars";
@@ -48,10 +41,10 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_polars";
-        hash = "sha256-qG7popu37L60+N0C6ayvvQKVfDaZiE5G9JXTK4unY/w=";
+        hash = "sha256-Um3buNPk/NmW1oXxo34101nJ061C2eyr/Ia/i5wvI2c=";
       };
 
-      cargoHash = "sha256-TvE5qJl+TQRhk0Q08zO37bLoJkVpQ5i0DAcnGwzNWzM=";
+      cargoHash = "sha256-wDElrCzkCN8yNA0amGK7iqm+yVbJ0RkgwkFxw+ExveM=";
 
       doCheck = false; # Needs OpenSSL, which build doesn't for some reason.
     })
@@ -61,10 +54,10 @@ in
       src = pkgs.fetchCrate {
         inherit version;
         pname = "nu_plugin_query";
-        hash = "sha256-ZY/rrahYg1gYjq1qsaQ34JQXd0PzWt3h5XqCMFaoanE=";
+        hash = "sha256-tvEdpSdqTVHHi3FCp7CLij8wmxBwPZ7CMMgAimVx/s4=";
       };
 
-      cargoHash = "sha256-ieFwg/Y/FuO2Rq6cjc6eyskV8/MzBWJVaFSGdwb53qA=";
+      cargoHash = "sha256-4MDWMBJVOnFj7t35MrNo+YtOLEb1fjTY5FUGI3pRzeA=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ openssl ];
