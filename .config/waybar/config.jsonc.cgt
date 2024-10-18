@@ -14,7 +14,7 @@ for d in require("lfs").dir("/sys/class/hwmon") do
   end
 end
 !>
-(local format-icons ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
+(local format-icons [" " "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
 
 {:spacing 4
  :layer :top
