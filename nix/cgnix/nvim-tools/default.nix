@@ -40,6 +40,7 @@ let
     })
     rust-analyzer
     taplo
+    tinymist
     vscode-langservers-extracted # cssls, eslint, html, jsonls
     zls
 

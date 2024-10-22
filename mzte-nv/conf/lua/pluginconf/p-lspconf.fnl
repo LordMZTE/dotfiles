@@ -63,4 +63,5 @@
        {:settings {:rust-analyzer {:checkOnSave {:command :clippy}}}})
 
 (setup :taplo)
+(setup :tinymist {:single_file_support true :offset_encoding :utf-8})
 (setup :zls)
