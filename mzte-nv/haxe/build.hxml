@@ -1,0 +1,10 @@
+# Only for haxe-languageserver
+
+-cp .
+--main Main
+
+-D lua-vanilla
+-D lua-jit
+-D dce=full
+
+--lua out.lua

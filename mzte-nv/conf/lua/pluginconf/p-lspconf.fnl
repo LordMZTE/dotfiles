@@ -1,5 +1,6 @@
 (local mztenv (require :mzte_nv))
 (local lspc (require :lspconfig))
+(local util (require :lspconfig.util))
 (local lsp-configs (require :lspconfig.configs))
 
 (macro setup [conf args]
@@ -63,5 +64,11 @@
        {:settings {:rust-analyzer {:checkOnSave {:command :clippy}}}})
 
 (setup :taplo)
-(setup :tinymist {:single_file_support true :offset_encoding :utf-8})
+(setup :tinymist
+       {:single_file_support true
+        :offset_encoding :utf-8
+        :root_dir (util.root_pattern :.typstroot)
+        :settings {:tinymist {:settings {:formatterMode :typstyle
+                                         :formatterPrintWidth 100}}}})
+
 (setup :zls)
