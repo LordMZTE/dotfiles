@@ -7,7 +7,7 @@
           "conditions": [
             {
               "cond": "totalItemLength <= n",
-              "value": 50
+              "value": 100
             }
           ],
           "type": "noWrap"
@@ -32,12 +32,8 @@
         {
           "conditions": [
             {
-              "cond": "itemCount >= n",
-              "value": 3
-            },
-            {
               "cond": "totalItemLength >= n",
-              "value": 50
+              "value": 100
             }
           ],
           "type": "onePerLine"
