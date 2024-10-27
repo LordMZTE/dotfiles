@@ -54,7 +54,7 @@ class Plugins {
         final pluginpath:String = MZTENv.reg.nvim_plugins;
         if (pluginpath != null) {
             Vim.opt.runtimepath.prepend(pluginpath + "/*");
-            Vim.opt.runtimepath.append(pluginpath + ":/*/after");
+            Vim.opt.runtimepath.append(pluginpath + "/*/after");
         }
 
         if (MZTENv.reg.plugin_load_callbacks == null) {
