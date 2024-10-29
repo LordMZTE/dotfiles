@@ -68,7 +68,6 @@
        {:single_file_support true
         :offset_encoding :utf-8
         :root_dir (util.root_pattern :.typstroot)
-        :settings {:tinymist {:settings {:formatterMode :typstyle
-                                         :formatterPrintWidth 100}}}})
+        :settings {:formatterMode :typstyle :formatterPrintWidth 100}})
 
 (setup :zls)
