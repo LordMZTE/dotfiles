@@ -60,22 +60,23 @@ let
     "10-nui" = plugin "nui.nvim";
   };
 
-  mzte-nv-compiler =
-    let
-      path = "${builtins.getEnv "HOME"}/.local/bin/mzte-nv-compile";
-    in
-    if (builtins.pathExists path) then
-    # This derivation exists to patch a potentially mismatched dynamic linker.
-      stdenvNoCC.mkDerivation
-        {
-          name = "mzte-nv-compiler-patched";
-          nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-          buildInputs = with pkgs; [ luajit ];
-          dontUnpack = true;
-          buildPhase = ''
-            cp ${/. + path} $out
-          '';
-        } else "";
+  # TODO: build mzte-nv-compiler in nix
+  #mzte-nv-compiler =
+  #  let
+  #    path = "${builtins.getEnv "HOME"}/.local/bin/mzte-nv-compile";
+  #  in
+  #  if (builtins.pathExists path) then
+  #  # This derivation exists to patch a potentially mismatched dynamic linker.
+  #    stdenvNoCC.mkDerivation
+  #      {
+  #        name = "mzte-nv-compiler-patched";
+  #        nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+  #        buildInputs = with pkgs; [ luajit ];
+  #        dontUnpack = true;
+  #        buildPhase = ''
+  #          cp ${/. + path} $out
+  #        '';
+  #      } else "";
 in
 {
   options.cgnix.nvim-plugins = lib.mkOption { };
@@ -97,7 +98,7 @@ in
 
     buildPhase = ''
       # Compile
-      ${if mzte-nv-compiler != "" then "${mzte-nv-compiler} plugins" else ""}
+      #$ {if mzte-nv-compiler != "" then "$ {mzte-nv-compiler} plugins" else ""}
     '';
 
     installPhase = ''
