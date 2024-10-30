@@ -4,7 +4,6 @@ import lua.Table;
 import ext.vim.Vim;
 import lua.Lua;
 
-@plugin(20, false)
 class PCatppuccin implements IPlugin {
     public var name:String = "Catppuccin";
 
