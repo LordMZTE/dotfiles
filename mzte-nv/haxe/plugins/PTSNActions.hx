@@ -66,20 +66,19 @@ class PTSNActions implements IPlugin {
                 });
             }].toTable(),
             java: {
-                hex_integer_literal: Table.create(
-                    [
-                        Table.create(
-                            [(node) -> MZTENv.tsn_actions.intToDec(this.tsna_helpers[untyped "node_text"](node))],
-                            {
-                                name: "Convert to Decimal",
-                            }
-                        )
-                    ]
-                ),
-                decimal_integer_literal: Table.create([Table.create([(node) ->
-                            MZTENv.tsn_actions.intToHex(this.tsna_helpers[untyped "node_text"](node))], {
-                    name: "Convert to Hexadecimal",
-                })]),
+                hex_integer_literal: Table.create([
+                    Table.create(
+                        [(node) -> MZTENv.tsn_actions.intToDec(this.tsna_helpers[untyped "node_text"](node))],
+                        {
+                            name: "Convert to Decimal",
+                        }
+                    )
+                ]),
+                decimal_integer_literal: Table.create([
+                    Table.create([(node) -> MZTENv.tsn_actions.intToHex(this.tsna_helpers[untyped "node_text"](node))], {
+                        name: "Convert to Hexadecimal",
+                    })
+                ]),
             },
             c: {
                 number_literal: toggle_int_action,
@@ -109,14 +108,16 @@ class PTSNActions implements IPlugin {
     }
 
     private function toggleTypstMath(node:Dynamic):String {
-        final text:String = this.tsna_helpers[untyped "node_text"](node);
+        final nodetext = this.tsna_helpers[untyped "node_text"](node);
+        final text = Std.isOfType(nodetext, AnyTable) ? return nodetext : (cast nodetext : String);
 
-        final sub1 = text.gsub("^%$%s+(.*)%s+%$$", "%$%1%$");
-        if (sub1 == text) {
-            // This assignment is necessary because haxe doesn't realize that gsub is a multireturn.
+        var sub = text.gsub("^%$%s+(.*)%s+%$$", "%$%1%$");
+        if (sub == text) {
+            // haxe doesn't realize that gsub is a multireturn.
             // TODO: open issue about this
-            final sub2 = text.gsub("^%$", "%$ ").gsub("%$$", " %$");
-            return sub2;
-        } else return sub1;
+            sub = text.gsub("^%$", "%$ ").gsub("%$$", " %$");
+        }
+
+        return sub;
     }
 }
