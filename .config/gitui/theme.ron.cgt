@@ -1,0 +1,27 @@
+<! local palette = {
+    command_fg = "text",
+    selection_bg = "surface2",
+    cmdbar_bg = "mantle",
+    cmdbar_extra_lines_bg = "mantle",
+    disabled_fg = "overlay1",
+    diff_line_add = "green",
+    diff_line_delete = "red",
+    diff_file_added = "green",
+    diff_file_removed = "maroon",
+    diff_file_moved = "mauve",
+    diff_file_modified = "peach",
+    commit_hash = "lavender",
+    commit_time = "subtext1",
+    commit_author = "sapphire",
+    danger_fg = "red",
+    push_gauge_bg = "blue",
+    push_gauge_fg = "base",
+    tag_fg = "rosewater",
+    branch_fg = "teal",
+} !>
+(
+    selected_tab: Some("Reset"),
+    <! for k, v in pairs(palette) do !>
+    <% k %>: Some("#<% opt.catppuccin[v] %>"),
+    <! end !>
+)
