@@ -8,10 +8,12 @@ class PAutopairs implements IPlugin {
     public function new() {}
 
     public function init() {
-        Lua.require("nvim-autopairs").setup({
+        Lua.require("nvim-autopairs")[untyped "setup"]({
             check_ts: true,
-            fast_wrap: {},
-            enable_check_bracket_line: false,
+            fast_wrap: {
+                map: "<M-e>",
+                cursor_pos_before: false,
+            },
         });
 
         Lua.require("cmp").event.on(
