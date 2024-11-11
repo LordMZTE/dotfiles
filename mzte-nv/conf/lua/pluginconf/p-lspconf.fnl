@@ -42,6 +42,41 @@
 (setup :haxe_language_server)
 (setup :html)
 (setup :jsonls {:on_attach disable-formatter})
+(setup :ltex {:cmd [:ltex-ls-plus]
+              :filetypes [:typst
+                          :bib
+                          :gitcommit
+                          :markdown
+                          :org
+                          :plaintex
+                          :rst
+                          :rnoweb
+                          :tex
+                          :pandoc
+                          :quarto
+                          :rmd
+                          :context
+                          :html
+                          :xhtml
+                          :mail
+                          :text]
+              :settings {:ltex {:enabled [:typst
+                                          :bibtex
+                                          :gitcommit
+                                          :markdown
+                                          :org
+                                          :tex
+                                          :restructuredtext
+                                          :rsweave
+                                          :latex
+                                          :quarto
+                                          :rmd
+                                          :context
+                                          :html
+                                          :xhtml
+                                          :mail
+                                          :plaintext]}}})
+
 (setup :lua_ls {:settings {:Lua {:runtime {:version :LuaJIT
                                            :path (do
                                                    (var p
