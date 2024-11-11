@@ -4,9 +4,12 @@ on-button-middle=dismiss-all
 
 font=<% opt.font %> 10
 
-default-timeout=8000
+default-timeout=4000
+max-visible=4
 
-anchor=top-left
+layer=overlay
+anchor=bottom-right
+icon-location=right
 
 # Colors
 background-color=#<% opt.catppuccin.base %>E0
