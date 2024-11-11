@@ -44,7 +44,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ opt.commands.media.play_pause },
         .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ opt.commands.media.prev },
         .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ opt.commands.media.next },
-         
+
         // light control
         .{ "None", "XF86MonBrightnessUp", "spawn", journal_prefix ++ opt.commands.backlight_up },
         .{ "None", "XF86MonBrightnessDown", "spawn", journal_prefix ++ opt.commands.backlight_down },
@@ -132,6 +132,17 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "tap", "enabled" },
     }) |cmd| {
         try con.runCommand(&[_][:0]const u8{ "input", "*" } ++ cmd);
+    }
+
+    // scratchpad
+    {
+        var pbuf: [64]u8 = undefined;
+        const scratchpad_tag: u32 = 1 << 9;
+        try con.runCommand(&.{ "spawn-tagmask", try std.fmt.bufPrintZ(&pbuf, "{}", .{~scratchpad_tag}) });
+
+        const tag_s = try std.fmt.bufPrintZ(&pbuf, "{}", .{scratchpad_tag});
+        try con.runCommand(&.{ "map", "normal", "Super", "P", "toggle-focused-tags", tag_s });
+        try con.runCommand(&.{ "map", "normal", "Super+Shift", "P", "set-view-tags", tag_s });
     }
 
     // tag config
