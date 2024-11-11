@@ -5,7 +5,7 @@ let
   plugins = {
     # LSP
     "20-lspconfig" = plugin "nvim-lspconfig";
-    "20-nullls" = plugin "null-ls.nvim";
+    "20-nonels" = plugin "none-ls.nvim";
     "20-jdtls" = plugin "nvim-jdtls";
     "20-lsp-saga" = plugin "lspsaga.nvim";
 

@@ -54,7 +54,6 @@ let
 
     # Misc
     html-tidy
-    shellcheck
     tree-sitter
   ];
 in

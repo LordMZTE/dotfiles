@@ -3,9 +3,7 @@
 (macro src [categ name]
   `(. nullls :builtins ,categ ,name))
 
-(nullls.setup {:sources [(src :code_actions :shellcheck)
-                         (src :diagnostics :fish)
-                         (src :diagnostics :shellcheck)
+(nullls.setup {:sources [(src :diagnostics :fish)
                          (src :diagnostics :tidy)
                          (src :formatting :clang_format)
                          (src :formatting :fish_indent)
