@@ -24,16 +24,13 @@ let
     (flakePkg "git+https://git.mzte.de/LordMZTE/haxe-language-server.git")
     config.output.packages.jdtls-wrapped
     (
-      let
-        commit = "2b60af";
-      in
       pkgs.stdenvNoCC.mkDerivation rec {
         pname = "ltex-ls-plus";
-        version = "18.3.0";
+        version = "18.3.0-alpha.nightly.2024-11-12";
         src = fetchurl {
           url =
-            "https://git.mzte.de/api/packages/LordMZTE/generic/ltex-ls-plus/${version}-${commit}-alpha/ltex-ls-plus-${version}-${commit}-alpha.tar.gz";
-          sha256 = "sha256-xiEQXfJNaTW61p6/4hZWr2WhxzwJfZtb8I+hS+s6Ji0=";
+            "https://github.com/ltex-plus/ltex-ls-plus/releases/download/nightly/ltex-ls-plus-${version}.tar.gz";
+          sha256 = "sha256-Ux982DGaI5GIEOSS4yqGQsxa8pKxXae8fxVEn+yEmgU=";
         };
 
         preferLocalBuild = true;

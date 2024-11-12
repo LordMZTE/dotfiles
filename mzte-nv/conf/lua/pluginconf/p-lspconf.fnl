@@ -43,7 +43,7 @@
 (setup :html)
 (setup :jsonls {:on_attach disable-formatter})
 (setup :ltex {:cmd [:ltex-ls-plus]
-              :filetypes [:typst
+              :filetypes [;:typst ;; TODO: enable when this issue is properly implemented: https://github.com/ltex-plus/ltex-ls-plus/issues/39
                           :bib
                           :gitcommit
                           :markdown
