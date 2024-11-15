@@ -1,76 +1,42 @@
 { config, lib, pkgs, ... }:
-let
-  nu-ver = "0.99.0";
-in
 {
   options.nushell-plugins = lib.mkOption { };
 
-  config.nushell-plugins = [
-    (builtins.getFlake
-      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=6233ae712a945233389a440eecc612b94e2a16d5"
-    ).outputs.packages.${pkgs.system}.default
+  config.nushell-plugins = {
+    jobcontrol = (builtins.getFlake
+      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=3a02910ff138691ecf3557722411e53261d900d4"
+    ).outputs.packages.${pkgs.system}.default;
 
-    (pkgs.rustPlatform.buildRustPackage rec {
+    dbus = (pkgs.rustPlatform.buildRustPackage rec {
       name = "nu-plugin-dbus";
-      version = "0.12.0";
-      src = pkgs.fetchCrate {
-        inherit version;
-        pname = "nu_plugin_dbus";
-        hash = "sha256-UBpqgw6qqcEDW5bbSWJ/aaSSbEG5B/D6nvcbokX8aeA=";
+      version = "0.13.0";
+      #src = pkgs.fetchCrate {
+      #  inherit version;
+      #  pname = "nu_plugin_dbus";
+      #  hash = "sha256-UBpqgw6qqcEDW5bbSWJ/aaSSbEG5B/D6nvcbokX8aeA=";
+      #};
+      src = pkgs.fetchFromGitHub {
+        owner = "LordMZTE";
+        repo = "nu_plugin_dbus";
+        rev = "a682d442cef12a84553c5fcd56c8f10f2cbda0e6";
+        hash = "sha256-BazLyxZ7h3C+8llr0SkdM5+o9HiDXHZMtIPJjY05n4E=";
       };
 
-      cargoHash = "sha256-OrrqvHyhGq8oFmU71/r7AerZhbhZKZBrtSeT3ckKujo=";
+      cargoHash = "sha256-DxcOLycX4kjff+XgParpGjio+MxpEA5t0+9x7XHrKgU=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
-    })
-    (pkgs.rustPlatform.buildRustPackage rec {
-      name = "nu-plugin-formats";
-      version = nu-ver;
-      src = pkgs.fetchCrate {
-        inherit version;
-        pname = "nu_plugin_formats";
-        hash = "sha256-ccOTLeisxz24ixTULhkbXhbnlcmPTarYl+zevh3/smc=";
-      };
-
-      cargoHash = "sha256-iyAYHVO/JxGGbcD4LnDiI9B7yUfv+mVRpsJs6HUW4DY=";
-    })
-    (pkgs.rustPlatform.buildRustPackage rec {
-      name = "nu-plugin-polars";
-      version = nu-ver;
-      src = pkgs.fetchCrate {
-        inherit version;
-        pname = "nu_plugin_polars";
-        hash = "sha256-Um3buNPk/NmW1oXxo34101nJ061C2eyr/Ia/i5wvI2c=";
-      };
-
-      cargoHash = "sha256-wDElrCzkCN8yNA0amGK7iqm+yVbJ0RkgwkFxw+ExveM=";
-
-      doCheck = false; # Needs OpenSSL, which build doesn't for some reason.
-    })
-    (pkgs.rustPlatform.buildRustPackage rec {
-      name = "nu-plugin-query";
-      version = nu-ver;
-      src = pkgs.fetchCrate {
-        inherit version;
-        pname = "nu_plugin_query";
-        hash = "sha256-tvEdpSdqTVHHi3FCp7CLij8wmxBwPZ7CMMgAimVx/s4=";
-      };
-
-      cargoHash = "sha256-4MDWMBJVOnFj7t35MrNo+YtOLEb1fjTY5FUGI3pRzeA=";
-
-      nativeBuildInputs = with pkgs; [ pkg-config ];
-      buildInputs = with pkgs; [ openssl ];
-    })
-  ];
+    });
+    inherit (pkgs.nushellPlugins) polars formats query;
+  };
 
   config.output.packages.nushell-plugins = pkgs.writeTextFile {
     name = "add-plugins.nu";
     text = builtins.concatStringsSep "\n"
-      (map
-        (d:
+      (lib.mapAttrsToList
+        (name: d:
           ''
-            plugin add ${lib.getBin d}/bin/${builtins.replaceStrings ["-"] ["_"] d.name}
+            plugin add ${lib.getBin d}/bin/nu_plugin_${name}
           '')
         config.nushell-plugins);
   };
