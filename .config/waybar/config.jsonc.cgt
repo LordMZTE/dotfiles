@@ -54,7 +54,7 @@ end
  :clock {:tooltip-format "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
          :format-alt "{:%Y-%m-%d}"}
  :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.system :nproc) 1)]
-                     (.. s "{icon" i "}")) " {usage}% ")
+                     (.. s "{icon" i "}")) " {usage}% {avg_frequency}GHz ")
        :interval 2
        : format-icons}
  :memory {:format "{}% "}
