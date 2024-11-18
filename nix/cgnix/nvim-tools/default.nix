@@ -53,7 +53,6 @@ let
     )
     lua-language-server
     (flakePkg "github:oxalica/nil")
-    ocamlPackages.ocaml-lsp
     openscad-lsp
     (pkgs.rustPlatform.buildRustPackage {
       name = "prosemd-lsp";
