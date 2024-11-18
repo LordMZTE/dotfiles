@@ -14,8 +14,14 @@
                                               (.. "typst watch --root " root
                                                   " " file " " outfile)
                                               (.. "typst watch " file " "
-                                                  outfile))})]
-             (term:toggle)
-             (vim.uv.spawn :zathura {:args [outfile]}
-                           (fn [code signal] (term:shutdown)))))]
+                                                  outfile))})
+                 viewer-timer (vim.uv.new_timer)]
+             (term:open)
+             (viewer-timer:start 2000 0
+                                 (fn []
+                                   (viewer-timer:stop)
+                                   (viewer-timer:close)
+                                   (vim.uv.spawn :zathura {:args [outfile]}
+                                                 (fn [code signal]
+                                                   (vim.schedule #(term:shutdown))))))))]
   (vim.api.nvim_create_user_command :TypstWatch cb {:nargs 0}))
