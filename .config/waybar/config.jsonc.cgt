@@ -90,5 +90,5 @@ end
            :format "{bandwidthDownBytes}  {bandwidthUpBytes} "
            :tooltip-format-ethernet "{ifname} {ipaddr}"
            :tooltip-format-wifi "{essid} {ipaddr}"
-           :on-click "<% opt.term.command %> nmtui"
-           :on-click-right "<% opt.term.command %> nmtui"}}
+           :on-click "<% opt.term.exec %> nmtui"
+           :on-click-right "<% opt.term.exec %> nmtui"}}

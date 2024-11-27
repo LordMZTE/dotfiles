@@ -21,16 +21,10 @@ opts.nvidia = false
 opts.font = "Iosevka NF"
 opts.term_font = "IosevkaTerm NFM"
 
---opts.term = {
---    name = "Wezterm",
---    command = "wezterm",
---    workdir_command = "wezterm-gui start --cwd ",
---    icon_name = "org.wezfurlong.wezterm",
---}
-
 opts.term = {
     name = "Ghostty",
     command = "ghostty",
+    exec = "ghostty -e",
     workdir_command = "ghostty --working-directory=",
     icon_name = "com.mitchellh.ghostty",
 }
@@ -38,6 +32,7 @@ opts.term = {
 --opts.term = {
 --    name = "foot",
 --    command = "foot",
+--    exec = "foot",
 --    workdir_command = "foot --working-directory=",
 --    icon_name = "foot",
 --}
