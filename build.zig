@@ -15,7 +15,6 @@ pub fn build(b: *std.Build) !void {
     // Symlink Scripts
     inst.addScript(b, opts, "brightness.rkt", "brightness");
     inst.addScript(b, opts, "map-touch-display.rkt", "map-touch-display");
-    inst.addScript(b, opts, "typstwatch.sh", "typstwatch");
     inst.addScript(b, opts, "videos-duration.sh", "videos-duration");
 
     // Scripts
