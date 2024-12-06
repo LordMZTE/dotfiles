@@ -59,6 +59,12 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
             if (!std.mem.startsWith(u8, std.fs.path.basename(exepath), q.name))
                 continue;
 
+            // Tor Browser's binary is named firefox. This trips this algorithm up, because it will
+            // think firefox is running and attempt to start firefox. Since we don't want to open
+            // Tor Browser anyways, we just special-case it.
+            if (std.mem.containsAtLeast(u8, exepath, 1, "tor-browser"))
+                continue;
+
             q.found_exepath = try alloc.dupe(u8, exepath);
         }
 
