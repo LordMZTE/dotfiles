@@ -16,10 +16,11 @@ class Plugins {
     var errors:Array<{plug:IPlugin, err:Exception}> = [];
 
     public function new() {
-        this.startupPlugins = [];
+        this.startupPlugins = [
+            new PCatppuccin(),
+        ];
         this.deferredPlugins = [
             new PAutopairs(),
-            new PCatppuccin(),
             new PNu(),
             new PTSNActions(),
         ].concat([
@@ -29,10 +30,10 @@ class Plugins {
             "dressing",
             "gitsigns",
             "harpoon",
+            "lspprogress",
             "line",
             "lsp-saga",
             "lspconf",
-            "lspprogress",
             "luasnip",
             "neogit",
             "nix-update",
