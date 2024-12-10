@@ -80,7 +80,20 @@ opts.gamemode = {
 
 opts.dev_dir = os.getenv "HOME" .. "/dev"
 
+local ctp_rgb = {}
+setmetatable(ctp_rgb, {
+    __index = function(_, key)
+        local rs, gs, bs = string.match(opts.catppuccin[key], "^(%x%x)(%x%x)(%x%x)$")
+        return {
+            r = tonumber(rs, 16),
+            g = tonumber(gs, 16),
+            b = tonumber(bs, 16),
+        }
+    end
+})
 opts.catppuccin = {
+    rgb = ctp_rgb,
+
     base = "1e1e2e",
     blue = "89b4fa",
     crust = "11111b",

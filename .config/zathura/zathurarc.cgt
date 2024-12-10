@@ -33,6 +33,7 @@ set index-active-bg           "#<% opt.catppuccin.surface0 %>"
 set render-loading-bg         "#<% opt.catppuccin.base %>"
 set render-loading-fg         "#<% opt.catppuccin.text %>"
 
-set highlight-color           "#575268"
-set highlight-fg              "#<% opt.catppuccin.pink %>"
-set highlight-active-color    "#<% opt.catppuccin.pink %>"
+<! local pink_rgb = opt.catppuccin.rgb.pink !>
+set highlight-color           "rgba(87,82,104,0.5)"
+set highlight-fg              "rgba(<% pink_rgb.r %>, <% pink_rgb.g %>, <% pink_rgb.b %>, 0.5)"
+set highlight-active-color    "rgba(<% pink_rgb.r %>, <% pink_rgb.g %>, <% pink_rgb.b %>, 0.5)"
