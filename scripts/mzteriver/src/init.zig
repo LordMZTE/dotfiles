@@ -158,8 +158,8 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         try con.runCommand(&.{ "map", "normal", "Super+Shift+Control", key, "toggle-view-tags", tags });
     }
 
-    // "0" acts as "all tags"
-    const all_tags_s = std.fmt.comptimePrint("{}", .{std.math.maxInt(u32)});
+    // "0" acts as "all tags", excluding special tags (beyond 9)
+    const all_tags_s = std.fmt.comptimePrint("{}", .{0b111111111});
     try con.runCommand(&.{ "map", "normal", "Super", "0", "set-focused-tags", all_tags_s });
     try con.runCommand(&.{ "map", "normal", "Super+Shift", "0", "set-view-tags", all_tags_s });
 
