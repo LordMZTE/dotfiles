@@ -1,0 +1,15 @@
+[general]
+initial-tool    = "rectangle"
+output-filename = "<% os.getenv [[HOME]] %>/Downloads/screenshot.png"
+save-after-copy = true
+
+[font]
+family = "<% opt.font %>"
+style  = "Regular"
+
+[color-palette]
+first  = "#<% opt.catppuccin.red %>"
+second = "#<% opt.catppuccin.blue %>"
+third  = "#<% opt.catppuccin.green %>"
+fourth = "#<% opt.catppuccin.peach %>"
+fifth  = "#<% opt.catppuccin.teal %>"
