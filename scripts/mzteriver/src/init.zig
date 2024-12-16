@@ -195,6 +195,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     );
     defer alloc.free(init_path);
 
+    log.info("Running river_init", .{});
     var init_child = std.process.Child.init(
         &.{ init_path, if (initial) "init" else "reinit" },
         alloc,
