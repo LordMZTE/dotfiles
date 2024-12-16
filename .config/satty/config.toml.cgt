@@ -3,6 +3,10 @@ initial-tool    = "rectangle"
 output-filename = "<% os.getenv [[HOME]] %>/Downloads/screenshot.png"
 save-after-copy = true
 
+# This commands keeps running after satty exists, so the screenshot remains in the clipboard, unlike
+# the builtin copy function.
+copy-command = "wl-copy -t image/png"
+
 [font]
 family = "<% opt.font %>"
 style  = "Regular"
