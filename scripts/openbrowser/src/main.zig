@@ -11,6 +11,7 @@ const browsers = &[_][]const u8{
     "firefox",
     "brave",
     "luakit",
+    "Ladybird",
     "chromium",
 };
 
