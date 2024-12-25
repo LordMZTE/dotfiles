@@ -62,6 +62,13 @@ fn onChapterChange(
     const chapter = Chapter.fromNodeMap(chapter_nodes[@intCast(chapter_id)].u.list.*);
 
     if (chapter.skipReason()) |reason| {
+        var start_time: f64 = 0.0;
+        try ffi.checkMpvError(c.mpv_get_property(
+            mpv,
+            "time-pos",
+            c.MPV_FORMAT_DOUBLE,
+            &start_time,
+        ));
         const end_time = if (chapter_id != chapter_nodes.len - 1) end_time: {
             std.debug.assert(chapter_nodes[@as(usize, @intCast(chapter_id)) + 1].format ==
                 c.MPV_FORMAT_NODE_MAP);
@@ -86,7 +93,10 @@ fn onChapterChange(
             @constCast(&end_time),
         ));
         try self.skipped_chapters.put(chapter_id, {});
-        try util.msg(mpv, .@"sb-skip", "skipped: {s}", .{reason});
+        try util.msg(mpv, .@"sb-skip", "skipped: {s} ({d:.2}s)", .{
+            reason,
+            end_time - start_time,
+        });
     }
 }
 
