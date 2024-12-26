@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<!
+    -- xfconfd uses glib's mmap wrapper to "read" this file, which will only read up to the length
+    -- reported by fstatat.
+    tmpl:setAssumeDeterministic(true)
+!>
+
+<! local function prop(typ, name, val) !>
+    <property name="<% name %>" type="<% typ %>" value="<% val %>"/>
+<! end !>
+
+<channel name="thunar" version="1.0"><!
+    -- Show hidden files
+    prop("bool", "last-show-hidden", "true")
+
+    -- Activate on single click
+    prop("bool", "misc-single-click", "true")
+
+    -- Show right-click action to permanently delete
+    prop("bool", "misc-show-delete-action", "true")
+
+    -- Execute shell scripts on click (why is this even off by default?)
+    prop("string", "misc-exec-shell-scripts-by-default", "THUNAR_EXECUTE_SHELL_SCRIPT_ALWAYS")
+!></channel>

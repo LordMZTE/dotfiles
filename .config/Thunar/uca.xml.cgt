@@ -25,19 +25,4 @@
 	<text-files/>
 	<video-files/>
 </action>
-
-<action>
-    <name>rm -rf</name>
-    <icon>user-trash-full</icon>
-    <command>[ "$(echo -e "Yes\nNo" | rofi -dmenu -theme ~/.local/share/rofi/applets/confirm.rasi -mesg $'Delete these Files?\n\n%F')" == Yes ] &amp;&amp; rm -rf %F</command>
-    <description>force delete stuff</description>
-    <patterns>*</patterns>
-
-	<audio-files/>
-	<image-files/>
-	<other-files/>
-	<text-files/>
-	<video-files/>
-    <directories/>
-</action>
 </actions>
