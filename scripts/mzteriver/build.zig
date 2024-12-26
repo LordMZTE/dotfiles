@@ -9,6 +9,7 @@ pub fn build(b: *std.Build) !void {
 
     const CgOpt = struct {
         catppuccin: struct {
+            base: [:0]const u8,
             red: [:0]const u8,
             sky: [:0]const u8,
         },

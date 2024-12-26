@@ -170,6 +170,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
     try con.runCommand(&.{ "set-repeat", "50", "300" });
 
+    try con.runCommand(&.{ "background-color", "0x" ++ opt.catppuccin.base });
     try con.runCommand(&.{ "border-color-focused", "0x" ++ opt.catppuccin.red });
     try con.runCommand(&.{ "border-color-unfocused", "0x" ++ opt.catppuccin.sky });
 
