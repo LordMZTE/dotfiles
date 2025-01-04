@@ -16,7 +16,6 @@
 // ==UserScript==
 <! for k, v in pairs(fields) do
 local arr = v[1] and v or {v}
-for _, val in ipairs(arr) do !>
-// @<% k %> <% val %>
+for _, val in ipairs(arr) do !>// @<% k %> <% val %>
 <! end end !>
 // ==/UserScript==

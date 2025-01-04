@@ -5,9 +5,10 @@ import js.Browser;
 
 using Lambda;
 
-function main() {
-    var siteStyles = Macro.siteStyles();
+final SITE_PLUGINS:Map<String, () -> ISitePlugin> = ["github.com" => siteplugin.Github.new];
+final SITE_STYLES = Macro.siteStyles();
 
+function main() {
     var ownStyle = Browser.document.createStyleElement();
     ownStyle.innerHTML = Macro.fileContent("own_style.css");
 
@@ -21,18 +22,19 @@ function main() {
             Browser.document.body.appendChild(style);
         }
 
-        var siteStyle = siteStyles[Browser.window.location.hostname];
+        final siteStyle = SITE_STYLES[Browser.window.location.hostname];
         if (siteStyle != null) {
             var siteStyleElem = Browser.document.createStyleElement();
             siteStyleElem.innerHTML = siteStyle;
             Browser.document.body.appendChild(siteStyleElem);
             Browser.console.log("added site style: ", siteStyleElem);
         }
+
+        final sitePlugin = SITE_PLUGINS[Browser.window.location.hostname];
+        if (sitePlugin != null) {
+            sitePlugin().onContentLoaded();
+        }
     });
 
-    [
-        new InfoAction(),
-        new ToggleStyleAction(style),
-        new ClearCookiesAction(),
-    ].iter(a -> a.register());
+    [new InfoAction(), new ToggleStyleAction(style), new ClearCookiesAction(),].iter(a -> a.register());
 }
