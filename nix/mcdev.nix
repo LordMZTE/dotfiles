@@ -26,7 +26,7 @@ in
       in
       pkgs.mkShell {
         shellHook = ''
-          export LD_LIBRARY_PATH="${pkgs.addOpenGLRunpath.driverLink}/lib:${pkgs.lib.makeLibraryPath shpgks}:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="${pkgs.addDriverRunpath.driverLink}/lib:${pkgs.lib.makeLibraryPath shpgks}:$LD_LIBRARY_PATH"
         '';
         buildInputs = shpgks;
       })
