@@ -1,0 +1,6 @@
+<!
+-- This exists to make Nix happy. It won't read _cgfs/opts.json, as that (correctly) reports size zero.
+-- This file somewhat unsoundly reports its size instead.
+-- See https://github.com/NixOS/nix/issues/10667
+tmpl:setAssumeDeterministic(true)
+!><% cg.fmt.json.serialize(opt) %>

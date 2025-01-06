@@ -28,8 +28,6 @@ pub fn build(b: *std.Build) void {
     scanner.generate("wl_shm", 1);
     scanner.generate("xdg_wm_base", 2);
 
-    scanner.addCSource(exe);
-
     exe.root_module.linkSystemLibrary("wayland-client", .{});
 
     b.installArtifact(exe);

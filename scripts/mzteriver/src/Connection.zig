@@ -77,13 +77,13 @@ fn cmdCallbackListener(
 fn registryListener(reg: *wl.Registry, ev: wl.Registry.Event, self: *Connection) void {
     switch (ev) {
         .global => |glob| {
-            if (std.mem.orderZ(u8, glob.interface, wl.Seat.getInterface().name) == .eq) {
+            if (std.mem.orderZ(u8, glob.interface, wl.Seat.interface.name) == .eq) {
                 self.seat = reg.bind(
                     glob.name,
                     wl.Seat,
                     wl.Seat.generated_version,
                 ) catch @panic("OOM");
-            } else if (std.mem.orderZ(u8, glob.interface, zriver.ControlV1.getInterface().name) == .eq) {
+            } else if (std.mem.orderZ(u8, glob.interface, zriver.ControlV1.interface.name) == .eq) {
                 self.ctl = reg.bind(
                     glob.name,
                     zriver.ControlV1,

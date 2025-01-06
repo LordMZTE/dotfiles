@@ -7,5 +7,6 @@
     ./mcdev.nix
     ./mzte-nix.nix
     ./nushell-plugins.nix
+    ./scripts.nix
   ];
 }

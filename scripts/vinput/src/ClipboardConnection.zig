@@ -288,7 +288,7 @@ fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *Globa
         .global => |glob| {
             inline for (std.meta.fields(GlobalCollector)) |f| {
                 const Interface = @typeInfo(@typeInfo(f.type).Optional.child).Pointer.child;
-                if (std.mem.orderZ(u8, glob.interface, Interface.getInterface().name) == .eq) {
+                if (std.mem.orderZ(u8, glob.interface, Interface.interface.name) == .eq) {
                     @field(globals, f.name) = reg.bind(
                         glob.name,
                         Interface,

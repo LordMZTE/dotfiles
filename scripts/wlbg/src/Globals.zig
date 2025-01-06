@@ -74,8 +74,8 @@ fn registryListener(reg: *wl.Registry, ev: wl.Registry.Event, col: *Collector) v
                     std.meta.Child(std.meta.FieldType(BaseType, .items))
                 else
                     BaseType);
-                if (std.mem.orderZ(u8, global.interface, Interface.getInterface().name) == .eq) {
-                    log.info("binding global {s}@{}", .{ Interface.getInterface().name, global.name });
+                if (std.mem.orderZ(u8, global.interface, Interface.interface.name) == .eq) {
+                    log.info("binding global {s}@{}", .{ Interface.interface.name, global.name });
 
                     const bound = reg.bind(
                         global.name,

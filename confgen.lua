@@ -11,7 +11,6 @@ cg.addFile ".bashrc"
 cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".Xresources.cgt"
 cg.addFile ".replrc"
-cg.addFile ".vieterrc.cgt"
 
 cg.onDone(function(errors)
     if errors then

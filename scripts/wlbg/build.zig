@@ -22,7 +22,7 @@ pub fn build(b: *std.Build) void {
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
     scanner.addSystemProtocol("unstable/xdg-output/xdg-output-unstable-v1.xml");
-    scanner.addCustomProtocol(b.pathFromRoot("wlr-layer-shell-unstable-v1.xml"));
+    scanner.addCustomProtocol(b.path("wlr-layer-shell-unstable-v1.xml"));
 
     scanner.generate("wl_compositor", 5);
     scanner.generate("wl_shm", 1);
@@ -31,8 +31,6 @@ pub fn build(b: *std.Build) void {
     scanner.generate("xdg_wm_base", 5); // dependency of layer shell
     scanner.generate("wl_seat", 8);
     scanner.generate("wl_output", 4);
-
-    scanner.addCSource(exe);
 
     exe.root_module.linkSystemLibrary("wayland-client", .{});
     exe.root_module.linkSystemLibrary("wayland-egl", .{});
