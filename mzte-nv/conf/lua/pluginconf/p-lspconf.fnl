@@ -42,6 +42,7 @@
 (setup :haxe_language_server)
 (setup :html)
 (setup :jsonls {:on_attach disable-formatter})
+(setup :julials)
 (setup :ltex {:cmd [:ltex-ls-plus]
               :filetypes [;:typst ;; TODO: enable when this issue is properly implemented: https://github.com/ltex-plus/ltex-ls-plus/issues/39
                           :bib
