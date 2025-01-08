@@ -19,6 +19,7 @@ let
     "50-friendly-snippets" = plugin "friendly-snippets";
     "50-luasnip" = plugin "LuaSnip";
     "50-cmp-treesitter" = plugin "cmp-treesitter";
+    "50-cmp-latex-symbols" = plugin "nvim-cmp-lua-latex-symbols";
 
     # Treesitter
     "30-treesitter" = plugin "nvim-treesitter";
