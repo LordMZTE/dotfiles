@@ -1,8 +1,24 @@
 const std = @import("std");
 const common = @import("common");
 
+const CgOpts = struct {
+    term_font: []u8 = "", // TODO: this being non-const is a workaround for an std bug
+    nix: struct {
+        nvim_plugins: ?[:0]u8 = null,
+        tree_sitter_parsers: ?[:0]u8 = null,
+        nvim_tools: ?[:0]u8 = null,
+        jvm: ?[:0]u8 = null,
+        @"fennel.lua": ?[:0]u8 = null,
+    } = .{},
+};
+
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
+    const compiler_only = b.option(
+        bool,
+        "compiler-only",
+        "only build the compiler",
+    ) orelse false;
 
     if (target.result.os.tag == .windows)
         // windows is an error in many ways
@@ -10,26 +26,10 @@ pub fn build(b: *std.Build) !void {
 
     const mode = b.standardOptimizeOption(.{});
 
-    const lib = b.addSharedLibrary(.{
-        .name = "mzte-nv",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = mode,
-    });
-
-    const znvim_dep = b.dependency("znvim", .{ .target = target, .optimize = mode });
     const common_dep = b.dependency("common", .{});
 
-    const cg_opt = try common.confgenGet(struct {
-        term_font: []u8, // TODO: this being non-const is a workaround for an std bug
-        nix: struct {
-            nvim_plugins: ?[:0]u8 = null,
-            tree_sitter_parsers: ?[:0]u8 = null,
-            nvim_tools: ?[:0]u8 = null,
-            jvm: ?[:0]u8 = null,
-            @"fennel.lua": ?[:0]u8 = null,
-        },
-    }, b.allocator);
+    // We fall back to defaults here in case we're building the compiler under Nix.
+    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{};
 
     const opts = b.addOptions();
     opts.addOption([]const u8, "font", cg_opt.term_font);
@@ -39,18 +39,32 @@ pub fn build(b: *std.Build) !void {
     opts.addOption(?[:0]const u8, "jvm", cg_opt.nix.jvm);
     opts.addOption(?[:0]const u8, "fennel.lua", cg_opt.nix.@"fennel.lua");
 
-    lib.root_module.addImport("opts", opts.createModule());
+    if (!compiler_only) {
+        const lib = b.addSharedLibrary(.{
+            .name = "mzte-nv",
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = mode,
+        });
 
-    lib.root_module.addImport("common", common_dep.module("common"));
-    lib.root_module.addImport("nvim", znvim_dep.module("nvim_c"));
-    lib.root_module.addImport("znvim", znvim_dep.module("znvim"));
+        if (b.lazyDependency(
+            "znvim",
+            .{ .target = target, .optimize = mode },
+        )) |znvim_dep| {
+            lib.root_module.addImport("nvim", znvim_dep.module("nvim_c"));
+            lib.root_module.addImport("znvim", znvim_dep.module("znvim"));
+        }
 
-    lib.linkLibC();
-    lib.linkSystemLibrary("luajit");
+        lib.root_module.addImport("opts", opts.createModule());
+        lib.root_module.addImport("common", common_dep.module("common"));
 
-    lib.root_module.unwind_tables = true;
+        lib.linkLibC();
+        lib.linkSystemLibrary("luajit");
 
-    b.getInstallStep().dependOn(&b.addInstallFile(lib.getEmittedBin(), "share/nvim/mzte-nv.so").step);
+        lib.root_module.unwind_tables = true;
+
+        b.getInstallStep().dependOn(&b.addInstallFile(lib.getEmittedBin(), "share/nvim/mzte-nv.so").step);
+    }
 
     // this is the install step for the lua config compiler binary
     const compiler = b.addExecutable(.{

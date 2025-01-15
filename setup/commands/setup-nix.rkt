@@ -3,4 +3,5 @@
 (provide run)
 
 (define (run)
-  (cmd "nix" "build" ".#cgnix" "--impure" "--out-link" "nix/cgnix/nix.lua"))
+  (let ([nix-cmd (if (find-executable-path "nom") "nom" "nix")])
+    (cmd nix-cmd "build" ".#cgnix" "--impure" "--out-link" "nix/cgnix/nix.lua")))

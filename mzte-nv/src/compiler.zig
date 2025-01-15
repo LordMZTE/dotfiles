@@ -44,8 +44,11 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     // fennel is made to run on lua 5.4, but ends up working with LJ too
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "package");
     c.lua_getfield(l, -1, "path");
-    ffi.luaPushString(l, ";" ++ (opts.@"fennel.lua" orelse "/usr/share/lua/5.4/fennel.lua"));
-    c.lua_concat(l, 2);
+    ffi.luaPushString(l, ";");
+    ffi.luaPushString(l, opts.@"fennel.lua" orelse
+        (std.posix.getenv("MZTE_NV_FENNEL") orelse
+        "/usr/share/lua/5.4/fennel.lua"));
+    c.lua_concat(l, 3);
     c.lua_setfield(l, -2, "path");
     c.lua_pop(l, 1);
 

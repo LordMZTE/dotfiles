@@ -101,7 +101,6 @@
 (setup :taplo)
 (setup :tinymist
        {:single_file_support true
-        :offset_encoding :utf-8
         :root_dir (util.root_pattern :.typstroot)
         :settings {:formatterMode :typstyle :formatterPrintWidth 100}})
 

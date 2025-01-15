@@ -1,4 +1,4 @@
-{ config, pkgs, lib, stdenvNoCC, ... }:
+{ config, pkgs, lib, stdenv, stdenvNoCC, ... }:
 let
   plugin = name: fetchGit { url = "https://git.mzte.de/nvim-plugins/${name}.git"; };
 
@@ -61,23 +61,29 @@ let
     "10-nui" = plugin "nui.nvim";
   };
 
-  # TODO: build mzte-nv-compiler in nix
-  #mzte-nv-compiler =
-  #  let
-  #    path = "${builtins.getEnv "HOME"}/.local/bin/mzte-nv-compile";
-  #  in
-  #  if (builtins.pathExists path) then
-  #  # This derivation exists to patch a potentially mismatched dynamic linker.
-  #    stdenvNoCC.mkDerivation
-  #      {
-  #        name = "mzte-nv-compiler-patched";
-  #        nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-  #        buildInputs = with pkgs; [ luajit ];
-  #        dontUnpack = true;
-  #        buildPhase = ''
-  #          cp ${/. + path} $out
-  #        '';
-  #      } else "";
+  mzte-nv-compiler = stdenv.mkDerivation {
+    name = "mzte-nv-compiler";
+    src = lib.fileset.toSource {
+      root = ../..;
+      fileset = lib.fileset.unions [
+        ../../lib/common-zig
+        ../../mzte-nv/src
+        ../../mzte-nv/build.zig
+        ../../mzte-nv/build.zig.zon
+      ];
+    };
+    patchPhase = "cd mzte-nv";
+
+    nativeBuildInputs = with pkgs; [ zig_0_13.hook makeBinaryWrapper ];
+    buildInputs = with pkgs; [ pkg-config luajit ];
+
+    zigBuildFlags = [ "-Dcompiler-only" ];
+
+    postInstall = ''
+      wrapProgram $out/bin/mzte-nv-compile \
+        --set MZTE_NV_FENNEL "${pkgs.luajitPackages.fennel}/share/lua/5.1/fennel.lua"
+    '';
+  };
 in
 {
   options.cgnix.nvim-plugins = lib.mkOption { };
@@ -85,8 +91,6 @@ in
 
   config.cgnix.entries.nvim_plugins = stdenvNoCC.mkDerivation {
     name = "nvim-plugins";
-
-    nativeBuildInputs = with pkgs; [ luajit luajitPackages.fennel ];
 
     unpackPhase = ''
       # Copy plugins sources here
@@ -98,8 +102,15 @@ in
     '';
 
     buildPhase = ''
+      # Generate helptags
+      ls plugins/20-lsp-saga
+      for doc in plugins/*/doc; do
+        echo "generating helptags @ $doc"
+        ${pkgs.neovim-unwrapped}/bin/nvim -u NONE -i NONE -c "helptags $doc" +quit!
+      done
+
       # Compile
-      #$ {if mzte-nv-compiler != "" then "$ {mzte-nv-compiler} plugins" else ""}
+      ${mzte-nv-compiler}/bin/mzte-nv-compile plugins
     '';
 
     installPhase = ''

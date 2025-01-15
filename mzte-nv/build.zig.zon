@@ -7,6 +7,7 @@
         .znvim = .{
             .url = "git+https://git.mzte.de/LordMZTE/znvim.git#593576ab90fe7745acef03b88849aa904c399731",
             .hash = "122036fae770b609b5eca343a07dd735522f90c93f9ae1a5f89bc24480f5906cd777",
+            .lazy = true,
         },
     },
     .paths = .{""},
