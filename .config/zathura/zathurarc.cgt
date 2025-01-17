@@ -21,7 +21,18 @@ set notification-warning-fg   "#fae3b0"
 set inputbar-fg               "#<% opt.catppuccin.text %>"
 set inputbar-bg               "#<% opt.catppuccin.surface0 %>"
 
-set recolor                   "true"
+<!
+-- We don't want to recolor documents I create myself with typst and preview with the :TypstWatch
+-- nvim command. We detect if zathura is opening such a file here, and don't enable recolor in that
+-- case.
+
+local recolor = true
+if fsctx then
+    local cmdline = io.open("/proc/" .. fsctx.pid .. "/cmdline", "r"):read("*a"):gsub("%z", " ")
+    recolor = cmdline:find(" /tmp/typstwatch_") == nil
+end
+!>
+set recolor                   "<% recolor %>"
 set recolor-lightcolor        "#<% opt.catppuccin.base %>"
 set recolor-darkcolor         "#<% opt.catppuccin.text %>"
 

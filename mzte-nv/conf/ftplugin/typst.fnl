@@ -6,8 +6,9 @@
            (let [Terminal (. (require :toggleterm.terminal) :Terminal)
                  lspc-util (require :lspconfig.util)
                  file (vim.api.nvim_buf_get_name 0)
-                 outfile-base (string.gsub (vim.fs.basename file) "%.typ$"
-                                           :.pdf)
+                 outfile-base (.. :typstwatch_
+                                  (string.gsub (vim.fs.basename file) "%.typ$"
+                                               :.pdf))
                  outfile (.. :/tmp/ outfile-base)
                  root ((lspc-util.root_pattern :.typstroot) file)
                  term (Terminal:new {:direction :horizontal
