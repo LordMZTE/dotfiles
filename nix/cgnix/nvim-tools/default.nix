@@ -83,6 +83,7 @@ let
 
     # Misc
     html-tidy
+    nix-update # nix-update.nvim
     tree-sitter
   ];
 in
