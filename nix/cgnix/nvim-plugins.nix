@@ -103,10 +103,9 @@ in
 
     buildPhase = ''
       # Generate helptags
-      ls plugins/20-lsp-saga
       for doc in plugins/*/doc; do
         echo "generating helptags @ $doc"
-        ${pkgs.neovim-unwrapped}/bin/nvim -u NONE -i NONE -c "helptags $doc" +quit!
+        ${pkgs.neovim-unwrapped}/bin/nvim -n -Es -u NONE -i NONE -c "helptags $doc" +quit!
       done
 
       # Compile
