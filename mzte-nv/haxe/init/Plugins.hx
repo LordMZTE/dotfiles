@@ -18,6 +18,7 @@ class Plugins {
     public function new() {
         this.startupPlugins = [
             new PCatppuccin(),
+            new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
         this.deferredPlugins = [
             new PAutopairs(),
@@ -33,7 +34,6 @@ class Plugins {
             "lspprogress",
             "line",
             "lsp-saga",
-            "lspconf",
             "luasnip",
             "neogit",
             "nix-update",
