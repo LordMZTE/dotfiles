@@ -29,6 +29,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
     var modules = .{
         @import("modules/LiveChat.zig").create(),
         @import("modules/SBSkip.zig").create(),
+        @import("modules/Shuffle.zig").create(),
     };
     // need this weird loop here for pointer access for fields to work
     inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
