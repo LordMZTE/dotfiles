@@ -22,6 +22,7 @@ class Plugins {
         ];
         this.deferredPlugins = [
             new PAutopairs(),
+            new PIndentBlankline(),
             new PNu(),
             new PTSNActions(),
         ].concat([

@@ -42,7 +42,7 @@ let
     "50-gitsigns" = plugin "gitsigns.nvim";
     "50-lualine" = plugin "lualine.nvim";
     "50-tree" = plugin "nvim-tree.lua";
-    "50-neogit" = fetchGit { url = "https://git.mzte.de/nvim-plugins/neogit.git?rev=nightly"; };
+    "50-neogit" = plugin "neogit";
     "50-telescope" = plugin "telescope.nvim";
     "50-toggleterm" = plugin "toggleterm.nvim";
     "50-dressing" = plugin "dressing.nvim";
@@ -51,6 +51,7 @@ let
     "50-dapui" = plugin "nvim-dap-ui";
     "50-harpoon" = plugin "harpoon";
     "50-recorder" = plugin "nvim-recorder";
+    "50-ibl" = plugin "indent-blankline.nvim";
     "50-lsp-progress" = plugin "lsp-progress.nvim";
 
     # Libraries

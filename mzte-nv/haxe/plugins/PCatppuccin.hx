@@ -24,6 +24,11 @@ class PCatppuccin implements IPlugin {
                 dap_ui: true,
                 gitsigns: true,
                 harpoon: true,
+                indent_blankline: {
+                    enabled: true,
+                    scope_color: "lavender",
+                    colored_indent_levels: true,
+                },
                 lsp_saga: true,
                 markdown: true,
                 native_lsp: {
