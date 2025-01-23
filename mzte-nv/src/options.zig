@@ -34,7 +34,11 @@ pub fn initOptions() !void {
     try opt(100).setLog("textwidth", .both);
     try opt(true).setLog("cursorcolumn", .both);
     try opt(true).setLog("cursorline", .both);
-    try opt(try std.fmt.bufPrintZ(&buf, "{s}:h10", .{opts.font})).setLog("guifont", .both);
+    // The reason we're not getting this from confgen is that nvim-qt (which I want to replace, but
+    // every other GUI is broken in some way) does not use fontconfig like a normal person but
+    // instead some dumb Qt font naming where the font has a completely different name for whatever
+    // reason.
+    try opt("IosevkaTerm Nerd Font Mono:h12").setLog("guifont", .both);
     try opt("a").setLog("mouse", .both);
     try opt(true).setLog("number", .both);
     try opt(true).setLog("relativenumber", .both);
