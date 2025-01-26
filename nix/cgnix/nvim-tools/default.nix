@@ -56,17 +56,6 @@ let
     lua-language-server
     (flakePkg "github:oxalica/nil")
     openscad-lsp
-    (pkgs.rustPlatform.buildRustPackage {
-      name = "prosemd-lsp";
-      src = pkgs.fetchFromGitHub {
-        owner = "kitten";
-        repo = "prosemd-lsp";
-        rev = "d6073d9ec269cec820b3efc77e0f62bcff47790e";
-        hash = "sha256-Mkbl8wT04sNjV7fpDJh9HbEqnCdi6SMXdlPCbT2801c=";
-      };
-
-      cargoHash = "sha256-/jx1hC/98v5L8XLG3ecFkk5H60HDtaKede+a8HDeFk4=";
-    })
     rust-analyzer
     taplo
     tinymist

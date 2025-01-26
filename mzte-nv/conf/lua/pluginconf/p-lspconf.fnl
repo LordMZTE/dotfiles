@@ -94,7 +94,6 @@
 
 (setup :nil_ls {:settings {:nil {:formatting {:command [:nixpkgs-fmt]}}}})
 (setup :openscad_lsp)
-(setup :prosemd_lsp)
 (setup :racket_langserver)
 (setup :rust_analyzer
        {:settings {:rust-analyzer {:checkOnSave {:command :clippy}}}})
