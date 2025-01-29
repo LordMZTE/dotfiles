@@ -1,8 +1,12 @@
-pub const c = @cImport({
-    @cInclude("wayland-egl.h"); // required for egl include to work
-    @cInclude("EGL/egl.h");
+const std = @import("std");
 
-    @cDefine("GL_GLEXT_PROTOTYPES", "1");
-    @cInclude("GL/gl.h");
-    @cInclude("GL/glext.h");
+pub const c = @cImport({
+    @cInclude("gdk-pixbuf/gdk-pixbuf.h");
 });
+
+pub fn checkGError(err: ?*c.GError) !void {
+    if (err) |e| {
+        std.log.err("GLib error: {s}", .{e.message});
+        return error.GError;
+    }
+}

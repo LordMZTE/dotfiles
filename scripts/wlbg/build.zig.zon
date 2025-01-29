@@ -2,8 +2,11 @@
     .name = "wlbg",
     .version = "0.0.0",
     .paths = .{""},
+
     .dependencies = .{
-        .common = .{ .path = "../../lib/common-zig" },
+        .common = .{
+            .path = "../../lib/common-zig",
+        },
         .wayland = .{
             .url = "git+https://codeberg.org/ifreund/zig-wayland.git#a5e2e9b6a6d7fba638ace4d4b24a3b576a02685b",
             .hash = "1220d41b23ae70e93355bb29dac1c07aa6aeb92427a2dffc4375e94b4de18111248c",

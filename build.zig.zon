@@ -17,7 +17,6 @@
         .openbrowser = .{ .path = "scripts/openbrowser" },
         .playvid = .{ .path = "scripts/playvid" },
         .prompt = .{ .path = "scripts/prompt" },
-        .randomwallpaper = .{ .path = "scripts/randomwallpaper" },
         .vinput = .{ .path = "scripts/vinput" },
         .withjava = .{ .path = "scripts/withjava" },
         .wlbg = .{ .path = "scripts/wlbg" },

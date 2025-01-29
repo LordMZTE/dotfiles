@@ -6,9 +6,6 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const scanner = Scanner.create(b, .{});
-    const wayland_mod = b.createModule(.{ .root_source_file = scanner.result });
-
     const exe = b.addExecutable(.{
         .name = "wlbg",
         .root_source_file = b.path("src/main.zig"),
@@ -17,27 +14,20 @@ pub fn build(b: *std.Build) void {
         .link_libc = true,
     });
 
+    const scanner = Scanner.create(b, .{});
+    const wayland_mod = b.createModule(.{ .root_source_file = scanner.result });
+
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
     exe.root_module.addImport("wayland", wayland_mod);
 
-    scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
-    scanner.addSystemProtocol("unstable/xdg-output/xdg-output-unstable-v1.xml");
-    scanner.addCustomProtocol(b.path("wlr-layer-shell-unstable-v1.xml"));
-
-    scanner.generate("wl_compositor", 5);
-    scanner.generate("wl_shm", 1);
-    scanner.generate("zwlr_layer_shell_v1", 4);
-    scanner.generate("zxdg_output_manager_v1", 3);
-    scanner.generate("xdg_wm_base", 5); // dependency of layer shell
-    scanner.generate("wl_seat", 8);
+    scanner.generate("wl_seat", 4);
     scanner.generate("wl_output", 4);
 
     exe.root_module.linkSystemLibrary("wayland-client", .{});
-    exe.root_module.linkSystemLibrary("wayland-egl", .{});
-    exe.root_module.linkSystemLibrary("EGL", .{});
-    exe.root_module.linkSystemLibrary("GL", .{});
+    exe.root_module.linkSystemLibrary("gdk-pixbuf-2.0", .{});
 
     b.installArtifact(exe);
+
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {

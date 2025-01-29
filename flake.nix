@@ -34,6 +34,7 @@
             buildInputs = with pkgs;
               [
                 # packages required to build scripts
+                gdk-pixbuf
                 libGL
                 libgit2
                 luajit
