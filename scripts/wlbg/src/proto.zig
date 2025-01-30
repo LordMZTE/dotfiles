@@ -112,20 +112,47 @@ pub fn randomizeWallpapers(state: *State) !void {
             //   |_| \___/|____/ \___/
             // TODO TODO TODO TODO TODO
             // USE LITERALLY ANYTHING EXCEPT GDK-PIXBUF!!
-            var gerr: ?*c.GError = null;
-            const pixbuf_unscaled = c.gdk_pixbuf_new_from_file(imgpath.ptr, &gerr);
-            try ffi.checkGError(gerr);
-            defer c.gdk_pixbuf_unref(pixbuf_unscaled);
+            const pixbuf = pixbuf: {
+                var gerr: ?*c.GError = null;
+                const pixbuf_unscaled = c.gdk_pixbuf_new_from_file(imgpath.ptr, &gerr);
+                try ffi.checkGError(gerr);
+                defer c.gdk_pixbuf_unref(pixbuf_unscaled);
 
-            const pixbuf = c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
+                break :pixbuf c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
+            };
             defer c.gdk_pixbuf_unref(pixbuf);
 
             // File Name (why does it need this?)
             try writeString(wr, imgpath);
 
             // Image Data
-            const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
-            try writeString(wr, c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen]);
+            // TODO: swww technically supports the ARGB pixel format, but this always lead to broken
+            // images. The CLI seems to query the format from the daemon and convert to that, which
+            // is fundamentally different than what we're doing. Somehow, changing from an opaque
+            // background to a transparent one keeps the transparent one below that when using the
+            // CLI, whereas you'd expect the previous one to be overridden. No idea how that works.
+            if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
+                // Ignore alpha component
+                std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
+                var pixels: []u8 = undefined;
+                var pixel_len: c.guint = 0;
+                pixels.ptr = c.gdk_pixbuf_get_pixels_with_length(pixbuf, &pixel_len);
+                pixels.len = pixel_len;
+
+                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
+
+                // This is RGBA
+                for (0..(pixels.len / 4)) |pixeli| {
+                    const i = pixeli * 4;
+
+                    try wr.writeAll(pixels[i..][0..3]);
+                }
+
+                std.log.debug("{}x{}, {}", .{ c.gdk_pixbuf_get_width(pixbuf), c.gdk_pixbuf_get_height(pixbuf), pixels.len });
+            } else {
+                const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
+                try writeString(wr, c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen]);
+            }
 
             // Size
             try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(c.gdk_pixbuf_get_width(pixbuf)))));
@@ -133,9 +160,7 @@ pub fn randomizeWallpapers(state: *State) !void {
 
             // Pixel format.
             // See: https://github.com/LGFae/swww/blob/main/common/src/ipc/types.rs#L550-L554
-            // FIXME: This is wrong! gdk-pixbuf stores alpha as RGBA while swww uses ARGB! The
-            // visual artifacts should serve as a reminder to fix this lol
-            try wr.writeByte(if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) 3 else 1);
+            try wr.writeByte(1);
 
             // Number of outputs to set this image for. Since we're using different images for each,
             // this is always 1.
