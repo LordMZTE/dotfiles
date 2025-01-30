@@ -96,7 +96,7 @@ pub fn main() !void {
     try std.posix.timerfd_settime(refresh_tfd, .{}, &.{
         .it_value = .{ .tv_sec = 1, .tv_nsec = 0 },
         .it_interval = .{
-            .tv_sec = std.time.s_per_min * 2, // refresh every 2 minutes
+            .tv_sec = std.time.s_per_min * 5, // refresh every 5 minutes
             .tv_nsec = 0,
         },
     }, null);
