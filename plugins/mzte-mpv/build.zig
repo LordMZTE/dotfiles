@@ -1,6 +1,7 @@
 const std = @import("std");
+const common = @import("common");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -12,6 +13,16 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     lib.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+
+    const cg_opts = try common.confgenGet(struct {
+        catppuccin: struct { base: []const u8 },
+    }, b.allocator);
+
+    const opts = b.addOptions();
+
+    opts.addOption([]const u8, "ctp_base", cg_opts.catppuccin.base);
+
+    lib.root_module.addImport("opts", opts.createModule());
 
     // Linking MPV for a plugin is usually undesirable, but it seems to work anyways.
     // This is here because Zig will otherwise not find the necessary header files on NixOS,

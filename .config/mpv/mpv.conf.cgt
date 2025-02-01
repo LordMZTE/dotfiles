@@ -6,6 +6,10 @@ local opts = {
   hwdec = "auto",
   ["hwdec-codecs"] = "all",
 
+  -- Set initial background color to transparent. Note that this must have alpha, or the MZTE-MPV
+  -- module will be unable to toggle to a color with alpha later. This seems to be a bug in MPV.
+  ["background-color"] = "0/0/0/0",
+
   -- YTDL: Don't go over 1080p
   ["ytdl-format"] = "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
 
