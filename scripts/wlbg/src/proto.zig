@@ -116,6 +116,12 @@ pub fn randomizeWallpapers(state: *State) !void {
                 var gerr: ?*c.GError = null;
                 const pixbuf_unscaled = c.gdk_pixbuf_new_from_file(imgpath.ptr, &gerr);
                 try ffi.checkGError(gerr);
+
+                // If the size is already correct, no need to rescale and copy the whole buffer.
+                if (c.gdk_pixbuf_get_width(pixbuf_unscaled) == outp.width and
+                    c.gdk_pixbuf_get_height(pixbuf_unscaled) == outp.height)
+                    break :pixbuf pixbuf_unscaled;
+
                 defer c.gdk_pixbuf_unref(pixbuf_unscaled);
 
                 break :pixbuf c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
