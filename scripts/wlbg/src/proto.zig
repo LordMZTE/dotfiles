@@ -12,10 +12,12 @@ const cmsghdr = extern struct {
     cmsg_type: i32,
 };
 
+const SwwwTransitionType = enum(u8) { simple, fade, outer, wipe, grow, wave, none };
+
 // All the structs starting with Swww* represent some swww IPC data type as represented by the wire
 // protocol.
 const SwwwTransition = packed struct {
-    transition_type: enum(u8) { simple, fade, outer, wipe, grow, wave, none },
+    transition_type: SwwwTransitionType,
     duration: f32,
     step: u8, // nonzero
     fps: u16,
@@ -31,6 +33,52 @@ const SwwwTransition = packed struct {
     wave0: f32,
     wave1: f32,
     invert_y: u8, // boolean
+
+    fn makeRandom(rand: std.Random) SwwwTransition {
+        // We don't want simple or none.
+        const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
+
+        return .{
+            .transition_type = typ,
+
+            // Between 1 and 5 seconds
+            .duration = 1.0 + rand.float(f32) * 4.0,
+
+            // Only generate this for transitions that use it.
+            .angle = switch (typ) {
+                .wipe, .wave => rand.float(f64) * 360.0,
+                else => 0.0,
+            },
+
+            .pos_x = switch (typ) {
+                .grow, .outer => rand.float(f32),
+                else => 0.0,
+            },
+            .pos_y = switch (typ) {
+                .grow, .outer => rand.float(f32),
+                else => 0.0,
+            },
+
+            .wave0 = switch (typ) {
+                .wave => 10.0 + rand.float(f32) * 20.0,
+                else => 0.0,
+            },
+            .wave1 = switch (typ) {
+                .wave => 10.0 + rand.float(f32) * 20.0,
+                else => 0.0,
+            },
+
+            .bezier0 = 0.15,
+            .bezier1 = 0.85,
+            .bezier2 = 0.85,
+            .bezier3 = 0.15,
+            .pos_x_type = .percent,
+            .pos_y_type = .percent,
+            .step = 90,
+            .fps = 25,
+            .invert_y = 0,
+        };
+    }
 };
 
 comptime {
@@ -73,24 +121,9 @@ pub fn randomizeWallpapers(state: *State) !void {
         var bufw = std.io.bufferedWriter(count_writer.writer());
         const wr = bufw.writer();
 
-        try wr.writeAll(std.mem.toBytes(SwwwTransition{
-            .transition_type = .wipe,
-            .duration = 1.0,
-            .step = 90,
-            .fps = 25,
-            .angle = state.rand.random().float(f64) * 360.0,
-            .pos_x_type = .percent,
-            .pos_x = 0.5,
-            .pos_y_type = .percent,
-            .pos_y = 0.5,
-            .bezier0 = 0.15,
-            .bezier1 = 0.85,
-            .bezier2 = 0.85,
-            .bezier3 = 0.15,
-            .wave0 = 0.0,
-            .wave1 = 0.0,
-            .invert_y = @intFromBool(false),
-        })[0..(@bitSizeOf(SwwwTransition) / 8)]);
+        try wr.writeAll(std.mem.toBytes(
+            SwwwTransition.makeRandom(state.rand.random()),
+        )[0..(@bitSizeOf(SwwwTransition) / 8)]);
 
         try wr.writeByte(@truncate(state.outputs.items.len));
 
