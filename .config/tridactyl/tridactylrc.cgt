@@ -2,6 +2,8 @@ set editorcmd neovim-qt
 set theme midnight
 set smoothscroll true
 
+set newtab <% opt.homepage_url %>
+
 <! local searchurls = {
     github = "https://github.com/search?type=repositories&q=",
     wiki = "https://en.wikipedia.org/w/index.php?search=",
@@ -11,7 +13,3 @@ set smoothscroll true
 <! for k, v in pairs(searchurls) do !>
 set searchurls.<% k %> <% v %>
 <! end !>
-
-" Filterable hint mode
-set hintfiltermode vimperator-reflow
-set hintnames numeric

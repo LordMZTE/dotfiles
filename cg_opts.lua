@@ -122,4 +122,6 @@ opts.catppuccin = {
     yellow = "f9e2af",
 }
 
+opts.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/homepage.html"
+
 return opts

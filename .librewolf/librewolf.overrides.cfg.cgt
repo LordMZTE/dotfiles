@@ -7,6 +7,9 @@ defaultPref("webgl.disabled", false);
 
 defaultPref("browser.sessionstore.resume_from_crash", false);
 
+defaultPref("cookiebanners.service.mode", 2);
+defaultPref("cookiebanners.service.mode.privateBrowsing", 2);
+
 // If enabled, fails with "Server is missing xdg_foreign support" on river and the GTK portal.
 defaultPref("widget.use-xdg-desktop-portal.file-picker", 0);
 
@@ -30,3 +33,6 @@ defaultPref("privacy.resistFingerprinting", false);
 // Dumb Protocol
 defaultPref("security.OCSP.enabled", 0);
 defaultPref("security.OCSP.require", false);
+
+// Homepage
+defaultPref("browser.startup.homepage", "<% opt.homepage_url %>")

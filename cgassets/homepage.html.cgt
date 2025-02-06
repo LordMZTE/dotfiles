@@ -1,0 +1,51 @@
+<% "<" .. "!" %>DOCTYPE html>
+<!
+local hostname = opt.read("/etc/hostname"):gsub("%s*$", "")
+
+local powerprofile_info = opt.system "powerprofilesctl"
+if #powerprofile_info == 0 then powerprofile_info = nil end
+!>
+<html>
+    <head>
+        <title><% hostname %></title>
+        <link rel="icon" type="image/x-icon" href="https://mzte.de/favicon.ico">
+        <meta name="darkreader-lock">
+        <style>
+        html, body {
+            /* This doesn't use opt.font because non-standard font names. Thanks! */
+            font-family: "Iosevka Nerd Font" monospace;
+            background-color: #<% opt.catppuccin.base %>;
+            color: #<% opt.catppuccin.text %>;
+            height: 100%;
+            width: 100%;
+        }
+
+        h2 {
+            color: #<% opt.catppuccin.teal %>;
+        }
+
+        pre {
+            color: #<% opt.catppuccin.peach %>;
+            background-color: #<% opt.catppuccin.surface0 %>;
+        }
+        </style>
+    </head>
+
+    <body>
+        <h1><font color="#<% opt.catppuccin.sky %>"><% hostname %></font> on <font color="#<% opt.catppuccin.green %>"><% opt.system "uname -ors" %></font></h1>
+        <h2>Time</h2>
+        <p style="color: #<% opt.catppuccin.peach %>"><% os.date() %></p>
+        <p style="color: #<% opt.catppuccin.mauve %>"><% os.time() %></p>
+
+        <h2>Memory</h2>
+        <pre><% opt.system "free -h" %></pre>
+
+        <h2>CPU</h2>
+        <pre><% opt.system "lscpu -e='CPU,ONLINE,MAXMHZ,MINMHZ,MHZ'" %></pre>
+
+        <! if powerprofile_info then !>
+        <h2>Power Profiles</h2>
+        <pre><% powerprofile_info %></pre>
+        <! end !>
+    </body>
+</html>
