@@ -3,6 +3,8 @@ const wayland = @import("wayland");
 const wl = wayland.client.wl;
 const xdg = wayland.client.zxdg;
 
+const proto = @import("proto.zig");
+
 const Output = @import("Output.zig");
 const State = @import("State.zig");
 
@@ -65,6 +67,7 @@ pub fn main() !void {
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.INT);
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.TERM);
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.CHLD);
+        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.USR1);
         break :sigs sigs;
     };
     std.posix.sigprocmask(std.posix.SIG.BLOCK, &sigset, null);
@@ -116,9 +119,13 @@ pub fn main() !void {
             if (ev.data.fd == sigfd) {
                 var siginf: std.os.linux.signalfd_siginfo = undefined;
                 std.debug.assert(try std.posix.read(sigfd, std.mem.asBytes(&siginf)) == @sizeOf(std.os.linux.signalfd_siginfo));
-                std.log.info("got signal {}, exiting", .{siginf.signo});
 
-                return;
+                if (siginf.signo == std.os.linux.SIG.USR1) {
+                    try proto.randomizeWallpapers(&state);
+                } else {
+                    std.log.info("got signal {}, exiting", .{siginf.signo});
+                    return;
+                }
             } else if (ev.data.fd == dpy.getFd()) {
                 if (dpy.readEvents() != .SUCCESS)
                     return error.WaylandDispatch;
@@ -129,7 +136,7 @@ pub fn main() !void {
             } else if (ev.data.fd == refresh_tfd) {
                 var tfd_buf: [@sizeOf(usize)]u8 = undefined;
                 std.debug.assert(try std.posix.read(refresh_tfd, &tfd_buf) == tfd_buf.len);
-                try @import("proto.zig").randomizeWallpapers(&state);
+                try proto.randomizeWallpapers(&state);
             }
         }
     }
