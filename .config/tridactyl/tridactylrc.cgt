@@ -8,6 +8,8 @@ set newtab <% opt.homepage_url %>
     github = "https://github.com/search?type=repositories&q=",
     wiki = "https://en.wikipedia.org/w/index.php?search=",
     dewiki = "https://de.wikipedia.org/w/index.php?search=",
+    nixpkgs = "https://search.nixos.org/packages?channel=unstable&query=",
+    nixos = "https://search.nixos.org/options?channel=unstable&query=",
 } !>
 
 <! for k, v in pairs(searchurls) do !>
