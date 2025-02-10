@@ -68,6 +68,7 @@ pub fn main() !void {
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.TERM);
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.CHLD);
         std.os.linux.sigaddset(&sigs, std.os.linux.SIG.USR1);
+        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.USR2);
         break :sigs sigs;
     };
     std.posix.sigprocmask(std.posix.SIG.BLOCK, &sigset, null);
@@ -96,13 +97,7 @@ pub fn main() !void {
     const refresh_tfd = try std.posix.timerfd_create(std.posix.CLOCK.MONOTONIC, .{});
     defer std.posix.close(refresh_tfd);
 
-    try std.posix.timerfd_settime(refresh_tfd, .{}, &.{
-        .it_value = .{ .tv_sec = 1, .tv_nsec = 0 },
-        .it_interval = .{
-            .tv_sec = std.time.s_per_min * 5, // refresh every 5 minutes
-            .tv_nsec = 0,
-        },
-    }, null);
+    try resetRefreshTime(refresh_tfd);
 
     var refresh_tfdev = std.os.linux.epoll_event{
         .events = std.os.linux.EPOLL.IN,
@@ -110,6 +105,8 @@ pub fn main() !void {
     };
 
     try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, refresh_tfd, &refresh_tfdev);
+
+    var mode = proto.WallpaperMode.random;
 
     while (true) {
         var evbuf: [32]std.os.linux.epoll_event = undefined;
@@ -121,7 +118,17 @@ pub fn main() !void {
                 std.debug.assert(try std.posix.read(sigfd, std.mem.asBytes(&siginf)) == @sizeOf(std.os.linux.signalfd_siginfo));
 
                 if (siginf.signo == std.os.linux.SIG.USR1) {
-                    try proto.randomizeWallpapers(&state);
+                    if (mode == .random)
+                        try proto.randomizeWallpapers(&state, .random);
+                } else if (siginf.signo == std.os.linux.SIG.USR2) {
+                    mode = switch (mode) {
+                        .random => .dark,
+                        .dark => .random,
+                    };
+                    if (mode == .dark)
+                        try proto.randomizeWallpapers(&state, .dark)
+                    else
+                        try resetRefreshTime(refresh_tfd);
                 } else {
                     std.log.info("got signal {}, exiting", .{siginf.signo});
                     return;
@@ -136,10 +143,21 @@ pub fn main() !void {
             } else if (ev.data.fd == refresh_tfd) {
                 var tfd_buf: [@sizeOf(usize)]u8 = undefined;
                 std.debug.assert(try std.posix.read(refresh_tfd, &tfd_buf) == tfd_buf.len);
-                try proto.randomizeWallpapers(&state);
+                if (mode == .random)
+                    try proto.randomizeWallpapers(&state, .random);
             }
         }
     }
+}
+
+fn resetRefreshTime(tfd: std.os.linux.fd_t) !void {
+    try std.posix.timerfd_settime(tfd, .{}, &.{
+        .it_value = .{ .tv_sec = 1, .tv_nsec = 0 },
+        .it_interval = .{
+            .tv_sec = std.time.s_per_min * 5, // refresh every 5 minutes
+            .tv_nsec = 0,
+        },
+    }, null);
 }
 
 fn registryListener(reg: *wl.Registry, ev: wl.Registry.Event, state: *State) void {

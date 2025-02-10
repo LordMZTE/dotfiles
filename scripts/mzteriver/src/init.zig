@@ -53,6 +53,8 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Super", "Space", "toggle-float" },
         .{ "Super", "F", "toggle-fullscreen" },
         .{ "Super+Shift", "Q", "close" },
+        .{ "Super", "W", "spawn", "pkill -USR1 wlbg" }, // randomize wallpaper
+        .{ "Super+Shift", "W", "spawn", "pkill -USR2 wlbg" }, // toggle dark wallpaper
 
         // screenshot
 

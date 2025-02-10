@@ -1,10 +1,16 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const c = ffi.c;
+const opts = @import("opts");
 
 const ffi = @import("ffi.zig");
 
 const State = @import("State.zig");
+
+const ctp_base: [3]u8 = blk: {
+    const int = std.fmt.parseInt(u24, opts.ctp_base, 16) catch unreachable;
+    break :blk .{ int >> 0x10, int >> 0x08 & 0xff, int & 0xff };
+};
 
 const cmsghdr = extern struct {
     cmsg_len: usize,
@@ -85,7 +91,12 @@ comptime {
     std.debug.assert(@bitSizeOf(SwwwTransition) / 8 == 51);
 }
 
-pub fn randomizeWallpapers(state: *State) !void {
+pub const WallpaperMode = enum {
+    random,
+    dark,
+};
+
+pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     const memfd = try std.posix.memfd_create("swww-ipc", 0);
     defer std.posix.close(memfd);
 
@@ -133,69 +144,85 @@ pub fn randomizeWallpapers(state: *State) !void {
                 return;
             }
 
-            const imgpath = state.wps[state.rand.random().uintLessThan(usize, state.wps.len)];
+            switch (how) {
+                .random => {
+                    const imgpath = state.wps[state.rand.random().uintLessThan(usize, state.wps.len)];
 
-            std.log.info("new wallpaper for output {s}: {s}", .{ outp.name.?, imgpath });
+                    std.log.info("new wallpaper for output {s}: {s}", .{ outp.name.?, imgpath });
 
-            // TODO TODO TODO TODO TODO
-            //  _____ ___  ____   ___
-            // |_   _/ _ \|  _ \ / _ \
-            //   | || | | | | | | | | |
-            //   | || |_| | |_| | |_| |
-            //   |_| \___/|____/ \___/
-            // TODO TODO TODO TODO TODO
-            // USE LITERALLY ANYTHING EXCEPT GDK-PIXBUF!!
-            const pixbuf = pixbuf: {
-                var gerr: ?*c.GError = null;
-                const pixbuf_unscaled = c.gdk_pixbuf_new_from_file(imgpath.ptr, &gerr);
-                try ffi.checkGError(gerr);
+                    // TODO TODO TODO TODO TODO
+                    //  _____ ___  ____   ___
+                    // |_   _/ _ \|  _ \ / _ \
+                    //   | || | | | | | | | | |
+                    //   | || |_| | |_| | |_| |
+                    //   |_| \___/|____/ \___/
+                    // TODO TODO TODO TODO TODO
+                    // USE LITERALLY ANYTHING EXCEPT GDK-PIXBUF!!
+                    const pixbuf = pixbuf: {
+                        var gerr: ?*c.GError = null;
+                        const pixbuf_unscaled = c.gdk_pixbuf_new_from_file(imgpath.ptr, &gerr);
+                        try ffi.checkGError(gerr);
 
-                // If the size is already correct, no need to rescale and copy the whole buffer.
-                if (c.gdk_pixbuf_get_width(pixbuf_unscaled) == outp.width and
-                    c.gdk_pixbuf_get_height(pixbuf_unscaled) == outp.height)
-                    break :pixbuf pixbuf_unscaled;
+                        // If the size is already correct, no need to rescale and copy the whole buffer.
+                        if (c.gdk_pixbuf_get_width(pixbuf_unscaled) == outp.width and
+                            c.gdk_pixbuf_get_height(pixbuf_unscaled) == outp.height)
+                            break :pixbuf pixbuf_unscaled;
 
-                defer c.gdk_pixbuf_unref(pixbuf_unscaled);
+                        defer c.gdk_pixbuf_unref(pixbuf_unscaled);
 
-                break :pixbuf c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
-            };
-            defer c.gdk_pixbuf_unref(pixbuf);
+                        break :pixbuf c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
+                    };
+                    defer c.gdk_pixbuf_unref(pixbuf);
 
-            // File Name (why does it need this?)
-            try writeString(wr, imgpath);
+                    // File Name (why does it need this?)
+                    try writeString(wr, imgpath);
 
-            // Image Data
-            // TODO: swww technically supports the ARGB pixel format, but this always lead to broken
-            // images. The CLI seems to query the format from the daemon and convert to that, which
-            // is fundamentally different than what we're doing. Somehow, changing from an opaque
-            // background to a transparent one keeps the transparent one below that when using the
-            // CLI, whereas you'd expect the previous one to be overridden. No idea how that works.
-            if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
-                // Ignore alpha component
-                std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
-                var pixels: []u8 = undefined;
-                var pixel_len: c.guint = 0;
-                pixels.ptr = c.gdk_pixbuf_get_pixels_with_length(pixbuf, &pixel_len);
-                pixels.len = pixel_len;
+                    // Image Data
+                    // TODO: swww technically supports the ARGB pixel format, but this always lead to broken
+                    // images. The CLI seems to query the format from the daemon and convert to that, which
+                    // is fundamentally different than what we're doing. Somehow, changing from an opaque
+                    // background to a transparent one keeps the transparent one below that when using the
+                    // CLI, whereas you'd expect the previous one to be overridden. No idea how that works.
+                    if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
+                        // Ignore alpha component
+                        std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
+                        var pixels: []u8 = undefined;
+                        var pixel_len: c.guint = 0;
+                        pixels.ptr = c.gdk_pixbuf_get_pixels_with_length(pixbuf, &pixel_len);
+                        pixels.len = pixel_len;
 
-                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
+                        try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
 
-                // This is RGBA
-                for (0..(pixels.len / 4)) |pixeli| {
-                    const i = pixeli * 4;
+                        // This is RGBA
+                        for (0..(pixels.len / 4)) |pixeli| {
+                            const i = pixeli * 4;
 
-                    try wr.writeAll(pixels[i..][0..3]);
-                }
+                            try wr.writeAll(pixels[i..][0..3]);
+                        }
 
-                std.log.debug("{}x{}, {}", .{ c.gdk_pixbuf_get_width(pixbuf), c.gdk_pixbuf_get_height(pixbuf), pixels.len });
-            } else {
-                const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
-                try writeString(wr, c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen]);
+                        std.log.debug("{}x{}, {}", .{ c.gdk_pixbuf_get_width(pixbuf), c.gdk_pixbuf_get_height(pixbuf), pixels.len });
+                    } else {
+                        const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
+                        try writeString(wr, c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen]);
+                    }
+
+                    // Size
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(c.gdk_pixbuf_get_width(pixbuf)))));
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(c.gdk_pixbuf_get_height(pixbuf)))));
+                },
+                .dark => {
+                    // File Name
+                    try writeString(wr, "[dark mode]");
+
+                    // Data (monotone catppuccin base background)
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * ctp_base.len))));
+                    try wr.writeBytesNTimes(&ctp_base, outp.width * outp.height);
+
+                    // Size
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, outp.width)));
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, outp.height)));
+                },
             }
-
-            // Size
-            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(c.gdk_pixbuf_get_width(pixbuf)))));
-            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(c.gdk_pixbuf_get_height(pixbuf)))));
 
             // Pixel format.
             // See: https://github.com/LGFae/swww/blob/main/common/src/ipc/types.rs#L550-L554

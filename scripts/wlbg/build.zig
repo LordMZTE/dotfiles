@@ -1,8 +1,13 @@
 const std = @import("std");
+const common = @import("common");
 
 const Scanner = @import("wayland").Scanner;
 
-pub fn build(b: *std.Build) void {
+const CgOpt = struct {
+    catppuccin: struct { base: [:0]const u8 },
+};
+
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -25,6 +30,12 @@ pub fn build(b: *std.Build) void {
 
     exe.root_module.linkSystemLibrary("wayland-client", .{});
     exe.root_module.linkSystemLibrary("gdk-pixbuf-2.0", .{});
+
+    const cg_opt = try common.confgenGet(CgOpt, b.allocator);
+    const opts = b.addOptions();
+    opts.addOption([:0]const u8, "ctp_base", cg_opt.catppuccin.base);
+
+    exe.root_module.addImport("opts", opts.createModule());
 
     b.installArtifact(exe);
 
