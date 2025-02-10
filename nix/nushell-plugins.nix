@@ -4,7 +4,7 @@
 
   config.nushell-plugins = {
     jobcontrol = (builtins.getFlake
-      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=742c21477bb930697536b1f35ccf9c7be84451b8"
+      "git+https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol.git?rev=4709b7677347fd7f33fadc202278547f4ada0629"
     ).outputs.packages.${pkgs.system}.default;
 
     dbus = pkgs.rustPlatform.buildRustPackage {
@@ -13,11 +13,12 @@
       src = pkgs.fetchFromGitHub {
         owner = "LordMZTE";
         repo = "nu_plugin_dbus";
-        rev = "baa52026c3e8e4c6296d5545fd26237287436dad";
-        hash = "sha256-Ga+1zFwS/v+3iKVEz7TFmJjyBW/gq6leHeyH2vjawto=";
+        rev = "dafedb90a487c7d1cc158bf3b4ffcee5e19d595d";
+        hash = "sha256-oxaz3/C/ifgZRVsAY0/ZuzpgYQ8XBREzvbmJCyCVuzE=";
       };
 
-      cargoHash = "sha256-wSEHmVenWlp4VUkz4VBtGR3U3Sf1KlXNC5YOa8A1l1c=";
+      useFetchCargoVendor = true;
+      cargoHash = "sha256-ZVaX6DcswyblpYXIjuOF8CBdMWr3HAhxw/St9EAMPss=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
