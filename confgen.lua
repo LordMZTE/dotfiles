@@ -79,6 +79,7 @@ cg.opt.system = function(cmd)
         error("Failed to spawn process" .. cmd)
     end
     local data, _ = handle:read("*a"):gsub("%s$", "")
+    handle:close()
     return data
 end
 
