@@ -1,4 +1,4 @@
-set editorcmd neovim-qt
+set editorcmd nvim-qt
 set theme midnight
 set smoothscroll true
 
