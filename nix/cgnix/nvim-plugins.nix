@@ -93,6 +93,8 @@ in
   config.cgnix.entries.nvim_plugins = stdenvNoCC.mkDerivation {
     name = "nvim-plugins";
 
+    preferLocalBuild = true;
+
     unpackPhase = ''
       # Copy plugins sources here
       mkdir plugins
