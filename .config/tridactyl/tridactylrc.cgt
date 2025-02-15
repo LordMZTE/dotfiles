@@ -5,13 +5,43 @@ set smoothscroll true
 set newtab <% opt.homepage_url %>
 
 <! local searchurls = {
-    github = "https://github.com/search?type=repositories&q=",
-    wiki = "https://en.wikipedia.org/w/index.php?search=",
-    dewiki = "https://de.wikipedia.org/w/index.php?search=",
-    nixpkgs = "https://search.nixos.org/packages?channel=unstable&query=",
-    nixos = "https://search.nixos.org/options?channel=unstable&query=",
+    -- Default search special case
+    ["_"] = {
+        search = "https://startpage.com/do/dsearch?q=",
+        base = "https://startpage.com",
+    },
+
+    github = {
+        search = "https://github.com/search?type=repositories&q=",
+        base = "https://github.com",
+    },
+    wiki = {
+        search = "https://en.wikipedia.org/w/index.php?search=",
+        base = "https://en.wikipedia.org",
+    },
+    dewiki = {
+        search = "https://de.wikipedia.org/w/index.php?search=",
+        base = "https://de.wikipedia.org",
+    },
+    nixpkgs = {
+        search = "https://search.nixos.org/packages?channel=unstable&query=",
+        base = "https://search.nixos.org/packages?channel=unstable",
+    },
+    nixos = {
+        search = "https://search.nixos.org/options?channel=unstable&query=",
+        base = "https://search.nixos.org/options?channel=unstable",
+    },
+    youtube = {
+        search = "https://youtube.com/results?search_query=",
+        base = "https://youtube.com",
+    },
 } !>
 
+# Clear searchurls
+jsb Object.keys(tri.config.get("searchurls")).reduce((prev, u) => prev.then(_ => tri.config.set("searchurls", u, null)), Promise.resolve())
 <! for k, v in pairs(searchurls) do !>
-set searchurls.<% k %> <% v %>
+set jsurls.<% k %> q => q == "" ? "<% v.base %>" : "<% v.search %>" + q
 <! end !>
+
+# Run MPV with systemd-run
+set exaliases.mpvsafe js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('systemd-run --user -- mpv --quiet ' + url))
