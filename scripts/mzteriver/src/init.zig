@@ -5,13 +5,13 @@ const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
-const journal_prefix = "systemd-cat --level-prefix=false -- ";
+const journal_prefix = "systemd-run --user -- ";
 
 fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
-        "systemd-cat",
-        "--level-prefix=false",
-        "--identifier=" ++ argv[0],
+        "systemd-run",
+        "--user",
+        "--unit=mzteriver-" ++ argv[0],
         "--",
     } ++ argv;
 }
@@ -29,24 +29,31 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Super+Control", "V", "spawn", journal_prefix ++ "vinput md" },
         .{ "Super+Control", "L", "spawn", journal_prefix ++ "physlock" },
         .{ "Super+Shift", "P", "spawn", journal_prefix ++ "gpower2" },
-        .{ "Alt", "Space", "spawn", journal_prefix ++ "rofi -show combi" },
-        .{ "Super+Alt", "Space", "spawn", journal_prefix ++ "rofi -show emoji" },
-        .{ "None", "Print", "spawn", "grim -g \"$(slurp; sleep 1)\" - | " ++ journal_prefix ++ " satty --filename -" },
+        .{
+            "Alt",
+            "Space",
+            "spawn",
+            // This command is special-cased. We need the service type to be forking here, because
+            // otherwise, systemd will kill any process spawned by rofi after rofi exits.
+            "systemd-run --user -pType=forking -- rofi -show combi",
+        },
+        .{ "Super+Alt", "Space", "spawn", "systemd-run --user -pType=forking -- rofi -show emoji" },
+        .{ "None", "Print", "spawn", journal_prefix ++ "sh -c 'grim -g \"$(slurp; sleep 1)\" - | satty --filename -'" },
 
         // media keys
-        .{ "None", "XF86Eject", "spawn", journal_prefix ++ "eject -T" },
-        .{ "None", "XF86AudioRaiseVolume", "spawn", journal_prefix ++ opt.commands.media.volume_up },
-        .{ "None", "XF86AudioLowerVolume", "spawn", journal_prefix ++ opt.commands.media.volume_down },
-        .{ "None", "XF86AudioMute", "spawn", journal_prefix ++ opt.commands.media.mute_sink },
-        .{ "None", "XF86AudioMicMute", "spawn", journal_prefix ++ opt.commands.media.mute_source },
-        .{ "None", "XF86AudioMedia", "spawn", journal_prefix ++ opt.commands.media.play_pause },
-        .{ "None", "XF86AudioPlay", "spawn", journal_prefix ++ opt.commands.media.play_pause },
-        .{ "None", "XF86AudioPrev", "spawn", journal_prefix ++ opt.commands.media.prev },
-        .{ "None", "XF86AudioNext", "spawn", journal_prefix ++ opt.commands.media.next },
+        .{ "None", "XF86Eject", "spawn", "eject -T" },
+        .{ "None", "XF86AudioRaiseVolume", "spawn", opt.commands.media.volume_up },
+        .{ "None", "XF86AudioLowerVolume", "spawn", opt.commands.media.volume_down },
+        .{ "None", "XF86AudioMute", "spawn", opt.commands.media.mute_sink },
+        .{ "None", "XF86AudioMicMute", "spawn", opt.commands.media.mute_source },
+        .{ "None", "XF86AudioMedia", "spawn", opt.commands.media.play_pause },
+        .{ "None", "XF86AudioPlay", "spawn", opt.commands.media.play_pause },
+        .{ "None", "XF86AudioPrev", "spawn", opt.commands.media.prev },
+        .{ "None", "XF86AudioNext", "spawn", opt.commands.media.next },
 
         // light control
-        .{ "None", "XF86MonBrightnessUp", "spawn", journal_prefix ++ opt.commands.backlight_up },
-        .{ "None", "XF86MonBrightnessDown", "spawn", journal_prefix ++ opt.commands.backlight_down },
+        .{ "None", "XF86MonBrightnessUp", "spawn", opt.commands.backlight_up },
+        .{ "None", "XF86MonBrightnessDown", "spawn", opt.commands.backlight_down },
 
         // control maps
         .{ "Super+Shift", "E", "exit" },
@@ -245,17 +252,16 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
         // spawn background processes
         inline for (.{
-            .{"wlbg"},
-            .{"waybar"},
-            .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
-            .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" },
-            .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" },
-        }) |argv| {
-            // TODO: wonk
-            // We use an arena here to prevent leaks because process.Child apparently doesn't support
-            // detaching.
-            var child = std.process.Child.init(initCommand(&argv), child_arena.allocator());
-            try child.spawn();
+            .{ false, .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" } },
+            .{ false, .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" } },
+            .{ true, .{"wlbg"} },
+            .{ true, .{"waybar"} },
+            .{ true, .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" } },
+        }) |arg| {
+            const background = arg[0];
+            const argv = arg[1];
+            var child = std.process.Child.init(if (background) initCommand(&argv) else &argv, child_arena.allocator());
+            _ = try child.spawnAndWait();
         }
     }
 }

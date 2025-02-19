@@ -42,6 +42,3 @@ jsb Object.keys(tri.config.get("searchurls")).reduce((prev, u) => prev.then(_ =>
 <! for k, v in pairs(searchurls) do !>
 set jsurls.<% k %> q => q == "" ? "<% v.base %>" : "<% v.search %>" + q
 <! end !>
-
-# Run MPV with systemd-run
-set exaliases.mpvsafe js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('systemd-run --user -- mpv --quiet ' + url))
