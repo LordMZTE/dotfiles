@@ -11,6 +11,7 @@ fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
         "systemd-run",
         "--user",
+        "-pRestart=on-failure",
         "--unit=mzteriver-" ++ argv[0],
         "--",
     } ++ argv;
