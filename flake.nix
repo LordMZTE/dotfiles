@@ -41,7 +41,6 @@
                 luajitPackages.luafilesystem
                 pkg-config
                 racket
-                roswell
                 wayland
                 wayland-protocols
                 wayland-scanner
