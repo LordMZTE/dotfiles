@@ -5,7 +5,7 @@ const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
-const journal_prefix = "systemd-run --user -- ";
+const journal_prefix = "systemd-run --user -pKillMode=process -- ";
 
 fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
@@ -34,8 +34,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
             "Alt",
             "Space",
             "spawn",
-            // This command is special-cased. We need the service type to be forking here, because
-            // otherwise, systemd will kill any process spawned by rofi after rofi exits.
+            // This command is special-cased becuase the forking unit type represents what rofi does here.
             "systemd-run --user -pType=forking -- rofi -show combi",
         },
         .{ "Super+Alt", "Space", "spawn", "systemd-run --user -pType=forking -- rofi -show emoji" },
