@@ -1,11 +1,7 @@
 const std = @import("std");
-const wayland = @import("wayland");
-const wl = wayland.client.wl;
-const xdg = wayland.client.zxdg;
 
 const proto = @import("proto.zig");
 
-const Output = @import("Output.zig");
 const State = @import("State.zig");
 
 pub const std_options = std.Options{
@@ -34,30 +30,23 @@ pub fn main() !void {
     std.log.info("found {} wallpapers", .{walker.files.items.len});
     if (walker.files.items.len == 0) return error.NoWallpapers;
 
-    const dpy = try wl.Display.connect(wl_dpy_name);
-    defer dpy.disconnect();
-
     var state = State{
+        .alloc = alloc,
         .wps = walker.files.items,
-        .outputs = std.ArrayList(*Output).init(alloc),
         .rand = std.Random.DefaultPrng.init(std.crypto.random.int(u64)),
         .sockpath = sockpath,
     };
-    defer {
-        for (state.outputs.items) |outp| {
-            outp.deinit();
-        }
-        state.outputs.deinit();
-    }
 
-    const reg = try dpy.getRegistry();
-    defer reg.destroy();
-    reg.setListener(*State, &registryListener, &state);
+    // Don't spawn daemon if the socket exists, one must already be running.
+    var swww_daemon = if (std.fs.cwd().statFile(sockpath)) |_|
+        null
+    else |_|
+        std.process.Child.init(&.{"swww-daemon"}, alloc);
+    if (swww_daemon) |*d| try d.spawn();
 
-    var swww_daemon = std.process.Child.init(&.{"swww-daemon"}, alloc);
-    try swww_daemon.spawn();
-
-    defer _ = swww_daemon.kill() catch |e| std.log.err("could not kill swww-daemon: {}", .{e});
+    defer if (swww_daemon) |*d| {
+        _ = d.kill() catch |e| std.log.err("could not kill swww-daemon: {}", .{e});
+    };
 
     const epfd = try std.posix.epoll_create1(0);
     defer std.posix.close(epfd);
@@ -82,17 +71,6 @@ pub fn main() !void {
     };
 
     try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, sigfd, &sigfdev);
-
-    var wlfdev = std.os.linux.epoll_event{
-        .events = std.os.linux.EPOLL.IN,
-        .data = .{ .fd = dpy.getFd() },
-    };
-
-    try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, dpy.getFd(), &wlfdev);
-
-    if (dpy.flush() != .SUCCESS)
-        return error.WaylandDispatch;
-    std.debug.assert(dpy.prepareRead());
 
     const refresh_tfd = try std.posix.timerfd_create(std.posix.CLOCK.MONOTONIC, .{});
     defer std.posix.close(refresh_tfd);
@@ -133,18 +111,12 @@ pub fn main() !void {
                     std.log.info("got signal {}, exiting", .{siginf.signo});
                     return;
                 }
-            } else if (ev.data.fd == dpy.getFd()) {
-                if (dpy.readEvents() != .SUCCESS)
-                    return error.WaylandDispatch;
-
-                while (!dpy.prepareRead())
-                    if (dpy.dispatchPending() != .SUCCESS or dpy.flush() != .SUCCESS)
-                        return error.WaylandDispatch;
             } else if (ev.data.fd == refresh_tfd) {
                 var tfd_buf: [@sizeOf(usize)]u8 = undefined;
                 std.debug.assert(try std.posix.read(refresh_tfd, &tfd_buf) == tfd_buf.len);
                 if (mode == .random)
-                    try proto.randomizeWallpapers(&state, .random);
+                    proto.randomizeWallpapers(&state, .random) catch |e|
+                        std.log.warn("chaning wallpapers: {}", .{e});
             }
         }
     }
@@ -158,32 +130,4 @@ fn resetRefreshTime(tfd: std.os.linux.fd_t) !void {
             .tv_nsec = 0,
         },
     }, null);
-}
-
-fn registryListener(reg: *wl.Registry, ev: wl.Registry.Event, state: *State) void {
-    switch (ev) {
-        .global => |glob| {
-            if (std.mem.orderZ(u8, glob.interface, wl.Output.interface.name) == .eq) {
-                std.log.info("binding output with ID {}", .{glob.name});
-                state.outputs.append(Output.init(
-                    state.outputs.allocator,
-                    reg.bind(
-                        glob.name,
-                        wl.Output,
-                        wl.Output.generated_version,
-                    ) catch return,
-                    glob.name,
-                ) catch @panic("OOM")) catch @panic("OOM");
-            }
-        },
-        .global_remove => |glob| {
-            for (state.outputs.items, 0..) |outp, i| {
-                std.log.debug("{}, {}", .{ outp.output.getId(), glob.name });
-                if (glob.name == outp.id) {
-                    std.log.info("removing output with ID {}", .{glob.name});
-                    state.outputs.orderedRemove(i).deinit();
-                }
-            }
-        },
-    }
 }

@@ -28,11 +28,6 @@ decoration {
         size = 3
         passes = 1
     }
-
-    drop_shadow = yes
-    shadow_range = 4
-    shadow_render_power = 3
-    col.shadow = rgba(1a1a1aee)
 }
 
 animations {
@@ -44,7 +39,6 @@ animations {
     animation = windows, 1, 7, overshoot
     animation = windowsOut, 1, 7, default, popin 80%
     animation = border, 1, 10, default
-    animation = borderangle, 1, 16, linear, loop
     animation = fade, 1, 7, default
     animation = workspaces, 1, 6, overshoot, slidefade 20%
 }
@@ -56,12 +50,28 @@ misc {
 
     animate_manual_resizes = true
     animate_mouse_windowdragging = true
+    vrr = 1
 }
 
 dwindle {
     pseudotile = yes
     preserve_split = yes
 }
+
+gestures {
+    workspace_swipe = true
+}
+
+ecosystem {
+    no_donation_nag = true # WTF
+}
+
+experimental {
+    #hdr = true
+    xx_color_management_v4 = true
+}
+
+monitor = , preferred, auto, 1
 
 windowrule = float,^(vinput-editor)$
 windowrule = center,^(vinput-editor)$
@@ -85,7 +95,6 @@ exec-once = echo 'cg.opt.setCurrentWaylandCompositor "hyprland"' >~/confgenfs/_c
 
 exec-once = waybar
 exec-once = wlbg
-exec-once = sleep 1 && randomwallpaper
 exec-once = hyprctl setcursor <% opt.cursor.theme %> <% opt.cursor.size %>
 <! if opt.commands.notification_daemon.wl then !>
 exec-once = <% opt.commands.notification_daemon.wl %>

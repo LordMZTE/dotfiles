@@ -21,7 +21,6 @@ bind = SUPER, R, togglesplit, # dwindle
 bind = SUPER, F, fullscreen,
 bind = SUPER, T, fullscreen, 1 # maximize
 bind = SUPER SHIFT, F, exec, hyprtool fullerscreen
-bind = SUPER CTRL, F, fakefullscreen,
 bind = SUPER, W, exec, pkill -USR1 wlbg
 bind = SUPER SHIFT, W, exec, pkill -USR2 wlbg
 

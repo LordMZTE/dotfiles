@@ -42,7 +42,8 @@ const SwwwTransition = packed struct {
 
     fn makeRandom(rand: std.Random) SwwwTransition {
         // We don't want simple or none.
-        const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
+        //const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
+        const typ = .wipe;
 
         return .{
             .transition_type = typ,
@@ -96,16 +97,165 @@ pub const WallpaperMode = enum {
     dark,
 };
 
+pub const QueryAnswer = struct {
+    arena: std.heap.ArenaAllocator,
+    bgs: []BgInfo,
+};
+
+pub const BgInfo = struct {
+    name: []u8,
+    width: u32,
+    height: u32,
+    scale_type: ScaleType,
+    scale: i32,
+    img: BgImg,
+    pixfmt: PixelFormat,
+};
+
+pub const ScaleType = enum { whole, fractional };
+
+pub const BgImg = union(enum) {
+    color: [3]u8,
+    img: []const u8, // path, not image data :P
+};
+
+// NOTE: you'll notice that some tags here differ from upstream source code. This is because
+// upstream code makes literally no sense and I'm relatively sure that they basically *mean*
+// the opposite of what this enum would suggest.
+pub const PixelFormat = enum(u8) {
+    rgb,
+    bgr,
+    rgba,
+    bgra,
+
+    pub fn hasAlpha(self: PixelFormat) bool {
+        return switch (self) {
+            .abgr, .argb => true,
+            .bgr, .rgb => false,
+        };
+    }
+
+    fn needByteswap(self: PixelFormat) bool {
+        return switch (self) {
+            .bgr, .abgr => true,
+            .rgb, .argb => false,
+        };
+    }
+};
+
+pub fn query(state: *State) !QueryAnswer {
+    const sock = try connect(state.sockpath);
+    defer std.posix.close(sock);
+
+    // send request
+    {
+        var iov_data = [_]u8{0} ** 16;
+        std.mem.bytesAsValue(u64, iov_data[0..8]).* = 1; // "code", 1 for query
+        std.debug.assert(try std.posix.sendmsg(sock, &.{
+            .name = null,
+            .namelen = 0,
+            .iov = &.{.{ .base = &iov_data, .len = iov_data.len }},
+            .iovlen = 1,
+            .control = null,
+            .controllen = 0,
+            .flags = 0,
+        }, 0) == 16);
+    }
+
+    // receive answer
+    {
+        var iov_data: [16]u8 = undefined;
+        var iov = std.posix.iovec{ .base = &iov_data, .len = iov_data.len };
+        var ancillary_buf: [@sizeOf(cmsghdr) + @sizeOf(std.posix.fd_t)]u8 = undefined;
+        var msg = std.posix.msghdr{
+            .name = null,
+            .namelen = 0,
+            .iov = (&iov)[0..1],
+            .iovlen = 1,
+            .control = &ancillary_buf,
+            .controllen = @truncate(ancillary_buf.len),
+            .flags = 0,
+        };
+        const recvlen = std.os.linux.recvmsg(
+            sock,
+            &msg,
+            // Wait for our (correct-sized) buffers to be filled by the daemon
+            std.posix.MSG.WAITALL,
+        );
+        if (recvlen != iov_data.len or
+            msg.iovlen != 1 or
+            iov.len != iov_data.len or
+            msg.controllen != ancillary_buf.len or
+            // "code" for ResInfo
+            std.mem.bytesToValue(u64, iov_data[0..8]) != 8) return error.ProtocolViolation;
+        const header = std.mem.bytesToValue(cmsghdr, ancillary_buf[0..@sizeOf(cmsghdr)]);
+        if (header.cmsg_len != ancillary_buf.len or
+            header.cmsg_level != std.os.linux.SOL.SOCKET or
+            // SCM_RIGHTS
+            header.cmsg_type != 0x01) return error.ProtocolViolation;
+        const fd = std.mem.bytesToValue(std.posix.fd_t, ancillary_buf[@sizeOf(cmsghdr)..]);
+        defer std.posix.close(fd);
+
+        var buf_reader = std.io.bufferedReader((std.fs.File{ .handle = fd }).reader());
+        const r = buf_reader.reader();
+
+        var ret_arena = std.heap.ArenaAllocator.init(state.alloc);
+        errdefer ret_arena.deinit();
+        const ret_alloc = ret_arena.allocator();
+
+        const n_bgs = try r.readByte();
+        const bgs = try ret_alloc.alloc(BgInfo, n_bgs);
+        for (0..n_bgs) |i| {
+            const name = try readStringAlloc(r, ret_alloc);
+
+            const width = std.mem.bytesToValue(u32, &try r.readBytesNoEof(4));
+            const height = std.mem.bytesToValue(u32, &try r.readBytesNoEof(4));
+
+            const scale_type: ScaleType = switch (try r.readByte()) {
+                0 => .whole,
+                1 => .fractional,
+                else => return error.ProtocolViolation,
+            };
+
+            const scale = std.mem.bytesToValue(i32, &try r.readBytesNoEof(4));
+
+            const img: BgImg = switch (try r.readByte()) {
+                0 => .{ .color = try r.readBytesNoEof(3) },
+                1 => .{ .img = try readStringAlloc(r, ret_alloc) },
+                else => return error.ProtocolViolation,
+            };
+
+            const pixfmt = std.meta.intToEnum(
+                PixelFormat,
+                try r.readByte(),
+            ) catch return error.ProtocolViolation;
+
+            bgs[i] = .{
+                .name = name,
+                .width = width,
+                .height = height,
+                .scale_type = scale_type,
+                .scale = scale,
+                .img = img,
+                .pixfmt = pixfmt,
+            };
+        }
+        return .{
+            .arena = ret_arena,
+            .bgs = bgs,
+        };
+    }
+}
+
 pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
+    const quer = try query(state);
+    defer quer.arena.deinit();
+
     const memfd = try std.posix.memfd_create("swww-ipc", 0);
     defer std.posix.close(memfd);
 
-    const addr = try std.net.Address.initUnix(state.sockpath);
-
-    const sock = try std.posix.socket(std.posix.AF.UNIX, std.posix.SOCK.STREAM, 0);
+    const sock = try connect(state.sockpath);
     defer std.posix.close(sock);
-
-    try std.posix.connect(sock, &addr.any, addr.getOsSockLen());
 
     var ancillary_buf: [@sizeOf(cmsghdr) + @sizeOf(std.posix.fd_t)]u8 = undefined;
 
@@ -119,7 +269,7 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     std.mem.bytesAsValue(std.posix.fd_t, ancillary_buf[@sizeOf(cmsghdr)..]).* = memfd;
 
     var iov_data = [_]u8{0} ** 16;
-    std.mem.bytesAsValue(u32, iov_data[0..8]).* = 3; // "code", 3 for img command
+    std.mem.bytesAsValue(u64, iov_data[0..8]).* = 3; // "code", 3 for img command
 
     {
         // shm data layout:
@@ -136,19 +286,14 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
             SwwwTransition.makeRandom(state.rand.random()),
         )[0..(@bitSizeOf(SwwwTransition) / 8)]);
 
-        try wr.writeByte(@truncate(state.outputs.items.len));
+        try wr.writeByte(@truncate(quer.bgs.len));
 
-        for (state.outputs.items) |outp| {
-            if (outp.name == null) {
-                std.log.warn("an output has not received a name from the compositor yet! skipping wallpaper randomization!", .{});
-                return;
-            }
-
+        for (quer.bgs) |outp| {
             switch (how) {
                 .random => {
                     const imgpath = state.wps[state.rand.random().uintLessThan(usize, state.wps.len)];
 
-                    std.log.info("new wallpaper for output {s}: {s}", .{ outp.name.?, imgpath });
+                    std.log.info("new wallpaper for output {s}: {s}", .{ outp.name, imgpath });
 
                     // TODO TODO TODO TODO TODO
                     //  _____ ___  ____   ___
@@ -170,7 +315,12 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
 
                         defer c.gdk_pixbuf_unref(pixbuf_unscaled);
 
-                        break :pixbuf c.gdk_pixbuf_scale_simple(pixbuf_unscaled, outp.width, outp.height, c.GDK_INTERP_BILINEAR);
+                        break :pixbuf c.gdk_pixbuf_scale_simple(
+                            pixbuf_unscaled,
+                            @intCast(outp.width),
+                            @intCast(outp.height),
+                            c.GDK_INTERP_BILINEAR,
+                        );
                     };
                     defer c.gdk_pixbuf_unref(pixbuf);
 
@@ -178,32 +328,98 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                     try writeString(wr, imgpath);
 
                     // Image Data
-                    // TODO: swww technically supports the ARGB pixel format, but this always lead to broken
-                    // images. The CLI seems to query the format from the daemon and convert to that, which
-                    // is fundamentally different than what we're doing. Somehow, changing from an opaque
-                    // background to a transparent one keeps the transparent one below that when using the
-                    // CLI, whereas you'd expect the previous one to be overridden. No idea how that works.
+                    // GDK Pixbuf is always either RGB or RGBA
+                    std.log.debug("pixelformat: {}", .{outp.pixfmt});
                     if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
-                        // Ignore alpha component
                         std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
                         var pixels: []u8 = undefined;
                         var pixel_len: c.guint = 0;
                         pixels.ptr = c.gdk_pixbuf_get_pixels_with_length(pixbuf, &pixel_len);
                         pixels.len = pixel_len;
 
-                        try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
+                        switch (outp.pixfmt) {
+                            .bgra => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len))));
 
-                        // This is RGBA
-                        for (0..(pixels.len / 4)) |pixeli| {
-                            const i = pixeli * 4;
+                                for (0..(pixels.len / 3)) |pixeli| {
+                                    const i = pixeli * 3;
 
-                            try wr.writeAll(pixels[i..][0..3]);
+                                    const pix: [4]u8 = .{
+                                        pixels[i + 2], pixels[i + 1], pixels[i], pixels[i + 3],
+                                    };
+                                    try wr.writeAll(&pix);
+                                }
+                            },
+                            .rgba => {
+                                try writeString(wr, pixels);
+                            },
+
+                            .rgb => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
+
+                                for (0..(pixels.len / 4)) |pixeli| {
+                                    const i = pixeli * 4;
+
+                                    try wr.writeAll(pixels[i..][0..3]);
+                                }
+                            },
+                            .bgr => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 4 * 3))));
+
+                                for (0..(pixels.len / 4)) |pixeli| {
+                                    const i = pixeli * 4;
+
+                                    try wr.writeByte(pixels[i + 2]);
+                                    try wr.writeByte(pixels[i + 1]);
+                                    try wr.writeByte(pixels[i]);
+                                }
+                            },
                         }
-
-                        std.log.debug("{}x{}, {}", .{ c.gdk_pixbuf_get_width(pixbuf), c.gdk_pixbuf_get_height(pixbuf), pixels.len });
                     } else {
                         const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
-                        try writeString(wr, c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen]);
+                        const pixels = c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen];
+
+                        switch (outp.pixfmt) {
+                            .bgra => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 3 * 4))));
+
+                                for (0..(pixels.len / 3)) |pixeli| {
+                                    const i = pixeli * 3;
+
+                                    const pix: [4]u8 = .{
+                                        pixels[i + 2], pixels[i + 1], pixels[i], 0xff,
+                                    };
+                                    try wr.writeAll(&pix);
+                                }
+                            },
+                            .rgba => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len / 3 * 4))));
+
+                                for (0..(pixels.len / 3)) |pixeli| {
+                                    const i = pixeli * 3;
+
+                                    const pix: [4]u8 = .{
+                                        pixels[i], pixels[i + 1], pixels[i + 2], 0xff,
+                                    };
+                                    try wr.writeAll(&pix);
+                                }
+                            },
+                            .rgb => {
+                                try writeString(wr, pixels);
+                            },
+                            .bgr => {
+                                try wr.writeAll(&std.mem.toBytes(@as(u32, @truncate(pixels.len))));
+
+                                for (0..(pixels.len / 3)) |pixeli| {
+                                    const i = pixeli * 3;
+
+                                    const pix: [3]u8 = .{
+                                        pixels[i + 2], pixels[i + 1], pixels[i],
+                                    };
+                                    try wr.writeAll(&pix);
+                                }
+                            },
+                        }
                     }
 
                     // Size
@@ -224,23 +440,23 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                 },
             }
 
-            // Pixel format.
-            // See: https://github.com/LGFae/swww/blob/main/common/src/ipc/types.rs#L550-L554
-            try wr.writeByte(1);
+            // Pixel format. This NEEDS to be the format advertised by the daemon for the output,
+            // otherwise, it segfaults (genious API design, right?)
+            try wr.writeByte(@intFromEnum(outp.pixfmt));
 
             // Number of outputs to set this image for. Since we're using different images for each,
             // this is always 1.
             try wr.writeByte(1);
 
             // Name of the output
-            try writeString(wr, outp.name.?);
+            try writeString(wr, outp.name);
 
             // No animation
             try wr.writeByte(0);
         }
 
         try bufw.flush();
-        std.mem.bytesAsValue(u32, iov_data[8..]).* = @truncate(count_writer.bytes_written); // length of shmfd
+        std.mem.bytesAsValue(u64, iov_data[8..]).* = @truncate(count_writer.bytes_written); // length of shmfd
     }
 
     std.debug.assert(try std.posix.sendmsg(sock, &.{
@@ -254,14 +470,34 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     }, 0) == 16);
 
     var resp_buf: [1024]u8 = undefined;
-    const read = try std.posix.read(sock, &resp_buf);
-    if (read < 8 or std.mem.bytesToValue(u32, resp_buf[0..read][0..8]) != 5) {
+    const read = try (std.fs.File{ .handle = sock }).reader().readAll(&resp_buf);
+    if (read < 8 or std.mem.bytesToValue(u64, resp_buf[0..read][0..8]) != 5) {
         std.log.warn("daemon sent bad response to img command", .{});
     }
 }
 
-// Writes the length of the given data as NE u32, then the data.
+fn connect(sockpath: []const u8) !std.posix.fd_t {
+    const addr = try std.net.Address.initUnix(sockpath);
+
+    const sock = try std.posix.socket(std.posix.AF.UNIX, std.posix.SOCK.STREAM, 0);
+    errdefer std.posix.close(sock);
+
+    try std.posix.connect(sock, &addr.any, addr.getOsSockLen());
+
+    return sock;
+}
+
+/// Writes the length of the given data as NE u32, then the data.
 fn writeString(writer: anytype, data: []const u8) !void {
     try writer.writeAll(&std.mem.toBytes(@as(u32, @truncate(data.len))));
     try writer.writeAll(data);
+}
+
+fn readStringAlloc(reader: anytype, alloc: std.mem.Allocator) ![]u8 {
+    const len = std.mem.bytesToValue(u32, &try reader.readBytesNoEof(4));
+    const name = try alloc.alloc(u8, len);
+    errdefer alloc.free(name);
+    try reader.readNoEof(name);
+
+    return name;
 }

@@ -1,8 +1,6 @@
 const std = @import("std");
 const common = @import("common");
 
-const Scanner = @import("wayland").Scanner;
-
 const CgOpt = struct {
     catppuccin: struct { base: [:0]const u8 },
 };
@@ -19,15 +17,7 @@ pub fn build(b: *std.Build) !void {
         .link_libc = true,
     });
 
-    const scanner = Scanner.create(b, .{});
-    const wayland_mod = b.createModule(.{ .root_source_file = scanner.result });
-
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    exe.root_module.addImport("wayland", wayland_mod);
-
-    scanner.generate("wl_seat", 4);
-    scanner.generate("wl_output", 4);
-
     exe.root_module.linkSystemLibrary("wayland-client", .{});
     exe.root_module.linkSystemLibrary("gdk-pixbuf-2.0", .{});
 
