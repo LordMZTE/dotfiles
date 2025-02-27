@@ -5,13 +5,12 @@ const log = std.log.scoped(.init);
 
 const Connection = @import("Connection.zig");
 
-const journal_prefix = "systemd-run --user -pKillMode=process -- ";
+const journal_prefix = "systemd-cat --level-prefix=false -- ";
 
 fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
         "systemd-run",
         "--user",
-        "-pRestart=on-failure",
         "--unit=mzteriver-" ++ argv[0],
         "--",
     } ++ argv;
