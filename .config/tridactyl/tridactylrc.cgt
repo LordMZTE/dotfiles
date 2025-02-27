@@ -37,6 +37,10 @@ set newtab <% opt.homepage_url %>
     },
 } !>
 
+# Open new background tab
+bind gn fillcmdline tabopen -b
+bind gN current_url tabopen -b
+
 # Clear searchurls
 jsb Object.keys(tri.config.get("searchurls")).reduce((prev, u) => prev.then(_ => tri.config.set("searchurls", u, null)), Promise.resolve())
 <! for k, v in pairs(searchurls) do !>
