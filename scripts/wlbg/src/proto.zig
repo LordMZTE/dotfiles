@@ -434,8 +434,26 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                     try writeString(wr, "[dark mode]");
 
                     // Data (monotone catppuccin base background)
-                    try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * ctp_base.len))));
-                    try wr.writeBytesNTimes(&ctp_base, outp.width * outp.height);
+                    switch (outp.pixfmt) {
+                        .rgb => {
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * ctp_base.len))));
+                            try wr.writeBytesNTimes(&ctp_base, outp.width * outp.height);
+                        },
+                        .bgr => {
+                            const color = [3]u8{ctp_base[2], ctp_base[1], ctp_base[0]};
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * color.len))));
+                            try wr.writeBytesNTimes(&color, outp.width * outp.height);
+                        },
+                        .rgba => {
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * (ctp_base.len + 1)))));
+                            try wr.writeBytesNTimes(&ctp_base ++ .{0xff}, outp.width * outp.height);
+                        },
+                        .bgra => {
+                            const color = [4]u8{ctp_base[2], ctp_base[1], ctp_base[0], 0xff};
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * color.len))));
+                            try wr.writeBytesNTimes(&color, outp.width * outp.height);
+                        },
+                    }
 
                     // Size
                     try wr.writeAll(&std.mem.toBytes(@as(u32, outp.width)));
