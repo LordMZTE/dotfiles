@@ -279,7 +279,10 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
 
         const mfdwriter = (std.fs.File{ .handle = memfd }).writer();
         var count_writer = std.io.countingWriter(mfdwriter);
-        var bufw = std.io.bufferedWriter(count_writer.writer());
+        var bufw = std.io.BufferedWriter(
+            1024 * 1024, // One MB because we're writing lots of data.
+            @TypeOf(count_writer.writer()),
+        ){ .unbuffered_writer = count_writer.writer() };
         const wr = bufw.writer();
 
         try wr.writeAll(std.mem.toBytes(
