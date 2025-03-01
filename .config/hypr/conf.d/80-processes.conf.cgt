@@ -1,0 +1,5 @@
+exec-once = waybar
+exec-once = wlbg
+<! if opt.commands.notification_daemon.wl then !>
+exec-once = <% opt.commands.notification_daemon.wl %>
+<! end !>
