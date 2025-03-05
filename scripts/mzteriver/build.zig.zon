@@ -1,12 +1,13 @@
 .{
-    .name = "mzteriver",
+    .name = .mzteriver,
     .version = "0.0.0",
+    .fingerprint = 0x56a05e24d75f87a,
 
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
         .wayland = .{
-            .url = "git+https://codeberg.org/ifreund/zig-wayland.git#a5e2e9b6a6d7fba638ace4d4b24a3b576a02685b",
-            .hash = "1220d41b23ae70e93355bb29dac1c07aa6aeb92427a2dffc4375e94b4de18111248c",
+            .url = "git+https://codeberg.org/ifreund/zig-wayland.git#91dcb18041e92fb73d0c09c6b7416c24d5295923",
+            .hash = "zig_wayland-0.3.0-dev-r73zYTzIAQAOXkH-9fjwrtXiGA7nDbOOkm-a_WcnQbQE",
         },
     },
 

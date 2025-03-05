@@ -72,7 +72,7 @@ pub fn main() !void {
 
     try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, sigfd, &sigfdev);
 
-    const refresh_tfd = try std.posix.timerfd_create(std.posix.CLOCK.MONOTONIC, .{});
+    const refresh_tfd = try std.posix.timerfd_create(.MONOTONIC, .{});
     defer std.posix.close(refresh_tfd);
 
     try resetRefreshTime(refresh_tfd);
@@ -124,10 +124,10 @@ pub fn main() !void {
 
 fn resetRefreshTime(tfd: std.os.linux.fd_t) !void {
     try std.posix.timerfd_settime(tfd, .{}, &.{
-        .it_value = .{ .tv_sec = 1, .tv_nsec = 0 },
+        .it_value = .{ .sec = 1, .nsec = 0 },
         .it_interval = .{
-            .tv_sec = std.time.s_per_min * 5, // refresh every 5 minutes
-            .tv_nsec = 0,
+            .sec = std.time.s_per_min * 5, // refresh every 5 minutes
+            .nsec = 0,
         },
     }, null);
 }

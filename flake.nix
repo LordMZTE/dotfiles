@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs-zig-0-14.url = "github:RossComputerGuy/nixpkgs/feat/zig-0.14";
     utils.url = "github:numtide/flake-utils";
   };
 
@@ -46,7 +47,7 @@
                 wayland-scanner
                 haxe
                 mpv-unwrapped
-                zig_0_13
+                (import inputs.nixpkgs-zig-0-14 { inherit system; }).zig_0_14
               ] ++
               # shorthands for setup.rkt
               builtins.map

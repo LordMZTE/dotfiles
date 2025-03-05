@@ -37,8 +37,8 @@ pub const InstallDepStep = struct {
         return self;
     }
 
-    fn make(step: *std.Build.Step, prog_node: std.Progress.Node) anyerror!void {
-        _ = prog_node;
+    fn make(step: *std.Build.Step, options: std.Build.Step.MakeOptions) anyerror!void {
+        _ = options;
         const self: *InstallDepStep = @fieldParentPtr("step", step);
 
         var dir = try std.fs.cwd().openDir(self.dep.builder.install_prefix, .{

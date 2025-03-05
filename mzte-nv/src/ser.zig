@@ -6,24 +6,24 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
     const T = @TypeOf(x);
 
     switch (@typeInfo(T)) {
-        .Void, .Null => c.lua_pushnil(l),
-        .Bool => c.lua_pushboolean(l, @intCast(@intFromBool(x))),
-        .Int, .ComptimeInt => c.lua_pushinteger(l, @intCast(x)),
-        .Float, .ComptimeFloat => c.lua_pushnumber(l, @floatCast(x)),
-        .Pointer => |P| {
+        .void, .null => c.lua_pushnil(l),
+        .bool => c.lua_pushboolean(l, @intCast(@intFromBool(x))),
+        .int, .comptime_int => c.lua_pushinteger(l, @intCast(x)),
+        .float, .comptime_float => c.lua_pushnumber(l, @floatCast(x)),
+        .pointer => |P| {
             switch (P.size) {
-                .One => {
+                .one => {
                     if (T == c.lua_CFunction or
-                        T == @typeInfo(c.lua_CFunction).Optional.child)
+                        T == @typeInfo(c.lua_CFunction).optional.child)
                     {
                         c.lua_pushcfunction(l, x);
-                    } else if (@typeInfo(P.child) == .Array) {
+                    } else if (@typeInfo(P.child) == .array) {
                         luaPushAny(l, @as([]const std.meta.Elem(P.child), x));
                     } else {
                         luaPushAny(l, x.*);
                     }
                 },
-                .Slice => {
+                .slice => {
                     if (P.child == u8) {
                         ffi.luaPushString(l, x);
                     } else {
@@ -35,13 +35,13 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                         }
                     }
                 },
-                .C => {
+                .c => {
                     if (P.child != u8)
                         @compileError("luaPushAny doesn't support " ++ @typeName(T));
 
                     c.lua_pushstring(l, x);
                 },
-                .Many => {
+                .many => {
                     if (P.child != u8)
                         @compileError("luaPushAny doesn't support " ++ @typeName(T));
 
@@ -49,8 +49,8 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                 },
             }
         },
-        .Array => luaPushAny(l, &x),
-        .Struct => |S| {
+        .array => luaPushAny(l, &x),
+        .@"struct" => |S| {
             if (comptime std.meta.hasFn(T, "luaPush")) {
                 return x.luaPush(l);
             }
@@ -71,15 +71,15 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
                 }
             }
         },
-        .Optional => {
+        .optional => {
             if (x) |val| {
                 luaPushAny(l, val);
             } else {
                 c.lua_pushnil(l);
             }
         },
-        .Enum, .EnumLiteral => c.lua_pushstring(l, @tagName(x)),
-        .Type => {
+        .@"enum", .enum_literal => c.lua_pushstring(l, @tagName(x)),
+        .type => {
             if (@hasDecl(x, "luaPush")) {
                 return x.luaPush(l);
             }

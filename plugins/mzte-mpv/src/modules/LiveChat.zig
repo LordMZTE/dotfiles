@@ -54,7 +54,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 try ffi.checkMpvError(c.mpv_command_async(
                     mpv,
                     0,
-                    @constCast(&[_:null]?[*:0]const u8{ "sub-add", sub_addr.ptr, "select", "MZTE-MPV live chat" }),
+                    @constCast(&[_:null]?[*]const u8{ "sub-add", sub_addr.ptr, "select", "MZTE-MPV live chat" }),
                 ));
 
                 // Quite stupidly, MPV will wait until the WHOLE subtitle stream is received before

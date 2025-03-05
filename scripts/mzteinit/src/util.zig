@@ -48,7 +48,7 @@ pub fn fmtCommand(cmd: []const []const u8) std.fmt.Formatter(formatCommand) {
 }
 
 pub fn findInPath(alloc: std.mem.Allocator, path: []const u8, bin: []const u8) !?[]const u8 {
-    var splits = std.mem.split(u8, path, ":");
+    var splits = std.mem.splitScalar(u8, path, ':');
     while (splits.next()) |p| {
         const trimmed = std.mem.trim(u8, p, " \n\r");
         if (trimmed.len == 0)

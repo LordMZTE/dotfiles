@@ -15,6 +15,6 @@ pub fn msg(
     const osd_msg = try std.fmt.bufPrintZ(&buf, "[mzte-mpv " ++ @tagName(scope) ++ "] " ++ fmt, args);
     try ffi.checkMpvError(c.mpv_command(
         mpv,
-        @constCast(&[_:null]?[*:0]const u8{ "show-text", osd_msg, "4000" }),
+        @constCast(&[_:null]?[*]const u8{ "show-text", osd_msg.ptr, "4000" }),
     ));
 }

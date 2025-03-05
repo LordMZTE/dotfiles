@@ -31,7 +31,6 @@ pub fn main() void {
                 std.debug.writeStackTrace(
                     trace.*,
                     fbs.writer(),
-                    std.heap.page_allocator,
                     deb_inf,
                     .no_color,
                 ) catch break :s null;

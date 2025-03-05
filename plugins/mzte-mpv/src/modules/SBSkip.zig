@@ -128,7 +128,7 @@ const Chapter = struct {
             return null;
 
         const types = self.title[prefix.len..];
-        var type_iter = std.mem.tokenize(u8, types, ",");
+        var type_iter = std.mem.tokenizeScalar(u8, types, ',');
         while (type_iter.next()) |type_split| {
             const typestr = std.mem.trim(u8, type_split, &std.ascii.whitespace);
             if (blacklist.has(typestr))

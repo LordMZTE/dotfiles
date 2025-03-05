@@ -27,7 +27,7 @@ fn lZigToggleMutability(l: *c.lua_State) !c_int {
 
     // split into lines
     c.lua_newtable(l);
-    var liter = std.mem.split(u8, out, "\n");
+    var liter = std.mem.splitScalar(u8, out, '\n');
     var idx: c_int = 1;
     while (liter.next()) |line| {
         ffi.luaPushString(l, line);

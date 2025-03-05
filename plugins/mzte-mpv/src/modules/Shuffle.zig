@@ -43,7 +43,7 @@ fn toggleShuffle(self: *Shuffle, mpv: *c.mpv_handle) !void {
     try ffi.checkMpvError(c.mpv_command_async(
         mpv,
         0,
-        @constCast(&[_:null]?[*:0]const u8{cmd}),
+        @constCast(&[_:null]?[*]const u8{cmd.ptr}),
     ));
     self.shuffled = !self.shuffled;
     try util.msg(mpv, .shuffle, "shuffled: {}", .{self.shuffled});

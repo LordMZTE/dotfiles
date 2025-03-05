@@ -1,13 +1,14 @@
 .{
-    .name = "dotfiles",
+    .name = .dotfiles,
     .version = "0.0.0",
     .paths = .{""},
+    .fingerprint = 0x1cd9b5b71d588f94,
 
     .dependencies = .{
         // Setup Deps
         .ziggy = .{
-            .url = "git+https://github.com/kristoff-it/ziggy.git#42b6f5d7320340bc5903c4c29d34065e8517a549",
-            .hash = "12200b69baf035d0474e04b131862d36b2657fbce88a5c9dc657af861430e5fc7e3d",
+            .url = "git+https://github.com/kristoff-it/ziggy.git#af41bdb5b1d64404c2ec7eb1d9de01083c0d2596",
+            .hash = "ziggy-0.1.0-kTg8v7rKBQCdELbScM186Uh4X3sxhBFgsdNpYcilLhDt",
         },
 
         // Scripts

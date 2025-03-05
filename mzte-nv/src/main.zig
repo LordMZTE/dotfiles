@@ -47,20 +47,18 @@ pub const std_options = std.Options{
                 .err => nvim.LOGLVL_ERR,
             };
 
-            var dict = znvim.Dictionary{ .alloc = std.heap.c_allocator };
-            defer dict.deinit();
+            const l: *c.lua_State = @ptrCast(nvim.get_global_lstate());
+            const top = c.lua_gettop(l);
+            c.lua_settop(l, top);
 
-            dict.push(@constCast("title"), znvim.nvimObject(@as([]u8, title))) catch return;
-            // noice notficitaions recognize this and show in the mini view instead of notifs
-            dict.push(@constCast("mzte_nv_mini"), comptime znvim.nvimObject(true)) catch return;
-
-            var e = znvim.Error{};
-            _ = nvim.nvim_notify(
-                znvim.nvimString(msg),
-                lvl,
-                dict.dict,
-                &e.err,
-            );
+            // This used to invoke nvim.nvim_notify, which is now not only deprecated, but does and
+            // always has done exactly this.
+            c.lua_getglobal(l, "vim");
+            c.lua_getfield(l, -1, "notify");
+            ffi.luaPushString(l, msg);
+            c.lua_pushinteger(l, lvl);
+            ser.luaPushAny(l, .{ .title = title });
+            _ = c.lua_pcall(l, 3, 0, 0);
         }
     }.logFn,
 

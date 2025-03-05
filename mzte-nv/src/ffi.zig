@@ -19,7 +19,6 @@ pub fn luaFunc(comptime func: anytype) c.lua_CFunction {
                     std.debug.writeStackTrace(
                         ert.*,
                         fbs.writer(),
-                        std.heap.c_allocator,
                         std.debug.getSelfDebugInfo() catch @panic("WTF"),
                         .no_color,
                     ) catch @panic("OOM");

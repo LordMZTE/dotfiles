@@ -81,7 +81,7 @@ pub fn OptionalPayload(comptime T: type) type {
 }
 
 fn EnumIntRoundUp(comptime T: type) type {
-    const int_info = @typeInfo(@typeInfo(T).Enum.tag_type).Int;
+    const int_info = @typeInfo(@typeInfo(T).@"enum".tag_type).int;
     return std.meta.Int(int_info.signedness, std.mem.alignForward(u16, int_info.bits, 8));
 }
 

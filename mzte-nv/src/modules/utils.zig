@@ -16,7 +16,7 @@ fn lFindInPath(l: *c.lua_State) !c_int {
     const bin = ffi.luaCheckstring(l, 1);
     const path = std.posix.getenv("PATH") orelse return error.PathNotSet;
 
-    var splits = std.mem.split(u8, path, ":");
+    var splits = std.mem.splitScalar(u8, path, ':');
     while (splits.next()) |p| {
         const trimmed = std.mem.trim(u8, p, " \n\r");
         if (trimmed.len == 0)

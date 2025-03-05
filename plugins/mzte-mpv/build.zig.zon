@@ -1,7 +1,9 @@
 .{
-    .name = "mzte-mpv",
+    .name = .mzte_mpv,
     .version = "0.0.0",
     .paths = .{""},
+    .fingerprint = 0xe28db8f4f785a414,
+
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
     }

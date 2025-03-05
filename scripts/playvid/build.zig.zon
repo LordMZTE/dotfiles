@@ -1,7 +1,9 @@
 .{
-    .name = "playvid",
+    .name = .playvid,
     .version = "0.0.0",
     .paths = .{""},
+    .fingerprint = 0x12cb10d2b2c64b25,
+
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
     },

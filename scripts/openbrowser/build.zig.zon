@@ -1,7 +1,9 @@
 .{
-    .name = "openbrowser",
+    .name = .openbrowser,
     .version = "0.0.0",
     .paths = .{""},
+    .fingerprint = 0xca08f0acb4b009fc,
+
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
     },

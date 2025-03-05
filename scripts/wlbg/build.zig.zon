@@ -1,7 +1,8 @@
 .{
-    .name = "wlbg",
+    .name = .wlbg,
     .version = "0.0.0",
     .paths = .{""},
+    .fingerprint = 0x127c88a34fb99942,
 
     .dependencies = .{
         .common = .{

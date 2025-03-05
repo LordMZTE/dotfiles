@@ -283,11 +283,12 @@ fn xdgSurfaceConfigureListener(xdg_surface: *xdg.Surface, ev: xdg.Surface.Event,
     xdg_surface.ackConfigure(ev.configure.serial);
 }
 
+// TODO: completely restructure this crap
 fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *GlobalCollector) void {
     switch (event) {
         .global => |glob| {
             inline for (std.meta.fields(GlobalCollector)) |f| {
-                const Interface = @typeInfo(@typeInfo(f.type).Optional.child).Pointer.child;
+                const Interface = @typeInfo(@typeInfo(f.type).optional.child).pointer.child;
                 if (std.mem.orderZ(u8, glob.interface, Interface.interface.name) == .eq) {
                     @field(globals, f.name) = reg.bind(
                         glob.name,

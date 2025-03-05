@@ -16,9 +16,26 @@
         "type": "github"
       }
     },
+    "nixpkgs-zig-0-14": {
+      "locked": {
+        "lastModified": 1741144264,
+        "narHash": "sha256-TNM2vOEXtnruMWzLWn1n+JaL8j44PnG+mcZLlaahY+o=",
+        "owner": "RossComputerGuy",
+        "repo": "nixpkgs",
+        "rev": "96c2125a8c56aad7a14b8d24e206fc0f61e2a520",
+        "type": "github"
+      },
+      "original": {
+        "owner": "RossComputerGuy",
+        "ref": "feat/zig-0.14",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
+        "nixpkgs-zig-0-14": "nixpkgs-zig-0-14",
         "utils": "utils"
       }
     },
