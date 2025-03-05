@@ -1,3 +1,18 @@
+/* Remove rounded corners */
+.titlebar,
+.titlebar .background,
+decoration,
+window,
+window.background
+{
+    border-radius: 0;
+}
+
+/* Remove csd shadows */
+decoration, decoration:backdrop
+{
+    box-shadow: none;
+}
 <! if opt.wayland_compositor == "river" then !>
 /* GTK is to retarded to realize that some compositors that don't implement deprecated
 * protocols do not want client-side decoration. We completely disable titlebars here to compensate. */
