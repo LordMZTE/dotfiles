@@ -6,12 +6,13 @@ let
     name = "mzte-scripts-packages";
     src = ./..;
 
+    # TODO: broken
     outputHashMode = "recursive";
-    outputHash = "sha256-v092gVzym6Tuozvj7IqQSl5zcto/Z2lmg/bXWApYd0M=";
+    outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     preferLocalBuild = true;
 
     nativeBuildInputs = with pkgs; [
-      zig_0_13
+      zig_0_14
     ];
 
     dontConfigure = true;
@@ -46,7 +47,6 @@ in
       libgit2
       wayland
       mpv-unwrapped
-      xorg.libxcb # used in some old code in randomwallpaper, should probably be yoinked
     ];
 
     env = { inherit CGOPTS; };

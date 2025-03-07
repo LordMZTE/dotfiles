@@ -2,11 +2,11 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1741171237,
-        "narHash": "sha256-3IJy05lcahEv8KM2QUsvdukmyxlNfRfGSYzZqWMPBcU=",
+        "lastModified": 1741323510,
+        "narHash": "sha256-zQL0iErtVTxywxyWc7ajRmRNCncny95uD+2wmBHYOzc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "59e3cd3bfcd5e27bb7f4498a5bd15084cecdb77c",
+        "rev": "f104cca31ba6c0403b678ad9428726476b503782",
         "type": "github"
       },
       "original": {
@@ -16,26 +16,9 @@
         "type": "github"
       }
     },
-    "nixpkgs-zig-0-14": {
-      "locked": {
-        "lastModified": 1741144264,
-        "narHash": "sha256-TNM2vOEXtnruMWzLWn1n+JaL8j44PnG+mcZLlaahY+o=",
-        "owner": "RossComputerGuy",
-        "repo": "nixpkgs",
-        "rev": "96c2125a8c56aad7a14b8d24e206fc0f61e2a520",
-        "type": "github"
-      },
-      "original": {
-        "owner": "RossComputerGuy",
-        "ref": "feat/zig-0.14",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "nixpkgs-zig-0-14": "nixpkgs-zig-0-14",
         "utils": "utils"
       }
     },
