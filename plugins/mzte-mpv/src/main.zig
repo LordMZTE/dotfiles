@@ -30,6 +30,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
         @import("modules/BackgroundColor.zig").create(),
         @import("modules/LiveChat.zig").create(),
         @import("modules/SBSkip.zig").create(),
+        @import("modules/ScreenshotOpen.zig").create(),
         @import("modules/Shuffle.zig").create(),
     };
     // need this weird loop here for pointer access for fields to work

@@ -32,7 +32,7 @@ pub fn onEvent(self: *Shuffle, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 std.mem.orderZ(u8, args[0], "key-binding") == .eq and
                 std.mem.orderZ(u8, args[1], "mzte-shuffle") == .eq and
                 (args[2][0] == 'd' or args[2][0] == 'p') // key was pressed
-            ) try toggleShuffle(self, mpv);
+            ) try self.toggleShuffle(mpv);
         },
         else => {},
     }
