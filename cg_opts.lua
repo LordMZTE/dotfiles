@@ -1,6 +1,4 @@
-local opts = {}
-
-opts.mzteinit_entries = {
+cg.opt.mzteinit_entries = {
     -- TODO: the `which` invocations here are a workaround in case the relevant binaries
     -- are installed in a directory that mzteinit adds to $PATH, which it currently doesn't handle.
     { key = "z", label = "river",    cmd = { cg.opt.system "which mzteriver" } },
@@ -13,15 +11,15 @@ opts.mzteinit_entries = {
 
 -- Enable if you have good internet, used for stuff like making
 -- streamlink use low-latency mode.
-opts.good_internet = true
+cg.opt.good_internet = true
 
 -- Enable if stuck on garbage hardware. Enables wayland-related workarounds.
-opts.nvidia = false
+cg.opt.nvidia = false
 
-opts.font = "Iosevka NF"
-opts.term_font = "IosevkaTerm NFM"
+cg.opt.font = "Iosevka NF"
+cg.opt.term_font = "IosevkaTerm NFM"
 
-opts.term = {
+cg.opt.term = {
     name = "Ghostty",
     command = "ghostty",
     exec = "ghostty -e",
@@ -29,7 +27,7 @@ opts.term = {
     icon_name = "com.mitchellh.ghostty",
 }
 
---opts.term = {
+--cg.opt.term = {
 --    name = "foot",
 --    command = "foot",
 --    exec = "foot",
@@ -37,15 +35,15 @@ opts.term = {
 --    icon_name = "foot",
 --}
 
-opts.cursor = {
+cg.opt.cursor = {
     theme = "LyraQ-cursors",
     size = 24,
 }
 
-opts.gtk_theme = "catppuccin-mocha-red-standard"
-opts.icon_theme = "candy-icons"
+cg.opt.gtk_theme = "catppuccin-mocha-red-standard"
+cg.opt.icon_theme = "candy-icons"
 
-opts.commands = {
+cg.opt.commands = {
     browser = "openbrowser",
     email = "claws-mail",
     calculator = "qalculate-gtk",
@@ -73,17 +71,17 @@ opts.commands = {
     backlight_down = "light -U 15";
 }
 
-opts.gamemode = {
+cg.opt.gamemode = {
     on_start = "notify-send 'Gamemode' 'Gamemode Active'",
     on_stop = "notify-send 'Gamemode' 'Gamemode Inactive'",
 }
 
-opts.dev_dir = os.getenv "HOME" .. "/dev"
+cg.opt.dev_dir = os.getenv "HOME" .. "/dev"
 
 local ctp_rgb = {}
 setmetatable(ctp_rgb, {
     __index = function(_, key)
-        local rs, gs, bs = string.match(opts.catppuccin[key], "^(%x%x)(%x%x)(%x%x)$")
+        local rs, gs, bs = string.match(cg.opt.catppuccin[key], "^(%x%x)(%x%x)(%x%x)$")
         return {
             r = tonumber(rs, 16),
             g = tonumber(gs, 16),
@@ -91,7 +89,7 @@ setmetatable(ctp_rgb, {
         }
     end
 })
-opts.catppuccin = {
+cg.opt.catppuccin = {
     rgb = ctp_rgb,
 
     base = "1e1e2e",
@@ -122,6 +120,6 @@ opts.catppuccin = {
     yellow = "f9e2af",
 }
 
-opts.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/homepage.html"
+cg.opt.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/homepage.html"
 
-return opts
+return cg.opt

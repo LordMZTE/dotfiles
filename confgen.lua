@@ -34,22 +34,6 @@ cg.opt.nix = nix
 
 local fennel = (loadfile(nix["fennel.lua"] or "/usr/share/lua/5.4/fennel.lua")())
 
--- Recursively merge 2 tables
-local function merge(a, b)
-    if b[1] then -- b is a list
-        return b
-    end
-
-    for k, v in pairs(b) do
-        if type(v) == "table" and type(a[k]) == "table" then
-            a[k] = merge(a[k], v)
-        else
-            a[k] = v
-        end
-    end
-    return a
-end
-
 -- This function is called in templates to allow adding device-specific configs.
 cg.opt.getDeviceConf = function(id)
     local path = os.getenv "HOME" .. "/.config/mzte_localconf/" .. id
@@ -118,10 +102,10 @@ cg.opt.setCurrentWaylandCompositor = function(comp)
     end
 end
 
-cg.opt = merge(cg.opt, require "cg_opts")
+require "cg_opts"
 
 local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
 
 if local_opts then
-    cg.opt = merge(cg.opt, local_opts())
+    local_opts()
 end
