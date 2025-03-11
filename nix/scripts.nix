@@ -35,7 +35,7 @@ in
     dontConfigure = true;
 
     nativeBuildInputs = with pkgs; [
-      zig_0_13.hook
+      zig_0_14.hook
 
       pkg-config
       wayland-protocols
