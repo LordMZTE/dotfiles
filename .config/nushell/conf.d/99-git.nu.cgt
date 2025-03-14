@@ -16,5 +16,6 @@ def --wrapped "git a" [p: path, ...rest] {
   gitalias("s", "status")
 
   gitalias("schieb", "push")
+  gitalias("pfusch", "push --force")
   gitalias("zieh", "pull")
 !>
