@@ -1,0 +1,51 @@
+<! local ctp = opt.catppuccin !>
+
+*.default=true
+*.normal=true
+
+default.fg=#<% ctp.text %>
+
+error.fg=#<% ctp.red %>
+warning.fg=#<% ctp.peach %>
+success.fg=#<% ctp.green %>
+
+tab.fg=#<% ctp.overlay0 %>
+tab.bg=#<% ctp.mantle %>
+tab.selected.fg=#<% ctp.text %>
+tab.selected.bg=#<% ctp.base %>
+tab.selected.bold=true
+
+border.fg=#<% ctp.crust %>
+border.bold=true
+
+msglist_unread.bold=true
+msglist_flagged.fg=#<% ctp.yellow %>
+msglist_flagged.bold=true
+msglist_result.fg=#<% ctp.blue %>
+msglist_result.bold=true
+msglist_*.selected.bold=true
+msglist_*.selected.bg=#<% ctp.surface0 %>
+
+dirlist_*.selected.bold=true
+dirlist_*.selected.bg=#<% ctp.surface0 %>
+
+statusline_default.fg=#<% ctp.overlay2 %>
+statusline_default.bg=#<% ctp.surface0 %>
+statusline_error.bold=true
+statusline_success.bold=true
+
+completion_default.selected.bg=#<% ctp.surface0 %>
+
+[viewer]
+url.fg=#<% ctp.blue %>
+url.underline=true
+header.bold=true
+signature.dim=true
+diff_meta.bold=true
+diff_chunk.fg=#<% ctp.blue %>
+diff_chunk_func.fg=#<% ctp.blue %>
+diff_chunk_func.bold=true
+diff_add.fg=#<% ctp.green %>
+diff_del.fg=#<% ctp.red %>
+quote_*.fg=#<% ctp.overlay0 %>
+quote_1.fg=#<% ctp.overlay2 %>
