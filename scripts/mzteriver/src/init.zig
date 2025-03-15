@@ -182,6 +182,8 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     try con.runCommand(&.{ "border-color-focused", "0x" ++ opt.catppuccin.red });
     try con.runCommand(&.{ "border-color-unfocused", "0x" ++ opt.catppuccin.sky });
 
+    // Cursor config
+    try con.runCommand(&.{ "set-cursor-warp", "on-focus-change" });
     try con.runCommand(&.{ "hide-cursor", "when-typing", "enabled" });
 
     try con.runCommand(&.{
