@@ -1,17 +1,3 @@
-# broken on 0.101.0
-#let completer = {|spans|
-#    fish --command $'complete "--do-complete=($spans | str join " ")"'
-#    | $"value(char tab)description(char newline)" + $in
-#    | from tsv --flexible --no-infer
-#    | each { |comp|
-#        let escaped = $comp.value | str replace --all '"' '\"'
-#        {
-#            value: (if ($escaped | str contains " ") { $'"($escaped)"' } else { $escaped })
-#            description: $comp.description
-#        }
-#    }
-#}
-
 $env.config = {
     show_banner: false
 
@@ -23,10 +9,6 @@ $env.config = {
 
     completions: {
         algorithm: "fuzzy"
-        external: (if (which fish | is-not-empty) { {
-            enable: true
-            #completer: $completer
-        } } else { {} })
     }
 
     cursor_shape: {
