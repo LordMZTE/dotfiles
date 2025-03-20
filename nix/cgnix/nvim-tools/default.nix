@@ -12,14 +12,14 @@ let
       src = pkgs.fetchFromGitHub {
         owner = "nolanderc";
         repo = "glsl_analyzer";
-        rev = "5b9848b2dd563170cd702c41443659d6b3cb11de";
+        rev = "a79772884572e5a8d11bca8d74e5ed6c2cf47848";
         leaveDotGit = true;
-        hash = "sha256-J7drPaIOIyFr6ib1GrhqD80fTRz7y3ewTG9lFaNAO5s=";
+        hash = "sha256-mtC+22jw/YK9SngtvTdywl50KbYbSxUxLsSkF57TiBM=";
       };
 
       dontConfigure = true;
 
-      nativeBuildInputs = with pkgs; [ zig_0_13.hook git ];
+      nativeBuildInputs = with pkgs; [ zig_0_14.hook git ];
     })
     (flakePkg "git+https://git.mzte.de/LordMZTE/haxe-language-server.git")
     config.output.packages.jdtls-wrapped
