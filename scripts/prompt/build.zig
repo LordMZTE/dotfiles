@@ -15,7 +15,7 @@ pub fn build(b: *std.Build) void {
     exe.linkSystemLibrary("libgit2");
 
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    exe.root_module.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi-term"));
+    exe.root_module.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
     exe.root_module.addImport("known-folders", b.dependency("known_folders", .{}).module("known-folders"));
 
     b.installArtifact(exe);

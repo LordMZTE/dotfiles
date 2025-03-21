@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi-term");
+    const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi_term");
     const common_mod = b.dependency("common", .{}).module("common");
 
     const exe = b.addExecutable(.{
