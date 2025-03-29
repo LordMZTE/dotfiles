@@ -44,24 +44,26 @@
 (setup :jsonls {:on_attach disable-formatter})
 (setup :julials)
 (setup :ltex {:cmd [:ltex-ls-plus]
-              :autostart false ;; LTeX is slow and noisy, but still catches a few errors sometimes.
-              :filetypes [:typst
+              ;; LTeX is slow and noisy, but still catches a few errors sometimes.
+              :autostart false
+              :filetypes [:asciidoc
                           :bib
+                          :context
                           :gitcommit
+                          :html
+                          :mail
                           :markdown
                           :org
-                          :plaintex
-                          :rst
-                          :rnoweb
-                          :tex
                           :pandoc
+                          :plaintex
                           :quarto
                           :rmd
-                          :context
-                          :html
-                          :xhtml
-                          :mail
-                          :text]
+                          :rnoweb
+                          :rst
+                          :tex
+                          :text
+                          :typst
+                          :xhtml]
               :settings {:ltex {:enabled [:typst
                                           :bibtex
                                           :gitcommit
