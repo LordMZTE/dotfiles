@@ -1,6 +1,7 @@
 set editorcmd nvim-qt
-set theme midnight
+set theme shydactyl
 set smoothscroll true
+set allowautofocus false
 
 set newtab <% opt.homepage_url %>
 

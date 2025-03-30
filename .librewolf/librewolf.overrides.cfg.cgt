@@ -36,3 +36,6 @@ defaultPref("security.OCSP.require", false);
 
 // Homepage
 defaultPref("browser.startup.homepage", "<% opt.homepage_url %>")
+
+// Don't allow websites to auto-focus stuff, no good with tridactyl
+defaultPref("browser.autofocus", false);
