@@ -60,8 +60,7 @@ let
     taplo
     tinymist
     vscode-langservers-extracted # cssls, eslint, html, jsonls
-    (flakePkg "github:zigtools/zls/336f468c1fddbb8b7356946f4f2ee69434edfaad")
-    #zls
+    zls
 
     # Formatters
     (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${nodePackages.prettier}/bin/prettier"; }]) # needed due to symlink shenanigans
