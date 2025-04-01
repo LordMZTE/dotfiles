@@ -40,7 +40,8 @@ cg.opt.cursor = {
     size = 24,
 }
 
-cg.opt.gtk_theme = "catppuccin-mocha-red-standard"
+-- https://github.com/Fausto-Korpsvart/catppuccin-gtk-theme
+cg.opt.gtk_theme = "Catppuccin-GTK-Red-Dark-Compact"
 cg.opt.icon_theme = "candy-icons"
 
 cg.opt.commands = {
