@@ -2,7 +2,7 @@ $env.config = {
     show_banner: false
 
     table: {
-        mode: reinforced
+        mode: compact_double
         padding: { left: 0, right: 0 }
         header_on_separator: true
     }
