@@ -6,12 +6,16 @@
                         :cterm_color 49
                         :name :CommonLisp})
 
-(wdi.setup {:override {:rkt racket-icon
+(wdi.setup {:override {:lisp commonlisp-icon
+                       :pony {:icon ""
+                              :color "#8d6e62"
+                              :cterm_color 138
+                              :name :Pony}
+                       :rkt racket-icon
                        :rktl racket-icon
                        :rktd racket-icon
+                       :ros commonlisp-icon
                        :scm {:icon "λ"
                              :color "#3e5ba9"
                              :cterm_color 61
-                             :name :Scheme}
-                       :lisp commonlisp-icon
-                       :ros commonlisp-icon}})
+                             :name :Scheme}}})
