@@ -6,7 +6,7 @@ const util = @import("../util.zig");
 
 const log = std.log.scoped(.@"sb-skip");
 
-const ChapterSet = std.AutoHashMap(isize, void);
+const ChapterSet = std.AutoHashMapUnmanaged(isize, void);
 
 skipped_chapters: ChapterSet,
 
@@ -92,7 +92,7 @@ fn onChapterChange(
             c.MPV_FORMAT_DOUBLE,
             @constCast(&end_time),
         ));
-        try self.skipped_chapters.put(chapter_id, {});
+        try self.skipped_chapters.put(std.heap.c_allocator, chapter_id, {});
         try util.msg(mpv, .@"sb-skip", "skipped: {s} ({d:.2}s)", .{
             reason,
             end_time - start_time,
@@ -146,10 +146,10 @@ pub fn setup(self: *SBSkip, mpv: *c.mpv_handle) !void {
 
 pub fn create() SBSkip {
     return .{
-        .skipped_chapters = ChapterSet.init(std.heap.c_allocator),
+        .skipped_chapters = .empty,
     };
 }
 
 pub fn deinit(self: *SBSkip) void {
-    self.skipped_chapters.deinit();
+    self.skipped_chapters.deinit(std.heap.c_allocator);
 }

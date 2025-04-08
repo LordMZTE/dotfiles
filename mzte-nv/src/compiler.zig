@@ -78,8 +78,8 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     const build_alloc = build_arena.allocator();
 
     // a list of lua files to compile
-    var files = std.ArrayList([]const u8).init(alloc);
-    defer files.deinit();
+    var files: std.ArrayListUnmanaged([]const u8) = .empty;
+    defer files.deinit(alloc);
 
     if ((try std.fs.cwd().statFile(path)).kind == .directory) {
         var dir = try std.fs.cwd().openDir(path, .{ .iterate = true });
@@ -96,14 +96,14 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
                     if (std.mem.endsWith(u8, entry.path, ".lua") or
                         std.mem.endsWith(u8, entry.path, ".fnl"))
                     {
-                        try files.append(entry_path);
+                        try files.append(alloc, entry_path);
                     }
                 },
                 else => {},
             }
         }
     } else {
-        try files.append(path);
+        try files.append(alloc, path);
     }
 
     var n_fnl: usize = 0;

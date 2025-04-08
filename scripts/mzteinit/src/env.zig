@@ -230,17 +230,17 @@ pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
 
     try msg("updating SystemD environment...", .{});
 
-    var argv = try std.ArrayList([]const u8).initCapacity(env.hash_map.allocator, env.count() + 3);
-    defer argv.deinit();
+    var argv = try std.ArrayListUnmanaged([]const u8).initCapacity(env.hash_map.allocator, env.count() + 3);
+    defer argv.deinit(env.hash_map.allocator);
 
     var arg_arena = std.heap.ArenaAllocator.init(env.hash_map.allocator);
     defer arg_arena.deinit();
 
-    try argv.appendSlice(&.{ "systemctl", "--user", "set-environment" });
+    try argv.appendSlice(env.hash_map.allocator, &.{ "systemctl", "--user", "set-environment" });
 
     var env_iter = env.iterator();
     while (env_iter.next()) |entry| {
-        try argv.append(try std.fmt.allocPrint(
+        try argv.append(env.hash_map.allocator, try std.fmt.allocPrint(
             arg_arena.allocator(),
             "{s}={s}",
             .{ entry.key_ptr.*, entry.value_ptr.* },

@@ -61,8 +61,8 @@ fn findVideoFile(alloc: std.mem.Allocator, out_buf: []u8) ![]const u8 {
     var cwd_iter = try std.fs.cwd().openDir(basedir, .{ .iterate = true });
     defer cwd_iter.close();
     var iter = cwd_iter.iterate();
-    var files = std.ArrayList([]const u8).init(alloc);
-    defer files.deinit();
+    var files: std.ArrayListUnmanaged([]const u8) = .empty;
+    defer files.deinit(alloc);
 
     while (try iter.next()) |entry| {
         switch (entry.kind) {
@@ -70,7 +70,7 @@ fn findVideoFile(alloc: std.mem.Allocator, out_buf: []u8) ![]const u8 {
                 if (std.mem.endsWith(u8, entry.name, ".live_chat.json"))
                     continue;
 
-                try files.append(try fname_arena.allocator().dupe(u8, entry.name));
+                try files.append(alloc, try fname_arena.allocator().dupe(u8, entry.name));
             },
             else => {},
         }

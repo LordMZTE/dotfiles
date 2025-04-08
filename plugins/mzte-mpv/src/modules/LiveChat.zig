@@ -77,12 +77,12 @@ fn transcoderThread(jsonf: std.fs.File, pipefd: std.c.fd_t) !void {
     try writer.flush();
 
     var reader = std.io.bufferedReader(jsonf.reader());
-    var line_buf = std.ArrayList(u8).init(std.heap.c_allocator);
-    defer line_buf.deinit();
+    var line_buf: std.ArrayListUnmanaged(u8) = .empty;
+    defer line_buf.deinit(std.heap.c_allocator);
 
     while (true) {
         line_buf.clearRetainingCapacity();
-        reader.reader().streamUntilDelimiter(line_buf.writer(), '\n', null) catch |e| switch (e) {
+        reader.reader().streamUntilDelimiter(line_buf.writer(std.heap.c_allocator), '\n', null) catch |e| switch (e) {
             error.EndOfStream => break,
             else => return e,
         };

@@ -1,20 +1,22 @@
 const std = @import("std");
 
-files: std.ArrayList([:0]u8),
+files: std.ArrayListUnmanaged([:0]u8),
+alloc: std.mem.Allocator,
 filename_arena: std.heap.ArenaAllocator,
 
 const Self = @This();
 
 pub fn init(alloc: std.mem.Allocator) Self {
     return Self{
-        .files = std.ArrayList([:0]u8).init(alloc),
+        .files = .empty,
+        .alloc = alloc,
         .filename_arena = std.heap.ArenaAllocator.init(alloc),
     };
 }
 
 pub fn deinit(self: *Self) void {
     self.filename_arena.deinit();
-    self.files.deinit();
+    self.files.deinit(self.alloc);
 }
 
 pub fn walk(self: *Self, dir: std.fs.Dir) anyerror!void {
@@ -27,7 +29,7 @@ pub fn walk(self: *Self, dir: std.fs.Dir) anyerror!void {
                     u8,
                     try dir.realpath(e.name, &rpath_buf),
                 );
-                try self.files.append(path);
+                try self.files.append(self.alloc, path);
             },
             .directory => {
                 var subdir = try dir.openDir(e.name, .{ .iterate = true });
@@ -41,7 +43,7 @@ pub fn walk(self: *Self, dir: std.fs.Dir) anyerror!void {
                     switch (err) {
                         error.NotDir => {
                             const fpath = try self.filename_arena.allocator().dupeZ(u8, p);
-                            try self.files.append(fpath);
+                            try self.files.append(self.alloc, fpath);
                             continue;
                         },
                         else => return err,

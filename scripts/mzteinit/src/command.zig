@@ -41,8 +41,8 @@ pub const Command = struct {
 };
 
 pub fn parseEntriesConfig(alloc: std.mem.Allocator, data: []const u8) ![]Command {
-    var entries = std.ArrayList(Command).init(alloc);
-    errdefer entries.deinit();
+    var entries: std.ArrayListUnmanaged(Command) = .empty;
+    errdefer entries.deinit(alloc);
 
     var line_splits = std.mem.tokenizeScalar(u8, data, '\n');
     while (line_splits.next()) |line| {
@@ -65,21 +65,21 @@ pub fn parseEntriesConfig(alloc: std.mem.Allocator, data: []const u8) ![]Command
         const key = std.ascii.toUpper(labels[0]);
         const label = labels[2..];
 
-        var argv = std.ArrayList([]const u8).init(alloc);
-        errdefer argv.deinit();
+        var argv: std.ArrayListUnmanaged([]const u8) = .empty;
+        errdefer argv.deinit(alloc);
         var command_splits = std.mem.splitScalar(u8, command, ',');
         while (command_splits.next()) |arg|
-            try argv.append(arg);
+            try argv.append(alloc, arg);
 
         if (argv.items.len == 0) return error.InvalidConfig;
 
-        try entries.append(.{
+        try entries.append(alloc, .{
             .key = key,
             .label = label,
-            .command = try argv.toOwnedSlice(),
+            .command = try argv.toOwnedSlice(alloc),
             .exit = exit,
         });
     }
 
-    return try entries.toOwnedSlice();
+    return try entries.toOwnedSlice(alloc);
 }
