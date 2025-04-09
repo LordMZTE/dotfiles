@@ -27,3 +27,6 @@ def viewdoc [f: path] {
     }
 }
 
+def pgrep [pattern: string]: nothing -> table<pid: int, ppid: int, name: string, status: string, cpu: float, mem: filesize, virtual: filesize> {
+    ps | where name =~ $pattern
+}
