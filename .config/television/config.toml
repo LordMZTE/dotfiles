@@ -1,0 +1,10 @@
+[ui]
+use_nerd_font_icons = true
+theme = "catppuccin-mzte"
+
+[keybindings]
+select_next_entry = ["down", "ctrl-n", "ctrl-j", "tab"] # added tab
+select_prev_entry = ["up", "ctrl-p", "ctrl-k", "backtab"] # added backtab
+
+toggle_selection_down = "ctrl-m"
+toggle_selection_up = []

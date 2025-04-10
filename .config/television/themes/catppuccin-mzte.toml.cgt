@@ -1,0 +1,22 @@
+<! local cpt = opt.catppuccin !>
+# general
+# no background
+border_fg = '#<% cpt.overlay0 %>'
+text_fg = '#<% cpt.text %>'
+dimmed_text_fg = '#<% cpt.overlay0 %>'
+# input
+input_text_fg = '#<% cpt.red %>'
+result_count_fg = '#<% cpt.red %>'
+# results
+result_name_fg = '#<% cpt.sky %>'
+result_line_number_fg = '#<% cpt.yellow %>'
+result_value_fg = '#<% cpt.lavender %>'
+selection_fg = '#<% cpt.green %>'
+selection_bg = '#<% cpt.surface0 %>'
+match_fg = '#<% cpt.red %>'
+# preview
+preview_title_fg = '#<% cpt.peach %>'
+# modes
+channel_mode_fg = '#<% cpt.pink %>'
+remote_control_mode_fg = '#<% cpt.green %>'
+send_to_channel_mode_fg = '#<% cpt.sky %>'
