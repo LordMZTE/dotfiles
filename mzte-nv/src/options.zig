@@ -48,6 +48,14 @@ pub fn initOptions() !void {
     // Folds
     try opt(2).setLog("conceallevel", .both);
 
+    // Cursor
+    try opt(
+        "n-v-c-sm:block," ++ // Block cursor in normal-like modes
+            "i-ci-ve:ver25," ++ // Vertical bar in insert-like modes
+            "r-cr-o:hor20," ++ // Horizontal bar in replac-like modes
+            "i-o-r-c-ci-cr-t:blinkon500-blinkoff500-blinkwait500-Cursor", // Blink in insert-like modes
+    ).setLog("guicursor", .both);
+
     // Disable unwanted filetype mappings
     setVar("g:no_plugin_maps", .{ .bool = true });
 
@@ -70,13 +78,27 @@ pub fn initOptions() !void {
     }
 
     // Neovide
-    setVar("g:neovide_transparency", .{ .float = 0.9 });
-    setVar("g:neovide_cursor_vfx_mode", .{ .string = @constCast("wireframe") });
+    setVar("g:neovide_opacity", .{ .float = 0.9 });
+    setVar("g:neovide_cursor_smooth_blink", .{ .bool = true });
+    {
+        const cursor_vfx = nvim.tv_list_alloc(2);
+        for ([_][]const u8{ "railgun", "wireframe" }) |str| {
+            nvim.tv_list_append_string(cursor_vfx, str.ptr, @intCast(str.len));
+        }
+
+        const key = "g:neovide_cursor_vfx_mode";
+        var val = nvim.typval_T{
+            .v_type = nvim.VAR_LIST,
+            .v_lock = nvim.VAR_UNLOCKED,
+            .vval = .{ .v_list = cursor_vfx },
+        };
+        nvim.set_var(key.ptr, key.len, &val, true);
+    }
 }
 
 fn setVar(key: [:0]const u8, value: znvim.TypVal) void {
     var val = value.toNvim();
-    nvim.set_var(key, key.len, &val, false);
+    nvim.set_var(key, key.len, &val, true);
 }
 
 fn cmd(cmd_s: [*:0]const u8) !void {
