@@ -1,6 +1,6 @@
 default-stream=<! if opt.good_internet then !>best<! else !>720p60<! end !>
-twitch-disable-hosting
 <! if opt.good_internet then !>twitch-low-latency<! end !>
 twitch-disable-ads
-hls-live-edge=1
+hls-live-edge=<% opt.good_internet and 1 or 3 %>
+player-verbose <! -- Show player's stdio instead of providing no useful information whatsoever !>
 player=mpv
