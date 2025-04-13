@@ -79,6 +79,11 @@ cg.opt.gamemode = {
 
 cg.opt.dev_dir = os.getenv "HOME" .. "/dev"
 
+cg.opt.irc = {
+    nick = "lordmzte",
+    realname = "LordMZTE",
+}
+
 local ctp_rgb = {}
 setmetatable(ctp_rgb, {
     __index = function(_, key)

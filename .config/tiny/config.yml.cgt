@@ -1,0 +1,19 @@
+servers:
+<! if opt.twitch then !>
+    - addr: "irc.chat.twitch.tv"
+      port: 6697
+      tls: true
+      pass: "oauth:<% opt.twitch.token %>"
+      nicks: ["<% string.lower(opt.twitch.name) %>"]
+      realname: "<% opt.twitch.name %>"
+      join: <! if #(opt.twitch.channels or {}) == 0 then !>[]<! else !>
+      <! for _, ch in ipairs(opt.twitch.channels) do !>
+          - "#<% ch %>"
+      <! end end !>
+<! end !>
+
+defaults:
+    nicks: ["<% opt.irc.nick %>"]
+    realname: "<% opt.irc.realname %>"
+
+log_dir: <% os.getenv "HOME" .. "/.local/share/tiny/logs" %>

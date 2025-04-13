@@ -1,0 +1,10 @@
+[twitch]
+username = "<% opt.twitch.name %>"
+channel  = "<% opt.twitch.name %>"
+token    = "oauth:<% opt.twitch.token %>"
+
+[frontend]
+favorite_channels = [
+    <! for _, ch in ipairs(opt.twitch.channels or {}) do !>"<% ch %>",
+    <! end !>
+]
