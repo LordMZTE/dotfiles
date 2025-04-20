@@ -29,5 +29,5 @@
 
 ;; command to stop LSPs
 (vim.api.nvim_create_user_command :StopLsps
-                                  #(vim.lsp.stop_client (vim.lsp.get_active_clients))
+                                  #(vim.lsp.stop_client (vim.lsp.get_clients))
                                   {:nargs 0})

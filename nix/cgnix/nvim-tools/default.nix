@@ -14,7 +14,7 @@ let
         repo = "glsl_analyzer";
         rev = "a79772884572e5a8d11bca8d74e5ed6c2cf47848";
         leaveDotGit = true;
-        hash = "sha256-mtC+22jw/YK9SngtvTdywl50KbYbSxUxLsSkF57TiBM=";
+        hash = "sha256-9UnQ+04P3Ml69TX5OUUjun9O+4F+IE29NR09DZfVUls=";
       };
 
       dontConfigure = true;

@@ -2,7 +2,7 @@
        (values (require :ufo) (require :nvim-treesitter.parsers)))
 
 (fn lsp-folds? [bufnr]
-  (accumulate [has false _ client (ipairs (vim.lsp.get_active_clients {: bufnr}))
+  (accumulate [has false _ client (ipairs (vim.lsp.get_clients {: bufnr}))
                &until has]
     (not= client.server_capabilities.foldingRangeProvider nil)))
 
