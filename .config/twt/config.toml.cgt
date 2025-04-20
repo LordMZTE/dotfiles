@@ -1,3 +1,4 @@
+<! if not opt.twitch then return end !>
 [twitch]
 username = "<% opt.twitch.name %>"
 channel  = "<% opt.twitch.name %>"
