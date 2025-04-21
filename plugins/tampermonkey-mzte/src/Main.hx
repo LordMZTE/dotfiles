@@ -5,7 +5,7 @@ import js.Browser;
 
 using Lambda;
 
-final SITE_PLUGINS:Map<String, () -> ISitePlugin> = ["github.com" => siteplugin.Github.new];
+final SITE_PLUGINS:Map<String, () -> ISitePlugin> = [];
 final SITE_STYLES = Macro.siteStyles();
 
 function main() {
