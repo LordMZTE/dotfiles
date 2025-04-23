@@ -24,7 +24,8 @@
             :formatting {:format (fn [entry vim-item]
                                    (tset vim-item :menu
                                          (. sources entry.source.name))
-                                   vim-item)}})
+                                   vim-item)}
+            :experimental {:ghost_text true}})
 
 (cmp.setup.cmdline "/" {:sources {:name :buffer}})
 (cmp.setup.cmdline ":"
