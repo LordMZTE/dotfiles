@@ -1,5 +1,6 @@
-(local (cmp luasnip mztenv)
-       (values (require :cmp) (require :luasnip) (require :mzte_nv)))
+(local (cmp luasnip colorful-menu mztenv)
+       (values (require :cmp) (require :luasnip) (require :colorful-menu)
+               (require :mzte_nv)))
 
 (local sources {:buffer " "
                 :luasnip " "
@@ -24,6 +25,10 @@
             :formatting {:format (fn [entry vim-item]
                                    (tset vim-item :menu
                                          (. sources entry.source.name))
+                                   (let [hlinf (colorful-menu.cmp_highlights entry)]
+                                     (when (~= hlinf nil)
+                                       (tset vim-item :abbr_hl_group hlinf.highlights)
+                                       (tset vim-item :abbr hlinf.text)))
                                    vim-item)}
             :experimental {:ghost_text true}})
 
