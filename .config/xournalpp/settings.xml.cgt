@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<! function prop(k, v) !>
+  <property name="<% k %>" value="<% v %>"/>
+<! end !>
+
+<settings>
+<!
+  prop("selectedToolbar", "MZTE")
+  prop("iconTheme", "iconsLucide")
+  prop(
+    "pageTemplate",
+    "xoj/template&#10;"
+    .. "copyLastPageSize=true&#10;"
+    .. "copyLastPageSettings=false&#10;"
+    .. "size=595.275591x841.889764&#10;"
+    .. "backgroundType=graph&#10;"
+    .. "backgroundTypeConfig=m1=40,rm=1&#10;"
+    .. "backgroundColor=#eff1f5&#10;" -- Catppuccin Latte base
+  )
+  -- Use Typst for math
+  prop("latexSettings.globalTemplatePath", os.getenv "HOME" .. "/.config/xournalpp/template.typ")
+  prop("latexSettings.genCmd", "typst c '{}'")
+
+  -- Font
+  prop("latexSettings.editorFont", opt.font .. " 12")
+!>
+  <property name="font" font="<% opt.font %>" size="12" />
+  <data name="buttonConfig">
+    <data name="default">
+      <! -- Catppuccin Latte text !>
+      <attribute name="color" type="hex" value="ff4c4f69"/>
+      <attribute name="drawingType" type="string" value="strokeRecognizer"/>
+      <attribute name="size" type="string" value="medium"/>
+      <attribute name="tool" type="string" value="pen"/>
+    </data>
+    <data name="stylus">
+      <attribute name="eraserMode" type="string" value="none"/>
+      <attribute name="size" type="string" value="none"/>
+      <attribute name="tool" type="string" value="eraser"/>
+    </data>
+    <data name="stylus2">
+      <attribute name="eraserMode" type="string" value="none"/>
+      <attribute name="size" type="string" value="none"/>
+      <attribute name="tool" type="string" value="eraser"/>
+    </data>
+  </data>
+  <data name="tools">
+    <data name="highlighter">
+      <! -- Catppuccin Latte yellow !>
+      <attribute name="color" type="hex" value="ffdf8e1d"/>
+    </data>
+    <data name="pen">
+      <! -- Catppuccin Latte text !>
+      <attribute name="color" type="hex" value="4c4f69"/>
+      <attribute name="drawingType" type="string" value="strokeRecognizer"/>
+      <attribute name="fill" type="int" value="0"/>
+      <attribute name="fillAlpha" type="int" value="128"/>
+      <attribute name="size" type="string" value="MEDIUM"/>
+      <attribute name="style" type="string" value="plain"/>
+    </data>
+  </data>
+</settings>
