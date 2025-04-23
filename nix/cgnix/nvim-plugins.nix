@@ -49,7 +49,6 @@ let
     "50-ufo" = plugin "nvim-ufo";
     "50-dap" = plugin "nvim-dap";
     "50-dapui" = plugin "nvim-dap-ui";
-    "50-harpoon" = plugin "harpoon";
     "50-recorder" = plugin "nvim-recorder";
     "50-ibl" = plugin "indent-blankline.nvim";
     "50-lsp-progress" = plugin "lsp-progress.nvim";

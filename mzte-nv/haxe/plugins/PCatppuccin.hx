@@ -23,7 +23,6 @@ class PCatppuccin implements IPlugin {
                 dap: true,
                 dap_ui: true,
                 gitsigns: true,
-                harpoon: true,
                 indent_blankline: {
                     enabled: true,
                     scope_color: "lavender",

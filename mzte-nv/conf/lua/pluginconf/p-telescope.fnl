@@ -19,8 +19,6 @@
                                                         :--strip-cwd-prefix
                                                         :--hidden]}}})
 
-(telescope.load_extension :harpoon)
-
 (set utils.transform_path
      (mztenv.telescope.makePathTransformer utils.transform_path))
 
@@ -56,5 +54,3 @@
 (lsp-map :s builtin.lsp_dynamic_workspace_symbols)
 (lsp-map :p builtin.diagnostics {:bufnr 0})
 (lsp-map :P builtin.diagnostics)
-;; harpoon
-(nmap :gm ext.harpoon.marks)

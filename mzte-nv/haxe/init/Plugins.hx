@@ -31,7 +31,6 @@ class Plugins {
             "devicons",
             "dressing",
             "gitsigns",
-            "harpoon",
             "lspprogress",
             "line",
             "lsp-saga",
