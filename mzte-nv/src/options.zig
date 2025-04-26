@@ -15,8 +15,6 @@ pub fn initOptions() !void {
     // Shell (defaults to mzteinit since that's my login shell)
     try opt("nu").setLog("shell", .both);
 
-    try cmd("syntax on");
-
     // Quicker updatetime
     try opt(1000).setLog("updatetime", .both);
 
@@ -61,9 +59,6 @@ pub fn initOptions() !void {
 
     // Disable automatic formatting of Zig code (this is on by default!!!)
     setVar("g:zig_fmt_autosave", .{ .bool = false });
-
-    // Other settings
-    try cmd("filetype plugin on");
 
     // Disable garbage providers
     for ([_][]const u8{
