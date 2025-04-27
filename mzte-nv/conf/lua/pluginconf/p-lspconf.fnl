@@ -95,6 +95,7 @@
                                  :telemetry {:enable false}}}})
 
 (setup :nil_ls {:settings {:nil {:formatting {:command [:nixpkgs-fmt]}}}})
+(setup :nushell)
 (setup :openscad_lsp)
 (setup :racket_langserver)
 (setup :rust_analyzer
