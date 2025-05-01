@@ -47,5 +47,4 @@
                                          sev.WARN ""
                                          sev.HINT ""
                                          sev.INFO ""}
-                                  :numhl hl
-                                  :linehl hl}}))
+                                  :numhl hl}}))
