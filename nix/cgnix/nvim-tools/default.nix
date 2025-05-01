@@ -54,7 +54,7 @@ let
       }
     )
     lua-language-server
-    (flakePkg "github:oxalica/nil")
+    nixd
     openscad-lsp
     rust-analyzer
     taplo
