@@ -26,8 +26,9 @@
                                    (tset vim-item :menu
                                          (. sources entry.source.name))
                                    (let [hlinf (colorful-menu.cmp_highlights entry)]
-                                     (when (~= hlinf nil)
-                                       (tset vim-item :abbr_hl_group hlinf.highlights)
+                                     (when (not= hlinf nil)
+                                       (tset vim-item :abbr_hl_group
+                                             hlinf.highlights)
                                        (tset vim-item :abbr hlinf.text)))
                                    vim-item)}
             :experimental {:ghost_text true}})
@@ -37,8 +38,14 @@
                    {:sources (cmp.config.sources [{:name :path}]
                                                  [{:name :cmdline}])})
 
-(local signs {:Error " " :Warn " " :Hint " " :Info " "})
-
-(each [k v (pairs signs)]
-  (let [hl (.. :DiagnosticSign k)]
-    (vim.fn.sign_define hl {:text v :texthl hl :numhl hl})))
+(let [sev vim.diagnostic.severity
+      hl {sev.ERROR :DiagnosticSignError
+          sev.WARN :DiagnosticSignWarn
+          sev.HINT :DiagnosticSignHint
+          sev.INFO :DiagnosticSignInfo}]
+  (vim.diagnostic.config {:signs {:text {sev.ERROR ""
+                                         sev.WARN ""
+                                         sev.HINT ""
+                                         sev.INFO ""}
+                                  :numhl hl
+                                  :linehl hl}}))
