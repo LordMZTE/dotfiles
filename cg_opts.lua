@@ -19,21 +19,21 @@ cg.opt.nvidia = false
 cg.opt.font = "Iosevka NF"
 cg.opt.term_font = "IosevkaTerm NFM"
 
-cg.opt.term = {
-    name = "Ghostty",
-    command = "ghostty",
-    exec = "ghostty -e",
-    workdir_command = "ghostty --working-directory=",
-    icon_name = "com.mitchellh.ghostty",
-}
-
 --cg.opt.term = {
---    name = "foot",
---    command = "foot",
---    exec = "foot",
---    workdir_command = "foot --working-directory=",
---    icon_name = "foot",
+--    name = "Ghostty",
+--    command = "ghostty",
+--    exec = "ghostty -e",
+--    workdir_command = "ghostty --working-directory=",
+--    icon_name = "com.mitchellh.ghostty",
 --}
+
+cg.opt.term = {
+    name = "foot",
+    command = "foot",
+    exec = "foot",
+    workdir_command = "foot --working-directory=",
+    icon_name = "foot",
+}
 
 cg.opt.cursor = {
     theme = "LyraQ-cursors",
