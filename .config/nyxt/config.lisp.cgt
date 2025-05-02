@@ -1,0 +1,52 @@
+;; vim: shiftwidth=2 tabstop=2
+(define-configuration web-buffer
+  ((default-modes
+    (append '(nyxt/mode/vi:vi-normal-mode nyxt/mode/style:dark-mode) %slot-value%))))
+
+(define-configuration base-mode
+  ((keyscheme-map
+    (define-keyscheme-map "mzte" (list :import %slot-value%)
+      nyxt/keyscheme:vi-normal '("g t" switch-buffer-next
+                                 "g T" switch-buffer-previous
+                                 "C-w" delete-current-buffer)))))
+
+(define-configuration browser
+  ((theme
+    (make-instance 'theme:theme
+      :action-color "#<% opt.catppuccin.blue %>"
+      :action-color+ "#<% opt.catppuccin.sky %>"
+      :action-color- "#<% opt.catppuccin.lavender %>"
+      :background-color "#<% opt.catppuccin.base %>"
+      :background-color+ "#<% opt.catppuccin.mantle %>"
+      :background-color- "#<% opt.catppuccin.crust %>"
+      :codeblock-color "#<% opt.catppuccin.surface1 %>"
+      :codeblock-color+ "#<% opt.catppuccin.surface0 %>"
+      :codeblock-color- "#<% opt.catppuccin.surface2 %>"
+      :contrast-text-color "#<% opt.catppuccin.base %>"
+      :highlight-color "#<% opt.catppuccin.peach %>"
+      :highlight-color+ "#<% opt.catppuccin.red %>"
+      :highlight-color- "#<% opt.catppuccin.yellow %>"
+      :on-action-color "#<% opt.catppuccin.surface0 %>"
+      :on-background-color "#<% opt.catppuccin.text %>"
+      :on-codeblock-color "#<% opt.catppuccin.subtext0 %>"
+      :on-highlight-color "#<% opt.catppuccin.overlay0 %>"
+      :on-primary-color "#<% opt.catppuccin.subtext1 %>"
+      :on-secondary-color "#<% opt.catppuccin.subtext0 %>"
+      :primary-color "#<% opt.catppuccin.surface1 %>"
+      :primary-color+ "#<% opt.catppuccin.surface0 %>"
+      :primary-color- "#<% opt.catppuccin.surface2 %>"
+      :secondary-color "#<% opt.catppuccin.base %>"
+      :secondary-color+ "#<% opt.catppuccin.mantle %>"
+      :secondary-color- "#<% opt.catppuccin.crust %>"
+      :success-color "#<% opt.catppuccin.green %>"
+      :success-color+ "#<% opt.catppuccin.green %>"
+      :success-color- "#<% opt.catppuccin.green %>"
+      :text-color "#<% opt.catppuccin.text %>"
+      :text-color+ "#<% opt.catppuccin.text %>"
+      :text-color- "#<% opt.catppuccin.text %>"
+      :warning-color "#<% opt.catppuccin.peach %>"
+      :warning-color+ "#<% opt.catppuccin.red %>"
+      :warning-color- "#<% opt.catppuccin.yellow %>"
+      
+      :font-family "<% opt.font %>"
+      :monospace-font-family "<% opt.term_font %>"))))
