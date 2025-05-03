@@ -29,6 +29,7 @@ let
     "30-ts-context" = plugin "nvim-treesitter-context";
     "30-tsn-actions" = plugin "ts-node-action";
     "30-ts-playground" = plugin "playground";
+    "30-ts-textobjects" = plugin "nvim-treesitter-textobjects";
 
     # Language Support
     "30-fish" = plugin "vim-fish";

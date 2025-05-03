@@ -18,16 +18,19 @@
 (local install-dir (.. (vim.loop.os_homedir) :/.local/share/nvim/ts-parsers))
 (vim.opt.runtimepath:append install-dir)
 
-(configs.setup {:parser_install_dir install-dir
-                :highlight {:enable true}
-                :autotag {:enable true}
-                :indent {:enable true}
-                :playground {:enable true}
-                :incremental_selection {:enable true
-                                        :keymaps {:init_selection :fv
-                                                  :node_incremental :v
-                                                  :node_decremental :V
-                                                  :scope_incremental false}}})
+(let [textobjects {:select {:enable true
+                            :keymaps {:am "@math.outer"
+                                      :im "@math.inner"
+                                      :af "@function.outer"
+                                      :if "@function.inner"
+                                      :ac "@class.outer"
+                                      :ic "@class.inner"}}}]
+  (configs.setup {:parser_install_dir install-dir
+                  :highlight {:enable true}
+                  :autotag {:enable true}
+                  :indent {:enable true}
+                  :playground {:enable true}
+                  : textobjects}))
 
 (fn delete-node-under-cursor []
   (local (r1 c1 r2 c2)
