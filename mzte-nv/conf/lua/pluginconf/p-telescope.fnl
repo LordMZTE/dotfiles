@@ -35,9 +35,6 @@
      (nmap ,(.. :gn suffix) ,action
            ,(doto (collect [k v (pairs opt)] k v)
               (tset :jump_type :tab)))
-     (nmap ,(.. :gs suffix) ,action
-           ,(doto (collect [k v (pairs opt)] k v)
-              (tset :jump_type :split)))
      (nmap ,(.. :gv suffix) ,action
            ,(doto (collect [k v (pairs opt)] k v)
               (tset :jump_type :vsplit)))))
@@ -51,6 +48,6 @@
 (lsp-map :d builtin.lsp_definitions)
 (lsp-map :i builtin.lsp_implementations)
 (lsp-map :r builtin.lsp_references)
-(lsp-map :s builtin.lsp_dynamic_workspace_symbols)
+(lsp-map :k builtin.lsp_dynamic_workspace_symbols)
 (lsp-map :p builtin.diagnostics {:bufnr 0})
 (lsp-map :P builtin.diagnostics)

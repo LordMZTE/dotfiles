@@ -19,8 +19,8 @@
 (vim.opt.runtimepath:append install-dir)
 
 (let [textobjects {:select {:enable true
-                            :keymaps {:am "@math.outer"
-                                      :im "@math.inner"
+                            :keymaps {:a$ "@math.outer"
+                                      :i$ "@math.inner"
                                       :af "@function.outer"
                                       :if "@function.inner"
                                       :ac "@class.outer"

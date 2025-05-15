@@ -45,6 +45,7 @@ class Plugins {
             "ts-context",
             "tterm",
             "ufo",
+            "mini",
         ].map(n -> (new LuaPlugin(n) : IPlugin)));
     }
 

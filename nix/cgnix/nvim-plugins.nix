@@ -24,7 +24,7 @@ let
 
     # Treesitter
     "30-treesitter" = plugin "nvim-treesitter";
-    "30-autopairs" = plugin "nvim-autopairs";
+    "30-autopairs" = plugin "nvim-autopairs"; # TODO: replace with mini.nvim
     "30-ts-autotag" = plugin "nvim-ts-autotag";
     "30-ts-context" = plugin "nvim-treesitter-context";
     "30-tsn-actions" = plugin "ts-node-action";
@@ -54,6 +54,7 @@ let
     "50-recorder" = plugin "nvim-recorder";
     "50-ibl" = plugin "indent-blankline.nvim";
     "50-lsp-progress" = plugin "lsp-progress.nvim";
+    "50-mini" = plugin "mini.nvim";
 
     # Libraries
     "10-plenary" = plugin "plenary.nvim";
