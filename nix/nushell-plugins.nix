@@ -20,6 +20,20 @@
       buildInputs = with pkgs; [ dbus ];
     };
 
+    tree = pkgs.rustPlatform.buildRustPackage {
+      name = "nu_plugin_tree";
+
+      src = pkgs.fetchFromGitHub {
+        owner = "fdncred";
+        repo = "nu_plugin_tree";
+        rev = "7697bff26970d76c053709c997d57addbb968219";
+        hash = "sha256-PFW/Sfu6Je2kI3H3zJnmAZ+QiYOqzBs5xa0DGCQs3Hc=";
+      };
+
+      useFetchCargoVendor = true;
+      cargoHash = "sha256-sQLg+neS69i3iGWuSMNVH4DPP7YK+CvQzJi8sJUcNTA=";
+    };
+
     inherit (pkgs.nushellPlugins) polars formats query;
   };
 
