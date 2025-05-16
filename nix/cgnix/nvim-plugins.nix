@@ -24,7 +24,6 @@ let
 
     # Treesitter
     "30-treesitter" = plugin "nvim-treesitter";
-    "30-autopairs" = plugin "nvim-autopairs"; # TODO: replace with mini.nvim
     "30-ts-autotag" = plugin "nvim-ts-autotag";
     "30-ts-context" = plugin "nvim-treesitter-context";
     "30-tsn-actions" = plugin "ts-node-action";

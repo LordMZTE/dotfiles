@@ -21,7 +21,6 @@ class Plugins {
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
         this.deferredPlugins = [
-            new PAutopairs(),
             new PIndentBlankline(),
             new PNu(),
             new PTSNActions(),
