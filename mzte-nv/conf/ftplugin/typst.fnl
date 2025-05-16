@@ -31,3 +31,6 @@
              (fsev:start :/tmp {} on-file-appear)
              (term:open)))]
   (vim.api.nvim_create_user_command :TypstWatch cb {:nargs 0}))
+
+(local mini-pairs (require :mini.pairs))
+(mini-pairs.map_buf 0 :i "$" {:action :closeopen :pair "$$"})
