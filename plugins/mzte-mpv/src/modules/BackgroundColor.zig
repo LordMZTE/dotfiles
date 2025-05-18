@@ -48,13 +48,12 @@ pub fn onEvent(self: *BackgroundColor, mpv: *c.mpv_handle, ev: *c.mpv_event) !vo
         c.MPV_EVENT_CLIENT_MESSAGE => {
             const cmsg: *c.mpv_event_client_message = @ptrCast(@alignCast(ev.data));
             const args = cmsg.args[0..@intCast(cmsg.num_args)];
-            std.debug.assert(std.mem.span(args[2]).len >= 3);
 
             if (args.len >= 3 and
                 std.mem.orderZ(u8, args[0], "key-binding") == .eq and
                 std.mem.orderZ(u8, args[1], "mzte-background") == .eq and
                 (args[2][0] == 'd' or args[2][0] == 'p') // key was pressed
-            ) try nextBackground(self, mpv);
+            ) try self.nextBackground(mpv);
         },
         else => {},
     }

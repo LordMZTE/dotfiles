@@ -29,15 +29,19 @@ fn tryMain(mpv: *c.mpv_handle) !void {
     var modules = .{
         @import("modules/BackgroundColor.zig").create(),
         @import("modules/LiveChat.zig").create(),
+        @import("modules/LocalWatchLater.zig").create(),
         @import("modules/SBSkip.zig").create(),
         @import("modules/ScreenshotOpen.zig").create(),
         @import("modules/Shuffle.zig").create(),
     };
+
     // need this weird loop here for pointer access for fields to work
     inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
         try @field(modules, f).setup(mpv);
     defer inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
         @field(modules, f).deinit();
+
+    try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, "on_before_start_file", 0));
 
     std.log.info("loaded with client name '{s}'", .{c.mpv_client_name(mpv)});
 
@@ -46,6 +50,15 @@ fn tryMain(mpv: *c.mpv_handle) !void {
         try ffi.checkMpvError(ev.@"error");
         inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
             try @field(modules, f).onEvent(mpv, ev);
-        if (ev.event_id == c.MPV_EVENT_SHUTDOWN) break;
+
+        switch (ev.event_id) {
+            c.MPV_EVENT_SHUTDOWN => break,
+            c.MPV_EVENT_HOOK => {
+                const hookev: *c.mpv_event_hook = @ptrCast(@alignCast(ev.data));
+
+                try ffi.checkMpvError(c.mpv_hook_continue(mpv, hookev.id));
+            },
+            else => {},
+        }
     }
 }

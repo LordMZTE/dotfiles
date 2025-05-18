@@ -18,3 +18,9 @@ pub fn msg(
         @constCast(&[_:null]?[*]const u8{ "show-text", osd_msg.ptr, "4000" }),
     ));
 }
+
+/// Returns true if the given path, as stored in the `path` property points to a regular file.
+pub fn pathIsRegularFile(path: []const u8) bool {
+    return !std.mem.containsAtLeast(u8, path, 1, "://") and
+        path[path.len - 1] != '-'; // stdin is reported as /some/path/-
+}
