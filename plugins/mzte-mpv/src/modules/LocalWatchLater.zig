@@ -120,10 +120,9 @@ fn onLoad(self: *LocalWatchLater, mpv: *c.mpv_handle) !void {
 fn resetWatchLater(self: *LocalWatchLater, mpv: *c.mpv_handle) !void {
     if (!self.touched_watch_later) return;
     log.info("restoring old watch-later-dir", .{});
-    try ffi.checkMpvError(c.mpv_set_property(
+    try ffi.checkMpvError(c.mpv_set_property_string(
         mpv,
         "watch-later-dir",
-        c.MPV_FORMAT_STRING,
-        @ptrCast(&self.old_watch_later),
+        self.old_watch_later,
     ));
 }

@@ -35,7 +35,8 @@ pub fn create() BackgroundColor {
 
 pub fn setup(self: *BackgroundColor, mpv: *c.mpv_handle) !void {
     _ = self;
-    _ = mpv;
+    // Needed for transparent backgrounds to work correctly
+    try ffi.checkMpvError(c.mpv_set_property_string(mpv, "background", "none"));
 }
 
 pub fn deinit(self: *BackgroundColor) void {
