@@ -21,6 +21,8 @@ file-picker-cmd=nfm --selector
 empty-subject-warning=true
 
 [filters]
+from,~über Moodle=<% opt.cgpath %>/.config/aerc/moodle-filter.sh | colorize
+
 text/plain=colorize
 text/calendar=calendar
 message/delivery-status=colorize

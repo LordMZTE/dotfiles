@@ -1,0 +1,16 @@
+#!/bin/sh
+# This script will process the extremely confusing emails my Uni's moodle instance sends in order to
+# provide a human-readable name for classes which are only identified by a number in EMails
+# (yes, really).
+<!
+  tmpl:setMode "755"
+  local class_map = {
+    [23013] = "Algorithmen \\& Datenstrukturen",
+    [101637] = "Experimentalphysik II",
+  }
+
+  local ansi_yellow = "\x1b[0;33m"
+  local ansi_reset = "\x1b[0m"
+!>
+exec sed \<! for num, name in pairs(class_map) do !>
+    -e 's/<% num %>/<% ansi_yellow %><<% name %>><% ansi_reset %>/g' \<! end !>

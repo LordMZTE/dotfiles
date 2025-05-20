@@ -128,4 +128,6 @@ cg.opt.catppuccin = {
 
 cg.opt.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/homepage.html"
 
+cg.opt.cgpath = cg.fs and cg.fs.mountpoint or require("lfs").currentdir() .. "/cgout"
+
 return cg.opt
