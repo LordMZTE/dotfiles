@@ -21,7 +21,9 @@ file-picker-cmd=nfm --selector
 empty-subject-warning=true
 
 [filters]
-from,~über Moodle=<% opt.cgpath %>/.config/aerc/moodle-filter.sh | colorize
+<! local moodle_filter = opt.cgpath .. [[/.config/aerc/moodle-filter.sh | colorize]] !>
+from,~über Moodle=<% moodle_filter %>
+subject,~\[Friedolin\] - =<% moodle_filter %>
 
 text/plain=colorize
 text/calendar=calendar

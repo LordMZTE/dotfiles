@@ -6,11 +6,14 @@
   tmpl:setMode "755"
   local class_map = {
     [23013] = "Algorithmen \\& Datenstrukturen",
+    [9745] = "Algorithmen \\& Datenstrukturen - Übung",
     [101637] = "Experimentalphysik II",
+    [9633] = "Grundlagen der Analysis",
+    [10018] = "Objektorientierte Programmierung",
   }
 
   local ansi_yellow = "\x1b[0;33m"
   local ansi_reset = "\x1b[0m"
 !>
 exec sed \<! for num, name in pairs(class_map) do !>
-    -e 's/<% num %>/<% ansi_yellow %><<% name %>><% ansi_reset %>/g' \<! end !>
+    -e 's/<% num %>/<% ansi_yellow %><<% num %>: <% name %>><% ansi_reset %>/g' \<! end !>
