@@ -1,6 +1,7 @@
 (local tsc (require :treesitter-context))
 
-(tsc.setup {:patterns {:zig [:block
+(tsc.setup {:max_lines 8
+            :patterns {:zig [:block
                              :FnProto
                              :function
                              :TopLevelDecl
