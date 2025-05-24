@@ -1,3 +1,7 @@
+def & [...argv] {
+    job spawn { ^($argv | get 0) ...($argv | skip 1) }
+}
+
 def --env mkdircd [p: string] {
     mkdir $p
     cd $p
