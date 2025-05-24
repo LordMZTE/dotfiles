@@ -51,7 +51,7 @@ pub fn onEvent(self: *LocalWatchLater, mpv: *c.mpv_handle, ev: *c.mpv_event) !vo
 }
 
 fn onLoad(self: *LocalWatchLater, mpv: *c.mpv_handle) !void {
-    var path_cstr: [*:0]const u8 = undefined;
+    var filename_cstr: [*:0]const u8 = undefined;
     {
         // Doesn't work because the `path` property won't be available here
         //try ffi.checkMpvError(c.mpv_get_property(
@@ -72,22 +72,24 @@ fn onLoad(self: *LocalWatchLater, mpv: *c.mpv_handle) !void {
             mpv,
             try std.fmt.bufPrintZ(&name_buf, "playlist/{}/filename", .{pos}),
             c.MPV_FORMAT_STRING,
-            @ptrCast(&path_cstr),
+            @ptrCast(&filename_cstr),
         ));
     }
-    defer c.mpv_free(@constCast(path_cstr));
-    var path_buf: [std.fs.max_path_bytes]u8 = undefined;
-    const path = std.fs.realpath(std.mem.span(path_cstr), &path_buf) catch |e| {
-        log.warn("couldn't resolve filename: {}", .{e});
-        return;
-    };
+    defer c.mpv_free(@constCast(filename_cstr));
+
+    const filename_span = std.mem.span(filename_cstr);
 
     // Only handle regular files.
-    std.debug.print("{s}\n", .{path});
-    if (!util.pathIsRegularFile(path)) {
+    if (!util.pathIsRegularFile(filename_span)) {
         try self.resetWatchLater(mpv);
         return;
     }
+
+    var path_buf: [std.fs.max_path_bytes]u8 = undefined;
+    const path = std.fs.realpath(filename_span, &path_buf) catch |e| {
+        log.warn("couldn't resolve filename '{s}': {}", .{ filename_span, e });
+        return;
+    };
 
     var dir = std.fs.path.dirname(path) orelse ".";
     var subpath_buf: [std.fs.max_path_bytes]u8 = undefined;
