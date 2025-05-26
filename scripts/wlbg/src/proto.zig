@@ -292,6 +292,11 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
         try wr.writeByte(@truncate(quer.bgs.len));
 
         for (quer.bgs) |outp| {
+            const width = mulDim(outp.width, outp.scale, outp.scale_type);
+            const height = mulDim(outp.height, outp.scale, outp.scale_type);
+
+            std.log.info("unscaled size of output {s}: {}x{}", .{ outp.name, width, height });
+
             switch (how) {
                 .random => {
                     const imgpath = state.wps[state.rand.random().uintLessThan(usize, state.wps.len)];
@@ -312,16 +317,16 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                         try ffi.checkGError(gerr);
 
                         // If the size is already correct, no need to rescale and copy the whole buffer.
-                        if (c.gdk_pixbuf_get_width(pixbuf_unscaled) == outp.width and
-                            c.gdk_pixbuf_get_height(pixbuf_unscaled) == outp.height)
+                        if (c.gdk_pixbuf_get_width(pixbuf_unscaled) == width and
+                            c.gdk_pixbuf_get_height(pixbuf_unscaled) == height)
                             break :pixbuf pixbuf_unscaled;
 
                         defer c.gdk_pixbuf_unref(pixbuf_unscaled);
 
                         break :pixbuf c.gdk_pixbuf_scale_simple(
                             pixbuf_unscaled,
-                            @intCast(outp.width),
-                            @intCast(outp.height),
+                            @intCast(width),
+                            @intCast(height),
                             c.GDK_INTERP_BILINEAR,
                         );
                     };
@@ -332,7 +337,6 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
 
                     // Image Data
                     // GDK Pixbuf is always either RGB or RGBA
-                    std.log.debug("pixelformat: {}", .{outp.pixfmt});
                     if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
                         std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
                         var pixels: []u8 = undefined;
@@ -436,28 +440,28 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                     // Data (monotone catppuccin base background)
                     switch (outp.pixfmt) {
                         .rgb => {
-                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * ctp_base.len))));
-                            try wr.writeBytesNTimes(&ctp_base, outp.width * outp.height);
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * ctp_base.len))));
+                            try wr.writeBytesNTimes(&ctp_base, width * height);
                         },
                         .bgr => {
-                            const color = [3]u8{ctp_base[2], ctp_base[1], ctp_base[0]};
-                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * color.len))));
-                            try wr.writeBytesNTimes(&color, outp.width * outp.height);
+                            const color = [3]u8{ ctp_base[2], ctp_base[1], ctp_base[0] };
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * color.len))));
+                            try wr.writeBytesNTimes(&color, width * height);
                         },
                         .rgba => {
-                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * (ctp_base.len + 1)))));
-                            try wr.writeBytesNTimes(&ctp_base ++ .{0xff}, outp.width * outp.height);
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * (ctp_base.len + 1)))));
+                            try wr.writeBytesNTimes(&ctp_base ++ .{0xff}, width * height);
                         },
                         .bgra => {
-                            const color = [4]u8{ctp_base[2], ctp_base[1], ctp_base[0], 0xff};
-                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(outp.width * outp.height * color.len))));
-                            try wr.writeBytesNTimes(&color, outp.width * outp.height);
+                            const color = [4]u8{ ctp_base[2], ctp_base[1], ctp_base[0], 0xff };
+                            try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * color.len))));
+                            try wr.writeBytesNTimes(&color, width * height);
                         },
                     }
 
                     // Size
-                    try wr.writeAll(&std.mem.toBytes(@as(u32, outp.width)));
-                    try wr.writeAll(&std.mem.toBytes(@as(u32, outp.height)));
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, width)));
+                    try wr.writeAll(&std.mem.toBytes(@as(u32, height)));
                 },
             }
 
@@ -521,4 +525,14 @@ fn readStringAlloc(reader: anytype, alloc: std.mem.Allocator) ![]u8 {
     try reader.readNoEof(name);
 
     return name;
+}
+
+fn mulDim(dim: u32, scale: i32, scale_type: ScaleType) u32 {
+    switch (scale_type) {
+        .whole => return @intCast(@as(i32, @intCast(dim)) * scale),
+        .fractional => {
+            const scale_f = @as(f64, @floatFromInt(scale)) / 120.0;
+            return @intFromFloat(@as(f64, @floatFromInt(dim)) * scale_f);
+        },
+    }
 }
