@@ -15,7 +15,17 @@ pub fn main() !u8 {
 
     try std.io.getStdOut().writer().print("playing: `{s}`\n", .{file});
 
-    var child = std.process.Child.init(&.{ "mpv", file }, alloc);
+    // Length: "mpv" + file + rest args
+    const mpv_argv = try alloc.alloc([]const u8, std.os.argv.len);
+    defer alloc.free(mpv_argv);
+
+    mpv_argv[0] = "mpv";
+    mpv_argv[1] = file;
+    for (mpv_argv[2..], std.os.argv[2..]) |*arg_out, arg_in| {
+        arg_out.* = std.mem.span(arg_in);
+    }
+
+    var child = std.process.Child.init(mpv_argv, alloc);
     const term = try child.spawnAndWait();
     if (!std.meta.eql(term, .{ .Exited = 0 })) return 1;
 
