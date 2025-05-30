@@ -116,7 +116,7 @@ pub fn main() !void {
                 std.debug.assert(try std.posix.read(refresh_tfd, &tfd_buf) == tfd_buf.len);
                 if (mode == .random)
                     proto.randomizeWallpapers(&state, .random) catch |e|
-                        std.log.warn("chaning wallpapers: {}", .{e});
+                        std.log.warn("changing wallpapers: {}", .{e});
             }
         }
     }
