@@ -1,22 +1,20 @@
-<!
-local opts = {
-  -- Enable hardware decoding
-  vo = "gpu-next",
-  profile = "gpu-hq",
-  hwdec = "auto",
-  ["hwdec-codecs"] = "all",
+<! local vo = opt.mpv_vo or "gpu-next" !>
+# Enable hardware decoding
+vo=<% vo %>
+profile=gpu-hq
+hwdec=auto
+hwdec-codecs=all
 
-  -- Set initial background color to transparent. Note that this must have alpha, or the MZTE-MPV
-  -- module will be unable to toggle to a color with alpha later. This seems to be a bug in MPV.
-  ["background-color"] = "0/0/0/0",
+# Set initial background color to transparent. Note that this must have alpha, or the MZTE-MPV
+# module will be unable to toggle to a color with alpha later. This seems to be a bug in MPV.
+background-color=0/0/0/0
 
-  -- YTDL: Don't go over 1080p
-  ["ytdl-format"] = "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+# YTDL: Don't go over 1080p
+ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]
+# YTDL: Mark Sponsorblock segments (YT-DLP Only, also doesn't work lol)
+#ytdl-raw-options=sponsorblock-mark=all
 
-  -- YTDL: Mark Sponsorblock segments (YT-DLP Only, also doesn't work lol)
-  --["ytdl-raw-options"] = "sponsorblock-mark=all",
-}
-!>
-<! for k, v in pairs(opts) do !>
-<% k %>=<% v %>
-<! end !>
+# Save filename in watch later. This is weirdly off by default as saving the names of local files in
+# .config is somehow supposed to be privacy unfriendly. Don't ask me what kind of logic that is.
+# This makes the files in watch_later more introspectable.
+write-filename-in-watch-later-config
