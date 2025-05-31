@@ -1,13 +1,19 @@
 ;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
 ;; vim: ft=fennel
 <!
+local function isCPUHwmon(name)
+  -- k10temp is for some AMD CPUs.
+  return name == "coretemp" or name == "k10temp"
+end
+
 local cpu_temp_hwmon = nil
 for d in require("lfs").dir("/sys/class/hwmon") do
   if d ~= "." and d ~= ".." then
     local namef = io.open("/sys/class/hwmon/" .. d .. "/name", "r")
 
-    if namef:read("*a"):gsub("%s+", "") == "coretemp" then
+    if isCPUHwmon(namef:read("*a"):gsub("%s+", "")) then
       cpu_temp_hwmon = "/sys/class/hwmon/" .. d .. "/temp1_input"
+      break
     end
 
     namef:close()
