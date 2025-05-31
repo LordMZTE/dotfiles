@@ -5,8 +5,8 @@ cg.opt.mzteinit_entries = {
     { key = "h", label = "hyprland", cmd = { "Hyprland" } },
     { key = "s", label = "shell",    cmd = { cg.opt.system "which nu" } },
     { key = "l", label = "logout",   cmd = { "!quit" } },
-    { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" }, quit = true },
-    { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },   quit = true },
+    { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" },        quit = true },
+    { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },          quit = true },
 }
 
 -- Enable if you have good internet, used for stuff like making
@@ -56,7 +56,10 @@ cg.opt.commands = {
         x = "wired",
         wl = "mako",
     },
-    screen_lock = string.format("i3lock -ti %s/.local/share/backgrounds/mzte.png", os.getenv "HOME"),
+    screen_lock = string.format(
+        "i3lock -ti %s/.local/share/backgrounds/mzte.png",
+        os.getenv "HOME"
+    ),
     media = {
         volume_up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
         volume_down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
@@ -68,8 +71,8 @@ cg.opt.commands = {
         next = "playerctl next",
         prev = "playerctl previous",
     },
-    backlight_up = "light -A 15";
-    backlight_down = "light -U 15";
+    backlight_up = "light -A 15",
+    backlight_down = "light -U 15",
 }
 
 cg.opt.gamemode = {
@@ -93,7 +96,7 @@ setmetatable(ctp_rgb, {
             g = tonumber(gs, 16),
             b = tonumber(bs, 16),
         }
-    end
+    end,
 })
 cg.opt.catppuccin = {
     rgb = ctp_rgb,

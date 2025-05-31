@@ -31,12 +31,15 @@ public Packet getDescriptionPacket() {{
 
     return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord,
         this.getBlockMetadata(), nbt);
-}}]]         ,
+}}]],
 
             { content = i(1) }
         )
     ),
-    s("markForUpdate", t [[this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);]]),
+    s(
+        "markForUpdate",
+        t [[this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);]]
+    ),
 })
 
 ls.add_snippets("json", {
@@ -51,7 +54,7 @@ ls.add_snippets("json", {
             "stream": false
         }}
     ]
-}},]]        ,
+}},]],
             {
                 name0 = i(1),
                 name1 = rep(1),

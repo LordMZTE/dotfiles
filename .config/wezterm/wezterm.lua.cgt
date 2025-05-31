@@ -45,44 +45,60 @@
     (table.insert keys (kmap dir-key :ALT|SHIFT :AdjustPaneSize
                              [dir-name resize-amt]))))
 
-
 (fn on-format-tab-title [tab tabs panes config hover max_width]
   (let [title (if (and tab.tab_title (> (length tab.tab_title) 0))
-                  tab.tab_title tab.active_pane.title)
-        bg (fn [t h] (if t.is_active :#<% opt.catppuccin.mauve %> (if h :#<% opt.catppuccin.surface1 %> :#<% opt.catppuccin.surface0 %>)))
-        fg (fn [t] (if t.is_active :#<% opt.catppuccin.mantle %> :#<% opt.catppuccin.text %>))
-        not-first? (~= tab.tab_index 0)
+                  tab.tab_title
+                  tab.active_pane.title)
+        bg (fn [t h]
+             (if t.is_active
+                 "#<%" opt.catppuccin.mauve %>
+                 (if h "#<%"
+                     opt.catppuccin.surface1 %>
+                     "#<%" opt.catppuccin.surface0
+                     %>)))
+        fg (fn [t]
+             (if t.is_active "#<%"
+                 opt.catppuccin.mantle %>
+                 "#<%" opt.catppuccin.text
+                 %>))
+        not-first? (not= tab.tab_index 0)
         last? (= tab.tab_index (- (length tabs) 1))
-        deco-len (+ 2
-                    (if not-first? 1 0)
-                    (if last? 2 0))
+        deco-len (+ 2 (if not-first? 1 0) (if last? 2 0))
         elems []]
     ;; first tab
-    (when (~= tab.tab_index 0)
-      (table.insert elems {:Foreground {:Color (bg (. tabs tab.tab_index) false)}})
+    (when (not= tab.tab_index 0)
+      (table.insert elems
+                    {:Foreground {:Color (bg (. tabs tab.tab_index) false)}})
       (table.insert elems {:Background {:Color (bg tab hover)}})
       (table.insert elems {:Text ""}))
-
     (table.insert elems {:Background {:Color (bg tab hover)}})
     (table.insert elems {:Foreground {:Color (fg tab)}})
-    (table.insert elems {:Text (.. " " (string.sub title 1 (math.min (- max_width deco-len) (length title))) " ")})
-
+    (table.insert elems {:Text (.. " "
+                                   (string.sub title 1
+                                               (math.min (- max_width deco-len)
+                                                         (length title)))
+                                   " ")})
     ;; last tab
     (when (= tab.tab_index (- (length tabs) 1))
       (table.insert elems {:Foreground {:Color (bg tab hover)}})
-      (table.insert elems {:Background {:Color :#<% opt.catppuccin.surface1 %>}}) ;; color of new tab button
+      (table.insert elems
+                    {:Background {:Color "#<%" opt.catppuccin.surface1 %>}})
+      ;; color of new tab button
       (table.insert elems {:Text " "}))
     elems))
 
 (wt.on :format-tab-title on-format-tab-title)
 
 (fn new-tab-button [hover]
-  (let [bg (if hover :#<% opt.catppuccin.blue %> :#<% opt.catppuccin.surface1 %>)]
+  (let [bg (if hover "#<%"
+               opt.catppuccin.blue %>
+               "#<%" opt.catppuccin.surface1
+               %>)]
     (wt.format [{:Background {:Color bg}}
-                {:Foreground {:Color :#<% opt.catppuccin.text %>}}
+                {:Foreground {:Color "#<%" opt.catppuccin.text %>}}
                 {:Text "  "}
                 {:Foreground {:Color bg}}
-                {:Background {:Color :#<% opt.catppuccin.crust %>}}
+                {:Background {:Color "#<%" opt.catppuccin.crust %>}}
                 {:Text ""}])))
 
 {:default_prog ["<% shell %>"]
@@ -92,12 +108,15 @@
  :window_background_opacity 0.8
  :disable_default_key_bindings true
  :leader {:key :a :mods :CTRL :timeout_milliseconds 2000}
- :adjust_window_size_when_changing_font_size false ;; this breaks on tiling WMs
+ :adjust_window_size_when_changing_font_size false
+ ;; this breaks on tiling WMs
  :cursor_blink_ease_in :Constant
  :cursor_blink_ease_out :Constant
- :check_for_updates false ;; WTF
+ :check_for_updates false
+ ;; WTF
  :use_fancy_tab_bar false
- :tab_bar_style {:new_tab (new-tab-button false) :new_tab_hover (new-tab-button true)}
+ :tab_bar_style {:new_tab (new-tab-button false)
+                 :new_tab_hover (new-tab-button true)}
  :tab_max_width 128
  ;; BULLSHIT: WezTerm by default sets $SHELL to the login shell.
  ;; This is justified by the fact that some users are too incompetent to
@@ -105,5 +124,6 @@
  ;; user error while compromising the experience of advanced users.
  ;; See https://github.com/wez/wezterm/issues/4168
  :set_environment_variables {:SHELL "<% shell %>"}
- :enable_wayland false ;; WL is completely broken
+ :enable_wayland false
+ ;; WL is completely broken
  : keys}

@@ -10,5 +10,6 @@ abstract class Action {
     };
 
     abstract function get_label():String;
-    abstract function call(ev: MouseEvent):Void;
+
+    abstract function call(ev:MouseEvent):Void;
 }

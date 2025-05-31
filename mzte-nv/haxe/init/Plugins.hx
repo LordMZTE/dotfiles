@@ -20,11 +20,7 @@ class Plugins {
             new PCatppuccin(), // avoid flicker of default theme
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
-        this.deferredPlugins = [
-            new PIndentBlankline(),
-            new PNu(),
-            new PTSNActions(),
-        ].concat([
+        this.deferredPlugins = [new PIndentBlankline(), new PNu(), new PTSNActions()].concat([
             "cmp",
             "dap",
             "devicons",

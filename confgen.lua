@@ -21,9 +21,15 @@ cg.onDone(function(errors)
         print "updating gsettings"
         cg.opt.system("gsettings set org.gnome.desktop.interface icon-theme " .. cg.opt.icon_theme)
         cg.opt.system("gsettings set org.gnome.desktop.interface gtk-theme " .. cg.opt.gtk_theme)
-        cg.opt.system("gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme)
-        cg.opt.system("gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size)
-        cg.opt.system('gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"')
+        cg.opt.system(
+            "gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme
+        )
+        cg.opt.system(
+            "gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size
+        )
+        cg.opt.system(
+            'gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"'
+        )
     end
 end)
 
@@ -41,9 +47,7 @@ cg.opt.getDeviceConf = function(id)
     local path = os.getenv "HOME" .. "/.config/mzte_localconf/" .. id
     local file = io.open(path, "r")
 
-    if not file then
-        return ""
-    end
+    if not file then return "" end
 
     return file:read "*a"
 end
@@ -51,9 +55,7 @@ end
 -- Returns the contents of a file
 cg.opt.read = function(fname)
     local file = io.open(fname, "r")
-    if not file then
-        return nil
-    end
+    if not file then return nil end
 
     return file:read "*a"
 end
@@ -61,26 +63,20 @@ end
 -- Get the output of a system command
 cg.opt.system = function(cmd)
     local handle = io.popen(cmd)
-    if handle == nil then
-        error("Failed to spawn process" .. cmd)
-    end
+    if handle == nil then error("Failed to spawn process" .. cmd) end
     local data, _ = handle:read("*a"):gsub("%s$", "")
     handle:close()
     return data
 end
 
 -- Compile the input as lua. Meant to be used as a post-processor.
-cg.opt.luaCompile = function(lua)
-    return string.dump(loadstring(lua), true)
-end
+cg.opt.luaCompile = function(lua) return string.dump(loadstring(lua), true) end
 
 -- Compile the input as fennel. Meant to be used as a post-processor.
 cg.opt.fennelCompile = fennel.compileString
 
 -- Evaluate fennel code and JSONify the result. Meant to be used as a post-processor.
-cg.opt.fennelToJSON = function(str)
-    return cg.fmt.json.serialize(fennel.eval(str))
-end
+cg.opt.fennelToJSON = function(str) return cg.fmt.json.serialize(fennel.eval(str)) end
 
 -- Check if the given file exists
 cg.opt.fileExists = function(path)
@@ -108,6 +104,4 @@ require "cg_opts"
 
 local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
 
-if local_opts then
-    local_opts()
-end
+if local_opts then local_opts() end

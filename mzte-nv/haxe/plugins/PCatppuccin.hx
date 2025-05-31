@@ -39,7 +39,9 @@ class PCatppuccin implements IPlugin {
                         ]
                     ),
                     underlines: Table.fromMap([for (t in ["errors", "hints", "warnings", "information"]) t => Table.fromArray(["italic"])]),
-                    inlay_hints: {background: true},
+                    inlay_hints: {
+                        background: true
+                    },
                 },
                 neogit: true,
                 nvimtree: true,

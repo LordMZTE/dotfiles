@@ -3,7 +3,8 @@ package plugins;
 import lua.Lua;
 
 class PNu implements IPlugin {
-	public var name:String = "Nushell";
+    public var name:String = "Nushell";
+
     public function new() {}
 
     public function init() {
