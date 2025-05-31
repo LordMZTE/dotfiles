@@ -74,8 +74,6 @@ fn transcoderThread(jsonf: std.fs.File, pipefd: std.c.fd_t) !void {
 
     var writer = std.io.bufferedWriter(pipe.writer());
 
-    try writer.flush();
-
     var reader = std.io.bufferedReader(jsonf.reader());
     var line_buf: std.ArrayListUnmanaged(u8) = .empty;
     defer line_buf.deinit(std.heap.c_allocator);
@@ -86,7 +84,7 @@ fn transcoderThread(jsonf: std.fs.File, pipefd: std.c.fd_t) !void {
             error.EndOfStream => break,
             else => return e,
         };
-        processLine(line_buf.items, pipe.writer()) catch |e| {
+        processLine(line_buf.items, writer.writer()) catch |e| {
             log.warn("failed to parse chat entry: {}", .{e});
         };
     }
@@ -102,8 +100,19 @@ const ChatEntry = struct {
                 item: struct {
                     liveChatTextMessageRenderer: struct {
                         message: struct {
-                            runs: []struct {
-                                text: ?[]u8 = null,
+                            runs: []union(enum) {
+                                text: []u8,
+                                emoji: struct {
+                                    emojiId: []u8,
+                                    isCustomEmoji: bool = false,
+                                    image: struct {
+                                        accessibility: struct {
+                                            accessibilityData: struct {
+                                                label: []u8,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                         authorName: struct {
@@ -153,13 +162,24 @@ fn processLine(line: []const u8, pipe: anytype) !void {
             act.addChatItemAction.item.liveChatTextMessageRenderer.authorName.simpleText,
         });
         for (act.addChatItemAction.item.liveChatTextMessageRenderer.message.runs) |seg| {
-            if (seg.text) |txt| {
-                std.mem.replaceScalar(u8, txt, '\n', '\\');
-                try pipe.writeAll(txt);
-            } else {
-                // Emojis and such
-                try pipe.writeAll("&lt;?&gt;");
-            }
+            const txt = switch (seg) {
+                .text => |s| s,
+                .emoji => |e| emoji: {
+                    // non-unicode emoji
+                    if (e.isCustomEmoji) {
+                        try pipe.writeAll("<i>&lt;");
+                        try pipe.writeAll(e.image.accessibility.accessibilityData.label);
+                        try pipe.writeAll("&gt;</i>");
+                        continue;
+                    }
+
+                    // It's called "ID", but it's just the emoji itself
+                    break :emoji e.emojiId;
+                },
+            };
+
+            std.mem.replaceScalar(u8, txt, '\n', '\\');
+            try pipe.writeAll(txt);
         }
         try pipe.writeByte('\n');
     }
