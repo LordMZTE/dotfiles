@@ -130,4 +130,4 @@ cg.opt.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/home
 
 cg.opt.cgpath = cg.fs and cg.fs.mountpoint or require("lfs").currentdir() .. "/cgout"
 
-return cg.opt
+cg.opt.textwidth = 100

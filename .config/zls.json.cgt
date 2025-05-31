@@ -1,3 +1,9 @@
 ;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
 ;; vim: ft=fennel
-{:warn_style true :enable_build_on_save true :enable_autofix true}
+{:warn_style true
+ :enable_build_on_save true
+ :enable_autofix true
+ :inlay_hints_hide_redundant_param_names true
+ :warn_style true
+ :inlay_hints_hide_redundant_param_names_last_token true
+ :highlight_global_var_declarations true}

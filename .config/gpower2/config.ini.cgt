@@ -1,5 +1,0 @@
-[commands]
-
-# Suspend and Hibernate commands should launch i3lock first.
-suspend = sh -c '<% opt.commands.screen_lock %> && systemctl suspend'
-hibernate = sh -c '<% opt.commands.screen_lock %> && systemctl hibernate'

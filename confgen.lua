@@ -7,10 +7,12 @@ cg.addPath ".ssh"
 cg.addPath ".cargo"
 cg.addPath "etc"
 
-cg.addFile ".bashrc"
-cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".Xresources.cgt"
-cg.addFile ".replrc"
+cg.addFile ".bashrc"
+cg.addFile ".clang-format.cgt"
+cg.addFile ".gtkrc-2.0.cgt"
+cg.addFile ".stylua.toml.cgt"
+cg.addFile "hxformat.json.cgt"
 
 cg.onDone(function(errors)
     if errors then

@@ -4,3 +4,8 @@ cgout
 # Zig build outputs
 **/zig-out
 **/.zig-cache
+
+# Files that are symlinked into the repo from ConfgenFS
+.stylua.toml
+.clang-format
+hxformat.json

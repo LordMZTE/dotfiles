@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Discord
-StartupWMClass=discord
-Comment=Shitcord Crap Messenger (browser app).
-GenericName=Internet Messenger
-Exec=openbrowser --app=https://discord.com/login
-Icon=discord
-Type=Application
-Categories=Network;InstantMessaging;

@@ -1,9 +1,0 @@
-[Appearance]
-custom_palette=false
-icon_theme=<% opt.icon_theme %>
-standard_dialogs=xdgdesktopportal
-style=kvantum-dark
-
-[Fonts]
-fixed="<% opt.font %>,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-general="<% opt.font %>,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"

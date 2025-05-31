@@ -1,0 +1,15 @@
+;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
+;; vim: ft=fennel
+(local wrap-rule {:conditions [{:cond "totalItemLength <= n"
+                                :value cg.opt.textwidth}]
+                  :type :noWrap})
+
+(local wrap-opt {:defaultWrap :onePerLine :rules [wrap-rule]})
+
+{:wrapping {:arrayWrap wrap-opt
+            :mapWrap wrap-opt
+            :methodChain {:rules [{:conditions [{:cond "itemCount >= n"
+                                                 :value 3}]
+                                   :type :onePerLine}]}
+            :callParameter wrap-opt}
+ :indentation {:character "    "}}
