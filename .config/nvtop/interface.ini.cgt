@@ -1,0 +1,51 @@
+[GeneralOption]
+UseColor = true
+UpdateInterval = 500
+ShowInfoMessages = true
+
+[HeaderOption]
+UseFahrenheit = false
+EncodeHideTimer = 4.0
+GPUInfoBar = true
+
+[ChartOption]
+ReverseChart = false
+
+[ProcessListOption]
+HideNvtopProcessList = false
+HideNvtopProcess = true
+SortOrder = descending
+SortBy = gpuRate
+
+<! for _, field in ipairs {
+  "pId",      "user",    "gpuId",   "type",
+  "gpuRate",  "encRate", "decRate", "memory",
+  "cpuUsage", "cpuMem",  "cmdline",
+} do !>
+DisplayField = <% field %>
+<! end !>
+
+<!
+  -- This sophisticated GPU detection logic is necessary, even though all I want to achieve is to
+  -- have it show temperature and power use in the graph of all GPUs.
+  -- nvtop doesn't want me to edit this file (but when did that ever stop me?)
+  local devices = coroutine.wrap(function()
+    local lfs = require "lfs"
+    for file in lfs.dir "/sys/class/drm" do
+      if file:match "^card[0-9]+$" then
+        local target = lfs.symlinkattributes("/sys/class/drm/" .. file .. "/device").target
+        coroutine.yield(target:match "^.*/(.*)$")
+      end
+    end
+  end)
+!>
+
+<! for dev in devices do !>
+[Device]
+Pdev = <% dev %>
+Monitor = true
+ShownInfo = gpuRate
+ShownInfo = gpuMemRate
+ShownInfo = temperature
+ShownInfo = powerDrawRate
+<! end !>
