@@ -99,7 +99,11 @@
 (setup :openscad_lsp)
 (setup :racket_langserver)
 (setup :rust_analyzer
-       {:settings {:rust-analyzer {:checkOnSave {:command :clippy}}}})
+       {:settings {:rust-analyzer {:check {:command :clippy}
+                                   :diagnostics {:experimental {:enable true}
+                                                 :styleLints {:enable true}}
+                                   :inlayHints {:closureCaptureHints {:enable true}}
+                                   :workspace {:symbol {:search {:kind :all_symbols}}}}}})
 
 (setup :taplo)
 (setup :tinymist
