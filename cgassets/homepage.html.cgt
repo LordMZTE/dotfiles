@@ -1,15 +1,15 @@
 <% "<" .. "!" %>DOCTYPE html>
 <!
-local hostname = opt.read("/etc/hostname"):gsub("%s*$", "")
-
-local powerprofile_info = opt.system "powerprofilesctl"
-if #powerprofile_info == 0 then powerprofile_info = nil end
+    local hostname = opt.read("/etc/hostname"):gsub("%s*$", "")
+    
+    local powerprofile_info = opt.system "powerprofilesctl"
+    if #powerprofile_info == 0 then powerprofile_info = nil end
 !>
 <html>
     <head>
         <title><% hostname %></title>
-        <link rel="icon" type="image/x-icon" href="https://mzte.de/favicon.ico">
-        <meta name="darkreader-lock">
+        <link rel="icon" type="image/x-icon" href="https://mzte.de/favicon.ico" />
+        <meta name="darkreader-lock" />
         <style>
         html, body {
             /* This doesn't use opt.font because non-standard font names. Thanks! */
@@ -37,8 +37,31 @@ if #powerprofile_info == 0 then powerprofile_info = nil end
         <p style="color: #<% opt.catppuccin.peach %>"><% os.date() %></p>
         <p style="color: #<% opt.catppuccin.mauve %>"><% os.time() %></p>
 
-        <h2>Memory</h2>
-        <pre><% opt.system "free -h" %></pre>
+        <!
+            local meminfo = {}
+            for line in io.lines "/proc/meminfo" do
+              local key, value_s = line:match("^(.+): +(%d+).-$")
+              meminfo[key] = tonumber(value_s)
+            end
+
+            local memwidth = 15
+            local membarheight = 1 / 4
+            local memavailrel = meminfo.MemAvailable / meminfo.MemTotal
+            local memfreerel = meminfo.MemFree / meminfo.MemTotal
+            local memusedrel = 1 - meminfo.MemAvailable / meminfo.MemTotal
+            local memcachedrel = meminfo.Cached / meminfo.MemTotal
+        !>
+        <h2>Memory (<% meminfo.MemTotal / 1000 %> MB)</h2>
+        <div style="background-color: #<% opt.catppuccin.surface0 %>"><svg viewBox="0 0 <% memwidth %> 1"><g>
+           <rect x="0" y="0" width="<% memusedrel * memwidth %>" height="<% membarheight %>" fill="#<% opt.catppuccin.red %>" />
+           <text x="0" y="<% membarheight - 0.05 %>" font-size="0.15px" fill="#<% opt.catppuccin.crust %>">Used: <% (meminfo.MemTotal - meminfo.MemAvailable) / 1000 %> MB</text>
+           <rect x="0" y="<% membarheight %>" width="<% memavailrel * memwidth %>" height="<% membarheight %>" fill="#<% opt.catppuccin.green %>" />
+           <text x="0" y="<% membarheight * 2 - 0.05 %>" font-size="0.15px" fill="#<% opt.catppuccin.crust %>">Avail: <% meminfo.MemAvailable / 1000 %> MB</text>
+           <rect x="0" y="<% membarheight * 2 %>" width="<% memfreerel * memwidth %>" height="<% membarheight %>" fill="#<% opt.catppuccin.lavender %>" />
+           <text x="0" y="<% membarheight * 3 - 0.05 %>" font-size="0.15px" fill="#<% opt.catppuccin.crust %>">Free: <% meminfo.MemFree / 1000 %> MB</text>
+           <rect x="0" y="<% membarheight * 3 %>" width="<% memcachedrel * memwidth %>" height="<% membarheight %>" fill="#<% opt.catppuccin.teal %>" />
+           <text x="0" y="<% membarheight * 4 - 0.05 %>" font-size="0.15px" fill="#<% opt.catppuccin.crust %>">Cached: <% meminfo.Cached / 1000 %> MB</text>
+        </g></svg></div>
 
         <h2>CPU</h2>
         <pre><% opt.system "lscpu -e='CPU,ONLINE,MAXMHZ,MINMHZ,MHZ'" %></pre>
