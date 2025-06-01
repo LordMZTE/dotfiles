@@ -1,22 +1,30 @@
 <?xml version='1.0'?>
 <% "<" .. [[!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">]] %>
 <fontconfig>
+    <!
+      -- This allows MPV (libass) to render monochrome emojis if the Noto Emoji
+      -- (nixpkgs: noto-fonts-monochrome-emoji) font is installed.
+      local emoji_fallback = [[<family>Noto Emoji</family>]]
+    !>
     <alias>
         <family>sans-serif</family>
         <prefer>
             <family><% opt.font %></family>
+            <% emoji_fallback %>
         </prefer>
     </alias>
     <alias>
         <family>serif</family>
         <prefer>
             <family><% opt.font %></family>
+            <% emoji_fallback %>
         </prefer>
     </alias>
     <alias>
         <family>monospace</family>
         <prefer>
             <family><% opt.term_font %></family>
+            <% emoji_fallback %>
         </prefer>
     </alias>
 </fontconfig>
