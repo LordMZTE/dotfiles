@@ -28,8 +28,10 @@ pub fn initOptions() !void {
     try opt(true).setLog("smartcase", .both);
 
     // Window Config
-    try opt("100").setLog("colorcolumn", .both);
-    try opt(100).setLog("textwidth", .both);
+    try opt(
+        std.fmt.comptimePrint("{}", .{opts.textwidth}),
+    ).setLog("colorcolumn", .both);
+    try opt(opts.textwidth).setLog("textwidth", .both);
     try opt(true).setLog("cursorcolumn", .both);
     try opt(true).setLog("cursorline", .both);
     // The reason we're not getting this from confgen is that nvim-qt (which I want to replace, but

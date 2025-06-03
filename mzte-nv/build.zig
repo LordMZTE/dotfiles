@@ -9,6 +9,7 @@ const CgOpts = struct {
         jvm: ?[:0]u8 = null,
         @"fennel.lua": ?[:0]u8 = null,
     } = .{},
+    textwidth: u16,
 };
 
 pub fn build(b: *std.Build) !void {
@@ -28,14 +29,19 @@ pub fn build(b: *std.Build) !void {
     const common_dep = b.dependency("common", .{});
 
     // We fall back to defaults here in case we're building the compiler under Nix.
-    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{};
+    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{ .textwidth = 0 };
 
     const opts = b.addOptions();
+
+    // Nix options
     opts.addOption(?[:0]const u8, "nvim_plugins", cg_opt.nix.nvim_plugins);
     opts.addOption(?[:0]const u8, "tree_sitter_parsers", cg_opt.nix.tree_sitter_parsers);
     opts.addOption(?[:0]const u8, "nvim_tools", cg_opt.nix.nvim_tools);
     opts.addOption(?[:0]const u8, "jvm", cg_opt.nix.jvm);
     opts.addOption(?[:0]const u8, "fennel.lua", cg_opt.nix.@"fennel.lua");
+
+    // other options
+    opts.addOption(u16, "textwidth", cg_opt.textwidth);
 
     if (!compiler_only) {
         const lib = b.addSharedLibrary(.{
