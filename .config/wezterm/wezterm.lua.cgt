@@ -50,17 +50,12 @@
                   tab.tab_title
                   tab.active_pane.title)
         bg (fn [t h]
-             (if t.is_active
-                 "#<%" opt.catppuccin.mauve %>
-                 (if h "#<%"
-                     opt.catppuccin.surface1 %>
-                     "#<%" opt.catppuccin.surface0
-                     %>)))
+             (if t.is_active "#<% opt.catppuccin.mauve %>"
+                 (if h "#<% opt.catppuccin.surface1 %>"
+                     "#<% opt.catppuccin.surface0 %>")))
         fg (fn [t]
-             (if t.is_active "#<%"
-                 opt.catppuccin.mantle %>
-                 "#<%" opt.catppuccin.text
-                 %>))
+             (if t.is_active "#<% opt.catppuccin.mantle %>"
+                 "#<% opt.catppuccin.text %>"))
         not-first? (not= tab.tab_index 0)
         last? (= tab.tab_index (- (length tabs) 1))
         deco-len (+ 2 (if not-first? 1 0) (if last? 2 0))
@@ -82,7 +77,7 @@
     (when (= tab.tab_index (- (length tabs) 1))
       (table.insert elems {:Foreground {:Color (bg tab hover)}})
       (table.insert elems
-                    {:Background {:Color "#<%" opt.catppuccin.surface1 %>}})
+                    {:Background {:Color "#<% opt.catppuccin.surface1 %>"}})
       ;; color of new tab button
       (table.insert elems {:Text " "}))
     elems))
@@ -90,15 +85,13 @@
 (wt.on :format-tab-title on-format-tab-title)
 
 (fn new-tab-button [hover]
-  (let [bg (if hover "#<%"
-               opt.catppuccin.blue %>
-               "#<%" opt.catppuccin.surface1
-               %>)]
+  (let [bg (if hover "#<% opt.catppuccin.blue %>"
+               "#<% opt.catppuccin.surface1 %>")]
     (wt.format [{:Background {:Color bg}}
-                {:Foreground {:Color "#<%" opt.catppuccin.text %>}}
+                {:Foreground {:Color "#<% opt.catppuccin.text %>"}}
                 {:Text "  "}
                 {:Foreground {:Color bg}}
-                {:Background {:Color "#<%" opt.catppuccin.crust %>}}
+                {:Background {:Color "#<% opt.catppuccin.crust %>"}}
                 {:Text ""}])))
 
 {:default_prog ["<% shell %>"]
