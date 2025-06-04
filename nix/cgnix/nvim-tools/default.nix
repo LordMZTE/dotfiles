@@ -26,13 +26,13 @@ let
     (
       pkgs.stdenvNoCC.mkDerivation rec {
         pname = "ltex-ls-plus";
-        version = "18.6.0-alpha.nightly.2025-04-07";
+        version = "18.6.0-alpha.nightly.2025-06-04";
         src = fetchurl {
           # Nightly releases are not persistent upstream,
           # so they're (manually) reuploaded to MZTE Git.
           url =
             "https://git.mzte.de/api/packages/LordMZTE/generic/${pname}/${version}/${pname}-${version}.tar.gz";
-          hash = "sha256-90pFUYYUcUa2xsDnuCCk7FZ/oa+8jsOppiJ5eZhWgm4=";
+          hash = "sha256-WTNC2jK7+My0s6zLg208sjrkYri+kTVppXJkt73l4Gg=";
         };
 
         preferLocalBuild = true;
