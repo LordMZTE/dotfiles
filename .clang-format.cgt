@@ -1,5 +1,5 @@
 ---
-AccessModifierOffset: 0
+AccessModifierOffset: -4
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: None
 AlignConsecutiveAssignments: None
