@@ -18,3 +18,9 @@ ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]
 # .config is somehow supposed to be privacy unfriendly. Don't ask me what kind of logic that is.
 # This makes the files in watch_later more introspectable.
 write-filename-in-watch-later-config
+
+# Subtitle visuals
+<! local sub_color = opt.catppuccin.rgb.maroon !>
+sub-color=<% sub_color.r / 255 %>/<% sub_color.g / 255 %>/<% sub_color.b / 255 %>/0.8
+sub-align-x=right
+sub-align-y=top

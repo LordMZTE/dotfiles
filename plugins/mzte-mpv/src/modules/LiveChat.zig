@@ -44,7 +44,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 try (std.fs.File{ .handle = pipe[1] }).writer().writeAll(
                     \\WEBVTT - MZTE-MPV transcoded live stream chat
                     \\
-                    \\00:00.000 --> 00:05.000
+                    \\00:00.000 --> 00:01.000
                     \\[MZTE-MPV] Live chat subtitle transcoder initialized
                     \\
                     \\
@@ -155,7 +155,7 @@ fn processLine(line: []const u8, pipe: anytype) !void {
 
     // Show chat messages for 5 seconds
     const ms = parsed.value.replayChatItemAction.videoOffsetTimeMsec;
-    try pipe.print("{} --> {}\n", .{ WebVttTime{ .ms = ms }, WebVttTime{ .ms = ms + 5000 } });
+    try pipe.print("{} --> {}\n", .{ WebVttTime{ .ms = ms }, WebVttTime{ .ms = ms + 8 * std.time.ms_per_s } });
 
     for (parsed.value.replayChatItemAction.actions) |act| {
         try pipe.print("<b>&lt;{s}&gt;:</b> ", .{
