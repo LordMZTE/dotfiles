@@ -42,8 +42,7 @@ const SwwwTransition = packed struct {
 
     fn makeRandom(rand: std.Random) SwwwTransition {
         // We don't want simple or none.
-        //const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
-        const typ = .wipe;
+        const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
 
         return .{
             .transition_type = typ,
