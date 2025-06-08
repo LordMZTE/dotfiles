@@ -19,7 +19,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
     switch (ev.event_id) {
         c.MPV_EVENT_PROPERTY_CHANGE => {
             const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
-            if (std.mem.eql(u8, std.mem.span(evprop.name), "path")) {
+            if (std.mem.orderZ(u8, evprop.name, "stream-open-filename") == .eq) {
                 var buf: [std.fs.max_path_bytes]u8 = undefined;
 
                 const str = std.mem.span((@as(?*[*:0]const u8, @ptrCast(@alignCast(evprop.data))) orelse return).*);
@@ -192,7 +192,12 @@ pub fn create() LiveChat {
 
 pub fn setup(self: *LiveChat, mpv: *c.mpv_handle) !void {
     _ = self;
-    try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "path", c.MPV_FORMAT_STRING));
+    try ffi.checkMpvError(c.mpv_observe_property(
+        mpv,
+        0,
+        "stream-open-filename",
+        c.MPV_FORMAT_STRING,
+    ));
 }
 
 pub fn deinit(self: *LiveChat) void {

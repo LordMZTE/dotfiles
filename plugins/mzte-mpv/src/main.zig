@@ -29,7 +29,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
     var modules = .{
         @import("modules/BackgroundColor.zig").create(),
         @import("modules/LiveChat.zig").create(),
-        @import("modules/LocalWatchLater.zig").create(),
+        @import("modules/LocalVids.zig").create(),
         @import("modules/SBSkip.zig").create(),
         @import("modules/ScreenshotOpen.zig").create(),
         @import("modules/Shuffle.zig").create(),
@@ -42,6 +42,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
         @field(modules, f).deinit();
 
     try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, "on_before_start_file", 0));
+    try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, "on_load", 0));
 
     std.log.info("loaded with client name '{s}'", .{c.mpv_client_name(mpv)});
 

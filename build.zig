@@ -22,7 +22,6 @@ pub fn build(b: *std.Build) !void {
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");
     inst.addZBuild(b, opts, zargs, "openbrowser");
-    inst.addZBuild(b, opts, zargs, "playvid");
     inst.addZBuild(b, opts, zargs, "prompt");
     inst.addZBuild(b, opts, zargs, "vinput");
     inst.addZBuild(b, opts, zargs, "withjava");

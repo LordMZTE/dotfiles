@@ -73,4 +73,3 @@ fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
 
     try self.tmpfiles.append(std.heap.c_allocator, tmpf_path);
 }
-
