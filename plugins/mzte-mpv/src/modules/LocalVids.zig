@@ -307,6 +307,10 @@ fn collectFilesInCWD(into: *std.ArrayListUnmanaged([]const u8)) !void {
     var iter = cur_dir.iterate();
     while (try iter.next()) |ent| {
         if (ent.kind != .file) continue;
+
+        // filter out yt-dlp live chat
+        if (std.mem.endsWith(u8, ent.name, ".live_chat.json")) continue;
+
         const path_alloc = try std.heap.c_allocator.dupe(u8, ent.name);
         errdefer std.heap.c_allocator.free(path_alloc);
         try into.append(std.heap.c_allocator, path_alloc);
