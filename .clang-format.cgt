@@ -85,9 +85,7 @@ LambdaBodyIndentation: OuterScope
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PackConstructorInitializers: NextLine
-PointerAlignment: Left
 QualifierAlignment: Left
-ReferenceAlignment: Left
 ReflowComments: true
 #RemoveSemicolon: true
 #RequiresClausePosition: OwnLine
