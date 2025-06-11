@@ -1,3 +1,4 @@
+//! Implementation of the swww IPC protocol. Swww version: 0.10.2
 const std = @import("std");
 const builtin = @import("builtin");
 const c = ffi.c;
@@ -111,7 +112,7 @@ pub const BgInfo = struct {
     pixfmt: PixelFormat,
 };
 
-pub const ScaleType = enum { whole, fractional };
+pub const ScaleType = enum { whole, preferred, fractional };
 
 pub const BgImg = union(enum) {
     color: [3]u8,
@@ -212,7 +213,8 @@ pub fn query(state: *State) !QueryAnswer {
 
             const scale_type: ScaleType = switch (try r.readByte()) {
                 0 => .whole,
-                1 => .fractional,
+                1 => .preferred,
+                2 => .fractional,
                 else => return error.ProtocolViolation,
             };
 
@@ -528,7 +530,7 @@ fn readStringAlloc(reader: anytype, alloc: std.mem.Allocator) ![]u8 {
 
 fn mulDim(dim: u32, scale: i32, scale_type: ScaleType) u32 {
     switch (scale_type) {
-        .whole => return @intCast(@as(i32, @intCast(dim)) * scale),
+        .whole, .preferred => return @intCast(@as(i32, @intCast(dim)) * scale),
         .fractional => {
             const scale_f = @as(f64, @floatFromInt(scale)) / 120.0;
             return @intFromFloat(@as(f64, @floatFromInt(dim)) * scale_f);
