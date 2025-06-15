@@ -6,7 +6,10 @@ user_id = "<% opt.matrix.mxid %>"
 [settings]
 username_display = "displayname"
 user_gutter_width = 16
-image_preview = { kind = "kitty" } # TODO: extract $TERM and check
+
+<! if not opt.safe_mode then !>
+image_preview = {}
+<! end !>
 
 [settings.sort]
 rooms = ["favorite", "recent"]

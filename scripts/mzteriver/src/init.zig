@@ -61,6 +61,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Super+Shift", "Q", "close" },
         .{ "Super", "W", "spawn", "pkill -USR1 wlbg" }, // randomize wallpaper
         .{ "Super+Shift", "W", "spawn", "pkill -USR2 wlbg" }, // toggle dark wallpaper
+        .{ "Super", "S", "spawn", "sh -c 'echo \"cg.opt.toggleSafeMode()\" > ~/confgenfs/_cgfs/eval'" },
 
         // screenshot
 

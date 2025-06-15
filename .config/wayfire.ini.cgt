@@ -73,6 +73,7 @@ toggle = none
     ["<shift> <super> KEY_E"] = "pkill wayfire", -- TODO: there must be a better way to exit WF
     ["<super> KEY_W"] = "pkill -USR1 wlbg",
     ["<shift> <super> KEY_W"] = "pkill -USR2 wlbg",
+    ["<super> KEY_S"] = [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
     ["KEY_SYSRQ"] = [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
 
     -- Program Keybinds

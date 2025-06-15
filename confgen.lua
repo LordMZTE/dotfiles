@@ -100,6 +100,17 @@ cg.opt.setCurrentWaylandCompositor = function(comp)
     end
 end
 
+-- This will set a "safe mode" flag which prevents supported messenger apps from showing images.
+-- Useful for opening matrix in public spaces due to recent spam.
+cg.opt.toggleSafeMode = function()
+    cg.opt.safe_mode = not cg.opt.safe_mode
+    if cg.opt.safe_mode then
+        cg.opt.system [[notify-send "Safe mode enabled"]]
+    else
+        cg.opt.system [[notify-send "Safe mode disabled"]]
+    end
+end
+
 require "cg_opts"
 
 local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
