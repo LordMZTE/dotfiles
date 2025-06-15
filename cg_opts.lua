@@ -87,6 +87,10 @@ cg.opt.irc = {
     realname = "LordMZTE",
 }
 
+cg.opt.matrix = {
+    mxid = "@lordmzte:mzte.de"
+}
+
 local ctp_rgb = {}
 setmetatable(ctp_rgb, {
     __index = function(_, key)

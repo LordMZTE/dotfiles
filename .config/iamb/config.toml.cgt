@@ -1,15 +1,15 @@
 default_profile = "main"
 
 [profiles.main]
-user_id = "<% opt.mxid or [[@lordmzte:mzte.de]] %>"
+user_id = "<% opt.matrix.mxid %>"
 
 [settings]
 username_display = "displayname"
 user_gutter_width = 16
-image_preview = { kind = "kitty"  }# TODO: extract $TERM and check
+image_preview = { kind = "kitty" } # TODO: extract $TERM and check
 
 [settings.sort]
 rooms = ["favorite", "recent"]
 
 [dirs]
-downloads = "/tmp/iamb_dl"
+downloads = "/tmp/iamb_dl_<% opt.system [[whoami]] %>"
