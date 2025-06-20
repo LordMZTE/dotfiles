@@ -63,7 +63,7 @@ DisableFormat: false # wtf
 EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: Always
 ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: false
+FixNamespaceComments: true
 ForEachMacros: ["BOOST_FOREACH"]
 IfMacros: []
 IncludeBlocks: Regroup
@@ -83,7 +83,7 @@ JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: OuterScope
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
+NamespaceIndentation: None
 PackConstructorInitializers: NextLine
 QualifierAlignment: Left
 ReflowComments: true
