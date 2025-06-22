@@ -126,18 +126,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // neovim
     try env.put("EDITOR", "nvim");
 
-    // Colored manpages
-    {
-        inline for ([_][2][]const u8{
-            .{ "mb", "1;32m" },
-            .{ "md", "1;32m" },
-            .{ "me", "0m" },
-            .{ "se", "0m" },
-            .{ "so", "01;33m" },
-            .{ "ue", "0m" },
-            .{ "us", "1;4;31m" },
-        }) |kv| try env.put("LESS_TERMCAP_" ++ kv[0], "\x1b[" ++ kv[1]);
-    }
+    // This is required for reasons unknown for `man` to show colors
+    try env.put("GROFF_NO_SGR", "1");
 
     // Java options
     {

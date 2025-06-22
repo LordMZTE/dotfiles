@@ -1,0 +1,11 @@
+#env
+<! local termcaps = {
+  mb = "1;32m",
+  md = "1;32m",
+  me = "0m",
+  se = "0m",
+  so = "01;33m",
+  ue = "0m",
+  us = "1;4;31m",
+}; for k, v in pairs(termcaps) do !>LESS_TERMCAP_<% k %>=<% "\x1b[" .. v %>
+<! end !>
