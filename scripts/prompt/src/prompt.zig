@@ -25,6 +25,7 @@ const symbols = struct {
     const jobs = "";
     const nix = "󱄅";
     const bash = "";
+    const julia = "";
 };
 
 pub const Options = struct {
@@ -117,6 +118,14 @@ fn Renderer(comptime Writer: type) type {
 
                     try self.writer.writeAll(" " ++ symbols.bash);
                 },
+                .julia => {
+                    const bgcol = Color.Magenta;
+                    const fgcol = Color.Black;
+                    try self.drawLeftSep(bgcol);
+                    try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
+
+                    try self.writer.writeAll(" " ++ symbols.julia);
+                }
             }
         }
 

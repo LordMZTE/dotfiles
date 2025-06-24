@@ -1,0 +1,12 @@
+using Pkg: Pkg
+atreplinit() do repl
+    try
+        @eval begin
+            using OhMyREPL
+            # https://github.com/KristofferC/OhMyREPL.jl/issues/387
+            <% nil --[[opt.system "~/.local/bin/prompt setup julia"]] %>
+        end
+    catch e
+        @warn "Couldn't load OhMyREPL" e
+    end
+end

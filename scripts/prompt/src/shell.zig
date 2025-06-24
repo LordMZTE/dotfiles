@@ -43,12 +43,28 @@ const setup_fmtstrs = struct {
         \\PS1='$(__mzprompt_show \j)'
         \\
     ;
+
+    const julia =
+        \\OhMyREPL.input_prompt!(() -> begin
+        \\    out = Pipe()
+        \\    run(pipeline(Cmd(`{[argv0]s} show`, env = (
+        \\        "MZPROMPT_SHELL" => "julia",
+        \\        "MZPROMPT_STATUS" => "0",
+        \\        "MZPROMPT_VI_MODE" => "_none",
+        \\        "MZPROMPT_DURATION" => "0",
+        \\        "MZPROMPT_JOBS" => "0",
+        \\    )), stdout=out))
+        \\    close(out.in)
+        \\    return String(read(out))
+        \\end)
+    ;
 };
 
 pub const Shell = enum {
     fish,
     nu,
     bash,
+    julia,
 
     pub fn writeInitCode(self: Shell, argv0: []const u8, writer: anytype) !void {
         switch (self) {
