@@ -1,7 +1,7 @@
 [general]
 corner-radius = 0;
-font-regular = <% opt.font %>:size=14;
-font-large = <% opt.font %>:size=20;
+font-regular = <% opt.font %>:size=20;
+font-large = <% opt.font %>:size=24;
 
 [colours]
 background = 0x<% opt.catppuccin.mantle %>;
