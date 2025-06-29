@@ -3,13 +3,14 @@ const common = @import("common");
 
 const CgOpts = struct {
     nix: struct {
-        nvim_plugins: ?[:0]u8 = null,
-        tree_sitter_parsers: ?[:0]u8 = null,
-        nvim_tools: ?[:0]u8 = null,
-        jvm: ?[:0]u8 = null,
-        @"fennel.lua": ?[:0]u8 = null,
+        nvim_plugins: ?[:0]const u8 = null,
+        tree_sitter_parsers: ?[:0]const u8 = null,
+        nvim_tools: ?[:0]const u8 = null,
+        jvm: ?[:0]const u8 = null,
+        @"fennel.lua": ?[:0]const u8 = null,
     } = .{},
     textwidth: u16,
+    term_font: [:0]const u8,
 };
 
 pub fn build(b: *std.Build) !void {
@@ -29,7 +30,7 @@ pub fn build(b: *std.Build) !void {
     const common_dep = b.dependency("common", .{});
 
     // We fall back to defaults here in case we're building the compiler under Nix.
-    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{ .textwidth = 0 };
+    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{ .textwidth = 0, .term_font = "monospace" };
 
     const opts = b.addOptions();
 
@@ -42,6 +43,7 @@ pub fn build(b: *std.Build) !void {
 
     // other options
     opts.addOption(u16, "textwidth", cg_opt.textwidth);
+    opts.addOption([:0]const u8, "term_font", cg_opt.term_font);
 
     if (!compiler_only) {
         const lib = b.addSharedLibrary(.{

@@ -12,8 +12,7 @@
         <meta name="darkreader-lock" />
         <style>
         html, body {
-            /* This doesn't use opt.font because non-standard font names. Thanks! */
-            font-family: "Iosevka Nerd Font" monospace;
+            font-family: "<% opt.font %>" monospace;
             background-color: #<% opt.catppuccin.base %>;
             color: #<% opt.catppuccin.text %>;
             height: 100%;
