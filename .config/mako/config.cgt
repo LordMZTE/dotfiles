@@ -2,7 +2,7 @@
 # Dismiss all notifications on middle click
 on-button-middle=dismiss-all
 
-font=<% opt.font %> 10
+font=<% opt.font %> 15
 
 default-timeout=4000
 max-visible=4
