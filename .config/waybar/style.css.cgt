@@ -4,8 +4,9 @@
 	border: none;
 	border-radius: 0;
 	font-family: "<% opt.font %>";
-	font-size: 14px;
-	min-height: 16px;
+    <! local fontsiz = opt.mulFontSize(14) !>
+	font-size: <% fontsiz %>px;
+	min-height: <% fontsiz + 2 %>px;
 }
 
 window#waybar {

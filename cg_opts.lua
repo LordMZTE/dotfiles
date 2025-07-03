@@ -18,6 +18,12 @@ cg.opt.nvidia = false
 
 cg.opt.font = "3270 Nerd Font"
 cg.opt.term_font = "3270 Nerd Font Mono"
+-- Font size multiplier. Useful for high-res displays.
+cg.opt.font_size_mul = 1
+
+cg.opt.mulFontSize = function(siz)
+    return math.floor(siz * cg.opt.font_size_mul)
+end
 
 --cg.opt.term = {
 --    name = "Ghostty",

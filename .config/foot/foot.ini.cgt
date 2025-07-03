@@ -1,5 +1,5 @@
 [main]
-font=<% opt.term_font %>:size=10
+font=<% opt.term_font %>:size=<% opt.mulFontSize(10) %>
 
 [colors]
 alpha=0.8
