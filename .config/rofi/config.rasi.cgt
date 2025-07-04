@@ -5,7 +5,9 @@ local modi = {
     "combi",
 }
 
+local have_nheko = false
 for _, m in ipairs(opt.extra_rofi_modes or {}) do
+    if m == "nheko" then have_nheko = true end
     table.insert(modi, m)
 end
 !>
@@ -14,6 +16,6 @@ configuration {
 	font: "<% opt.font %> 12";
 	show-icons: true;
 	icon-theme: "<% opt.icon_theme %>";
-	combi-modi: "drun,nheko,window,run";
+	combi-modi: "drun,<! if have_nheko then !>nheko,<! end !>window,run";
 }
 @theme "catppuccin-sidebar.rasi"
