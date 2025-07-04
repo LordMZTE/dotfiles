@@ -1,5 +1,16 @@
+<!
+local base_fontsiz = 12
+if fsctx then
+    local cmdline = io.open("/proc/" .. fsctx.pid .. "/cmdline", "r"):read("*a"):gsub("%z", " ")
+
+    -- If we're starting iamb, use a larger font.
+    if cmdline:find(" iamb") then
+        base_fontsiz = 20
+    end
+end
+!>
 [main]
-font=<% opt.term_font %>:size=<% opt.mulFontSize(12) %>
+font=<% opt.term_font %>:size=<% opt.mulFontSize(base_fontsiz) %>
 
 [colors]
 alpha=0.8
