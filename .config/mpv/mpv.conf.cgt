@@ -24,3 +24,4 @@ write-filename-in-watch-later-config
 sub-color=<% sub_color.r / 255 %>/<% sub_color.g / 255 %>/<% sub_color.b / 255 %>/0.8
 sub-align-x=right
 sub-align-y=top
+sub-font-size=<% opt.mulFontSize(20) %>
