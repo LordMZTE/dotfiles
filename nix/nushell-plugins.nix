@@ -3,38 +3,27 @@
   options.nushell-plugins = lib.mkOption { };
 
   config.nushell-plugins = {
+    # This is technically in nixpkgs, but the version there is the outdated upstream.
+    # Thankfully, it seems like someone has since taken over my duty of creating never-to-be-merged
+    # update PRs.
     dbus = pkgs.rustPlatform.buildRustPackage {
       name = "nu_plugin_dbus";
 
       src = pkgs.fetchFromGitHub {
-        owner = "LordMZTE";
+        owner = "dtomvan";
         repo = "nu_plugin_dbus";
-        rev = "a22eac85b996f2ad0d63f9f2d4bb89fa71862260";
-        hash = "sha256-PDV69TNIfcE0WH7IqQ3XXE8+JA1nsjfU/MRp8JjgNho=";
+        rev = "dd7a69308a0906a681c210b09a1c3a02a862a7b1";
+        hash = "sha256-nzJ7wY0USJdEg7hOYTjpcoWKIFYGo5akRNorWnHTiKg=";
       };
 
       useFetchCargoVendor = true;
-      cargoHash = "sha256-JR2FGB8dta5IH+O/8OJ90pSWIH8II/HgV/N7KHt7i08=";
+      cargoHash = "sha256-JrtLJa/DClktK5ih0H0ofRV8CzQaK78P5Rm9Tsgrzc4=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
     };
 
-    tree = pkgs.rustPlatform.buildRustPackage {
-      name = "nu_plugin_tree";
-
-      src = pkgs.fetchFromGitHub {
-        owner = "fdncred";
-        repo = "nu_plugin_tree";
-        rev = "7697bff26970d76c053709c997d57addbb968219";
-        hash = "sha256-PFW/Sfu6Je2kI3H3zJnmAZ+QiYOqzBs5xa0DGCQs3Hc=";
-      };
-
-      useFetchCargoVendor = true;
-      cargoHash = "sha256-sQLg+neS69i3iGWuSMNVH4DPP7YK+CvQzJi8sJUcNTA=";
-    };
-
-    inherit (pkgs.nushellPlugins) polars formats query;
+    inherit (pkgs.nushellPlugins) polars formats query skim;
   };
 
   config.output.packages.nushell-plugins = pkgs.writeTextFile {
