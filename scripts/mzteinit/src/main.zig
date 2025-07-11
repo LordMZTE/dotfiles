@@ -158,7 +158,7 @@ fn tryMain() !void {
 
         const cmd = ui(&stdout, entries) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
-            break;
+            return e;
         };
 
         try stdout.writer().writeAll(util.ansi_clear);
