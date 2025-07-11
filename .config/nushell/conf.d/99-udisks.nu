@@ -4,13 +4,13 @@ def "input disk" [] {
     | get blockdevices
     | update size { into filesize }
     | update fsused? { if $in != null { into filesize } }
-    | sk --format {
+    | sk --format ({
         let mount = match $in.mountpoints {
             [$mp, ..] => { $mp }
             _ => { "<not mounted>" }
         }
         $"($in.name | fill -w 32) ($in.type | fill -w 5) ($in.size | into string | fill -w 8) ($mount)"
-    } --preview { upsert mountpoints { str join "\n" } }
+    }) --preview ({ upsert mountpoints { str join "\n" } })
 }
 
 def "udisksctl lockmount" [--block-device (-b): path] {
