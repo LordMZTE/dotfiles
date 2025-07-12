@@ -1,10 +1,10 @@
 <!
 local base_fontsiz = 12
 if fsctx then
-    local cmdline = io.open("/proc/" .. fsctx.pid .. "/cmdline", "r"):read("*a"):gsub("%z", " ")
+    local cmdline = fsctx:getCallerCmd()
 
     -- If we're starting iamb, use a larger font.
-    if cmdline:find(" iamb") then
+    if cg.lib.contains(cmdline, function(arg) return arg:match("iamb$") end) then
         base_fontsiz = 20
     end
 end

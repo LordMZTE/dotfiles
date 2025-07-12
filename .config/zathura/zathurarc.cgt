@@ -28,8 +28,8 @@ set inputbar-bg               "#<% opt.catppuccin.surface0 %>"
 
 local recolor = true
 if fsctx then
-    local cmdline = io.open("/proc/" .. fsctx.pid .. "/cmdline", "r"):read("*a"):gsub("%z", " ")
-    recolor = cmdline:find(" /tmp/typstwatch_") == nil
+    local cmdline = fsctx:getCallerCmd()
+    recolor = not cg.lib.contains(cmdline, function(arg) return arg:match("^/tmp/typstwatch_") end)
 end
 !>
 set recolor                   "<% recolor %>"
