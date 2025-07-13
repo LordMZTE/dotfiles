@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <% "<" .. [[!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">]] %>
 <fontconfig>
-    <! function emojiConfig()
+    <! local function emojiConfig()
       -- This allows MPV (libass) to render monochrome emojis if the Noto Emoji
       -- (nixpkgs: noto-fonts-monochrome-emoji) font is installed while preferring colored emoji.
       -- It will also make Blobmoji be the preferred emoji font. !>
