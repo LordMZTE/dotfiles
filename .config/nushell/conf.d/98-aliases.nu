@@ -20,3 +20,6 @@ alias qs = dexit
 def --wrapped ssh [...args] {
     TERM=xterm-256color ^ssh ...$args
 }
+
+# Use nvim to view man pages
+def man [page: string] { nvim $"+:hide Man ($page)" }
