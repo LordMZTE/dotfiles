@@ -114,6 +114,7 @@ cg.opt.toggleSafeMode = function()
 end
 
 require "cg_opts"
+require "cg_lazies"
 
 local local_opts = loadfile(os.getenv "HOME" .. "/.config/mzte_localconf/opts.lua")
 

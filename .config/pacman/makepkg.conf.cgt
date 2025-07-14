@@ -1,2 +1,2 @@
-MAKEFLAGS="-j<% opt.system "nproc" %>"
+MAKEFLAGS="-j<% opt.lazy.ncpus() %>"
 BUILDENV+=('!check')

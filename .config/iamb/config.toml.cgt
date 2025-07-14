@@ -15,4 +15,4 @@ image_preview = {}
 rooms = ["favorite", "recent"]
 
 [dirs]
-downloads = "/tmp/iamb_dl_<% opt.system [[whoami]] %>"
+downloads = "/tmp/iamb_dl_<% opt.lazy.username() %>"

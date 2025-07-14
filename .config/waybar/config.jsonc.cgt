@@ -61,7 +61,7 @@ end
  :tray {:spacing 10}
  :clock {:tooltip-format "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
          :format-alt "{:%Y-%m-%d}"}
- :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.system :nproc) 1)]
+ :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.lazy.ncpus) 1)]
                      (.. s "{icon" i "}")) " {usage}% {max_frequency} {avg_frequency}⌀ ")
        :interval 2
        : format-icons}

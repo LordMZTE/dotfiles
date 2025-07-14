@@ -31,7 +31,7 @@
     </head>
 
     <body>
-        <h1><font color="#<% opt.catppuccin.sky %>"><% hostname %></font> on <font color="#<% opt.catppuccin.green %>"><% opt.system "uname -ors" %></font></h1>
+        <h1><font color="#<% opt.catppuccin.sky %>"><% hostname %></font> on <font color="#<% opt.catppuccin.green %>"><% opt.lazy.unameORS() %></font></h1>
         <h2>Time</h2>
         <p style="color: #<% opt.catppuccin.peach %>"><% os.date() %></p>
         <p style="color: #<% opt.catppuccin.mauve %>"><% os.time() %></p>

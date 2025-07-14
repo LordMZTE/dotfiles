@@ -3,21 +3,8 @@
 
   local hwdec_codecs = { "all" }
 
-  -- TODO: make this lazy
-  -- See: https://git.mzte.de/LordMZTE/confgen/issues/15
   if opt.mpvHwdecCodecPred then
-    local cmdout = opt.system "mpv --no-config --vd=help"
-    hwdec_codecs = {}
-    for codec in cmdout:gmatch("    ([^ ]+).-%- .-\n") do
-      if
-        -- These are obsolete for this setting.
-        not codec:match("_cuvid$")
-        and not codec:match("_vdpau$")
-        and opt.mpvHwdecCodecPred(codec)
-      then
-        table.insert(hwdec_codecs, codec)
-      end
-    end
+    hwdec_codecs = cg.lib.filter(opt.lazy.mpvCodecs(), opt.mpvHwdecCodecPred)
   end
 !>
 # Enable hardware decoding

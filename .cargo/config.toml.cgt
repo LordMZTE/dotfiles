@@ -1,4 +1,4 @@
-<! local ncpus = tonumber(opt.system "nproc") !>
+<! local ncpus = opt.lazy.ncpus() !>
 [profile.release]
 lto = true
 opt-level = 3
