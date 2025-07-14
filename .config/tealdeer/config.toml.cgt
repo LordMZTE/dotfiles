@@ -1,0 +1,14 @@
+[display]
+compact = true
+
+# This is configured to match nushell's style with my config.
+[style]
+command_name = { foreground = "yellow", bold = true }
+example_text = { foreground = "magenta" }
+example_code = { foreground = "green" }
+example_variable = { foreground = "blue", italic = true }
+
+<! if opt.good_internet then !>
+[updates]
+auto_update = true
+<! end !>
