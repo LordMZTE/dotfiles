@@ -42,7 +42,8 @@ end
                  :clock
                  :tray]
  :river/tags {:num-tags 10
-              :tag-labels [:1 :2 :3 :4 :5 :6 :7 :8 :9 :S]}
+              :tag-labels [:1 :2 :3 :4 :5 :6 :7 :8 :9 :S]
+              :hide-vacant true}
  :river/window {: max-length}
  :cava {:hide_on_silence true
         :bars 16
