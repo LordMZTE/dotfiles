@@ -28,6 +28,7 @@ export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {
 fn tryMain(mpv: *c.mpv_handle) !void {
     var modules = .{
         @import("modules/BackgroundColor.zig").create(),
+        @import("modules/BetterTags.zig").create(),
         @import("modules/LiveChat.zig").create(),
         @import("modules/LocalVids.zig").create(),
         @import("modules/SBSkip.zig").create(),

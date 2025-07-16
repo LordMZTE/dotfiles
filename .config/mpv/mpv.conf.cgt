@@ -33,3 +33,12 @@ sub-color=<% sub_color.r / 255 %>/<% sub_color.g / 255 %>/<% sub_color.b / 255 %
 sub-align-x=right
 sub-align-y=top
 sub-font-size=<% opt.mulFontSize(20) %>
+
+# CLI setup
+msg-color=yes
+msg-module=yes
+term-osd-bar=yes
+term-osd-bar-chars=┠─┸╌┨
+
+# MZTE-MPV will show metadata in a more fancy way. Disable builtin metadata printing
+display-tags-clr

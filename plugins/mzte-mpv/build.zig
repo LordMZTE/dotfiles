@@ -13,6 +13,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     lib.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+    lib.root_module.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
 
     const cg_opts = try common.confgenGet(struct {
         catppuccin: struct { base: []const u8 },

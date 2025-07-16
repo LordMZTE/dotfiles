@@ -26,7 +26,7 @@ pub fn onEvent(self: *SBSkip, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
     switch (ev.event_id) {
         c.MPV_EVENT_PROPERTY_CHANGE => {
             const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
-            if (std.mem.eql(u8, std.mem.span(evprop.name), "chapter")) {
+            if (std.mem.orderZ(u8, evprop.name, "chapter") == .eq) {
                 const chapter_id_ptr = @as(?*i64, @ptrCast(@alignCast(evprop.data)));
                 if (chapter_id_ptr) |chptr|
                     try self.onChapterChange(mpv, @intCast(chptr.*));
