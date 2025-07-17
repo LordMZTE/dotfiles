@@ -47,7 +47,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     ffi.luaPushString(l, ";");
     ffi.luaPushString(l, opts.@"fennel.lua" orelse
         (std.posix.getenv("MZTE_NV_FENNEL") orelse
-        "/usr/share/lua/5.4/fennel.lua"));
+            "/usr/share/lua/5.4/fennel.lua"));
     c.lua_concat(l, 3);
     c.lua_setfield(l, -2, "path");
     c.lua_pop(l, 1);

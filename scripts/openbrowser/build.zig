@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = mode,
     });
-    
+
     exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
 
     b.installArtifact(exe);

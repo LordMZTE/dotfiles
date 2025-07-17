@@ -125,7 +125,7 @@ fn Renderer(comptime Writer: type) type {
                     try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
 
                     try self.writer.writeAll(" " ++ symbols.julia);
-                }
+                },
             }
         }
 
