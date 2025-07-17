@@ -6,6 +6,8 @@ const ffi = @import("../ffi.zig");
 
 const BetterTags = @This();
 
+const log = std.log.scoped(.@"better-tags");
+
 // Needed to silence error that we'd otherwise get because this thing being zero-sized would make it
 // a comptime var or something.
 _placeholder: u1 = 0,
@@ -78,10 +80,12 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
     var out_buf = std.io.bufferedWriter(std.io.getStdOut().writer());
     const out = out_buf.writer();
 
+    const textwidth = 100;
+
     const sep_thick = "━";
     const sep_thin = "─";
 
-    const sepwidth = @min(100, @max(
+    const sepwidth = @min(textwidth, @max(
         multilineStringWidth(title orelse ""),
         multilineStringWidth(description orelse ""),
     ));
@@ -108,8 +112,32 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
 
         if (description) |d| {
             try ansiterm.format.resetStyle(out);
-            try out.writeAll(d);
-            try out.writeByte('\n');
+
+            write_desc: {
+                // write description with rudimentary hard wrapping
+                var char_iter = (std.unicode.Utf8View.init(d) catch {
+                    log.warn("Description is invalid UTF8, skipping", .{});
+                    break :write_desc;
+                }).iterator();
+                var linelen: usize = 0;
+                while (char_iter.nextCodepointSlice()) |cp| {
+                    try out.writeAll(cp);
+
+                    if (cp.len == 1 and cp[0] == '\n') {
+                        linelen = 0;
+                        continue;
+                    }
+
+                    linelen += 1;
+
+                    if (linelen >= textwidth) {
+                        try out.writeByte('\n');
+                        linelen = 0;
+                    }
+                }
+
+                try out.writeByte('\n');
+            }
 
             try ansiterm.format.updateStyle(out, sepstyle, null);
             try out.writeBytesNTimes(sep_thick, sepwidth);
