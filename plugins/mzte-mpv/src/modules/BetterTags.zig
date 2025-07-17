@@ -64,17 +64,30 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
         const val_node = meta_node.u.list.*.values[i];
         if (val_node.format != c.MPV_FORMAT_STRING) continue;
 
-        const key = meta_node.u.list.*.keys[i];
+        const key = std.mem.span(meta_node.u.list.*.keys[i]);
         const value = std.mem.span(val_node.u.string);
 
-        if (std.mem.orderZ(u8, key, "TITLE") == .eq) {
+        if (std.ascii.eqlIgnoreCase(key, "title")) {
             title = value;
-        } else if (std.mem.orderZ(u8, key, "DESCRIPTION") == .eq) {
+        } else if (std.ascii.eqlIgnoreCase(key, "description") or std.ascii.eqlIgnoreCase(key, "ytdl_description")) {
             description = value;
         } else if (std.mem.indexOfScalar(u8, value, '\n') == null) {
             // Don't print other multiline properties
-            try other_fields.put(std.heap.c_allocator, std.mem.span(key), value);
+            try other_fields.put(std.heap.c_allocator, key, value);
         }
+    }
+
+    if (title == null) {
+        // fall back to getting title from `media-title`
+        var media_title_cstr: [*:0]const u8 = undefined;
+        try ffi.checkMpvError(c.mpv_get_property(
+            mpv,
+            "media-title",
+            c.MPV_FORMAT_STRING,
+            @ptrCast(&media_title_cstr),
+        ));
+
+        title = std.mem.span(media_title_cstr);
     }
 
     var out_buf = std.io.bufferedWriter(std.io.getStdOut().writer());
