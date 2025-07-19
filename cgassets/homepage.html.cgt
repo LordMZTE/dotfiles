@@ -1,5 +1,6 @@
 <% "<" .. "!" %>DOCTYPE html>
 <!
+    tmpl:setCacheTime(1000 * 4); -- Only to counter dumb repeated reads from browser
     local hostname = opt.read("/etc/hostname"):gsub("%s*$", "")
     
     local powerprofile_info = opt.system "powerprofilesctl"

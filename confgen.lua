@@ -35,6 +35,11 @@ cg.onDone(function(errors)
     end
 end)
 
+if cg.fs then
+    -- Cache files in ConfgenFS for one minute by default
+    cg.fs.cachetime = 60 * 1000
+end
+
 local nix = (loadfile "nix/cgnix/nix.lua" or function()
     print "no cgnix file!"
     return {}
