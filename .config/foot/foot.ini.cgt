@@ -1,4 +1,6 @@
 <!
+tmpl:setCacheTime(0)
+
 local base_fontsiz = 12
 if fsctx then
     local cmdline = fsctx:getCallerCmd()
