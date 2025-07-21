@@ -17,8 +17,8 @@ hwdec-codecs=<% table.concat(hwdec_codecs, ",") %>
 # module will be unable to toggle to a color with alpha later. This seems to be a bug in MPV.
 background-color=0/0/0/0
 
-# YTDL: Don't go over 1080p
-ytdl-format=bestvideo[height<=1080]+bestaudio/best[height<=1080]
+# YTDL: Don't go over opt.videosize
+ytdl-format=bestvideo[height<=<% opt.videosize[2] %>]+bestaudio/best[height<=<% opt.videosize[2] %>]
 # YTDL: Mark Sponsorblock segments (YT-DLP Only, also doesn't work lol)
 #ytdl-raw-options=sponsorblock-mark=all
 

@@ -144,3 +144,6 @@ cg.opt.homepage_url = "file://" .. os.getenv "HOME" .. "/confgenfs/cgassets/home
 cg.opt.cgpath = cg.fs and cg.fs.mountpoint or require("lfs").currentdir() .. "/cgout"
 
 cg.opt.textwidth = 100
+
+-- The size to use when downloading or streaming videos. Typically, only the height is checked here.
+cg.opt.videosize = { 1920, 1080 }
