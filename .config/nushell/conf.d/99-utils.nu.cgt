@@ -36,11 +36,17 @@ def pgrep [pattern: string, --all(-a)]: nothing -> table<pid: int, ppid: int, na
 }
 
 # A wrapper around yt-dlp that passes some sane defaults and limits resolution.
-def viddl [url: string] {
+def --wrapped viddl [
+  url: string,
+  --output (-o): string = "%(uploader)s - %(title)s.%(ext)s",
+  --format (-f): string = "bestvideo[height<=<% opt.videosize[2] %>]+bestaudio/best[height<=<% opt.videosize[2] %>]",
+  ...args
+] {
     (yt-dlp $url
     --sponsorblock-mark all
     <! if opt.good_internet then !>--limit-rate (1024 * 1024) # needed to not get blocked
-    <! end !>--format "bestvideo[height<=<% opt.videosize[2] %>]+bestaudio/best[height<=<% opt.videosize[2] %>]"
-    --output "%(uploader)s - %(title)s.%(ext)s"
-    --embed-metadata)
+    <! end !>--format $format
+    --output $output
+    --embed-metadata
+    ...$args)
 }
