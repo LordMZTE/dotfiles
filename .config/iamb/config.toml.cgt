@@ -6,6 +6,7 @@ user_id = "<% opt.matrix.mxid %>"
 [settings]
 username_display = "displayname"
 user_gutter_width = 16
+normal_after_send = true
 
 <! if not opt.safe_mode then !>
 image_preview = {}
