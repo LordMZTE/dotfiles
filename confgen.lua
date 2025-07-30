@@ -97,6 +97,12 @@ cg.opt.fileExists = function(path)
     return false
 end
 
+-- Check if a TERM environment variable describes a terminal supporting the kitty image protocol.
+cg.opt.termSupportsKittyImages = function(term)
+    if not term then return false end
+    return term:match "kitty" or term:match "ghostty"
+end
+
 -- Set the currently active wayland compositor. Updates options for templates as well as gsettings.
 cg.opt.setCurrentWaylandCompositor = function(comp)
     cg.opt.wayland_compositor = comp

@@ -1,11 +1,32 @@
-<! if not opt.twitch then return end !>
+<!
+  if not opt.twitch then return end
+  tmpl:setCacheTime(0) -- Don't cache since we check caller env
+!>
 [twitch]
 username = "<% opt.twitch.name %>"
 channel  = "<% opt.twitch.name %>"
 token    = "oauth:<% opt.twitch.token %>"
+
+[storage]
+# save channel history
+channels = true
 
 [frontend]
 favorite_channels = [
     <! for _, ch in ipairs(opt.twitch.channels or {}) do !>"<% ch %>",
     <! end !>
 ]
+
+# don't care about date and year
+datetime_format = "%T"
+cursor_shape = "line"
+
+<! if not fsctx or opt.termSupportsKittyImages(fsctx:getCallerEnv().TERM) then !>
+# enable emotes
+twitch_emotes = true
+betterttv_emotes = true
+seventv_emotes = true
+frankerfacez_emotes = true
+<! end !>
+
+border_type = "thick"
