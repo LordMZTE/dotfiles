@@ -1,5 +1,9 @@
 font_family <% opt.term_font %>
+font_size <% opt.mulFontSize(12) %>
 background_opacity 0.8
+
+map ctrl+plus change_font_size all +2.0
+map ctrl+minus change_font_size all -2.0
 
 # CATPPUCCIN THEME
 
