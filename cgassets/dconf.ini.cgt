@@ -1,0 +1,12 @@
+# This file is loaded into the dconf database by a confgen onDone callback.
+# It is in dconf format and exists to compensate for the growing stupidity of the GNOME ecosystem.
+
+[org/gnome/desktop/interface]
+cursor-theme='<% opt.cursor.theme %>'
+cursor-size=<% opt.cursor.size %>
+gtk-theme='<% opt.gtk_theme %>'
+font-name='<% opt.font %> 11'
+icon-theme='<% opt.icon_theme %>'
+
+# Without this, Firefox 141 and above disrespects the GTK theme.
+color-scheme='prefer-dark'

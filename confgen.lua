@@ -20,18 +20,8 @@ cg.onDone(function(errors)
     if errors then
         print "ERRORS DURING CONFGEN"
     else
-        print "updating gsettings"
-        cg.opt.system("gsettings set org.gnome.desktop.interface icon-theme " .. cg.opt.icon_theme)
-        cg.opt.system("gsettings set org.gnome.desktop.interface gtk-theme " .. cg.opt.gtk_theme)
-        cg.opt.system(
-            "gsettings set org.gnome.desktop.interface cursor-theme " .. cg.opt.cursor.theme
-        )
-        cg.opt.system(
-            "gsettings set org.gnome.desktop.interface cursor-size " .. cg.opt.cursor.size
-        )
-        cg.opt.system(
-            'gsettings set org.gnome.desktop.interface font-name "' .. cg.opt.font .. ' 11"'
-        )
+        print "updating dconf"
+        cg.opt.system "dconf load / <~/confgenfs/cgassets/dconf.ini"
     end
 end)
 
