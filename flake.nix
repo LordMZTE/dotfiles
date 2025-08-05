@@ -17,9 +17,32 @@
 
         root-mod = { config, pkgs, ... }: {
           options.nixpkgs.overlays = nixpkgs.lib.mkOption { default = [ ]; };
-          options.output = nixpkgs.lib.mkOption {
-            default = { };
-            type = with nixpkgs.lib.types; attrsOf anything;
+
+          options.output = {
+            packfuncs = nixpkgs.lib.mkOption {
+              default = { };
+              type = with nixpkgs.lib.types; attrsOf (functionTo package);
+            };
+
+            packages = nixpkgs.lib.mkOption {
+              default = { };
+              type = with nixpkgs.lib.types; attrsOf package;
+            };
+
+            devShells = nixpkgs.lib.mkOption {
+              default = { };
+              type = with nixpkgs.lib.types; attrsOf package;
+            };
+
+            mzteinit = nixpkgs.lib.mkOption {
+              default = { };
+              type = with nixpkgs.lib.types; anything;
+            };
+
+            overlay = nixpkgs.lib.mkOption {
+              default = { };
+              type = with nixpkgs.lib.types; anything;
+            };
           };
 
           config._module.args = rec {
@@ -64,7 +87,15 @@
 
           config.output.mzteinit = base-pkgs.callPackage ./scripts/mzteinit/package.nix { };
 
-          config.output.overlay = final: prev: config.output.packages;
+          config.output.packages = builtins.mapAttrs
+            (_: f: pkgs.callPackage f { })
+            config.output.packfuncs;
+
+          # TODO: This causes infinite recursing, but copying exactly the same code to the caller
+          # works. I call bullshit.
+          #config.output.overlay = final: prev: builtins.mapAttrs
+          #  (_: f: final.callPackage f { })
+          #  config.output.packfuncs;
         };
 
         modopt = nixpkgs.lib.evalModules {

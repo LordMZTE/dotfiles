@@ -2,9 +2,9 @@
 # - Text
 # - OpenSCAD and STL models
 
-{ pkgs, ... }:
+{ ... }:
 let
-  mkThumbnailerEntry = { name, mime, exec }: pkgs.writeTextDir
+  mkThumbnailerEntry = pkgs: { name, mime, exec }: pkgs.writeTextDir
     "share/thumbnailers/${name}.thumbnailer"
     ''
       [Thumbnailer Entry]
@@ -18,7 +18,7 @@ let
 in
 {
   # See https://docs.xfce.org/xfce/tumbler/available_plugins#customized_thumbnailer_for_text-based_documents
-  output.packages.mzte-thumbnailer-text =
+  output.packfuncs.mzte-thumbnailer-text = { pkgs, ... }:
     let
       textthumb = pkgs.writeShellScript "textthumb" ''
         iFile=$(<"$1")
@@ -39,26 +39,26 @@ in
         }
       '';
     in
-    mkThumbnailerEntry {
+    mkThumbnailerEntry pkgs {
       name = "mzte-thumbnailer-text";
       mime = "text/plain;text/x-log;text/html;text/css;";
       exec = "${textthumb} %i %o";
     };
 
-  output.packages.mzte-thumbnailer-openscad =
+  output.packfuncs.mzte-thumbnailer-openscad = { pkgs, ... }:
     let
       scadthumb = pkgs.writeShellScript "scadthumb" ''
         ${pkgs.openscad-unstable}/bin/openscad --imgsize "500,500" -o "$2" "$1" 2>/dev/null
       '';
     in
-    mkThumbnailerEntry {
+    mkThumbnailerEntry pkgs {
       name = "mzte-thumbnailer-openscad";
       mime = "application/x-openscad;";
       exec = "${scadthumb} %i %o";
     };
 
   # See: https://docs.xfce.org/xfce/tumbler/available_plugins#customized_thumbnailer_for_stl_content
-  output.packages.mzte-thumbnailer-stl =
+  output.packfuncs.mzte-thumbnailer-stl = { pkgs, ... }:
     let
       stlthumb = pkgs.writeShellScript "stlthumb" ''
         if TEMP=$(mktemp --directory --tmpdir tumbler-stl-XXXXXX); then
@@ -69,7 +69,7 @@ in
         fi
       '';
     in
-    mkThumbnailerEntry {
+    mkThumbnailerEntry pkgs {
       name = "mzte-thumbnailer-stl";
       mime = "model/stl;";
       exec = "${stlthumb} %i %o";

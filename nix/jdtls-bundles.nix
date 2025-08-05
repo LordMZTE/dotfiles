@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ ... }:
 {
-  output.packages.jdtls-bundles = pkgs.linkFarm "jdtls-bundles" [
+  output.packfuncs.jdtls-bundles = { pkgs, ... }: pkgs.linkFarm "jdtls-bundles" [
     {
       name = "java-debug.jar";
       path = pkgs.fetchurl {

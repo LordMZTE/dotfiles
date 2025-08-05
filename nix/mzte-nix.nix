@@ -3,7 +3,7 @@ let
   flakePkg = ref: (builtins.getFlake ref).packages.${pkgs.system}.default;
 in
 {
-  options.mzte-nix-packages = lib.mkOption { };
+  options.mzte-nix-packfuncs = lib.mkOption { };
 
   config.nixpkgs.overlays = [
     (final: prev: {
@@ -34,13 +34,15 @@ in
     })
   ];
 
-  config.mzte-nix-packages = with pkgs; [
-    nsxiv
-    nsxiv-pipe
+  config.mzte-nix-packfuncs = [
+    ({ pkgs, ... }: pkgs.nsxiv)
+    ({ pkgs, ... }: pkgs.nsxiv-pipe)
   ];
 
-  config.output.packages.mzte-nix = pkgs.symlinkJoin {
+  config.output.packfuncs.mzte-nix = { pkgs, ... }: pkgs.symlinkJoin {
     name = "mzte-nix";
-    paths = lib.concatMap (p: map (o: p.${o}) p.outputs) config.mzte-nix-packages;
+    paths = lib.concatMap
+      (pf: let p = pkgs.callPackage pf { }; in map (o: p.${o}) p.outputs)
+      config.mzte-nix-packfuncs;
   };
 }
