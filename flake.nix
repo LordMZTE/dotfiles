@@ -105,5 +105,6 @@
       in
       modopt.config.output // {
         config = modopt;
-      });
+
+      }) // { nixosModules.default = ./nix/nixos; };
 }
