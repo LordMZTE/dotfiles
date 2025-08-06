@@ -5,8 +5,7 @@ local base_fontsiz = 12
 if fsctx then
     local cmdline = fsctx:getCallerCmd()
 
-    -- If we're starting iamb, use a larger font.
-    if cg.lib.contains(cmdline, function(arg) return arg:match("iamb$") end) then
+    if opt.shouldUseLargeFontForCmdline(cmdline) then
         base_fontsiz = 20
     end
 end

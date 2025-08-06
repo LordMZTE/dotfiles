@@ -1,5 +1,17 @@
+<!
+tmpl:setCacheTime(0)
+
+local base_fontsiz = 12
+if fsctx then
+    local cmdline = fsctx:getCallerCmd()
+
+    if opt.shouldUseLargeFontForCmdline(cmdline) then
+        base_fontsiz = 20
+    end
+end
+!>
 font_family <% opt.term_font %>
-font_size <% opt.mulFontSize(12) %>
+font_size <% opt.mulFontSize(base_fontsiz) %>
 background_opacity 0.8
 
 map ctrl+plus change_font_size all +2.0

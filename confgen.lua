@@ -93,6 +93,14 @@ cg.opt.termSupportsKittyImages = function(term)
     return term:match "kitty" or term:match "ghostty"
 end
 
+-- Returns true iff the given terminal command line (usually the return value of fsctx:getCallerCmd)
+-- should cause a terminal to be launched with a larger font size.
+cg.opt.shouldUseLargeFontForCmdline = function(cmdline)
+    return cg.lib.contains(cmdline, function (arg)
+        return arg:match "iamb$"
+    end)
+end
+
 -- Set the currently active wayland compositor. Updates options for templates as well as gsettings.
 cg.opt.setCurrentWaylandCompositor = function(comp)
     cg.opt.wayland_compositor = comp
