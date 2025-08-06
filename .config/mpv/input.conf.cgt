@@ -1,0 +1,21 @@
+k script-binding mzte-shuffle
+B script-binding mzte-background
+S script-binding mzte-screenshot-open
+l cycle-values loop-playlist "inf" "no"
+Ctrl+i cycle-values vf "sub,lavfi=negate" "" # Invert colors
+
+<! if opt.nix and opt.nix.catppuccin_lut then !>
+# Catppuccin Mocha LUT
+# On the current MPV release at time of writing, toggling this off causes an error. This will be
+# fixed in https://github.com/mpv-player/mpv/pull/16633
+Ctrl+r cycle-values target-lut "<% opt.nix.catppuccin_lut %>" ""
+<! end !>
+
+# Scaling
+Shift+Alt+RIGHT add video-scale-x 0.1
+Shift+Alt+LEFT add video-scale-x -0.1
+Shift+Alt+UP add video-scale-y 0.1
+Shift+Alt+DOWN add video-scale-y -0.1
+
+# Toggle keepaspect
+Alt+a cycle keepaspect
