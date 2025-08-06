@@ -10,5 +10,4 @@
                          (src :formatting :fnlfmt)
                          (src :formatting :prettier)
                          (src :formatting :shfmt)
-                         (src :formatting :stylua)
                          (src :formatting :tidy)]})
