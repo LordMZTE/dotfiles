@@ -21,25 +21,34 @@ cg.opt.term_font = "3270 Nerd Font Mono"
 -- Font size multiplier. Useful for high-res displays.
 cg.opt.font_size_mul = 1
 
-cg.opt.mulFontSize = function(siz)
-    return math.floor(siz * cg.opt.font_size_mul)
-end
+cg.opt.mulFontSize = function(siz) return math.floor(siz * cg.opt.font_size_mul) end
 
---cg.opt.term = {
---    name = "Ghostty",
---    command = "ghostty",
---    exec = "ghostty -e",
---    workdir_command = "ghostty --working-directory=",
---    icon_name = "com.mitchellh.ghostty",
---}
-
-cg.opt.term = {
-    name = "foot",
-    command = "foot",
-    exec = "foot",
-    workdir_command = "foot --working-directory=",
-    icon_name = "foot",
+-- Configurations for all terminals I tend to use. To activate one, set cg.opt.term to it.
+cg.opt.terminal_configurations = {
+    foot = {
+        name = "foot",
+        command = "foot",
+        exec = "foot",
+        workdir_command = "foot --working-directory=",
+        icon_name = "foot",
+    },
+    ghostty = {
+        name = "Ghostty",
+        command = "ghostty",
+        exec = "ghostty -e",
+        workdir_command = "ghostty --working-directory=",
+        icon_name = "com.mitchellh.ghostty",
+    },
+    kitty = {
+        name = "Kitty",
+        command = "kitty",
+        exec = "kitty",
+        workdir_command = "kitty --working-directory=",
+        icon_name = "kitty",
+    },
 }
+
+cg.opt.term = cg.opt.terminal_configurations.foot
 
 cg.opt.cursor = {
     theme = "LyraQ-cursors",
@@ -94,7 +103,7 @@ cg.opt.irc = {
 }
 
 cg.opt.matrix = {
-    mxid = "@lordmzte:mzte.de"
+    mxid = "@lordmzte:mzte.de",
 }
 
 local ctp_rgb = {}
