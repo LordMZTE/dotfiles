@@ -77,6 +77,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     try env.put("MZTE_ENV_SET", "1");
 
+
     // XDG vars
     for ([_][2][]const u8{
         .{ "XDG_DATA_HOME", ".local/share" },
@@ -125,6 +126,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // neovim
     try env.put("EDITOR", "nvim");
+
+    try env.put("TERMINAL", cg.term.exec);
 
     // This is required for reasons unknown for `man` to show colors
     try env.put("GROFF_NO_SGR", "1");

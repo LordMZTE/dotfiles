@@ -40,6 +40,9 @@ pub fn build(b: *std.Build) !void {
 
     const cg_opt = try common.confgenGet(struct {
         gtk_theme: []const u8,
+        term: struct {
+            exec: []const u8,
+        },
     }, b.allocator);
 
     const opts = b.addOptions();

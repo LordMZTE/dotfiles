@@ -8,6 +8,7 @@ let
 in 
 {
   imports = [
+    ./catppuccin-lut.nix
     ./nvim-tools
     ./jvm.nix
     ./nvim-plugins.nix
