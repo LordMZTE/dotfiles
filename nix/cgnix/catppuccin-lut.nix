@@ -3,6 +3,7 @@ let
   png_lut = pkgs.runCommand "catppuccin-mocha.png" { } ''
     ${pkgs.lutgen}/bin/lutgen generate \
       --palette catppuccin-mocha \
+      --preserve --lum 0.5 \
       --output $out
   '';
   lut_convert =
