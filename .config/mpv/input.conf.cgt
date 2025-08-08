@@ -19,3 +19,12 @@ Shift+Alt+DOWN add video-scale-y -0.1
 
 # Toggle keepaspect
 Alt+a cycle keepaspect
+
+# Audio Visualizer
+<! local audio_visualizers = {
+    "[aid1]asplit[ao], showcqt[vo]",
+    "[aid1]asplit[ao], avectorscope[vo]",
+} !>
+Ctrl+a cycle-values lavfi-complex <%
+    table.concat(cg.lib.map(audio_visualizers, function(av) return "\"" .. av .. "\"" end), " ")
+%> ""
