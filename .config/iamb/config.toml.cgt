@@ -1,3 +1,4 @@
+<! tmpl:setCacheTime(0) !>
 default_profile = "main"
 
 [profiles.main]
@@ -9,7 +10,8 @@ user_gutter_width = 16
 normal_after_send = true
 
 <! if not opt.safe_mode then !>
-image_preview = {}
+<! local img_proto = (fsctx and opt.termSupportsKittyImages(fsctx:getCallerEnv().TERM)) and "kitty" or "sixel" !>
+image_preview = { protocol = { type = "<% img_proto %>" } }
 <! end !>
 
 [settings.sort]
