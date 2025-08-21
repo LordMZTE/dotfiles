@@ -1,0 +1,3 @@
+# blacklist magic ConfgenFS files that allow arbitrary code execution
+# TODO: This doesn't work
+blacklist ${HOME}/confgenfs/_cgfs
