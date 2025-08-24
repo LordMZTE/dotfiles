@@ -69,7 +69,7 @@
                 wayland-scanner
                 haxe
                 mpv-unwrapped
-                zig_0_14
+                zig_0_15
               ] ++
               # shorthands for setup.rkt
               builtins.map

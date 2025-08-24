@@ -1,4 +1,5 @@
 const std = @import("std");
+const common = @import("common");
 
 const Mutex = @import("mutex.zig").Mutex;
 
@@ -28,7 +29,7 @@ pub const Command = struct {
 
         if (self.exit) exit.* = .immediate;
 
-        log.info("run cmd: {s}", .{self.command});
+        log.info("run cmd: {f}", .{common.fmt.command(self.command)});
         var child = std.process.Child.init(self.command, alloc);
         {
             env.mtx.lock();

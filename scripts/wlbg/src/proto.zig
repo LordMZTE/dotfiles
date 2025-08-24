@@ -8,6 +8,8 @@ const ffi = @import("ffi.zig");
 
 const State = @import("State.zig");
 
+const native_endian = @import("builtin").cpu.arch.endian();
+
 const ctp_base: [3]u8 = blk: {
     const int = std.fmt.parseInt(u24, opts.ctp_base, 16) catch unreachable;
     break :blk .{ int >> 0x10, int >> 0x08 & 0xff, int & 0xff };
@@ -196,39 +198,40 @@ pub fn query(state: *State) !QueryAnswer {
         const fd = std.mem.bytesToValue(std.posix.fd_t, ancillary_buf[@sizeOf(cmsghdr)..]);
         defer std.posix.close(fd);
 
-        var buf_reader = std.io.bufferedReader((std.fs.File{ .handle = fd }).reader());
-        const r = buf_reader.reader();
+        var read_buffer: [512]u8 = undefined;
+        var reader = (std.fs.File{ .handle = fd }).reader(&read_buffer);
+        const r = &reader.interface;
 
         var ret_arena = std.heap.ArenaAllocator.init(state.alloc);
         errdefer ret_arena.deinit();
         const ret_alloc = ret_arena.allocator();
 
-        const n_bgs = try r.readByte();
+        const n_bgs = try r.takeByte();
         const bgs = try ret_alloc.alloc(BgInfo, n_bgs);
         for (0..n_bgs) |i| {
             const name = try readStringAlloc(r, ret_alloc);
 
-            const width = std.mem.bytesToValue(u32, &try r.readBytesNoEof(4));
-            const height = std.mem.bytesToValue(u32, &try r.readBytesNoEof(4));
+            const width = try r.takeInt(u32, native_endian);
+            const height = try r.takeInt(u32, native_endian);
 
-            const scale_type: ScaleType = switch (try r.readByte()) {
+            const scale_type: ScaleType = switch (try r.takeByte()) {
                 0 => .whole,
                 1 => .preferred,
                 2 => .fractional,
                 else => return error.ProtocolViolation,
             };
 
-            const scale = std.mem.bytesToValue(i32, &try r.readBytesNoEof(4));
+            const scale = try r.takeInt(i32, native_endian);
 
-            const img: BgImg = switch (try r.readByte()) {
-                0 => .{ .color = try r.readBytesNoEof(3) },
+            const img: BgImg = switch (try r.takeByte()) {
+                0 => .{ .color = (try r.takeArray(3)).* },
                 1 => .{ .img = try readStringAlloc(r, ret_alloc) },
                 else => return error.ProtocolViolation,
             };
 
             const pixfmt = std.meta.intToEnum(
                 PixelFormat,
-                try r.readByte(),
+                try r.takeByte(),
             ) catch return error.ProtocolViolation;
 
             bgs[i] = .{
@@ -278,13 +281,9 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
         // 51: number of following ImgReqs
         // ImgReqs
 
-        const mfdwriter = (std.fs.File{ .handle = memfd }).writer();
-        var count_writer = std.io.countingWriter(mfdwriter);
-        var bufw = std.io.BufferedWriter(
-            1024 * 1024, // One MB because we're writing lots of data.
-            @TypeOf(count_writer.writer()),
-        ){ .unbuffered_writer = count_writer.writer() };
-        const wr = bufw.writer();
+        var mfdwritebuf: [1024 * 1024]u8 = undefined;
+        var mfdwriter = (std.fs.File{ .handle = memfd }).writer(&mfdwritebuf);
+        const wr = &mfdwriter.interface;
 
         try wr.writeAll(std.mem.toBytes(
             SwwwTransition.makeRandom(state.rand.random()),
@@ -439,24 +438,27 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                     try writeString(wr, "[dark mode]");
 
                     // Data (monotone catppuccin base background)
+                    // TODO: this sort of splatting with small slices and large splat counts is
+                    // currently incredibly slow in Zig std. Let's just leave it like this and hope
+                    // the next release fixes it.
                     switch (outp.pixfmt) {
                         .rgb => {
                             try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * ctp_base.len))));
-                            try wr.writeBytesNTimes(&ctp_base, width * height);
+                            try wr.splatBytesAll(&ctp_base, width * height);
                         },
                         .bgr => {
                             const color = [3]u8{ ctp_base[2], ctp_base[1], ctp_base[0] };
                             try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * color.len))));
-                            try wr.writeBytesNTimes(&color, width * height);
+                            try wr.splatBytesAll(&color, width * height);
                         },
                         .rgba => {
                             try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * (ctp_base.len + 1)))));
-                            try wr.writeBytesNTimes(&ctp_base ++ .{0xff}, width * height);
+                            try wr.splatBytesAll(&ctp_base ++ .{0xff}, width * height);
                         },
                         .bgra => {
                             const color = [4]u8{ ctp_base[2], ctp_base[1], ctp_base[0], 0xff };
                             try wr.writeAll(&std.mem.toBytes(@as(u32, @intCast(width * height * color.len))));
-                            try wr.writeBytesNTimes(&color, width * height);
+                            try wr.splatBytesAll(&color, width * height);
                         },
                     }
 
@@ -481,8 +483,8 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
             try wr.writeByte(0);
         }
 
-        try bufw.flush();
-        std.mem.bytesAsValue(u64, iov_data[8..]).* = @truncate(count_writer.bytes_written); // length of shmfd
+        try wr.flush();
+        std.mem.bytesAsValue(u64, iov_data[8..]).* = @truncate(mfdwriter.pos); // length of shmfd
     }
 
     std.debug.assert(try std.posix.sendmsg(sock, &.{
@@ -496,7 +498,7 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     }, 0) == 16);
 
     var resp_buf: [1024]u8 = undefined;
-    const read = try (std.fs.File{ .handle = sock }).reader().readAll(&resp_buf);
+    const read = try (std.fs.File{ .handle = sock }).readAll(&resp_buf);
     if (read < 8 or std.mem.bytesToValue(u64, resp_buf[0..read][0..8]) != 5) {
         std.log.warn("daemon sent bad response to img command", .{});
     }
@@ -519,11 +521,12 @@ fn writeString(writer: anytype, data: []const u8) !void {
     try writer.writeAll(data);
 }
 
-fn readStringAlloc(reader: anytype, alloc: std.mem.Allocator) ![]u8 {
-    const len = std.mem.bytesToValue(u32, &try reader.readBytesNoEof(4));
+fn readStringAlloc(reader: *std.Io.Reader, alloc: std.mem.Allocator) ![]u8 {
+    const len = try reader.takeInt(u32, native_endian);
     const name = try alloc.alloc(u8, len);
     errdefer alloc.free(name);
-    try reader.readNoEof(name);
+
+    try reader.readSliceAll(name);
 
     return name;
 }

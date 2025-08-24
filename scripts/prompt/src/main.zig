@@ -14,7 +14,9 @@ pub fn main() !void {
 
     const verb = std.mem.span(std.os.argv[1]);
 
-    const stdout = std.io.getStdOut();
+    var stdout_buf: [1024]u8 = undefined;
+    var stdout = std.fs.File.stdout().writer(&stdout_buf);
+
     if (std.mem.eql(u8, verb, "setup")) {
         if (std.os.argv.len < 3)
             return error.NotEnoughArguments;
@@ -22,9 +24,8 @@ pub fn main() !void {
         const shell = std.meta.stringToEnum(Shell, std.mem.span(std.os.argv[2])) orelse
             return error.InvalidShell;
 
-        var stdout_buf = std.io.bufferedWriter(stdout.writer());
-        try shell.writeInitCode(std.mem.span(std.os.argv[0]), stdout_buf.writer());
-        try stdout_buf.flush();
+        try shell.writeInitCode(std.mem.span(std.os.argv[0]), &stdout.interface);
+        try stdout.interface.flush();
     } else if (std.mem.eql(u8, verb, "show")) {
         const options = prompt.Options{
             .status = try std.fmt.parseInt(
@@ -55,14 +56,12 @@ pub fn main() !void {
             ) orelse return error.MissingEnv) orelse return error.InvalidShell,
         };
 
-        var buf: [1024 * 8]u8 = undefined;
-        var fbs = std.io.fixedBufferStream(&buf);
-        prompt.render(fbs.writer(), options) catch |e| {
-            fbs.reset();
-            fbs.writer().print("Render Error: {s}\n|> ", .{@errorName(e)}) catch
+        prompt.render(&stdout.interface, options) catch |e| {
+            stdout.interface.end = 0;
+            stdout.interface.print("Render Error: {s}\n|> ", .{@errorName(e)}) catch
                 @panic("emergency prompt failed to print");
         };
-        try stdout.writeAll(fbs.getWritten());
+        try stdout.interface.flush();
     } else {
         return error.UnknownCommand;
     }

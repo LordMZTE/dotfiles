@@ -22,12 +22,13 @@ pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
     };
     defer if (cgopt_env == null) alloc.free(optjson_path);
 
+    var readbuf: [1024]u8 = undefined;
     var file = try std.fs.cwd().openFileZ(optjson_path, .{});
     defer file.close();
-    var buf_reader = std.io.bufferedReader(file.reader());
 
-    var reader = std.json.Reader(1024 * 8, @TypeOf(buf_reader.reader()))
-        .init(alloc, buf_reader.reader());
+    var file_reader = file.reader(&readbuf);
+
+    var reader = std.json.Reader.init(alloc, &file_reader.interface);
     defer reader.deinit();
 
     const ret = try std.json.parseFromTokenSource(T, alloc, &reader, confgen_json_opt);

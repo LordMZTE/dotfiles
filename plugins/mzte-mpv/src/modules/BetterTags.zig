@@ -90,8 +90,9 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
         title = std.mem.span(media_title_cstr);
     }
 
-    var out_buf = std.io.bufferedWriter(std.io.getStdOut().writer());
-    const out = out_buf.writer();
+    var out_buf: [1024]u8 = undefined;
+    var out_fw = std.fs.File.stdout().writer(&out_buf);
+    const out = &out_fw.interface;
 
     const textwidth = 100;
 
@@ -110,7 +111,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
 
     if (title != null or description != null) {
         try ansiterm.format.updateStyle(out, sepstyle, null);
-        try out.writeBytesNTimes(sep_thick, sepwidth);
+        try out.splatBytesAll(sep_thick, sepwidth);
         try out.writeByte('\n');
 
         if (title) |t| {
@@ -119,7 +120,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
             try out.writeByte('\n');
 
             try ansiterm.format.updateStyle(out, sepstyle, titlestyle);
-            try out.writeBytesNTimes(if (description != null) sep_thin else sep_thick, sepwidth);
+            try out.splatBytesAll(if (description != null) sep_thin else sep_thick, sepwidth);
             try out.writeByte('\n');
         }
 
@@ -153,7 +154,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
             }
 
             try ansiterm.format.updateStyle(out, sepstyle, null);
-            try out.writeBytesNTimes(sep_thick, sepwidth);
+            try out.splatBytesAll(sep_thick, sepwidth);
             try out.writeByte('\n');
         }
     }
@@ -170,7 +171,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
     }
 
     try ansiterm.format.resetStyle(out);
-    try out_buf.flush();
+    try out.flush();
 }
 
 fn multilineStringWidth(str: []const u8) usize {

@@ -1,4 +1,6 @@
 const std = @import("std");
+const common = @import("common");
+
 const info = @import("info.zig");
 
 pub const std_options = std.Options{
@@ -59,7 +61,7 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
         }
     }
 
-    std.log.info("child argv: {s}", .{argv});
+    std.log.info("child argv: {f}", .{common.fmt.command(argv)});
 
     var child = std.process.Child.init(argv, alloc);
     _ = try child.spawnAndWait();

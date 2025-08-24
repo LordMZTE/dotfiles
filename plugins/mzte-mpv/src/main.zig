@@ -15,7 +15,7 @@ pub const mztecommon_opts = common.Opts{
     .log_clear_line = true,
 };
 
-export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.C) c_int {
+export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.c) c_int {
     tryMain(handle) catch |e| {
         if (@errorReturnTrace()) |ert|
             std.debug.dumpStackTrace(ert.*);

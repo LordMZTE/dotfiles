@@ -5,15 +5,20 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const lib = b.addSharedLibrary(.{
-        .name = "mzte-mpv",
+    const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .link_libc = true,
         .target = target,
         .optimize = optimize,
     });
-    lib.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    lib.root_module.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
+
+    const lib = b.addLibrary(.{
+        .name = "mzte-mpv",
+        .root_module = mod,
+        .linkage = .dynamic,
+    });
+    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
 
     const cg_opts = try common.confgenGet(struct {
         catppuccin: struct { base: []const u8 },
@@ -23,13 +28,13 @@ pub fn build(b: *std.Build) !void {
 
     opts.addOption([]const u8, "ctp_base", cg_opts.catppuccin.base);
 
-    lib.root_module.addImport("opts", opts.createModule());
+    mod.addImport("opts", opts.createModule());
 
     // Linking MPV for a plugin is usually undesirable, but it seems to work anyways.
     // This is here because Zig will otherwise not find the necessary header files on NixOS,
     // and there appears to be no way to obtain an include path using pkg-config without
     // also linking.
-    lib.root_module.linkSystemLibrary("mpv", .{});
+    mod.linkSystemLibrary("mpv", .{});
 
     const install_step = b.addInstallArtifact(lib, .{
         // this is not a standard MPV installation path, but instead one that makes sense.

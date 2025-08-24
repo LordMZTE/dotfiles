@@ -44,24 +44,28 @@ pub fn build(b: *std.Build) !void {
 
     const scanner = Scanner.create(b, .{});
 
-    const exe = b.addExecutable(.{
-        .name = "mzteriver",
+    const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
 
-    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    exe.root_module.addImport("opts", opts.createModule());
-    exe.root_module.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
+    const exe = b.addExecutable(.{
+        .name = "mzteriver",
+        .root_module = mod,
+    });
+
+    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("opts", opts.createModule());
+    mod.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
     scanner.addCustomProtocol(b.path("river-control-unstable-v1.xml"));
 
     scanner.generate("zriver_control_v1", 1);
     scanner.generate("wl_seat", 7);
 
-    exe.root_module.linkSystemLibrary("wayland-client", .{});
+    mod.linkSystemLibrary("wayland-client", .{});
 
     b.installArtifact(exe);
 

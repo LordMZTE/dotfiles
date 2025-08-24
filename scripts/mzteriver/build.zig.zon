@@ -6,8 +6,8 @@
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
         .wayland = .{
-            .url = "git+https://codeberg.org/ifreund/zig-wayland.git#91dcb18041e92fb73d0c09c6b7416c24d5295923",
-            .hash = "zig_wayland-0.3.0-dev-r73zYTzIAQAOXkH-9fjwrtXiGA7nDbOOkm-a_WcnQbQE",
+            .url = "git+https://codeberg.org/ifreund/zig-wayland.git#1b5c038ec10da20ed3a15b0b2a6db1c21383e8ea",
+            .hash = "wayland-0.5.0-dev-lQa1khrMAQDJDwYFKpdH3HizherB7sHo5dKMECfvxQHe",
         },
     },
 

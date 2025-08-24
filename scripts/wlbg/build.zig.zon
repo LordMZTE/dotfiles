@@ -8,5 +8,9 @@
         .common = .{
             .path = "../../lib/common-zig",
         },
+        .wayland = .{
+            .url = "git+https://codeberg.org/ifreund/zig-wayland.git#1b5c038ec10da20ed3a15b0b2a6db1c21383e8ea",
+            .hash = "wayland-0.5.0-dev-lQa1khrMAQDJDwYFKpdH3HizherB7sHo5dKMECfvxQHe",
+        },
     },
 }

@@ -5,10 +5,6 @@ const opts = @import("opts");
 const init = @import("init.zig").init;
 
 pub const std_options = std.Options{
-    .log_level = switch (@import("builtin").mode) {
-        .Debug => .debug,
-        else => .info,
-    },
     .logFn = @import("common").logFn,
 };
 
@@ -37,12 +33,12 @@ pub fn main() !void {
         std.log.info("running in launch mode", .{});
 
         const logfd = logf: {
-            const logf_path = try std.fmt.allocPrintZ(
-                alloc,
+            var logf_pathbuf: [std.fs.max_path_bytes]u8 = undefined;
+            const logf_path = try std.fmt.bufPrintZ(
+                &logf_pathbuf,
                 "/tmp/mzteriver-{}-{}.log",
                 .{ std.os.linux.getuid(), std.os.linux.getpid() },
             );
-            defer alloc.free(logf_path);
 
             std.log.info("river log file: {s}", .{logf_path});
 
@@ -67,21 +63,22 @@ pub fn main() !void {
         }
         std.posix.close(logfd);
 
-        var env = std.BoundedArray(?[*:0]const u8, 0xff).init(0) catch unreachable;
+        var envbuf: [0xff]?[*:0]const u8 = undefined;
+        var env = std.ArrayList(?[*:0]const u8).initBuffer(&envbuf);
         const envp: [*:null]?[*:0]const u8 = env: {
-            try env.appendSlice(std.os.environ);
+            try env.appendSliceBounded(std.os.environ);
 
-            try env.append("XKB_DEFAULT_LAYOUT=de");
-            try env.append("QT_QPA_PLATFORM=wayland");
-            try env.append("XDG_CURRENT_DESKTOP=river");
+            try env.appendBounded("XKB_DEFAULT_LAYOUT=de");
+            try env.appendBounded("QT_QPA_PLATFORM=wayland");
+            try env.appendBounded("XDG_CURRENT_DESKTOP=river");
 
             if (opts.cg.nvidia) {
-                try env.append("WLR_NO_HARDWARE_CURSORS=1");
+                try env.appendBounded("WLR_NO_HARDWARE_CURSORS=1");
             }
 
             // manually add sentinel
-            try env.append(null);
-            break :env @ptrCast(env.slice().ptr);
+            try env.appendBounded(null);
+            break :env @ptrCast(env.items.ptr);
         };
 
         return std.posix.execvpeZ("river", &[_:null]?[*:0]const u8{"river"}, envp);

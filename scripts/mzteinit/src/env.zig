@@ -1,4 +1,5 @@
 const std = @import("std");
+const common = @import("common");
 const cg = @import("opts").cg;
 
 const sysdaemon = @import("sysdaemon.zig");
@@ -8,8 +9,6 @@ const util = @import("util.zig");
 const msg = @import("message.zig").msg;
 
 const log = std.log.scoped(.env);
-
-const delimitedWriter = @import("common").delimitedWriter;
 
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
@@ -33,8 +32,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // PATH
     {
-        var bufstream = std.io.fixedBufferStream(&buf);
-        var b = delimitedWriter(bufstream.writer(), ':');
+        var bufstream = std.Io.Writer.fixed(&buf);
+        var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ':' };
 
         for ([_][]const u8{
             ".nix-profile/bin",
@@ -72,11 +71,10 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
             try b.push(system_path);
         }
 
-        try env.put("PATH", bufstream.getWritten());
+        try env.put("PATH", bufstream.buffered());
     }
 
     try env.put("MZTE_ENV_SET", "1");
-
 
     // XDG vars
     for ([_][2][]const u8{
@@ -90,8 +88,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // XDG_DATA_DIRS
     {
-        var bufstream = std.io.fixedBufferStream(&buf);
-        var b = delimitedWriter(bufstream.writer(), ':');
+        var bufstream = std.Io.Writer.fixed(&buf);
+        var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ':' };
 
         // Default value taken from archwiki.
         // https://wiki.archlinux.org/title/XDG_Base_Directory
@@ -99,13 +97,13 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
         inline for (.{ ".nix-profile/share", ".local/share" }) |base| {
             const full = try std.fmt.bufPrint(&sbuf, "{s}/" ++ base, .{home});
-            if (!std.mem.containsAtLeast(u8, bufstream.getWritten(), 1, full)) {
+            if (!std.mem.containsAtLeast(u8, bufstream.buffered(), 1, full)) {
                 log.info("adding " ++ base ++ " to XDG_DATA_DIRS", .{});
                 try b.push(full);
             }
         }
 
-        try env.put("XDG_DATA_DIRS", bufstream.getWritten());
+        try env.put("XDG_DATA_DIRS", bufstream.buffered());
     }
 
     // set shell to nu to prevent anything from defaulting to mzteinit
@@ -134,8 +132,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // Java options
     {
-        var bufstream = std.io.fixedBufferStream(&buf);
-        var b = delimitedWriter(bufstream.writer(), ' ');
+        var bufstream = std.Io.Writer.fixed(&buf);
+        var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ' ' };
 
         // anti-alias text
         try b.push("-Dawt.useSystemAAFontSettings=on");
@@ -145,7 +143,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         try b.push("-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
         try b.push("-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 
-        try env.put("_JAVA_OPTIONS", bufstream.getWritten());
+        try env.put("_JAVA_OPTIONS", bufstream.buffered());
     }
 
     // GUI options
@@ -173,8 +171,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
             };
             defer dir.close();
 
-            var bufstream = std.io.fixedBufferStream(&buf);
-            var b = delimitedWriter(bufstream.writer(), ':');
+            var bufstream = std.Io.Writer.fixed(&buf);
+            var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ':' };
 
             var iter = dir.iterate();
             while (try iter.next()) |entry| {
@@ -187,7 +185,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
                 try b.push(dpath);
             }
 
-            try env.put("ICONPATH", bufstream.getWritten());
+            try env.put("ICONPATH", bufstream.buffered());
         }
     }
 
@@ -199,8 +197,8 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
     // LUA_CPATH
     {
-        var bufstream = std.io.fixedBufferStream(&buf);
-        var b = delimitedWriter(bufstream.writer(), ';');
+        var bufstream = std.Io.Writer.fixed(&buf);
+        var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ';' };
 
         const fixed_home = [_][]const u8{
             ".local/lib/lua/?.so",
@@ -211,7 +209,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         }
         try b.writer.writeAll(";;");
 
-        try env.put("LUA_CPATH", bufstream.getWritten());
+        try env.put("LUA_CPATH", bufstream.buffered());
     }
 
     return true;
@@ -240,7 +238,7 @@ pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
         ));
     }
 
-    log.debug("sysdaemon env cmd: {}", .{util.fmtCommand(argv.items)});
+    log.debug("sysdaemon env cmd: {f}", .{common.fmt.command(argv.items)});
 
     var child = std.process.Child.init(argv.items, env.hash_map.allocator);
     const term = try child.spawnAndWait();

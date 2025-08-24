@@ -4,14 +4,18 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "openbrowser",
+    const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = mode,
     });
 
-    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+    const exe = b.addExecutable(.{
+        .name = "openbrowser",
+        .root_module = mod,
+    });
+
+    mod.addImport("common", b.dependency("common", .{}).module("common"));
 
     b.installArtifact(exe);
 

@@ -47,8 +47,9 @@ pub fn onEvent(self: *ScreenshotOpen, mpv: *c.mpv_handle, ev: *c.mpv_event) !voi
 }
 
 fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
-    const tmpf_path = try std.fmt.allocPrintZ(
-        std.heap.c_allocator,
+    var tmpf_buf: [std.fs.max_path_bytes]u8 = undefined;
+    const tmpf_path = try std.fmt.bufPrintZ(
+    &tmpf_buf,
         "/tmp/mzte-mpv-screenshot-{}-{}.jpg",
         .{ std.os.linux.getuid(), @rem(std.time.milliTimestamp(), std.time.ms_per_day) },
     );

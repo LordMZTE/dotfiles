@@ -34,15 +34,13 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
         };
         defer cmdline_f.close();
 
+        var cmdline_reader = cmdline_f.reader(&buf);
+
         // read first part of null-separated data (binary path)
-        const exepath = epath: {
-            var fbs = std.io.fixedBufferStream(&buf);
-            cmdline_f.reader().streamUntilDelimiter(fbs.writer(), 0, null) catch |e| switch (e) {
-                // occurs if there's no delimiter
-                error.EndOfStream => {},
-                else => return e,
-            };
-            break :epath fbs.getWritten();
+        const exepath = cmdline_reader.interface.takeDelimiterExclusive(0) catch |e| switch (e) {
+            // occurs if the file is empty, continue
+            error.EndOfStream => continue,
+            else => return e,
         };
 
         var found_all = true;

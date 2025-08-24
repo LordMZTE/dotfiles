@@ -46,11 +46,20 @@ pub fn build(b: *std.Build) !void {
     opts.addOption([:0]const u8, "term_font", cg_opt.term_font);
 
     if (!compiler_only) {
-        const lib = b.addSharedLibrary(.{
-            .name = "mzte-nv",
+        const lib_mod = b.addModule("mzte-nv", .{
             .root_source_file = b.path("src/main.zig"),
             .target = target,
             .optimize = mode,
+        });
+
+        const lib = b.addLibrary(.{
+            .name = "mzte-nv",
+            .linkage = .dynamic,
+            .root_module = lib_mod,
+
+            // Compiler segfaults without this
+            // TODO: investigate
+            .use_llvm = true,
         });
 
         if (b.lazyDependency(
@@ -73,12 +82,16 @@ pub fn build(b: *std.Build) !void {
         b.getInstallStep().dependOn(&b.addInstallFile(lib.getEmittedBin(), "share/nvim/mzte-nv.so").step);
     }
 
-    // this is the install step for the lua config compiler binary
-    const compiler = b.addExecutable(.{
-        .name = "mzte-nv-compile",
+    const compiler_mod = b.createModule(.{
         .root_source_file = b.path("src/compiler.zig"),
         .target = target,
         .optimize = mode,
+    });
+
+    // this is the install step for the lua config compiler binary
+    const compiler = b.addExecutable(.{
+        .name = "mzte-nv-compile",
+        .root_module = compiler_mod,
     });
 
     compiler.linkLibC();

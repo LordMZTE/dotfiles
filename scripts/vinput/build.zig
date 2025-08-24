@@ -9,16 +9,20 @@ pub fn build(b: *std.Build) void {
     const scanner = Scanner.create(b, .{});
     const wayland_mod = b.createModule(.{ .root_source_file = scanner.result });
 
-    const exe = b.addExecutable(.{
-        .name = "vinput",
+    const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = mode,
         .link_libc = true,
     });
 
-    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    exe.root_module.addImport("wayland", wayland_mod);
+    const exe = b.addExecutable(.{
+        .name = "vinput",
+        .root_module = mod,
+    });
+
+    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
 
@@ -28,7 +32,7 @@ pub fn build(b: *std.Build) void {
     scanner.generate("wl_shm", 1);
     scanner.generate("xdg_wm_base", 2);
 
-    exe.root_module.linkSystemLibrary("wayland-client", .{});
+    mod.linkSystemLibrary("wayland-client", .{});
 
     b.installArtifact(exe);
 

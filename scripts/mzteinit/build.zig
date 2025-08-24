@@ -8,23 +8,31 @@ pub fn build(b: *std.Build) !void {
     const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi_term");
     const common_mod = b.dependency("common", .{}).module("common");
 
+    const mod = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     const exe = b.addExecutable(.{
         .name = "mzteinit",
-        .root_source_file = b.path("src/main.zig"),
+        .root_module = mod,
+    });
+
+    const mzteinitctl_mod = b.createModule(.{
+        .root_source_file = b.path("src/mzteinitctl.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const mzteinitctl = b.addExecutable(.{
         .name = "mzteinitctl",
-        .root_source_file = b.path("src/mzteinitctl.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = mzteinitctl_mod,
     });
 
-    inline for (.{ mzteinitctl, exe }) |e| {
-        e.root_module.addImport("ansi-term", ansi_term_mod);
-        e.root_module.addImport("common", common_mod);
+    inline for (.{ mzteinitctl_mod, mod }) |m| {
+        m.addImport("ansi-term", ansi_term_mod);
+        m.addImport("common", common_mod);
     }
 
     // TODO: Broken, see: https://github.com/ziglang/zig/issues/20525

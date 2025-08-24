@@ -12,12 +12,7 @@ pub fn luaPush(l: *c.lua_State) void {
     });
 }
 
-fn fmtEscapedFn(
-    s: []const u8,
-    comptime _: []const u8,
-    _: std.fmt.FormatOptions,
-    writer: anytype,
-) !void {
+fn fmtEscapedFn(s: []const u8, writer: *std.Io.Writer) !void {
     for (s) |ch| {
         if (ch == '%')
             try writer.writeAll("%%")
@@ -26,7 +21,7 @@ fn fmtEscapedFn(
     }
 }
 
-fn fmtEscaped(s: []const u8) std.fmt.Formatter(fmtEscapedFn) {
+fn fmtEscaped(s: []const u8) std.fmt.Alt([]const u8, fmtEscapedFn) {
     return .{ .data = s };
 }
 
@@ -36,17 +31,18 @@ fn lFormatSeries(l: *c.lua_State) !c_int {
     const percentage = c.lua_tointeger(l, 3);
     const done = c.lua_toboolean(l, 4) != 0;
 
-    var buf = std.BoundedArray(u8, 1024).init(0) catch unreachable;
-    var del = common.delimitedWriter(buf.writer(), ' ');
+    var buf: [1024]u8 = undefined;
+    var bufw = std.Io.Writer.fixed(&buf);
+    var del = common.DelimitedWriter{ .writer = &bufw, .delimiter = ' ' };
 
     const msg_is_title = title != null and message != null and std.mem.eql(u8, title.?, message.?);
 
     if (title) |t|
-        try del.print("%#Title#{s}", .{fmtEscaped(t)});
+        try del.print("%#Title#{f}", .{fmtEscaped(t)});
 
     if (message) |m|
         if (!msg_is_title)
-            try del.print("%#ModeMsg#{s}", .{fmtEscaped(m)});
+            try del.print("%#ModeMsg#{f}", .{fmtEscaped(m)});
 
     if (percentage != 0)
         try del.print("%#NONE#(%#Number#{d}%%%#NONE#)", .{percentage});
@@ -55,7 +51,7 @@ fn lFormatSeries(l: *c.lua_State) !c_int {
 
     try del.writer.writeAll("%#NONE#");
 
-    ffi.luaPushString(l, buf.slice());
+    ffi.luaPushString(l, bufw.buffered());
     return 1;
 }
 
@@ -65,8 +61,9 @@ fn lFormatClient(l: *c.lua_State) !c_int {
     // 3: array of series messages
     c.luaL_checktype(l, 3, c.LUA_TTABLE);
 
-    var buf = std.BoundedArray(u8, 1024).init(0) catch unreachable;
-    var del = common.delimitedWriter(buf.writer(), ' ');
+    var buf: [1024]u8 = undefined;
+    var bufw = std.Io.Writer.fixed(&buf);
+    var del = common.DelimitedWriter{ .writer = &bufw, .delimiter = ' ' };
 
     try del.print("%#Special#[{s}] %#Comment#{s}", .{ client_name, spinner });
 
@@ -89,6 +86,6 @@ fn lFormatClient(l: *c.lua_State) !c_int {
         try del.push("%#Comment#󰇘");
     }
 
-    ffi.luaPushString(l, buf.slice());
+    ffi.luaPushString(l, bufw.buffered());
     return 1;
 }

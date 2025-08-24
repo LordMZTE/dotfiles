@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 const at = @import("ansi-term");
 const common = @import("common");
 
@@ -27,14 +28,14 @@ pub fn main() void {
             const trace_s = s: {
                 const deb_inf = std.debug.getSelfDebugInfo() catch break :s null;
 
-                var fbs = std.io.fixedBufferStream(&buf);
+                var fbs = std.Io.Writer.fixed(&buf);
                 std.debug.writeStackTrace(
                     trace.*,
-                    fbs.writer(),
+                    &fbs,
                     deb_inf,
                     .no_color,
                 ) catch break :s null;
-                break :s fbs.getWritten();
+                break :s fbs.buffered();
             };
 
             if (trace_s) |s| {
@@ -52,11 +53,16 @@ pub fn main() void {
 }
 
 fn tryMain() !void {
-    var stdout = std.io.bufferedWriter(std.io.getStdOut().writer());
+    var stdout_f = std.fs.File.stdout();
+    var stdout_buf: [1024]u8 = undefined;
+    var stdout = stdout_f.writer(&stdout_buf);
 
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const alloc = gpa.allocator();
+    var dbg_alloc = if (builtin.mode == .Debug) std.heap.DebugAllocator(.{}){} else {};
+    defer if (builtin.mode == .Debug) {
+        _ = dbg_alloc.deinit();
+    };
+
+    const alloc = if (builtin.mode == .Debug) dbg_alloc.allocator() else std.heap.smp_allocator;
 
     var launch_cmd: ?[][]const u8 = null;
     defer if (launch_cmd) |cmd| alloc.free(cmd);
@@ -77,8 +83,8 @@ fn tryMain() !void {
     defer env_map.data.deinit();
 
     if (env_map.data.get("MZTEINIT")) |_| {
-        try stdout.writer().writeAll("mzteinit running already, starting shell\n");
-        try stdout.flush();
+        try stdout.interface.writeAll("mzteinit running already, starting shell\n");
+        try stdout.interface.flush();
         var child = std.process.Child.init(launch_cmd orelse &.{"nu"}, alloc);
         _ = try child.spawnAndWait();
         return;
@@ -154,19 +160,19 @@ fn tryMain() !void {
     }
 
     while (true) {
-        try stdout.writer().writeAll(util.ansi_clear);
+        try stdout.interface.writeAll(util.ansi_clear);
 
-        const cmd = ui(&stdout, entries) catch |e| {
+        const cmd = ui(&stdout.interface, entries) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             return e;
         };
 
-        try stdout.writer().writeAll(util.ansi_clear);
-        try stdout.flush();
+        try stdout.interface.writeAll(util.ansi_clear);
+        try stdout.interface.flush();
 
         var exit = util.ExitMode.run;
         cmd.run(alloc, &exit, &env_map) catch |e| {
-            try stdout.writer().print("Error running command: {}\n\n", .{e});
+            try stdout.interface.print("Error running command: {}\n\n", .{e});
             continue;
         };
 
@@ -174,17 +180,16 @@ fn tryMain() !void {
             .run => {},
             .immediate => return,
             .delayed => {
-                try stdout.writer().writeAll("Goodbye!");
-                try stdout.flush();
-                std.time.sleep(2 * std.time.ns_per_s);
+                try stdout.interface.writeAll("Goodbye!");
+                try stdout.interface.flush();
+                std.Thread.sleep(2 * std.time.ns_per_s);
                 return;
             },
         }
     }
 }
 
-fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
-    const w = buf_writer.writer();
+fn ui(w: *std.Io.Writer, entries: []command.Command) !command.Command {
     var style: ?at.style.Style = null;
 
     try @import("figlet.zig").writeFiglet(w);
@@ -216,7 +221,7 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
     try at.format.resetStyle(w);
     style = .{};
 
-    try buf_writer.flush();
+    try w.flush();
 
     const old_termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     var new_termios = old_termios;
@@ -227,7 +232,7 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
     var cmd: ?command.Command = null;
     var c: [1]u8 = undefined;
     while (cmd == null) {
-        std.debug.assert(try std.io.getStdIn().read(&c) == 1);
+        std.debug.assert(try std.fs.File.stdin().read(&c) == 1);
         if (c[0] == '#') {
             return error.ManualEmergency;
         }
@@ -240,7 +245,7 @@ fn ui(buf_writer: anytype, entries: []command.Command) !command.Command {
             }
         } else {
             try w.print("Unknown command '{s}'\n", .{c});
-            try buf_writer.flush();
+            try w.flush();
         }
     }
     try std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, old_termios);

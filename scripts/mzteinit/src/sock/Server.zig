@@ -30,19 +30,26 @@ pub fn run(self: *Server) !void {
 
 pub fn handleConnection(self: *Server, con: std.net.Server.Connection) !void {
     defer con.stream.close();
+
+    var write_buf: [512]u8 = undefined;
+    var read_buf: [512]u8 = undefined;
+
+    var writer = con.stream.writer(&write_buf);
+    var reader = con.stream.reader(&read_buf);
+
     while (true) {
-        const msg = message.Serverbound.read(con.stream.reader(), self.alloc) catch |e| {
+        const msg = message.readMessage(message.Serverbound, reader.interface(), self.alloc) catch |e| {
             switch (e) {
                 error.EndOfStream => return,
                 else => return e,
             }
         };
-        defer msg.deinit(self.alloc);
+        defer message.deinitMessage(message.Serverbound, msg, self.alloc);
 
         switch (msg) {
             .ping => {
                 log.info("got ping!", .{});
-                try (message.Clientbound{ .pong = .{} }).write(con.stream.writer());
+                try message.writeMessage(message.Clientbound, .pong, &writer.interface);
             },
             .getenv => |key| {
                 self.env.mtx.lock();
@@ -56,8 +63,11 @@ pub fn handleConnection(self: *Server, con: std.net.Server.Connection) !void {
                     else
                         null,
                 } };
-                try payload.write(con.stream.writer());
+
+                try message.writeMessage(message.Clientbound, payload, &writer.interface);
             },
         }
+
+        try writer.interface.flush();
     }
 }

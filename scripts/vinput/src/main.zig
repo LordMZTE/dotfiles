@@ -1,5 +1,7 @@
 const std = @import("std");
+const common = @import("common");
 const c = @import("ffi.zig").c;
+
 const ClipboardConnection = @import("ClipboardConnection.zig");
 
 pub const std_options = std.Options{
@@ -58,7 +60,7 @@ pub fn main() !void {
         filename,
     };
 
-    std.log.info("invoking editor with command {s}", .{&editor_argv});
+    std.log.info("invoking editor with command {f}", .{common.fmt.command(&editor_argv)});
 
     var nvide_child = std.process.Child.init(&editor_argv, alloc);
     _ = try nvide_child.spawnAndWait();

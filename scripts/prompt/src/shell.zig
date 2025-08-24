@@ -1,3 +1,5 @@
+const std = @import("std");
+
 const setup_fmtstrs = struct {
     const fish =
         \\functions -e fish_mode_prompt
@@ -12,7 +14,6 @@ const setup_fmtstrs = struct {
         \\
     ;
     const nu =
-        // https://git.mzte.de/LordMZTE/nu-plugin-jobcontrol
         \\$env.PROMPT_COMMAND = {{ ||
         \\    $env.MZPROMPT_SHELL = "nu"
         \\    $env.MZPROMPT_STATUS = $env.LAST_EXIT_CODE
@@ -66,7 +67,7 @@ pub const Shell = enum {
     bash,
     julia,
 
-    pub fn writeInitCode(self: Shell, argv0: []const u8, writer: anytype) !void {
+    pub fn writeInitCode(self: Shell, argv0: []const u8, writer: *std.Io.Writer) !void {
         switch (self) {
             inline else => |s| {
                 const fmt = @field(setup_fmtstrs, @tagName(s));

@@ -1,7 +1,9 @@
 const std = @import("std");
 const root = @import("root");
 
-pub usingnamespace @import("delimited_writer.zig");
+pub const fmt = @import("fmt.zig");
+
+pub const DelimitedWriter = @import("DelimitedWriter.zig");
 
 pub const Opts = struct {
     log_pfx: ?[]const u8 = null,
@@ -17,7 +19,7 @@ pub var log_file: ?std.fs.File = null;
 pub fn logFn(
     comptime level: std.log.Level,
     comptime scope: @TypeOf(.enum_literal),
-    comptime fmt: []const u8,
+    comptime fmtstr: []const u8,
     args: anytype,
 ) void {
     const color = log_file == null and stderr_isatty orelse blk: {
@@ -26,10 +28,17 @@ pub fn logFn(
         break :blk isatty;
     };
 
-    const logfile = log_file orelse std.io.getStdErr();
+    const logfile = log_file; // Copied here to pretend this is atomic.
+
+    var writebuf: [512]u8 = undefined;
+    var writer = if (logfile) |f| fwriter: {
+        var fwriter = f.writerStreaming(&writebuf);
+        break :fwriter &fwriter.interface;
+    } else std.debug.lockStderrWriter(&writebuf);
+    defer if (logfile == null) std.debug.unlockStderrWriter();
 
     if (opts.log_clear_line) {
-        logfile.writer().writeAll("\x1b[2K\r") catch {};
+        writer.writeAll("\x1b[2K\r") catch {};
     }
 
     const scope_prefix = if (opts.log_pfx) |lpfx|
@@ -56,7 +65,9 @@ pub fn logFn(
                 .err => "E: ",
             };
 
-            logfile.writer().print(scope_prefix ++ lvl_prefix ++ fmt ++ "\n", args) catch {};
+            writer.print(scope_prefix ++ lvl_prefix ++ fmtstr ++ "\n", args) catch {};
         },
     }
+
+    writer.flush() catch {};
 }

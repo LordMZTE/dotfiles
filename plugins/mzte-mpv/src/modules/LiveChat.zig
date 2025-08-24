@@ -41,7 +41,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
 
                 // This needs to be done here instead of the separate thread. MPV will instantly
                 // give up if there's nothing to be read from the pipe when the command is called.
-                try (std.fs.File{ .handle = pipe[1] }).writer().writeAll(
+                try (std.fs.File{ .handle = pipe[1] }).writeAll(
                     \\WEBVTT - MZTE-MPV transcoded live stream chat
                     \\
                     \\00:00.000 --> 00:01.000
@@ -67,26 +67,26 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
     }
 }
 
-fn transcoderThread(jsonf: std.fs.File, pipefd: std.c.fd_t) !void {
+fn transcoderThread(jsonf: std.fs.File, pipefd: std.posix.fd_t) !void {
     defer jsonf.close();
     var pipe = std.fs.File{ .handle = pipefd };
     defer pipe.close();
 
-    var writer = std.io.bufferedWriter(pipe.writer());
+    var write_buf: [1024 * 4]u8 = undefined;
+    var fwriter = pipe.writerStreaming(&write_buf);
+    const writer = &fwriter.interface;
 
-    var reader = std.io.bufferedReader(jsonf.reader());
-    var line_buf: std.ArrayListUnmanaged(u8) = .empty;
-    defer line_buf.deinit(std.heap.c_allocator);
+    var read_buf: [1024 * 4]u8 = undefined;
+    var freader = jsonf.reader(&read_buf);
+    var reader = &freader.interface;
 
-    while (true) {
-        line_buf.clearRetainingCapacity();
-        reader.reader().streamUntilDelimiter(line_buf.writer(std.heap.c_allocator), '\n', null) catch |e| switch (e) {
-            error.EndOfStream => break,
-            else => return e,
-        };
-        processLine(line_buf.items, writer.writer()) catch |e| {
+    while (reader.takeDelimiterExclusive('\n')) |line| {
+        processLine(line, writer) catch |e| {
             log.warn("failed to parse chat entry: {}", .{e});
         };
+    } else |e| switch(e) {
+        error.EndOfStream => {},
+        else => return e,
     }
 
     try writer.flush();
@@ -131,9 +131,7 @@ const WebVttTime = struct {
 
     pub fn format(
         self: WebVttTime,
-        comptime _: []const u8,
-        _: std.fmt.FormatOptions,
-        writer: anytype,
+        writer: *std.Io.Writer,
     ) !void {
         const time: @Vector(4, usize) = @splat(self.ms);
         const div: @Vector(4, usize) = .{ std.time.ms_per_hour, std.time.ms_per_min, std.time.ms_per_s, 1 };
@@ -155,7 +153,7 @@ fn processLine(line: []const u8, pipe: anytype) !void {
 
     // Show chat messages for 5 seconds
     const ms = parsed.value.replayChatItemAction.videoOffsetTimeMsec;
-    try pipe.print("{} --> {}\n", .{ WebVttTime{ .ms = ms }, WebVttTime{ .ms = ms + 8 * std.time.ms_per_s } });
+    try pipe.print("{f} --> {f}\n", .{ WebVttTime{ .ms = ms }, WebVttTime{ .ms = ms + 8 * std.time.ms_per_s } });
 
     for (parsed.value.replayChatItemAction.actions) |act| {
         try pipe.print("<b>&lt;{s}&gt;:</b> ", .{

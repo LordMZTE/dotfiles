@@ -10,21 +10,21 @@ pub const c = @cImport({
 /// func should be `fn(*c.lua_State) !c_int` ()
 pub fn luaFunc(comptime func: anytype) c.lua_CFunction {
     return &struct {
-        fn f(l: ?*c.lua_State) callconv(.C) c_int {
+        fn f(l: ?*c.lua_State) callconv(.c) c_int {
             return func(l.?) catch |e| {
                 var buf: [1024 * 4]u8 = undefined;
-                var fbs = std.io.fixedBufferStream(&buf);
-                fbs.writer().print("Zig Error: {s}\n", .{@errorName(e)}) catch @panic("OOM");
+                var fbs = std.Io.Writer.fixed(&buf);
+                fbs.print("Zig Error: {t}\n", .{e}) catch @panic("OOM");
                 if (@errorReturnTrace()) |ert| {
                     std.debug.writeStackTrace(
                         ert.*,
-                        fbs.writer(),
+                        &fbs,
                         std.debug.getSelfDebugInfo() catch @panic("WTF"),
                         .no_color,
                     ) catch @panic("OOM");
                 }
 
-                luaPushString(l, fbs.getWritten());
+                luaPushString(l, fbs.buffered());
                 _ = c.lua_error(l);
                 unreachable;
             };

@@ -37,8 +37,8 @@ pub const Options = struct {
     shell: Shell,
 };
 
-pub fn render(writer: anytype, options: Options) !void {
-    var renderer = Renderer(@TypeOf(writer)){
+pub fn render(writer: *std.Io.Writer, options: Options) !void {
+    var renderer = Renderer{
         .last_style = null,
         .writer = writer,
         .options = options,
@@ -46,327 +46,340 @@ pub fn render(writer: anytype, options: Options) !void {
     try renderer.render();
 }
 
-fn Renderer(comptime Writer: type) type {
-    return struct {
-        last_style: ?Style,
-        writer: Writer,
-        options: Options,
+const Renderer = struct {
+    last_style: ?Style,
+    writer: *std.Io.Writer,
+    options: Options,
 
-        const Self = @This();
+    const Self = @This();
 
-        pub fn render(self: *Self) !void {
-            const left_color: Color = if (self.options.status == 0) .Green else .Red;
+    pub fn render(self: *Self) !void {
+        const left_color: Color = if (self.options.status == 0) .Green else .Red;
 
-            try self.setStyle(.{ .foreground = left_color });
-            try self.writer.writeAll(symbols.top_left);
-            try self.setStyle(.{ .background = left_color });
-            try self.renderShell();
-            try self.renderDuration();
-            try self.renderJobs();
-            try self.renderCwd();
-            try self.renderNix();
-            self.renderGit() catch |err| {
-                switch (err) {
-                    error.GitError => {}, // git error will be printed
-                    else => return err,
-                }
-            };
-
-            try self.writer.writeAll(" ");
-            try self.setStyle(.{ .foreground = self.last_style.?.background });
-            try self.writer.writeAll(symbols.top_end ++ "\n");
-
-            try self.setStyle(.{ .foreground = left_color });
-            try self.writer.writeAll(symbols.bottom_left);
-            try self.setStyle(.{ .foreground = left_color, .background = left_color });
-            try self.writer.writeAll(" ");
-
-            if (self.options.mode != ._none) {
-                const mode_color = self.options.mode.getColor();
-
-                try self.setStyle(.{
-                    .foreground = left_color,
-                    .background = mode_color,
-                    .font_style = .{ .bold = true },
-                });
-                try self.writer.writeAll(symbols.right_separator ++ " ");
-                try self.setStyle(.{
-                    .foreground = .Black,
-                    .background = mode_color,
-                    .font_style = .{ .bold = true },
-                });
-                try self.writer.writeByte(self.options.mode.getChar());
-                try self.writer.writeByte(' ');
-                try self.setStyle(.{ .foreground = mode_color });
-            } else {
-                try self.writer.writeByte(' ');
-                try self.setStyle(.{ .foreground = left_color });
+        try self.setStyle(.{ .foreground = left_color });
+        try self.writer.writeAll(symbols.top_left);
+        try self.setStyle(.{ .background = left_color });
+        try self.renderShell();
+        try self.renderDuration();
+        try self.renderJobs();
+        try self.renderCwd();
+        try self.renderNix();
+        self.renderGit() catch |err| {
+            switch (err) {
+                error.GitError => {}, // git error will be printed
+                else => return err,
             }
+        };
 
-            try self.writer.writeAll(symbols.right_separator ++ " ");
-            try self.setStyle(.{});
-        }
+        try self.writer.writeAll(" ");
+        try self.setStyle(.{ .foreground = self.last_style.?.background });
+        try self.writer.writeAll(symbols.top_end ++ "\n");
 
-        fn renderShell(self: *Self) !void {
-            switch (self.options.shell) {
-                .fish, .nu => {},
-                .bash => {
-                    const bgcol = Color{ .Grey = 150 };
-                    const fgcol = Color.Black;
-                    try self.drawLeftSep(bgcol);
-                    try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
+        try self.setStyle(.{ .foreground = left_color });
+        try self.writer.writeAll(symbols.bottom_left);
+        try self.setStyle(.{ .foreground = left_color, .background = left_color });
+        try self.writer.writeAll(" ");
 
-                    try self.writer.writeAll(" " ++ symbols.bash);
-                },
-                .julia => {
-                    const bgcol = Color.Magenta;
-                    const fgcol = Color.Black;
-                    try self.drawLeftSep(bgcol);
-                    try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
+        if (self.options.mode != ._none) {
+            const mode_color = self.options.mode.getColor();
 
-                    try self.writer.writeAll(" " ++ symbols.julia);
-                },
-            }
-        }
-
-        fn renderDuration(self: *Self) !void {
-            if (self.options.duration < 2 * std.time.ms_per_s)
-                return;
-
-            try self.drawLeftSep(.Blue);
             try self.setStyle(.{
-                .background = .Blue,
-                .foreground = .Black,
+                .foreground = left_color,
+                .background = mode_color,
                 .font_style = .{ .bold = true },
             });
-            try self.writer.writeAll(" ");
-            try self.writer.writeAll(symbols.watch);
-            try self.writer.writeAll(" ");
-
-            var total = self.options.duration;
-
-            const hours = total / std.time.ms_per_hour;
-            total -= hours * std.time.ms_per_hour;
-
-            const minutes = total / std.time.ms_per_min;
-            total -= minutes * std.time.ms_per_min;
-
-            const seconds = total / std.time.ms_per_s;
-            total -= seconds * std.time.ms_per_s;
-
-            const millis = total;
-
-            if (hours > 0) {
-                try self.writer.print("{}h ", .{hours});
-            }
-
-            if (minutes > 0 or hours > 0) {
-                try self.writer.print("{}min ", .{minutes});
-            }
-
-            if (seconds > 0 or minutes > 0 or hours > 0) {
-                try self.writer.print("{}s ", .{seconds});
-            }
-
-            if (millis > 0 or seconds > 0 or minutes > 0 or hours > 0) {
-                try self.writer.print("{}ms", .{millis});
-            }
+            try self.writer.writeAll(symbols.right_separator ++ " ");
+            try self.setStyle(.{
+                .foreground = .Black,
+                .background = mode_color,
+                .font_style = .{ .bold = true },
+            });
+            try self.writer.writeByte(self.options.mode.getChar());
+            try self.writer.writeByte(' ');
+            try self.setStyle(.{ .foreground = mode_color });
+        } else {
+            try self.writer.writeByte(' ');
+            try self.setStyle(.{ .foreground = left_color });
         }
 
-        fn renderJobs(self: *Self) !void {
-            if (self.options.jobs <= 0)
-                return;
+        try self.writer.writeAll(symbols.right_separator ++ " ");
+        try self.setStyle(.{});
+    }
 
-            try self.drawLeftSep(.Cyan);
-            try self.setStyle(.{ .background = .Cyan, .foreground = .Black });
+    fn renderShell(self: *Self) !void {
+        switch (self.options.shell) {
+            .fish, .nu => {},
+            .bash => {
+                const bgcol = Color{ .Grey = 150 };
+                const fgcol = Color.Black;
+                try self.drawLeftSep(bgcol);
+                try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
 
-            try self.writer.print(" {s} {}", .{ symbols.jobs, self.options.jobs });
+                try self.writer.writeAll(" " ++ symbols.bash);
+            },
+            .julia => {
+                const bgcol = Color.Magenta;
+                const fgcol = Color.Black;
+                try self.drawLeftSep(bgcol);
+                try self.setStyle(.{ .background = bgcol, .foreground = fgcol });
+
+                try self.writer.writeAll(" " ++ symbols.julia);
+            },
+        }
+    }
+
+    fn renderDuration(self: *Self) !void {
+        if (self.options.duration < 2 * std.time.ms_per_s)
+            return;
+
+        try self.drawLeftSep(.Blue);
+        try self.setStyle(.{
+            .background = .Blue,
+            .foreground = .Black,
+            .font_style = .{ .bold = true },
+        });
+        try self.writer.writeAll(" ");
+        try self.writer.writeAll(symbols.watch);
+        try self.writer.writeAll(" ");
+
+        var total = self.options.duration;
+
+        const hours = total / std.time.ms_per_hour;
+        total -= hours * std.time.ms_per_hour;
+
+        const minutes = total / std.time.ms_per_min;
+        total -= minutes * std.time.ms_per_min;
+
+        const seconds = total / std.time.ms_per_s;
+        total -= seconds * std.time.ms_per_s;
+
+        const millis = total;
+
+        if (hours > 0) {
+            try self.writer.print("{}h ", .{hours});
         }
 
-        fn renderCwd(self: *Self) !void {
-            var cwd_buf: [512]u8 = undefined;
-            const cwd = try std.posix.getcwd(&cwd_buf);
+        if (minutes > 0 or hours > 0) {
+            try self.writer.print("{}min ", .{minutes});
+        }
 
-            const home_path = (try known_folders.getPath(std.heap.c_allocator, .home));
+        if (seconds > 0 or minutes > 0 or hours > 0) {
+            try self.writer.print("{}s ", .{seconds});
+        }
 
-            try self.drawLeftSep(.{ .Yellow = {} });
-            var written_path = false;
-            if (home_path) |home| {
-                defer std.heap.c_allocator.free(home);
-                if (std.mem.startsWith(u8, cwd, home)) {
-                    try self.setStyle(.{
-                        .background = .Yellow,
-                        .foreground = .Red,
-                    });
-                    try self.writer.writeAll(" " ++ symbols.home);
-                    if (home.len != cwd.len) {
-                        try self.renderPathSep();
-                        try self.renderPath(cwd[(home.len + 1)..]);
-                    }
-                    written_path = true;
-                }
-            }
+        if (millis > 0 or seconds > 0 or minutes > 0 or hours > 0) {
+            try self.writer.print("{}ms", .{millis});
+        }
+    }
 
-            // write root-relative path
-            if (!written_path) {
+    fn renderJobs(self: *Self) !void {
+        if (self.options.jobs <= 0)
+            return;
+
+        try self.drawLeftSep(.Cyan);
+        try self.setStyle(.{ .background = .Cyan, .foreground = .Black });
+
+        try self.writer.print(" {s} {}", .{ symbols.jobs, self.options.jobs });
+    }
+
+    fn renderCwd(self: *Self) !void {
+        var cwd_buf: [512]u8 = undefined;
+        const cwd = try std.posix.getcwd(&cwd_buf);
+
+        const home_path = (try known_folders.getPath(std.heap.c_allocator, .home));
+
+        try self.drawLeftSep(.{ .Yellow = {} });
+        var written_path = false;
+        if (home_path) |home| {
+            defer std.heap.c_allocator.free(home);
+            if (std.mem.startsWith(u8, cwd, home)) {
                 try self.setStyle(.{
                     .background = .Yellow,
                     .foreground = .Red,
                 });
-                try self.writer.writeAll(" " ++ symbols.root);
-
-                // don't render separators when we're in /
-                if (cwd.len > 1) {
+                try self.writer.writeAll(" " ++ symbols.home);
+                if (home.len != cwd.len) {
                     try self.renderPathSep();
-                    try self.renderPath(cwd[1..]);
+                    try self.renderPath(cwd[(home.len + 1)..]);
                 }
+                written_path = true;
             }
         }
 
-        fn renderNix(self: *Self) !void {
-            if (self.options.nix_name) |name| {
-                try self.drawLeftSep(.Blue);
-                try self.setStyle(.{ .background = .Blue, .foreground = .Black });
-
-                try self.writer.print(" {s} {s}", .{ symbols.nix, name });
-            }
-        }
-
-        fn renderPath(self: *Self, path: []const u8) !void {
-            for (path) |byte|
-                if (byte == '/')
-                    try self.renderPathSep()
-                else
-                    try self.writer.writeByte(byte);
-        }
-
-        fn renderPathSep(self: *Self) !void {
+        // write root-relative path
+        if (!written_path) {
             try self.setStyle(.{
-                .background = self.last_style.?.background,
-                .foreground = .Blue,
+                .background = .Yellow,
+                .foreground = .Red,
             });
+            try self.writer.writeAll(" " ++ symbols.root);
 
-            try self.writer.writeAll(" " ++ symbols.path_separator ++ " ");
-
-            try self.setStyle(.{
-                .background = self.last_style.?.background,
-                .foreground = .Black,
-            });
-        }
-
-        fn renderGit(self: *Self) !void {
-            try checkGitError(c.git_libgit2_init());
-            defer _ = c.git_libgit2_shutdown();
-
-            var path_buf = std.mem.zeroes(c.git_buf);
-            defer c.git_buf_dispose(&path_buf);
-            if (c.git_repository_discover(&path_buf, ".", 1, null) < 0)
-                // no repo found
-                return;
-
-            var repo: ?*c.git_repository = null;
-            try checkGitError(c.git_repository_open(&repo, path_buf.ptr));
-            defer c.git_repository_free(repo);
-
-            var head: ?*c.git_reference = null;
-            const head_err = c.git_repository_head(&head, repo);
-
-            // branch with no commits
-            if (head_err == c.GIT_EUNBORNBRANCH) {
-                const bg = Color{ .Grey = 200 };
-                try self.drawLeftSep(bg);
-                try self.setStyle(.{
-                    .background = bg,
-                    .foreground = .Black,
-                    .font_style = .{ .bold = true },
-                });
-                try self.writer.writeAll(" <new branch>");
-
-                return;
+            // don't render separators when we're in /
+            if (cwd.len > 1) {
+                try self.renderPathSep();
+                try self.renderPath(cwd[1..]);
             }
+        }
+    }
 
-            defer c.git_reference_free(head);
-            const name = c.git_reference_shorthand(head);
+    fn renderNix(self: *Self) !void {
+        if (self.options.nix_name) |name| {
+            try self.drawLeftSep(.Blue);
+            try self.setStyle(.{ .background = .Blue, .foreground = .Black });
 
-            var status_options: c.git_status_options = undefined;
-            try checkGitError(c.git_status_options_init(
-                &status_options,
-                c.GIT_STATUS_OPTIONS_VERSION,
-            ));
+            try self.writer.print(" {s} {s}", .{ symbols.nix, name });
+        }
+    }
 
-            status_options.flags =
-                c.GIT_STATUS_OPT_INCLUDE_UNTRACKED |
-                c.GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
+    fn renderPath(self: *Self, path: []const u8) !void {
+        for (path) |byte|
+            if (byte == '/')
+                try self.renderPathSep()
+            else
+                try self.writer.writeByte(byte);
+    }
 
-            var status_list: ?*c.git_status_list = null;
-            try checkGitError(c.git_status_list_new(
-                &status_list,
-                repo,
-                &status_options,
-            ));
+    fn renderPathSep(self: *Self) !void {
+        try self.setStyle(.{
+            .background = self.last_style.?.background,
+            .foreground = .Blue,
+        });
 
-            var counts = GitStatusCounts{};
-            try checkGitError(c.git_status_foreach_ext(
-                repo,
-                &status_options,
-                gitStatusCb,
-                &counts,
-            ));
+        try self.writer.writeAll(" " ++ symbols.path_separator ++ " ");
 
-            // now render all that info!
-            const ref_bg = counts.getColor();
-            try self.drawLeftSep(ref_bg);
+        try self.setStyle(.{
+            .background = self.last_style.?.background,
+            .foreground = .Black,
+        });
+    }
 
+    fn renderGit(self: *Self) !void {
+        try checkGitError(c.git_libgit2_init());
+        defer _ = c.git_libgit2_shutdown();
+
+        var path_buf = std.mem.zeroes(c.git_buf);
+        defer c.git_buf_dispose(&path_buf);
+        if (c.git_repository_discover(&path_buf, ".", 1, null) < 0)
+            // no repo found
+            return;
+
+        var repo: ?*c.git_repository = null;
+        try checkGitError(c.git_repository_open(&repo, path_buf.ptr));
+        defer c.git_repository_free(repo);
+
+        var head: ?*c.git_reference = null;
+        const head_err = c.git_repository_head(&head, repo);
+
+        // branch with no commits
+        if (head_err == c.GIT_EUNBORNBRANCH) {
+            const bg = Color{ .Grey = 200 };
+            try self.drawLeftSep(bg);
             try self.setStyle(.{
-                .background = ref_bg,
+                .background = bg,
                 .foreground = .Black,
                 .font_style = .{ .bold = true },
             });
-            // using print here because name is a cstring
-            try self.writer.print(" {s}", .{name});
+            try self.writer.writeAll(" <new branch>");
 
-            if (counts.staged > 0) {
-                try self.drawLeftSep(.Green);
-                try self.setStyle(.{
-                    .background = .Green,
-                    .foreground = .Black,
-                });
+            return;
+        } else try checkGitError(head_err);
+        defer c.git_reference_free(head);
 
-                try self.writer.print(" {}{s}", .{ counts.staged, symbols.staged });
-            }
+        const name = c.git_reference_shorthand(head);
 
-            if (counts.unstaged > 0) {
-                try self.drawLeftSep(.Magenta);
-                try self.setStyle(.{
-                    .background = .Magenta,
-                    .foreground = .Black,
-                });
+        var status_options: c.git_status_options = undefined;
+        try checkGitError(c.git_status_options_init(
+            &status_options,
+            c.GIT_STATUS_OPTIONS_VERSION,
+        ));
 
-                try self.writer.print(" {}{s}", .{ counts.unstaged, symbols.unstaged });
-            }
-        }
+        status_options.flags =
+            c.GIT_STATUS_OPT_INCLUDE_UNTRACKED |
+            c.GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
 
-        fn setStyle(self: *Self, style: Style) !void {
-            try at.format.updateStyle(self.writer, style, self.*.last_style);
-            self.last_style = style;
-        }
+        var counts = GitStatusCounts{
+            .start = try std.time.Timer.start(),
+        };
 
-        fn drawLeftSep(self: *Self, new_bg: Color) !void {
-            try self.writer.writeAll(" ");
+        const status_errno = c.git_status_foreach_ext(
+            repo,
+            &status_options,
+            gitStatusCb,
+            &counts,
+        );
+
+        if (status_errno == git_timeout_ret) {
+            const bg_col = Color.Red;
+            try self.drawLeftSep(bg_col);
             try self.setStyle(.{
-                .background = self.last_style.?.background,
-                .foreground = new_bg,
+                .background = bg_col,
+                .foreground = .Black,
+                .font_style = .{ .italic = true },
             });
-            try self.writer.writeAll(symbols.left_separator);
+
+            try self.writer.writeAll(" <git timeout>");
+
+            return;
         }
-    };
-}
+        try checkGitError(status_errno);
+
+        // now render all that info!
+        const ref_bg = counts.getColor();
+        try self.drawLeftSep(ref_bg);
+
+        try self.setStyle(.{
+            .background = ref_bg,
+            .foreground = .Black,
+            .font_style = .{ .bold = true },
+        });
+        // using print here because name is a cstring
+        try self.writer.print(" {s}", .{name});
+
+        if (counts.staged > 0) {
+            try self.drawLeftSep(.Green);
+            try self.setStyle(.{
+                .background = .Green,
+                .foreground = .Black,
+            });
+
+            try self.writer.print(" {}{s}", .{ counts.staged, symbols.staged });
+        }
+
+        if (counts.unstaged > 0) {
+            try self.drawLeftSep(.Magenta);
+            try self.setStyle(.{
+                .background = .Magenta,
+                .foreground = .Black,
+            });
+
+            try self.writer.print(" {}{s}", .{ counts.unstaged, symbols.unstaged });
+        }
+    }
+
+    fn setStyle(self: *Self, style: Style) !void {
+        try at.format.updateStyle(self.writer, style, self.*.last_style);
+        self.last_style = style;
+    }
+
+    fn drawLeftSep(self: *Self, new_bg: Color) !void {
+        try self.writer.writeAll(" ");
+        try self.setStyle(.{
+            .background = self.last_style.?.background,
+            .foreground = new_bg,
+        });
+        try self.writer.writeAll(symbols.left_separator);
+    }
+};
+
+// We need some number that is unlikely to be used by libgit as we otherwise couldn't distinguish
+// this being returned by our callback from an error coming from libgit.
+const git_timeout_ret = -42069;
 
 fn gitStatusCb(
     _: [*c]const u8,
     flags: c_uint,
     counts_: ?*anyopaque,
-) callconv(.C) c_int {
+) callconv(.c) c_int {
     const staged_flags =
         c.GIT_STATUS_INDEX_NEW |
         c.GIT_STATUS_INDEX_MODIFIED |
@@ -389,12 +402,16 @@ fn gitStatusCb(
     if (flags & unstaged_flags > 0)
         counts.unstaged += 1;
 
+    if (counts.start.read() > 100 * std.time.ns_per_ms) return git_timeout_ret;
+
     return 0;
 }
 
 const GitStatusCounts = struct {
     staged: u32 = 0,
     unstaged: u32 = 0,
+
+    start: std.time.Timer,
 
     pub fn getColor(self: *GitStatusCounts) Color {
         const has_staged = self.staged > 0;

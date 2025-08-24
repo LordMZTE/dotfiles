@@ -213,7 +213,7 @@ fn handleDeletionOnExit(self: *LocalVids) !void {
     if (self.vids_dir == null or self.last_stream_open_filename == null) return;
 
     if (try promptForDeletion(self.last_stream_open_filename.?)) {
-        try std.io.getStdOut().writer().print("deleting: '{s}'\n", .{self.last_stream_open_filename.?});
+        log.info("deleting: '{s}'\n", .{self.last_stream_open_filename.?});
         try std.fs.cwd().deleteFile(self.last_stream_open_filename.?);
 
         // Also delete the live_chat file from yt-dlp if present
@@ -364,7 +364,10 @@ fn fnameLessThanByIdx(_: void, a: []const u8, b: []const u8) bool {
 }
 
 fn promptForDeletion(file: []const u8) !bool {
-    try std.io.getStdOut().writer().print("delete file '{s}'? [Y/N] ", .{file});
+    var buf: [64]u8 = undefined;
+    var writer = std.fs.File.stdout().writer(&buf);
+    try writer.interface.print("delete file '{s}'? [Y/N] ", .{file});
+    try writer.interface.flush();
 
     const old_termios = try std.posix.tcgetattr(std.posix.STDIN_FILENO);
     var new_termios = old_termios;
@@ -372,12 +375,14 @@ fn promptForDeletion(file: []const u8) !bool {
     try std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, new_termios);
     defer std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, old_termios) catch {};
 
-    const answer = try std.io.getStdIn().reader().readByte();
-    const ret = switch (answer) {
+    var answer: [1]u8 = undefined;
+    std.debug.assert(try std.fs.File.stdin().read(&answer) == 1);
+    const ret = switch (answer[0]) {
         'y', 'Y' => true,
         else => false,
     };
 
-    try std.io.getStdOut().writeAll("\n");
+    try writer.interface.writeByte('\n');
+    try writer.interface.flush();
     return ret;
 }

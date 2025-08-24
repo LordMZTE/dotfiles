@@ -1,5 +1,6 @@
 const std = @import("std");
 const wayland = @import("wayland");
+const common = @import("common");
 
 const wl = wayland.client.wl;
 const zriver = wayland.client.zriver;
@@ -40,7 +41,7 @@ pub fn deinit(self: Connection) void {
 }
 
 pub fn runCommand(self: Connection, args: []const [:0]const u8) !void {
-    std.log.debug("running command: {s}", .{args});
+    std.log.debug("running command: {f}", .{common.fmt.command(args)});
     for (args) |arg| self.ctl.?.addArgument(arg.ptr);
 
     var success: ?bool = null;

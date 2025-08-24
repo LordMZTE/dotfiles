@@ -51,13 +51,13 @@ pub fn main() !void {
     const epfd = try std.posix.epoll_create1(0);
     defer std.posix.close(epfd);
 
-    const sigset = comptime sigs: {
-        var sigs = std.posix.empty_sigset;
-        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.INT);
-        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.TERM);
-        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.CHLD);
-        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.USR1);
-        std.os.linux.sigaddset(&sigs, std.os.linux.SIG.USR2);
+    const sigset = sigs: {
+        var sigs = std.posix.sigemptyset();
+        std.posix.sigaddset(&sigs, std.os.linux.SIG.INT);
+        std.posix.sigaddset(&sigs, std.os.linux.SIG.TERM);
+        std.posix.sigaddset(&sigs, std.os.linux.SIG.CHLD);
+        std.posix.sigaddset(&sigs, std.os.linux.SIG.USR1);
+        std.posix.sigaddset(&sigs, std.os.linux.SIG.USR2);
         break :sigs sigs;
     };
     std.posix.sigprocmask(std.posix.SIG.BLOCK, &sigset, null);

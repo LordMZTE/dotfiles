@@ -1,5 +1,5 @@
 const std = @import("std");
-const ziggy = @import("ziggy");
+const ziggy = @import("ziggy").ziggy;
 
 ignored_scripts: []const []const u8 = &.{},
 
@@ -15,7 +15,7 @@ pub fn parseConfig(arena: std.mem.Allocator) !Options {
         opts_path,
         1024 * 1024,
         null,
-        @alignOf(u8),
+        .@"1",
         0,
     )) |opts_data| {
         var diag: ziggy.Diagnostic = .{ .path = opts_path };

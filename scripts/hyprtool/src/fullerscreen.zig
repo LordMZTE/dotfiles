@@ -16,18 +16,23 @@ const Window = struct {
 pub fn doFullerscreen(alloc: std.mem.Allocator, sockpath: []const u8) !void {
     var json_arena = std.heap.ArenaAllocator.init(alloc);
     defer json_arena.deinit();
+    var read_buf: [1024]u8 = undefined;
+    var write_buf: [1024]u8 = undefined;
 
     const parsed = request: {
         const stream = try std.net.connectUnixSocket(sockpath);
         defer stream.close();
 
+        var stream_reader = stream.reader(&read_buf);
+        const reader = stream_reader.interface();
+
         try stream.writeAll("[[BATCH]][-j]/monitors;[-j]/activewindow;");
-        var json_reader = std.json.reader(json_arena.allocator(), stream.reader());
+        var json_reader = std.json.Reader.init(json_arena.allocator(), reader);
 
         const json_options = std.json.ParseOptions{
             .ignore_unknown_fields = true,
             .max_value_len = std.json.default_max_value_len,
-            .allocate = .alloc_if_needed,
+            .allocate = .alloc_always,
         };
 
         const monitors = try std.json.innerParse(
@@ -68,10 +73,9 @@ pub fn doFullerscreen(alloc: std.mem.Allocator, sockpath: []const u8) !void {
     const stream = try std.net.connectUnixSocket(sockpath);
     defer stream.close();
 
-    var buf_writer = std.io.bufferedWriter(stream.writer());
-    const writer = buf_writer.writer();
+    var writer = stream.writer(&write_buf);
 
-    try writer.writeAll("[[BATCH]]");
+    try writer.interface.writeAll("[[BATCH]]");
 
     // window is already fullerscreen
     if (parsed.active_window.floating and
@@ -80,28 +84,31 @@ pub fn doFullerscreen(alloc: std.mem.Allocator, sockpath: []const u8) !void {
     {
         std.log.info("already fullerscreen, tiling window", .{});
         // disable floating
-        try writer.print("/dispatch togglefloating address:{s};", .{parsed.active_window.address});
+        try writer.interface.print("/dispatch togglefloating address:{s};", .{parsed.active_window.address});
     } else {
         // ensure window is floating
         if (!parsed.active_window.floating) {
-            try writer.print("/dispatch togglefloating address:{s};", .{parsed.active_window.address});
+            try writer.interface.print("/dispatch togglefloating address:{s};", .{parsed.active_window.address});
         }
 
         // set pos to 0/0
-        try writer.print(
+        try writer.interface.print(
             "/dispatch movewindowpixel exact 0 0,address:{s};",
             .{parsed.active_window.address},
         );
 
         // resize
-        try writer.print(
+        try writer.interface.print(
             "/dispatch resizewindowpixel exact {} {},address:{s};",
             .{ new_width, new_height, parsed.active_window.address },
         );
     }
 
-    try buf_writer.flush();
+    try writer.interface.flush();
 
-    var fifo = std.fifo.LinearFifo(u8, .{ .Static = 1024 * 4 }).init();
-    try fifo.pump(stream.reader(), std.io.getStdOut().writer());
+    var stream_reader = stream.reader(&read_buf);
+    var stdout = std.fs.File.stdout().writer(&write_buf);
+
+    _ = try stream_reader.interface().stream(&stdout.interface, .unlimited);
+    try stdout.interface.flush();
 }
