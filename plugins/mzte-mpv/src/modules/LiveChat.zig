@@ -84,7 +84,7 @@ fn transcoderThread(jsonf: std.fs.File, pipefd: std.posix.fd_t) !void {
         processLine(line, writer) catch |e| {
             log.warn("failed to parse chat entry: {}", .{e});
         };
-    } else |e| switch(e) {
+    } else |e| switch (e) {
         error.EndOfStream => {},
         else => return e,
     }

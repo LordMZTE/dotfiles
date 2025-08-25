@@ -77,7 +77,7 @@ pub fn build(b: *std.Build) !void {
         lib.linkSystemLibrary("luajit");
 
         // I have no idea what the difference between async and sync is here, but this works.
-        lib.root_module.unwind_tables = .@"async";
+        lib.root_module.unwind_tables = .async;
 
         b.getInstallStep().dependOn(&b.addInstallFile(lib.getEmittedBin(), "share/nvim/mzte-nv.so").step);
     }
@@ -100,7 +100,7 @@ pub fn build(b: *std.Build) !void {
     compiler.root_module.addImport("opts", opts.createModule());
     compiler.root_module.addImport("common", b.dependency("common", .{}).module("common"));
 
-    compiler.root_module.unwind_tables = .@"async";
+    compiler.root_module.unwind_tables = .async;
 
     b.installArtifact(compiler);
 }

@@ -13,11 +13,11 @@ pub const Clientbound = union(enum) {
 };
 
 pub const NullPayload = struct {
-    fn read(_:  *std.Io.Reader, _: std.mem.Allocator) !NullPayload {
+    fn read(_: *std.Io.Reader, _: std.mem.Allocator) !NullPayload {
         return .{};
     }
 
-    fn write(_: NullPayload, _:  *std.Io.Writer) !void {}
+    fn write(_: NullPayload, _: *std.Io.Writer) !void {}
 };
 
 pub const BytesPayload = struct {
@@ -32,7 +32,7 @@ pub const BytesPayload = struct {
         return .{ .data = data };
     }
 
-    fn write(self: *const BytesPayload, writer:  *std.Io.Writer) !void {
+    fn write(self: *const BytesPayload, writer: *std.Io.Writer) !void {
         try writer.writeInt(usize, self.data.len, native_endian);
         try writer.writeAll(self.data);
     }

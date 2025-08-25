@@ -49,7 +49,7 @@ pub fn main() !void {
 
         if (val) |v| {
             var write_buf: [512]u8 = undefined;
-            var writer =  std.fs.File.stdout().writer(&write_buf);
+            var writer = std.fs.File.stdout().writer(&write_buf);
 
             try writer.interface.writeAll(v);
             try writer.interface.writeByte('\n');
