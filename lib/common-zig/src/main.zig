@@ -22,13 +22,13 @@ pub fn logFn(
     comptime fmtstr: []const u8,
     args: anytype,
 ) void {
+    const logfile = log_file; // Copied here to pretend this is atomic.
+
     const color = log_file == null and stderr_isatty orelse blk: {
         const isatty = std.posix.isatty(std.posix.STDERR_FILENO);
         stderr_isatty = isatty;
         break :blk isatty;
     };
-
-    const logfile = log_file; // Copied here to pretend this is atomic.
 
     var writebuf: [512]u8 = undefined;
     var writer = if (logfile) |f| fwriter: {

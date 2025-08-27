@@ -16,6 +16,8 @@ pub fn build(b: *std.Build) !void {
         .name = "mzte-mpv",
         .root_module = mod,
         .linkage = .dynamic,
+        // TODO: https://github.com/ziglang/zig/issues/25026
+        .use_llvm = true,
     });
     mod.addImport("common", b.dependency("common", .{}).module("common"));
     mod.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
