@@ -12,6 +12,7 @@
         },
 
         // Scripts
+        .brightness = .{ .path = "scripts/brightness" },
         .hyprtool = .{ .path = "scripts/hyprtool" },
         .mzteinit = .{ .path = "scripts/mzteinit" },
         .mzteriver = .{ .path = "scripts/mzteriver" },

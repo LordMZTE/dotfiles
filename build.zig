@@ -13,11 +13,11 @@ pub fn build(b: *std.Build) !void {
     const opts = try Options.parseConfig(b.allocator);
 
     // Symlink Scripts
-    inst.addScript(b, opts, "brightness.rkt", "brightness");
     inst.addScript(b, opts, "pluto.jl", "pluto");
     inst.addScript(b, opts, "videos-duration.sh", "videos-duration");
 
     // Scripts
+    inst.addZBuild(b, opts, zargs, "brightness");
     inst.addZBuild(b, opts, zargs, "hyprtool");
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");

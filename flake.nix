@@ -57,6 +57,7 @@
             buildInputs = with pkgs;
               [
                 # packages required to build scripts
+                ddcutil # libddcutil for brightness script
                 gdk-pixbuf
                 libGL
                 libgit2

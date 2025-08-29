@@ -2,6 +2,7 @@ const std = @import("std");
 const root = @import("root");
 
 pub const fmt = @import("fmt.zig");
+pub const paths = @import("paths.zig");
 
 pub const DelimitedWriter = @import("DelimitedWriter.zig");
 
