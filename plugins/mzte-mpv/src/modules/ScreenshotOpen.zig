@@ -8,7 +8,7 @@ const log = std.log.scoped(.@"screenshot-open");
 
 const ScreenshotOpen = @This();
 
-tmpfiles: std.ArrayListUnmanaged([:0]const u8),
+tmpfiles: std.ArrayList([:0]const u8),
 
 pub fn create() ScreenshotOpen {
     return .{ .tmpfiles = .empty };
@@ -47,11 +47,11 @@ pub fn onEvent(self: *ScreenshotOpen, mpv: *c.mpv_handle, ev: *c.mpv_event) !voi
 }
 
 fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
-    var tmpf_buf: [std.fs.max_path_bytes]u8 = undefined;
-    const tmpf_path = try std.fmt.bufPrintZ(
-        &tmpf_buf,
+    const tmpf_path = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator,
         "/tmp/mzte-mpv-screenshot-{}-{}.jpg",
         .{ std.os.linux.getuid(), @rem(std.time.milliTimestamp(), std.time.ms_per_day) },
+        0,
     );
     errdefer std.heap.c_allocator.free(tmpf_path);
 
@@ -67,7 +67,7 @@ fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
         @memcpy(fname_buf[0..tmpf_path.len], tmpf_path);
         fname_buf[tmpf_path.len] = 0;
 
-        const err = std.posix.execvpeZ("satty", &.{ "satty", "--filename", @ptrCast(&fname_buf) }, std.c.environ);
+        const err = std.posix.execvpeZ("nsxiv", &.{ "nsxiv", @ptrCast(&fname_buf) }, std.c.environ);
         log.err("spawning child: {}", .{err});
         std.process.exit(1);
     }
