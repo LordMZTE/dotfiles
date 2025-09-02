@@ -9,9 +9,9 @@ const journal_prefix = "systemd-cat --level-prefix=false -- ";
 
 fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
     return &[_][:0]const u8{
-        "systemd-run",
-        "--user",
-        "--unit=mzteriver-" ++ argv[0],
+        "systemd-cat",
+        "--level-prefix=false",
+        "--identifier=" ++ argv[0],
         "--",
     } ++ argv;
 }
@@ -29,15 +29,14 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Super+Control", "V", "spawn", journal_prefix ++ "vinput md" },
         .{ "Super+Control", "L", "spawn", journal_prefix ++ "physlock" },
         .{ "Super+Shift", "P", "spawn", journal_prefix ++ "gpower2" },
+        .{ "Alt", "Space", "spawn", journal_prefix ++ "rofi -show combi" },
+        .{ "Super+Alt", "Space", "spawn", journal_prefix ++ "rofi -show emoji" },
         .{
-            "Alt",
-            "Space",
+            "None",
+            "Print",
             "spawn",
-            // This command is special-cased becuase the forking unit type represents what rofi does here.
-            "systemd-run --user -pType=forking -- rofi -show combi",
+            journal_prefix ++ "sh -c 'grim -g \"$(slurp; sleep 1)\" - | satty --filename -'",
         },
-        .{ "Super+Alt", "Space", "spawn", "systemd-run --user -pType=forking -- rofi -show emoji" },
-        .{ "None", "Print", "spawn", journal_prefix ++ "sh -c 'grim -g \"$(slurp; sleep 1)\" - | satty --filename -'" },
 
         // media keys
         .{ "None", "XF86Eject", "spawn", "eject -T" },
@@ -254,16 +253,37 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
         // spawn background processes
         inline for (.{
-            .{ false, .{ "dbus-update-activation-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" } },
-            .{ false, .{ "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP" } },
+            .{ false, .{
+                "dbus-update-activation-environment",
+                "DISPLAY",
+                "XAUTHORITY",
+                "WAYLAND_DISPLAY",
+                "XDG_CURRENT_DESKTOP",
+            } },
+            .{ false, .{
+                "systemctl",
+                "--user",
+                "import-environment",
+                "DISPLAY",
+                "XAUTHORITY",
+                "WAYLAND_DISPLAY",
+                "XDG_CURRENT_DESKTOP",
+            } },
             .{ true, .{"wlbg"} },
             .{ true, .{"waybar"} },
             .{ true, .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" } },
         }) |arg| {
             const background = arg[0];
             const argv = arg[1];
-            var child = std.process.Child.init(if (background) initCommand(&argv) else &argv, child_arena.allocator());
-            _ = try child.spawnAndWait();
+
+            var child = std.process.Child.init(initCommand(&argv), child_arena.allocator());
+            try child.spawn();
+
+            if (!background) {
+                // TODO: this is a resource leak if we don't wait. We should use the as of yet
+                // non-existant `detach`-API instead.
+                _ = try child.wait();
+            }
         }
     }
 }
