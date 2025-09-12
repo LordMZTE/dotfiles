@@ -4,7 +4,7 @@
   local hwdec_codecs = { "all" }
 
   if opt.mpvHwdecCodecPred then
-    hwdec_codecs = cg.lib.filter(opt.lazy.mpvCodecs(), opt.mpvHwdecCodecPred)
+    hwdec_codecs = cg.lib.filter(require("cgdata.mpv").codecs(), opt.mpvHwdecCodecPred)
   end
 !>
 # Enable hardware decoding
