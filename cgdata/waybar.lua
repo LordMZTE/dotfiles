@@ -98,7 +98,7 @@ function mod.moduleConfig()
     conf["temperature"] = {
         ["hwmon-path"] = cpu_temp_hwmon,
         ["critical-threshold"] = 95,
-        ["warning-threshold"] = 80,
+        ["warning-threshold"] = 70,
         format = "{temperatureC}°C {icon}",
         ["format-icons"] = { "", "", "" }
     }

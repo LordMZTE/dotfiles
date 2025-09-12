@@ -1,43 +1,53 @@
 /* ==== General Style ==== */
 
 * {
-	border: none;
+    border: none;
     border-radius: 0;
-	font-family: "<% opt.font %>";
+    font-family: "<% opt.font %>";
     <! local fontsiz = opt.mulFontSize(15) !>
-	font-size: <% fontsiz %>px;
-	min-height: 0;
+    font-size: <% fontsiz %>px;
+    min-height: 0;
     /* Absolutely horrifying, but without this, GTK thinks 0 means "put a gap everywhere" */
     padding: 2px;
     margin: -2px;
 }
 
 window#waybar {
-	background: transparent;
+    background: transparent;
 }
 
 window#waybar.hidden {
-	opacity: 0.2;
+    opacity: 0.2;
 }
 
 /* Warning */
+@keyframes blink-warning {
+    to {
+        background-color: #<% opt.catppuccin.peach %>;
+    }
+}
+
 .warning {
-    background-color: #<% opt.catppuccin.peach %>;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-name: blink-warning;
+    animation-duration: 1s;
 }
 
 /* Critical */
 @keyframes blink-critical {
-	to {
-		background-color: #<% opt.catppuccin.red %>;
-	}
+    to {
+        background-color: #<% opt.catppuccin.red %>;
+    }
 }
 
 .critical {
-	animation-timing-function: linear;
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
-	animation-name: blink-critical;
-	animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-name: blink-critical;
+    animation-duration: 0.5s;
 }
 
 <! local function modcolorconf(module, sepmodbase, fg, bg, nextbg) !>
