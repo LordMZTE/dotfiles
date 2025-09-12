@@ -40,7 +40,7 @@ function mod.moduleConfig()
             ["hide-vacant"] = true,
         }
 
-        conf["river-window"] = {
+        conf["river/window"] = {
             ["max-length"] = max_length,
         }
     end
@@ -75,7 +75,7 @@ function mod.moduleConfig()
     }
 
     conf["memory"] = {
-        format = "{}% ",
+        format = "{}%  ",
     }
 
     local function isCPUHwmon(name)
@@ -97,7 +97,8 @@ function mod.moduleConfig()
     end
     conf["temperature"] = {
         ["hwmon-path"] = cpu_temp_hwmon,
-        ["critical-threshold"] = 80,
+        ["critical-threshold"] = 95,
+        ["warning-threshold"] = 80,
         format = "{temperatureC}°C {icon}",
         ["format-icons"] = { "", "", "" }
     }
@@ -128,7 +129,7 @@ function mod.moduleConfig()
             fmt = fmt .. " {icon}"
         end
 
-        fmt = fmt .. " {format_source}"
+        fmt = fmt .. " {format_source} "
 
         return fmt
     end

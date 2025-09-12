@@ -4,10 +4,12 @@
 	border: none;
     border-radius: 0;
 	font-family: "<% opt.font %>";
-    <! local fontsiz = opt.mulFontSize(14) !>
+    <! local fontsiz = opt.mulFontSize(15) !>
 	font-size: <% fontsiz %>px;
-	min-height: <% fontsiz + 2 %>px;
-    padding: 0;
+	min-height: 0;
+    /* Absolutely horrifying, but without this, GTK thinks 0 means "put a gap everywhere" */
+    padding: 2px;
+    margin: -2px;
 }
 
 window#waybar {
@@ -54,9 +56,11 @@ window#waybar.hidden {
     "workspaces",
     "tags",
     "window",
+
     "tray",
     "clock",
     "battery",
+    "pulseaudio",
     "temperature",
     "network",
     "memory",
@@ -64,7 +68,7 @@ window#waybar.hidden {
 } !>
 
 <% table.concat(cg.lib.map(non_sep_mods, function(n) return "#" .. n end), ", ") %> {
-    padding: 0 4px;
+    padding: 0 10px;
 }
 
 /* ==== Left Modules ==== */

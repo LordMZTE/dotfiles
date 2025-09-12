@@ -5,7 +5,7 @@ local config = wb.moduleConfig()
 -- Generate left modules
 do
     local lsep_conf = {
-        format = "█ ",
+        format = "█ ",
         tooltip = false,
     }
     local left_modules = {}
@@ -23,7 +23,7 @@ end
 -- Generate right modules
 do
     local rsep_conf = {
-       format = " █",
+       format = " █",
        tooltip = false,
     }
     local right_modules = {}
