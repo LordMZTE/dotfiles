@@ -1,103 +1,44 @@
-;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
-;; vim: ft=fennel
 <!
-local function isCPUHwmon(name)
-  -- k10temp is for some AMD CPUs.
-  return name == "coretemp" or name == "k10temp"
-end
+local wb = require "cgdata.waybar"
+local config = wb.moduleConfig()
 
-local cpu_temp_hwmon = nil
-for d in require("lfs").dir("/sys/class/hwmon") do
-  if d ~= "." and d ~= ".." then
-    local namef = io.open("/sys/class/hwmon/" .. d .. "/name", "r")
+-- Generate left modules
+do
+    local lsep_conf = {
+        format = "█ ",
+        tooltip = false,
+    }
+    local left_modules = {}
+    for _, mod in ipairs(wb.modulesLeft()) do
+        local sep_name = "custom/sep-" .. mod:gsub("/", "-")
 
-    if isCPUHwmon(namef:read("*a"):gsub("%s+", "")) then
-      cpu_temp_hwmon = "/sys/class/hwmon/" .. d .. "/temp1_input"
-      break
+        table.insert(left_modules, mod)
+        table.insert(left_modules, sep_name)
+
+        config[sep_name] = lsep_conf
     end
-
-    namef:close()
-  end
+    config["modules-left"] = left_modules
 end
-!>
-(local format-icons [" " "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"])
-(local max-length 64)
 
-{:spacing 4
- :layer :top
- ;<! if opt.wayland_compositor == "river" then !>
- :modules-left [:river/tags :river/window]
- ;<! elseif opt.wayland_compositor == "hyprland" then !>
- :modules-left [:hyprland/workspaces :hyprland/window]
- ;<! end !>
- :modules-right [:mpris
-                 :cava
-                 :cpu
-                 :memory
-                 :network
-                 :pulseaudio
-                 :gamemode
-                 :temperature
-                 :battery
-                 :clock
-                 :tray]
- :river/tags {:num-tags 10
-              :tag-labels [:1 :2 :3 :4 :5 :6 :7 :8 :9 :S]
-              :hide-vacant true}
- :river/window {: max-length}
- :cava {:hide_on_silence true
-        :bars 16
-        :bar_delimiter 0
-        :method :pipewire
-        : format-icons}
- :mpris {:format "{status_icon} {dynamic}"
-         :interval 5
-         :dynamic-order [:title :artist :position :length]
-         :dynamic-importance-order [:position :length :artist :album]
-         :status-icons {:playing "󰏤" :paused "󰐊" :stopped "󰓛"}
-         :title-len 32
-         :dynamic-len max-length
-         :dynamic-separators " 󱓜 "}
- :gamemode {:format "{glyph} {count}"}
- :tray {:spacing 10}
- :clock {:tooltip-format "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
-         :format-alt "{:%Y-%m-%d}"}
- :cpu {:format (.. (faccumulate [s "" i 0 (- (cg.opt.lazy.ncpus) 1)]
-                     (.. s "{icon" i "}")) " {usage}% {max_frequency} {avg_frequency}⌀ ")
-       :interval 2
-       : format-icons}
- :memory {:format "{}% "}
- :temperature {:hwmon-path "<% cpu_temp_hwmon %>"
-               :critical-threshold 80
-               :format "{temperatureC}°C {icon}"
-               :format-icons ["" "" ""]}
- :battery {:states {:warning 50 :critical 20}
-           :format "{capacity}% {icon}"
-           :format-charging "{capacity}% 󰂄"
-           :format-plugged "{capacity}% "
-           :format-alt "{time} {icon}"
-           :format-icons ["" "" "" "" ""]}
- :pulseaudio (let [fstring (fn [muted bluetooth]
-                             (.. (if muted "󰝟" "{volume}%")
-                                 (if (and muted (not bluetooth)) "" " {icon}")
-                                 (if bluetooth "" "") " {format_source}"))]
-               {:format (fstring false false)
-                :format-muted (fstring true false)
-                :format-bluetooth (fstring false true)
-                :format-bluetooth-muted (fstring true true)
-                :format-source "{volume}% "
-                :format-source-muted ""
-                :format-icons {:headphone ""
-                               :hands-free "󰋏"
-                               :headset "󰋎"
-                               :phone ""
-                               :portable ""
-                               :car ""
-                               :default ["" "" ""]}
-                :on-click :pavucontrol})
- :network {:interval 10
-           :format "{bandwidthDownBytes}  {bandwidthUpBytes} "
-           :tooltip-format-ethernet "{ifname} {ipaddr}"
-           :tooltip-format-wifi "{essid} {ipaddr}"
-           :on-click "<% opt.term.exec %> nmtui"
-           :on-click-right "<% opt.term.exec %> nmtui"}}
+-- Generate right modules
+do
+    local rsep_conf = {
+       format = " █",
+       tooltip = false,
+    }
+    local right_modules = {}
+    for _, mod in ipairs(wb.modules_right) do
+        local sep_name = "custom/sep-".. mod:gsub("/", "-")
+
+        table.insert(right_modules, sep_name)
+        table.insert(right_modules, mod)
+
+        config[sep_name] = rsep_conf
+    end
+    config["modules-right"] = right_modules
+end
+
+config["spacing"] = 0
+config["layer"] = "top"
+!>
+<% cg.fmt.json.serialize(config) %>

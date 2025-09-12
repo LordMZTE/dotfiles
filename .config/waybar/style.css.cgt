@@ -1,12 +1,13 @@
-@import "mocha.css";
+/* ==== General Style ==== */
 
 * {
 	border: none;
-	border-radius: 0;
+    border-radius: 0;
 	font-family: "<% opt.font %>";
     <! local fontsiz = opt.mulFontSize(14) !>
 	font-size: <% fontsiz %>px;
 	min-height: <% fontsiz + 2 %>px;
+    padding: 0;
 }
 
 window#waybar {
@@ -17,192 +18,162 @@ window#waybar.hidden {
 	opacity: 0.2;
 }
 
-#window {
-    margin-top: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-	transition: none;
-    color: transparent;
-	background: transparent;
+/* Warning */
+.warning {
+    background-color: #<% opt.catppuccin.peach %>;
 }
 
-window#waybar.termite #window,
-window#waybar.Firefox #window,
-window#waybar.Navigator #window,
-window#waybar.PCSX2 #window {
-    color: @text;
-	background: @surface0;
+/* Critical */
+@keyframes blink-critical {
+	to {
+		background-color: #<% opt.catppuccin.red %>;
+	}
 }
 
-#workspaces, #tags {
-	margin-top: 8px;
-	margin-left: 12px;
-	margin-bottom: 0;
-	background: @base;
-	transition: none;
+.critical {
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-name: blink-critical;
+	animation-duration: 1s;
 }
 
-#workspaces button, #tags button {
-	transition: none;
-	color: @text;
-	background: @crust;
-	font-size: 16px;
-    padding: 0;
+<! local function modcolorconf(module, sepmodbase, fg, bg, nextbg) !>
+#<% module %> {
+    color: #<% fg %>;
+    background: #<% bg %>;
 }
+
+#custom-sep-<% sepmodbase %> {
+    color: #<% bg %>;
+    <! if nextbg then !>background: #<% nextbg %>;<! end !>
+}
+<! end !>
+
+<! local non_sep_mods = {
+    "workspaces",
+    "tags",
+    "window",
+    "tray",
+    "clock",
+    "battery",
+    "temperature",
+    "network",
+    "memory",
+    "cpu",
+} !>
+
+<% table.concat(cg.lib.map(non_sep_mods, function(n) return "#" .. n end), ", ") %> {
+    padding: 0 4px;
+}
+
+/* ==== Left Modules ==== */
+
+/* Workspaces/Tags */
+<! if opt.wayland_compositor == "river" then
+    modcolorconf(
+        "tags",
+        "river-tags",
+        opt.catppuccin.text,
+        opt.catppuccin.base,
+        opt.catppuccin.surface0
+    )
+elseif opt.wayland_compositor == "hyprland" then
+    modcolorconf(
+        "workspaces",
+        "hyprland-workspaces",
+        opt.catppuccin.text,
+        opt.catppuccin.base,
+        opt.catppuccin.surface0
+    )
+end !>
 
 #tags button.occupied {
-    color: @sky;
-    background: @base;
+    color: #<% opt.catppuccin.maroon %>;
 }
 
 #workspaces button.active, #tags button.focused {
-	color: @lavender;
-    background: @surface0;
+    color: #<% opt.catppuccin.sky %>;
+    background: #<% opt.catppuccin.surface1 %>;
 }
 
-#workspaces button:hover, #tags button:hover {
-	transition: none;
-	box-shadow: inherit;
-	text-shadow: inherit;
-	color: @maroon;
-}
+/* Window */
+<! modcolorconf(
+    "window",
+    (opt.wayland_compositor or "") .. "-window",
+    opt.catppuccin.text,
+    opt.catppuccin.surface0
+) !>
 
-#pulseaudio {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @teal;
-}
+/* ==== Right Modules ==== */
 
-#cava {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @sapphire;
-	background: @surface0;
-}
+/* Tray */
+<! modcolorconf(
+    "tray", "tray",
+    opt.catppuccin.text,
+    opt.catppuccin.crust,
+    opt.catppuccin.mantle
+) !>
 
-#mpris {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @text;
-	background: @surface0;
-}
+/* Clock */
+<! modcolorconf(
+    "clock", "clock",
+    opt.catppuccin.text,
+    opt.catppuccin.mantle,
+    opt.catppuccin.sky
+) !>
 
-#temperature {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @green;
-}
+/* Battery */
+<! modcolorconf(
+    "battery", "battery",
+    opt.catppuccin.base,
+    opt.catppuccin.sky,
+    opt.catppuccin.flamingo
+) !>
 
-#cpu {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @mauve;
-}
+/* Pulseaudio */
+<! modcolorconf(
+    "pulseaudio", "pulseaudio",
+    opt.catppuccin.base,
+    opt.catppuccin.flamingo,
+    opt.catppuccin.green
+) !>
 
-#memory {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @yellow;
-}
+/* Temp */
+<! modcolorconf(
+    "temperature", "temperature",
+    opt.catppuccin.base,
+    opt.catppuccin.green,
+    opt.catppuccin.lavender
+) !>
 
-#battery {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @blue;
-}
+/* Network */
+<! modcolorconf(
+    "network", "network",
+    opt.catppuccin.base,
+    opt.catppuccin.lavender,
+    opt.catppuccin.yellow
+) !>
 
-#clock {
-	margin-top: 8px;
-	margin-left: 8px;
-	margin-right: 12px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @text;
-	background: @mantle;
-}
+/* Memory */
+<! modcolorconf(
+    "memory", "memory",
+    opt.catppuccin.base,
+    opt.catppuccin.yellow,
+    opt.catppuccin.mauve
+) !>
 
-#gamemode {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @text;
-	background: @red;
-}
+/* CPU */
+<! modcolorconf(
+    "cpu", "cpu",
+    opt.catppuccin.base,
+    opt.catppuccin.mauve,
+    opt.catppuccin.base
+) !>
 
-#tray {
-	margin-top: 8px;
-	margin-left: 8px;
-	margin-right: 12px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	background: @crust;
-}
-
-window#waybar.empty #window {
-    padding: 0px;
-    margin: 0px;
-    border: 0px;
-    background-color: transparent;
-}
-
-#window {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @text;
-	background: @base;
-}
-
-#network {
-	margin-top: 8px;
-	margin-left: 8px;
-	padding-left: 16px;
-	padding-right: 16px;
-	margin-bottom: 0;
-	transition: none;
-	color: @base;
-	background: @peach;
-}
+/* Mpris */
+<! modcolorconf(
+    "mpris", "mpris",
+    opt.catppuccin.text,
+    opt.catppuccin.base
+) !>
