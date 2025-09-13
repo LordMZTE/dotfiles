@@ -27,6 +27,10 @@ ytdl-format=bestvideo[height<=<% opt.videosize[2] %>]+bestaudio/best[height<=<% 
 # This makes the files in watch_later more introspectable.
 write-filename-in-watch-later-config
 
+# Needed for watch-later to work if we move relevant video files, which happens with
+# mzte-mpv-local-vids.
+ignore-path-in-watch-later-config
+
 # Subtitle visuals
 <! local sub_color = opt.catppuccin.rgb.maroon !>
 sub-color=<% sub_color.r / 255 %>/<% sub_color.g / 255 %>/<% sub_color.b / 255 %>/0.8
