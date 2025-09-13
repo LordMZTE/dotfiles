@@ -46,3 +46,9 @@ term-osd-bar-chars=┠─┸╌┨
 
 # MZTE-MPV will show metadata in a more fancy way. Disable builtin metadata printing
 display-tags-clr
+
+<! if not opt.good_internet then !>
+# If buffering, wait for 5 seconds to be buffered instead of 1. This makes for less frequent
+# buffering with bad internet.
+cache-pause-wait=10
+<! end !>
