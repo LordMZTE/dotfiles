@@ -2,15 +2,17 @@
 local wb = require "cgdata.waybar"
 local config = wb.moduleConfig()
 
+local separator_modpath = os.getenv "HOME" .. "/.local/share/waybar/cffi/mzte-waybar-separator.so"
+
 -- Generate left modules
 do
     local lsep_conf = {
-        format = "█ ",
-        tooltip = false,
+        module_path = separator_modpath,
+        side = "left",
     }
     local left_modules = {}
     for _, mod in ipairs(wb.modulesLeft()) do
-        local sep_name = "custom/sep-" .. mod:gsub("/", "-")
+        local sep_name = "cffi/sep-" .. mod:gsub("/", "-")
 
         table.insert(left_modules, mod)
         table.insert(left_modules, sep_name)
@@ -23,12 +25,12 @@ end
 -- Generate right modules
 do
     local rsep_conf = {
-       format = " █",
-       tooltip = false,
+       module_path = separator_modpath,
+       side = "right",
     }
     local right_modules = {}
     for _, mod in ipairs(wb.modules_right) do
-        local sep_name = "custom/sep-".. mod:gsub("/", "-")
+        local sep_name = "cffi/sep-".. mod:gsub("/", "-")
 
         table.insert(right_modules, sep_name)
         table.insert(right_modules, mod)

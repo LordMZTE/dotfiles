@@ -59,6 +59,7 @@
                 # packages required to build scripts
                 ddcutil # libddcutil for brightness script
                 gdk-pixbuf
+                gtk3.dev
                 libGL
                 libgit2
                 luajit

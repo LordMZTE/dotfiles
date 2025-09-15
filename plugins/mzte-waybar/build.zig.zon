@@ -1,0 +1,10 @@
+.{
+    .name = .mzte_waybar,
+    .version = "0.0.0",
+    .paths = .{""},
+    .fingerprint = 0xdc8903f0ed497435,
+
+    .dependencies = .{
+        .common = .{ .path = "../../lib/common-zig" },
+    },
+}

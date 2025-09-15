@@ -24,5 +24,6 @@
 
         // Plugins
         .@"mzte-mpv" = .{ .path = "plugins/mzte-mpv" },
+        .@"mzte-waybar" = .{ .path = "plugins/mzte-waybar" },
     },
 }

@@ -7,9 +7,8 @@
     <! local fontsiz = opt.mulFontSize(15) !>
     font-size: <% fontsiz %>px;
     min-height: 0;
-    /* Absolutely horrifying, but without this, GTK thinks 0 means "put a gap everywhere" */
-    padding: 2px;
-    margin: -2px;
+    padding: 0;
+    margin: 0;
 }
 
 window#waybar {
@@ -50,15 +49,10 @@ window#waybar.hidden {
     animation-duration: 0.5s;
 }
 
-<! local function modcolorconf(module, sepmodbase, fg, bg, nextbg) !>
+<! local function modcolorconf(module, fg, bg) !>
 #<% module %> {
     color: #<% fg %>;
     background: #<% bg %>;
-}
-
-#custom-sep-<% sepmodbase %> {
-    color: #<% bg %>;
-    <! if nextbg then !>background: #<% nextbg %>;<! end !>
 }
 <! end !>
 
@@ -87,18 +81,14 @@ window#waybar.hidden {
 <! if opt.wayland_compositor == "river" then
     modcolorconf(
         "tags",
-        "river-tags",
         opt.catppuccin.text,
-        opt.catppuccin.base,
-        opt.catppuccin.surface0
+        opt.catppuccin.base
     )
 elseif opt.wayland_compositor == "hyprland" then
     modcolorconf(
-        "workspaces",
         "hyprland-workspaces",
         opt.catppuccin.text,
-        opt.catppuccin.base,
-        opt.catppuccin.surface0
+        opt.catppuccin.base
     )
 end !>
 
@@ -114,7 +104,6 @@ end !>
 /* Window */
 <! modcolorconf(
     "window",
-    (opt.wayland_compositor or "") .. "-window",
     opt.catppuccin.text,
     opt.catppuccin.surface0
 ) !>
@@ -123,71 +112,63 @@ end !>
 
 /* Tray */
 <! modcolorconf(
-    "tray", "tray",
+    "tray",
     opt.catppuccin.text,
-    opt.catppuccin.crust,
-    opt.catppuccin.mantle
+    opt.catppuccin.crust
 ) !>
 
 /* Clock */
 <! modcolorconf(
-    "clock", "clock",
+    "clock",
     opt.catppuccin.text,
-    opt.catppuccin.mantle,
-    opt.catppuccin.sky
+    opt.catppuccin.mantle
 ) !>
 
 /* Battery */
 <! modcolorconf(
-    "battery", "battery",
+    "battery",
     opt.catppuccin.base,
-    opt.catppuccin.sky,
-    opt.catppuccin.flamingo
+    opt.catppuccin.sky
 ) !>
 
 /* Pulseaudio */
 <! modcolorconf(
-    "pulseaudio", "pulseaudio",
+    "pulseaudio",
     opt.catppuccin.base,
-    opt.catppuccin.flamingo,
-    opt.catppuccin.green
+    opt.catppuccin.flamingo
 ) !>
 
 /* Temp */
 <! modcolorconf(
-    "temperature", "temperature",
+    "temperature",
     opt.catppuccin.base,
-    opt.catppuccin.green,
-    opt.catppuccin.lavender
+    opt.catppuccin.green
 ) !>
 
 /* Network */
 <! modcolorconf(
-    "network", "network",
+    "network",
     opt.catppuccin.base,
-    opt.catppuccin.lavender,
-    opt.catppuccin.yellow
+    opt.catppuccin.lavender
 ) !>
 
 /* Memory */
 <! modcolorconf(
-    "memory", "memory",
+    "memory",
     opt.catppuccin.base,
-    opt.catppuccin.yellow,
-    opt.catppuccin.mauve
+    opt.catppuccin.yellow
 ) !>
 
 /* CPU */
 <! modcolorconf(
-    "cpu", "cpu",
+    "cpu",
     opt.catppuccin.base,
-    opt.catppuccin.mauve,
-    opt.catppuccin.base
+    opt.catppuccin.mauve
 ) !>
 
 /* Mpris */
 <! modcolorconf(
-    "mpris", "mpris",
+    "mpris",
     opt.catppuccin.text,
     opt.catppuccin.base
 ) !>

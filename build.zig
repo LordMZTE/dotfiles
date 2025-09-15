@@ -28,4 +28,5 @@ pub fn build(b: *std.Build) !void {
 
     // Plugins
     inst.addZBuild(b, opts, zargs, "mzte-mpv");
+    inst.addZBuild(b, opts, zargs, "mzte-waybar");
 }
