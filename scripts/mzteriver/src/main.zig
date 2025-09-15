@@ -1,6 +1,6 @@
 const std = @import("std");
 const common = @import("common");
-const opts = @import("opts");
+const cg = @import("cg");
 
 const init = @import("init.zig").init;
 
@@ -72,7 +72,7 @@ pub fn main() !void {
             try env.appendBounded("QT_QPA_PLATFORM=wayland");
             try env.appendBounded("XDG_CURRENT_DESKTOP=river");
 
-            if (opts.cg.nvidia) {
+            if (cg.nvidia) {
                 try env.appendBounded("WLR_NO_HARDWARE_CURSORS=1");
             }
 

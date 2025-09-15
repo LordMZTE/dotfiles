@@ -1,5 +1,5 @@
 const std = @import("std");
-const opt = @import("opts").cg;
+const opt = @import("cg");
 
 const log = std.log.scoped(.init);
 

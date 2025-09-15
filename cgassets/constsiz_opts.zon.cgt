@@ -1,0 +1,1 @@
+<! tmpl:setAssumeDeterministic(true) !><% require("lib.confgen.zon").serialize(opt) %>

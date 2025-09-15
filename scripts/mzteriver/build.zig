@@ -7,41 +7,6 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const CgOpt = struct {
-        catppuccin: struct {
-            base: [:0]const u8,
-            red: [:0]const u8,
-            sky: [:0]const u8,
-        },
-        nvidia: bool = false,
-        term: struct { command: [:0]const u8 },
-        commands: struct {
-            file_manager: [:0]const u8,
-            browser: [:0]const u8,
-            media: struct {
-                volume_up: [:0]const u8,
-                volume_down: [:0]const u8,
-                mute_sink: [:0]const u8,
-                mute_source: [:0]const u8,
-
-                play_pause: [:0]const u8,
-                stop: [:0]const u8,
-                next: [:0]const u8,
-                prev: [:0]const u8,
-            },
-            backlight_up: [:0]const u8,
-            backlight_down: [:0]const u8,
-        },
-        cursor: struct {
-            theme: [:0]const u8,
-            size: u32,
-        },
-    };
-    const cg_opt = try common.confgenGet(CgOpt, b.allocator);
-
-    const opts = b.addOptions();
-    opts.addOption(CgOpt, "cg", cg_opt);
-
     const scanner = Scanner.create(b, .{});
 
     const mod = b.createModule(.{
@@ -56,8 +21,10 @@ pub fn build(b: *std.Build) !void {
         .root_module = mod,
     });
 
+    mod.addAnonymousImport("cg", .{
+        .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
+    });
     mod.addImport("common", b.dependency("common", .{}).module("common"));
-    mod.addImport("opts", opts.createModule());
     mod.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
     scanner.addCustomProtocol(b.path("river-control-unstable-v1.xml"));

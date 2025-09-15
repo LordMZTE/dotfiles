@@ -25,11 +25,9 @@ pub fn build(b: *std.Build) !void {
     mod.linkSystemLibrary("wayland-client", .{});
     mod.linkSystemLibrary("gdk-pixbuf-2.0", .{});
 
-    const cg_opt = try common.confgenGet(CgOpt, b.allocator);
-    const opts = b.addOptions();
-    opts.addOption([:0]const u8, "ctp_base", cg_opt.catppuccin.base);
-
-    mod.addImport("opts", opts.createModule());
+    mod.addAnonymousImport("cg", .{
+        .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
+    });
 
     b.installArtifact(exe);
 

@@ -35,27 +35,9 @@ pub fn build(b: *std.Build) !void {
         m.addImport("common", common_mod);
     }
 
-    // TODO: Broken, see: https://github.com/ziglang/zig/issues/20525
-    //const cg_opt = try common.confgenGet(struct {
-    //    gtk_theme: []const u8,
-    //    mzteinit_entries: []const struct {
-    //        key: []const u8,
-    //        label: []const u8,
-    //        cmd: []const []const u8,
-    //        quit: bool = false,
-    //    },
-    //}, b.allocator);
-
-    const cg_opt = try common.confgenGet(struct {
-        gtk_theme: []const u8,
-        term: struct {
-            exec: []const u8,
-        },
-    }, b.allocator);
-
-    const opts = b.addOptions();
-    opts.addOption(@TypeOf(cg_opt), "cg", cg_opt);
-    exe.root_module.addImport("opts", opts.createModule());
+    mod.addAnonymousImport("cg", .{
+        .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
+    });
 
     b.installArtifact(exe);
     b.installArtifact(mzteinitctl);

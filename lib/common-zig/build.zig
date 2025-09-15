@@ -8,7 +8,6 @@ pub fn build(b: *std.Build) void {
     });
 }
 
-// TODO: make confgen generate zon and delete
 /// Retrieve some confgen options given a relative path to the dotfile root and a struct type
 /// with a field for each option.
 pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
@@ -36,6 +35,16 @@ pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
     // We just grab the value from the parse result as this data will almost certainly have been
     // allocated with the builder's arena anyways.
     return ret.value;
+}
+
+pub fn confgenPath(b: *std.Build, subpath: []const u8) std.Build.LazyPath {
+    const path = std.fs.path.join(b.allocator, &.{
+        std.posix.getenv("HOME") orelse @panic("HOME not set"),
+        "confgenfs",
+        subpath,
+    }) catch @panic("OOM");
+
+    return .{ .cwd_relative = path };
 }
 
 pub fn findRepoRoot(alloc: std.mem.Allocator) ![:0]const u8 {

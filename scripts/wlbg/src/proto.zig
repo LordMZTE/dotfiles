@@ -2,7 +2,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const c = ffi.c;
-const opts = @import("opts");
+const cg = @import("cg");
 
 const ffi = @import("ffi.zig");
 
@@ -11,7 +11,7 @@ const State = @import("State.zig");
 const native_endian = @import("builtin").cpu.arch.endian();
 
 const ctp_base: [3]u8 = blk: {
-    const int = std.fmt.parseInt(u24, opts.ctp_base, 16) catch unreachable;
+    const int = std.fmt.parseInt(u24, cg.catppuccin.base, 16) catch unreachable;
     break :blk .{ int >> 0x10, int >> 0x08 & 0xff, int & 0xff };
 };
 

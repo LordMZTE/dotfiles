@@ -1,6 +1,6 @@
 const std = @import("std");
 const common = @import("common");
-const cg = @import("opts").cg;
+const cg = @import("cg");
 
 const sysdaemon = @import("sysdaemon.zig");
 

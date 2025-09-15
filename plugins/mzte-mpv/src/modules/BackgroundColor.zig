@@ -1,6 +1,6 @@
 const std = @import("std");
 const c = ffi.c;
-const opts = @import("opts");
+const cg = @import("cg");
 
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
@@ -20,8 +20,8 @@ const Background = enum(u8) {
     fn color(self: Background) [:0]const u8 {
         return switch (self) {
             .transparent => "#00000000",
-            .ctp => "#" ++ opts.ctp_base,
-            .ctp_transparent => "#a0" ++ opts.ctp_base,
+            .ctp => "#" ++ cg.catppuccin.base,
+            .ctp_transparent => "#a0" ++ cg.catppuccin.base,
             .black => "#000000",
         };
     }
