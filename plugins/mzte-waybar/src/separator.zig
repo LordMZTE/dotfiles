@@ -7,6 +7,17 @@ comptime {
     lib.wb.defineStandardExterns();
 }
 
+// x, y tuples in range of 0-1
+const sep_vertices = [_][2]f64{
+    .{ 0.0, 0.0 },
+    .{ 0.244, 0.244 },
+    .{ 0.064, 0.5 },
+    .{ 0.5, 0.5 },
+    .{ 0.340, 0.732 },
+    .{ 0.732, 0.732 },
+    .{ 1.0, 1.0 },
+};
+
 const Side = enum { left, right };
 
 const Instance = struct {
@@ -87,9 +98,9 @@ fn tryInit(init_info: *const wb.InitInfo, config: []const wb.ConfigEntry) !*Inst
 }
 
 export fn wbcffi_deinit(instance: *Instance) void {
-    std.heap.c_allocator.destroy(instance);
     if (instance.left_neighbor) |l| c.g_object_unref(l);
     if (instance.right_neighbor) |r| c.g_object_unref(r);
+    std.heap.c_allocator.destroy(instance);
 }
 
 fn showCb(widget: *c.GtkWidget, instance: *Instance) callconv(.c) void {
@@ -144,11 +155,11 @@ fn showCb(widget: *c.GtkWidget, instance: *Instance) callconv(.c) void {
     }
 
     if (instance.left_neighbor) |l| c.g_object_unref(l);
-    _ = c.g_object_ref(before);
+    if (before) |b| _ = c.g_object_ref(b);
     instance.left_neighbor = before;
 
     if (instance.right_neighbor) |r| c.g_object_unref(r);
-    _ = c.g_object_ref(after);
+    if (after) |a| _ = c.g_object_ref(a);
     instance.right_neighbor = after;
 }
 
@@ -190,21 +201,7 @@ fn drawAreaDrawCb(
         c.cairo_save(cr);
         defer c.cairo_restore(cr);
 
-        // Add a clip triangle into the cairo state
-        switch (instance.side) {
-            .left => {
-                c.cairo_move_to(cr, 0, 0);
-                c.cairo_line_to(cr, width, 0);
-                c.cairo_line_to(cr, 0, height);
-                c.cairo_close_path(cr);
-            },
-            .right => {
-                c.cairo_move_to(cr, 0, 0);
-                c.cairo_line_to(cr, width, height);
-                c.cairo_line_to(cr, 0, height);
-                c.cairo_close_path(cr);
-            },
-        }
+        clipToCairo(cr, width, height, instance.side, true);
         c.cairo_clip(cr);
 
         const style_ctx = c.gtk_widget_get_style_context(neighbor);
@@ -216,20 +213,7 @@ fn drawAreaDrawCb(
         c.cairo_save(cr);
         defer c.cairo_restore(cr);
 
-        switch (instance.side) {
-            .left => {
-                c.cairo_move_to(cr, width, 0);
-                c.cairo_line_to(cr, width, height);
-                c.cairo_line_to(cr, 0, height);
-                c.cairo_close_path(cr);
-            },
-            .right => {
-                c.cairo_move_to(cr, 0, 0);
-                c.cairo_line_to(cr, width, 0);
-                c.cairo_line_to(cr, width, height);
-                c.cairo_close_path(cr);
-            },
-        }
+        clipToCairo(cr, width, height, instance.side, false);
         c.cairo_clip(cr);
 
         const style_ctx = c.gtk_widget_get_style_context(neighbor);
@@ -237,4 +221,27 @@ fn drawAreaDrawCb(
     }
 
     return 0;
+}
+
+fn clipToCairo(cr: *c.cairo_t, width: f64, height: f64, side: Side, invert: bool) void {
+    if (invert) {
+        c.cairo_move_to(cr, 0, 0);
+    } else {
+        c.cairo_move_to(cr, width, 0);
+    }
+
+    for (sep_vertices) |vert| {
+        switch (side) {
+            .left => c.cairo_line_to(cr, (1.0 - vert[0]) * width, vert[1] * height),
+            .right => c.cairo_line_to(cr, vert[0] * width, vert[1] * height),
+        }
+    }
+
+    if (invert) {
+        c.cairo_line_to(cr, 0, height);
+    } else {
+        c.cairo_line_to(cr, width, height);
+    }
+
+    c.cairo_close_path(cr);
 }
