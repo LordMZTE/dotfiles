@@ -122,6 +122,14 @@ cg.opt.toggleSafeMode = function()
     end
 end
 
+-- Essentially undoes all cached "require" calls. This is useful for iterating on code running in
+-- ConfgenFS to reload.
+cg.opt.unloadModules = function ()
+    for k, _ in pairs(package.loaded) do
+        package.loaded[k] = nil
+    end
+end
+
 require "cg_opts"
 require "cg_lazies"
 

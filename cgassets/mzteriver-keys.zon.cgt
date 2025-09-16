@@ -1,0 +1,31 @@
+<!
+tmpl:setAssumeDeterministic(true)
+local wm = require "cgdata.wm"
+
+local keymodconv = {
+    meta = "Mod4",
+    ctrl = "Control",
+    shift = "Shift",
+    alt = "Mod1",
+}
+
+local function key(k)
+    local mods = #k[1] == 0 and "None" or
+        table.concat(cg.lib.map(k[1], function(m) return keymodconv[m] end), "+")
+    return [["]] .. mods .. [[", "]] .. k[2] .. [["]]
+end
+!>
+.{
+    .control_keys = .{
+        <! for name, k in pairs(wm.control_keys) do !>
+        .@"<% name %>" = .{ <% key(k) %> },<! end !>
+    },
+
+    .launch_keys = .{
+        <! for k, cmd in pairs(wm.launch_keys) do !>
+        .{
+            <% key(k) %>,
+            \\<% cmd %>
+        },<! end !>
+    },
+}

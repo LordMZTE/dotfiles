@@ -1,29 +1,32 @@
-# Media keys
-bind = ,XF86AudioRaiseVolume, exec, <% opt.commands.media.volume_up %>
-bind = ,XF86AudioLowerVolume, exec, <% opt.commands.media.volume_down %>
-bind = ,XF86AudioMute, exec, <% opt.commands.media.mute_sink %>
-bind = ,XF86AudioMicMute, exec, <% opt.commands.media.mute_source %>
-bind = ,XF86AudioPlay, exec, <% opt.commands.media.play_pause %>
-bind = ,XF86AudioStop, exec, <% opt.commands.media.stop %>
-bind = ,XF86AudioNext, exec, <% opt.commands.media.next %>
-bind = ,XF86AudioPrev, exec, <% opt.commands.media.prev %>
+<!
+local wm = require "cgdata.wm"
 
-# Backlight keys
-bind = ,XF86MonBrightnessUp, exec, <% opt.commands.backlight_up %>
-bind = ,XF86MonBrightnessDown, exec, <% opt.commands.backlight_down %>
+local keymodconv = {
+    meta = "SUPER",
+    shift = "SHIFT",
+    ctrl = "CTRL",
+    alt = "ALT",
+}
 
+-- Convert keys from wm.lua to hyprland format.
+local function key(k)
+    return table.concat(cg.lib.map(k[1], function(m) return keymodconv[m] end), " ")
+        .. "," .. k[2]
+end
+!>
+
+# CG Launch Keys
+<! for k, cmd in pairs(wm.launch_keys) do !>
+bind = <% key(k) %>, execr, <% cmd %><! end !>
 # Control keys
-bind = SUPER SHIFT, E, exit,
-bind = SUPER SHIFT, Q, killactive,
-bind = SUPER SHIFT, SPACE, togglefloating, 
+bind = <% key(wm.control_keys.quit) %>, exit,
+bind = <% key(wm.control_keys.close_window) %>, killactive,
+bind = <% key(wm.control_keys.float) %>, togglefloating, 
+bind = <% key(wm.control_keys.fullscreen) %>, fullscreen,
 bind = SUPER, P, pseudo, # dwindle
 bind = SUPER, R, togglesplit, # dwindle
-bind = SUPER, F, fullscreen,
 bind = SUPER, T, fullscreen, 1 # maximize
 bind = SUPER SHIFT, F, exec, hyprtool fullerscreen
-bind = SUPER, W, exec, pkill -USR1 wlbg
-bind = SUPER SHIFT, W, exec, pkill -USR2 wlbg
-bind = SUPER, S, exec, echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval
 
 <! for _, dirs in pairs {
     { "left", "right", "up", "down" },

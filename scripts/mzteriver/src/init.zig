@@ -1,5 +1,6 @@
 const std = @import("std");
 const opt = @import("cg");
+const cgkeys = @import("cgkeys");
 
 const log = std.log.scoped(.init);
 
@@ -22,47 +23,11 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
     // Normal-Mode keyboard mappings
     inline for (.{
-        // "run command" maps
-        .{ "Super", "Return", "spawn", journal_prefix ++ opt.term.command },
-        .{ "Super+Control", "E", "spawn", journal_prefix ++ opt.commands.file_manager },
-        .{ "Super+Control", "B", "spawn", journal_prefix ++ opt.commands.browser },
-        .{ "Super+Control", "V", "spawn", journal_prefix ++ "vinput md" },
-        .{ "Super+Control", "L", "spawn", journal_prefix ++ "physlock" },
-        .{ "Super+Shift", "P", "spawn", journal_prefix ++ "gpower2" },
-        .{ "Alt", "Space", "spawn", journal_prefix ++ "rofi -show combi" },
-        .{ "Super+Alt", "Space", "spawn", journal_prefix ++ "rofi -show emoji" },
-        .{
-            "None",
-            "Print",
-            "spawn",
-            journal_prefix ++ "sh -c 'grim -g \"$(slurp; sleep 1)\" - | satty --filename -'",
-        },
-
-        // media keys
-        .{ "None", "XF86Eject", "spawn", "eject -T" },
-        .{ "None", "XF86AudioRaiseVolume", "spawn", opt.commands.media.volume_up },
-        .{ "None", "XF86AudioLowerVolume", "spawn", opt.commands.media.volume_down },
-        .{ "None", "XF86AudioMute", "spawn", opt.commands.media.mute_sink },
-        .{ "None", "XF86AudioMicMute", "spawn", opt.commands.media.mute_source },
-        .{ "None", "XF86AudioMedia", "spawn", opt.commands.media.play_pause },
-        .{ "None", "XF86AudioPlay", "spawn", opt.commands.media.play_pause },
-        .{ "None", "XF86AudioPrev", "spawn", opt.commands.media.prev },
-        .{ "None", "XF86AudioNext", "spawn", opt.commands.media.next },
-
-        // light control
-        .{ "None", "XF86MonBrightnessUp", "spawn", opt.commands.backlight_up },
-        .{ "None", "XF86MonBrightnessDown", "spawn", opt.commands.backlight_down },
-
         // control maps
-        .{ "Super+Shift", "E", "exit" },
-        .{ "Super", "Space", "toggle-float" },
-        .{ "Super", "F", "toggle-fullscreen" },
-        .{ "Super+Shift", "Q", "close" },
-        .{ "Super", "W", "spawn", "pkill -USR1 wlbg" }, // randomize wallpaper
-        .{ "Super+Shift", "W", "spawn", "pkill -USR2 wlbg" }, // toggle dark wallpaper
-        .{ "Super", "S", "spawn", "sh -c 'echo \"cg.opt.toggleSafeMode()\" > ~/confgenfs/_cgfs/eval'" },
-
-        // screenshot
+        cgkeys.control_keys.quit ++ .{"exit"},
+        cgkeys.control_keys.float ++ .{"toggle-float"},
+        cgkeys.control_keys.fullscreen ++ .{"toggle-fullscreen"},
+        cgkeys.control_keys.close_window ++ .{"close"},
 
         // "irregular" focus & move maps
         // (that is, they don't exist for all 4 directions)
@@ -81,6 +46,12 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         .{ "Super+Shift", "L", "send-layout-cmd", "rivertile", "main-count +1" },
     }) |map_cmd| {
         try con.runCommand(&(.{ "map", "normal" } ++ map_cmd));
+    }
+
+    // Confgen'd keymaps
+    inline for (cgkeys.launch_keys) |mapping| {
+        const cmd = &.{ "map", "normal", mapping.@"0", mapping.@"1", "spawn", mapping.@"2" };
+        try con.runCommand(cmd);
     }
 
     inline for (.{
