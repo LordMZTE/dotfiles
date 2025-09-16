@@ -84,9 +84,9 @@ window#waybar.hidden {
         opt.catppuccin.text,
         opt.catppuccin.base
     )
-elseif opt.wayland_compositor == "hyprland" then
+elseif opt.wayland_compositor == "hyprland" or opt.wayland_compositor == "niri" then
     modcolorconf(
-        "hyprland-workspaces",
+        "workspaces",
         opt.catppuccin.text,
         opt.catppuccin.base
     )

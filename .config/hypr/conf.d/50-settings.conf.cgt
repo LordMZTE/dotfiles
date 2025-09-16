@@ -1,7 +1,7 @@
 exec-once = echo 'cg.opt.setCurrentWaylandCompositor "hyprland"' >~/confgenfs/_cgfs/eval
 
 input {
-    kb_layout = de
+    kb_layout = <% opt.keyboard.layout %>
 
     follow_mouse = 2
 

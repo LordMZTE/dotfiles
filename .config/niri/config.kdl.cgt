@@ -1,0 +1,112 @@
+<! local wm = require "cgdata.wm" !>
+input {
+    keyboard {
+        xkb {
+            layout "<% opt.keyboard.layout %>"
+            <! if opt.keyboard.options then !>options "<% opt.keyboard.options %>"<! end !>
+        }
+
+        repeat-delay 300
+        repeat-rate 50
+    }
+
+    warp-mouse-to-focus
+}
+
+cursor {
+    xcursor-theme "<% opt.cursor.theme %>"
+    xcursor-size <% opt.cursor.size %>
+}
+
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+layout {
+    focus-ring {
+        off
+    }
+
+    border {
+        width 2
+        active-color "#<% opt.catppuccin.red %>"
+        inactive-color "#<% opt.catppuccin.sky %>"
+    }
+}
+
+binds {
+    <!
+    local keymodconv = {
+        meta = "Super",
+        ctrl = "Ctrl",
+        shift = "Shift",
+        alt = "Alt",
+    }
+
+    function key(k)
+        local mods = ""
+        for _, mod in pairs(k[1]) do
+            mods = mods .. keymodconv[mod] .. "+"
+        end
+        return mods .. k[2]
+    end
+    !>
+
+    // Control Keys
+    <% key(wm.control_keys.quit) %> { quit; }
+    <% key(wm.control_keys.close_window) %> { close-window; }
+    <% key(wm.control_keys.float) %> { toggle-window-floating; }
+    <% key(wm.control_keys.fullscreen) %> { fullscreen-window; }
+
+    // Confgen Keys
+    <! for k, cmd in pairs(wm.launch_keys) do !>
+    <% key(k) %> { spawn-sh "<% cmd:gsub([["]], [[\"]]) %>"; }<! end !>
+
+    Super+O { toggle-overview; }
+
+    // Focus/Move
+    <! for _, k in ipairs {
+        { "Left", "H", "column-left" },
+        { "Right", "L", "column-right" },
+        { "Up", "K", "window-or-workspace-up", "window-up-or-to-workspace-up" },
+        { "Down", "J", "window-or-workspace-down", "window-down-or-to-workspace-down" },
+    } do !>
+    Super+<% k[1] %> { focus-<% k[3] %>; }
+    Super+<% k[2] %> { focus-<% k[3] %>; }
+    Super+Shift+<% k[1] %> { move-<% k[4] or k[3] %>; }
+    Super+Shift+<% k[2] %> { move-<% k[4] or k[3] %>; }
+    <! end !>
+
+    Super+Period { focus-monitor-next; }
+    Super+Shift+Period { move-window-to-monitor-next; }
+    Super+Control+Shift+Period { move-column-to-monitor-next; }
+
+    Super+Comma { focus-monitor-previous; }
+    Super+Shift+Comma { move-window-to-monitor-previous; }
+    Super+Control+Shift+Comma { move-column-to-monitor-previous; }
+
+    // Numbered Workspaces
+    <! for n = 1, 9 do !>
+    Super+<% n %> { focus-workspace <% n %>; }
+    Super+Shift+<% n %> { move-column-to-workspace <% n %>; }
+    <! end !>
+
+    Super+Shift+C { consume-window-into-column; }
+    Super+Ctrl+C { expel-window-from-column; }
+    Super+C { maximize-column; }
+
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Plus { set-column-width "+10%"; }
+}
+
+environment {
+    QT_QPA_PLATFORM "wayland"
+    XDG_CURRENT_DESKTOP "niri"
+}
+
+spawn-sh-at-startup "echo 'cg.opt.setCurrentWaylandCompositor [[niri]]' > ~/confgenfs/_cgfs/eval"
+spawn-at-startup "kanshi"
+spawn-at-startup "wlbg"
+spawn-at-startup "waybar"

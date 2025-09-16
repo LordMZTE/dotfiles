@@ -2,6 +2,7 @@
 -- Window managers/Compositors implementing this:
 -- - Hyprland
 -- - River (via MZTERiver)
+-- - Niri
 
 local mod_shorthands = {
     m = "meta",

@@ -11,6 +11,8 @@ function mod.modulesLeft()
         return { "river/tags", "river/window" }
     elseif cg.opt.wayland_compositor == "hyprland" then
         return { "hyprland/workspaces", "hyprland/window" }
+    elseif cg.opt.wayland_compositor == "niri" then
+        return { "niri/workspaces", "niri/window" }
     else
         return {}
     end
