@@ -77,7 +77,7 @@ mod.launch_keys = {
     [{ kmods "ma", "Space" }] = "rofi -show emoji",
     [{ kmods "mc", "E" }] = cmds.file_manager,
     [{ kmods "mc", "B" }] = cmds.browser,
-    [{ kmods "mc", "V" }] = "vinput",
+    [{ kmods "mc", "V" }] = "vinput md",
 }
 
 return mod
