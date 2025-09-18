@@ -39,7 +39,7 @@ mod.control_keys = {
     quit = { kmods "ms", "E" },
     close_window = { kmods "ms", "Q" },
     float = { kmods "m", "Space" },
-    fullscreen = { kmods "ms", "F" },
+    fullscreen = { kmods "m", "F" },
 }
 
 local cmds = cg.opt.commands
