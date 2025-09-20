@@ -16,7 +16,6 @@
         hash = "sha256-VdX9tZ0D0XNoK8gVAGUXlWb3HdzqlWYdeM/usi588RQ=";
       };
 
-      useFetchCargoVendor = true;
       cargoHash = "sha256-GYJf3OnNEUiSVbooxCQhKjH0dXbHb3pCxFWWCOBaKBY=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
