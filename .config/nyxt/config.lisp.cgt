@@ -8,7 +8,8 @@
     (define-keyscheme-map "mzte" (list :import %slot-value%)
       nyxt/keyscheme:vi-normal '("g t" switch-buffer-next
                                  "g T" switch-buffer-previous
-                                 "C-w" delete-current-buffer)))))
+                                 "C-w" delete-current-buffer
+                                 "y f" copy-hint-url)))))
 
 (define-configuration browser
   ((theme
