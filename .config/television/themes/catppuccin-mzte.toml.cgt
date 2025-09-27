@@ -19,4 +19,5 @@ preview_title_fg = '#<% cpt.peach %>'
 # modes
 channel_mode_fg = '#<% cpt.pink %>'
 remote_control_mode_fg = '#<% cpt.green %>'
+remote_control_mode_bg = '#<% cpt.base %>'
 send_to_channel_mode_fg = '#<% cpt.sky %>'
