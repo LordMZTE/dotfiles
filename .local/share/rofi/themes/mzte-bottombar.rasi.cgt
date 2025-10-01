@@ -1,0 +1,61 @@
+<! local ctp = opt.catppuccin !>
+* {
+    text-color: #<% ctp.text %>;
+    background-color: #<% ctp.base %>50;
+}
+
+window {
+    location: south;
+    anchor: south;
+    width: 100%;
+    border: 2px 0px 0px 0px;
+    border-color: #<% ctp.red %>;
+}
+
+mainbox {
+    orientation: vertical;
+    children: [ listview, mode-switcher, message, inputbar ];
+}
+
+listview {
+    flow: horizontal;
+    columns: 8;
+    lines: 8;
+    scrollbar: true;
+}
+
+scrollbar {
+    background-color: #<% ctp.surface1 %>80;
+    handle-color: #<% ctp.peach %>;
+}
+
+mode-switcher {
+    background-color: #<% ctp.surface0 %>80;
+}
+
+textbox-rownumsep {
+    str: "/";
+    expand: false;
+}
+
+inputbar {
+    spacing: 10px;
+    children: [ entry, num-filtered-rows, textbox-rownumsep, num-rows ];
+}
+
+entry {
+    border: 1px;
+    border-color: #<% ctp.sky %>;
+}
+
+element-text {
+    font: "<% opt.font %> 20px";
+}
+
+element selected {
+    background-color: #<% opt.catppuccin.maroon %>a0;
+}
+
+button selected {
+    background-color: #<% opt.catppuccin.maroon %>a0;
+}

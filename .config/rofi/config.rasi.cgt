@@ -14,9 +14,9 @@ end
 !>
 configuration {
 	modi: "<% table.concat(modi, ",") %>";
-	font: "<% opt.font %> 12";
+	font: "<% opt.font %> 12pt";
 	show-icons: true;
 	icon-theme: "<% opt.icon_theme %>";
 	combi-modi: "drun,<! if have_nheko then !>nheko,<! end !>window,run";
 }
-@theme "catppuccin-sidebar.rasi"
+@theme "mzte-bottombar.rasi"
