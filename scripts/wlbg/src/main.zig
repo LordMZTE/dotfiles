@@ -18,7 +18,11 @@ pub fn main() !void {
     const xdgrtdir = std.posix.getenv("XDG_RUNTIME_DIR") orelse return error.NoRuntimeDir;
 
     var sockpath_buf: [std.fs.max_path_bytes]u8 = undefined;
-    const sockpath = try std.fmt.bufPrintZ(&sockpath_buf, "{s}/swww-{s}.sock", .{ xdgrtdir, wl_dpy_name });
+    const sockpath = try std.fmt.bufPrintZ(
+        &sockpath_buf,
+        "{s}/{s}-swww-daemon..sock",
+        .{ xdgrtdir, wl_dpy_name },
+    );
 
     var wp_arena = std.heap.ArenaAllocator.init(alloc);
     defer wp_arena.deinit();

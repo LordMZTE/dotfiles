@@ -1,4 +1,4 @@
-//! Implementation of the swww IPC protocol. Swww version: 0.10.2
+//! Implementation of the swww IPC protocol. Swww version: 0.11.2
 const std = @import("std");
 const builtin = @import("builtin");
 const c = ffi.c;
@@ -117,7 +117,7 @@ pub const BgInfo = struct {
 pub const ScaleType = enum { whole, preferred, fractional };
 
 pub const BgImg = union(enum) {
-    color: [3]u8,
+    color: [4]u8,
     img: []const u8, // path, not image data :P
 };
 
@@ -224,7 +224,7 @@ pub fn query(state: *State) !QueryAnswer {
             const scale = try r.takeInt(i32, native_endian);
 
             const img: BgImg = switch (try r.takeByte()) {
-                0 => .{ .color = (try r.takeArray(3)).* },
+                0 => .{ .color = (try r.takeArray(4)).* },
                 1 => .{ .img = try readStringAlloc(r, ret_alloc) },
                 else => return error.ProtocolViolation,
             };
