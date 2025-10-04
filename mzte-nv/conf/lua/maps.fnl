@@ -23,7 +23,7 @@
 (nmap :<S-F4> (cmd :cprevious))
 
 ;; LSP
-(nmap :-r #(vim.lsp.buf.format {:async true}))
+(nmap :-r #((. (require :mztelualib.lsp) :format) 0))
 (nmap :<C-k> vim.lsp.buf.signature_help)
 (vim.keymap.set :i :<C-k> vim.lsp.buf.signature_help opts)
 

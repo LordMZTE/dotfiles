@@ -8,6 +8,10 @@
                          (src :formatting :clang_format)
                          (src :formatting :fish_indent)
                          (src :formatting :fnlfmt)
-                         (src :formatting :prettier)
+                         ((. (src :formatting :prettier) :with) {:extra_args (fn [params]
+                                                                               (and params.options
+                                                                                    params.options.tabSize
+                                                                                    [:--tab-width
+                                                                                     params.options.tabSize]))})
                          (src :formatting :shfmt)
                          (src :formatting :tidy)]})

@@ -3,17 +3,9 @@
 (local util (require :lspconfig.util))
 (local lsp-configs (require :lspconfig.configs))
 
-(macro setup [conf args]
-  (var args args)
-  (when (not args)
-    (set args {}))
-  (tset args :on_attach (if args.on_attach
-                            `(fn [client# bufnr#]
-                               (mztenv.lsp.onAttach client# bufnr#)
-                               (,args.on_attach client# bufnr#))
-                            `mztenv.lsp.onAttach))
-  (tset args :capabilities `caps)
-  `((. lspc ,conf :setup) ,args))
+(fn setup [conf args]
+  (when args (vim.lsp.config conf args))
+  (vim.lsp.enable conf))
 
 (tset lsp-configs :cl-lsp {:default_config {:cmd [:cl-lsp]
                                             :filetypes [:lisp :commonlisp]
@@ -24,24 +16,22 @@
 (var caps
      ((. (require :cmp_nvim_lsp) :default_capabilities) (vim.lsp.protocol.make_client_capabilities)))
 
+(vim.lsp.config "*" {:capabilities caps})
+
 (tset caps :textDocument :foldingRange
       {:dynamicRegistration false :lineFoldingOnly true})
 
 (tset caps :offsetEncoding [:utf-8])
 
-(fn disable-formatter [client _]
-  (tset client :server_capabilities :documentFormattingRangeProvider false))
-
 (setup :cl-lsp)
-(setup :clangd {:on_attach disable-formatter})
-
+(setup :clangd)
 (setup :cssls)
 (setup :elixirls {:cmd [:elixir-ls]})
 (setup :eslint)
 (setup :glsl_analyzer)
 (setup :haxe_language_server)
 (setup :html)
-(setup :jsonls {:on_attach disable-formatter})
+(setup :jsonls)
 (setup :julials)
 (setup :ltex {:cmd [:ltex-ls-plus]
               ;; LTeX is slow and noisy, but still catches a few errors sometimes.
