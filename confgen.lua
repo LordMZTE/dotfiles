@@ -96,7 +96,7 @@ end
 -- Returns true iff the given terminal command line (usually the return value of fsctx:getCallerCmd)
 -- should cause a terminal to be launched with a larger font size.
 cg.opt.shouldUseLargeFontForCmdline = function(cmdline)
-    return cg.lib.contains(cmdline, function (arg)
+    return cg.lib.contains(cmdline, function(arg)
         return arg:match "iamb$"
     end)
 end
@@ -124,7 +124,7 @@ end
 
 -- Essentially undoes all cached "require" calls. This is useful for iterating on code running in
 -- ConfgenFS to reload.
-cg.opt.unloadModules = function ()
+cg.opt.unloadModules = function()
     for k, _ in pairs(package.loaded) do
         package.loaded[k] = nil
     end

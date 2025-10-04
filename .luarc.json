@@ -1,12 +1,5 @@
 {
     "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
-    "Lua.diagnostics.globals": [
-        "vim",
-        "luakit",
-        "lfs",
-        "cg"
-    ],
-    "Lua.workspace.library": [
-        "${3rd}/lfs/library"
-    ]
+    "Lua.diagnostics.globals": ["vim", "luakit", "lfs", "cg"],
+    "Lua.workspace.library": ["${3rd}/lfs/library"]
 }
