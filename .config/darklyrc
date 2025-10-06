@@ -1,0 +1,5 @@
+[Common]
+CornerRadius=0
+
+[Style]
+renderThinSeparatorBetweenTheScrollBar=true

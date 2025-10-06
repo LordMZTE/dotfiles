@@ -1,0 +1,2 @@
+whitelist ${HOME}/.config/darklyrc
+whitelist ${HOME}/.config/hypr/hyprqt6engine

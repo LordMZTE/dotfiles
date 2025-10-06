@@ -1,0 +1,13 @@
+theme {
+    # https://github.com/catppuccin/qt5ct
+    color_scheme = catppuccin-mocha-red
+
+    # https://github.com/Bali10050/Darkly
+    style = Darkly
+
+    icon_theme = <% opt.icon_theme %>
+    font = <% opt.font %>
+    font_fixed = <% opt.term_font %>
+    font_size = 11
+    font_fixed_size = 11
+}
