@@ -19,3 +19,10 @@ rooms = ["favorite", "recent"]
 
 [dirs]
 downloads = "/tmp/iamb_dl_<% opt.lazy.username() %>"
+
+[macros.normal]
+"gr" = ":replied<Enter>"
+"go" = ":open<Enter>"
+"gi" = ":message<Enter>"
+"fu" = ":unreads<Enter>"
+"fc" = ":chats<Enter>"
