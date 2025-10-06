@@ -13,7 +13,7 @@
                                  {:buffer buf
                                   :callback #(vim.lsp.buf.clear_references)}))
   (when client.server_capabilities.inlayHintProvider
-    (vim.lsp.inlay_hint.enable true buf)))
+    (vim.lsp.inlay_hint.enable true {:bufnr buf})))
 
 (vim.api.nvim_create_autocmd :LspAttach {:callback on-lsp-attach})
 
