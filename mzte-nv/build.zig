@@ -10,7 +10,7 @@ const CgOpts = struct {
         @"fennel.lua": ?[:0]const u8 = null,
     } = .{},
     textwidth: u16,
-    term_font: [:0]const u8,
+    font: [:0]const u8,
 };
 
 pub fn build(b: *std.Build) !void {
@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) !void {
     const common_dep = b.dependency("common", .{});
 
     // We fall back to defaults here in case we're building the compiler under Nix.
-    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{ .textwidth = 0, .term_font = "monospace" };
+    const cg_opt = common.confgenGet(CgOpts, b.allocator) catch CgOpts{ .textwidth = 0, .font = "monospace" };
 
     const opts = b.addOptions();
 
@@ -43,7 +43,7 @@ pub fn build(b: *std.Build) !void {
 
     // other options
     opts.addOption(u16, "textwidth", cg_opt.textwidth);
-    opts.addOption([:0]const u8, "term_font", cg_opt.term_font);
+    opts.addOption([:0]const u8, "font", cg_opt.font);
 
     if (!compiler_only) {
         const lib_mod = b.addModule("mzte-nv", .{
