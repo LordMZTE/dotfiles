@@ -33,43 +33,9 @@
 (setup :html)
 (setup :jsonls)
 (setup :julials)
-(setup :ltex {:cmd [:ltex-ls-plus]
-              ;; LTeX is slow and noisy, but still catches a few errors sometimes.
-              :autostart false
-              :filetypes [:asciidoc
-                          :bib
-                          :context
-                          :gitcommit
-                          :html
-                          :mail
-                          :markdown
-                          :org
-                          :pandoc
-                          :plaintex
-                          :quarto
-                          :rmd
-                          :rnoweb
-                          :rst
-                          :tex
-                          :text
-                          :typst
-                          :xhtml]
-              :settings {:ltex {:enabled [:typst
-                                          :bibtex
-                                          :gitcommit
-                                          :markdown
-                                          :org
-                                          :tex
-                                          :restructuredtext
-                                          :rsweave
-                                          :latex
-                                          :quarto
-                                          :rmd
-                                          :context
-                                          :html
-                                          :xhtml
-                                          :mail
-                                          :plaintext]}}})
+
+;; LTeX is slow and noisy, but still catches a few errors sometimes, don't autostart
+(vim.lsp.config :ltex_plus {})
 
 (setup :lua_ls {:settings {:Lua {:runtime {:version :LuaJIT
                                            :path (do
