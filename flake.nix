@@ -80,7 +80,6 @@
                 '') [
                 "install-scripts"
                 "install-plugins"
-                "install-lsps-paru"
                 "setup-nvim-config"
                 "setup-nix"
                 "run-confgen"
