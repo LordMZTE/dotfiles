@@ -23,7 +23,7 @@ local function kmods(str)
     return modtable
 end
 
-local mod = {}
+local M = {}
 
 -- Keybinds in this section are expressed as tuples with a list of modifiers from `mod_shorthands`
 -- and an XKB key.
@@ -35,7 +35,7 @@ local mod = {}
 -- Additionally to these keys here, a WM must implement directionaly keys with meta+HJKL and arrow
 -- keys as well as workspace keys with meta and numbers. Due to how different layout strategies make
 -- for different setups here, this is to be defined separately for each compositor.
-mod.control_keys = {
+M.control_keys = {
     quit = { kmods "ms", "E" },
     close_window = { kmods "ms", "Q" },
     float = { kmods "m", "Space" },
@@ -45,7 +45,7 @@ mod.control_keys = {
 local cmds = cg.opt.commands
 
 -- Keys that start some command expressed in shell notation.
-mod.launch_keys = {
+M.launch_keys = {
     -- Media Keys
     [{ {}, "XF86AudioRaiseVolume" }] = cmds.media.volume_up,
     [{ {}, "XF86AudioLowerVolume" }] = cmds.media.volume_down,
@@ -81,4 +81,4 @@ mod.launch_keys = {
     [{ kmods "mc", "V" }] = "vinput md",
 }
 
-return mod
+return M

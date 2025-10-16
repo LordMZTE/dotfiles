@@ -1,8 +1,8 @@
 -- A rudimentary ZON serializer. Absolutely not robust.
 
-local mod = {}
+local M = {}
 
-function mod.serialize(val)
+function M.serialize(val)
     local typ = type(val)
 
     if typ == "nil" then
@@ -15,7 +15,7 @@ function mod.serialize(val)
         if #val ~= 0 then
             local ret = ".{"
             for _, v in ipairs(val) do
-                local serialized = mod.serialize(v)
+                local serialized = M.serialize(v)
                 if serialized then
                     ret = ret .. serialized .. ","
                 end
@@ -24,7 +24,7 @@ function mod.serialize(val)
         else
             local ret = ".{"
             for k, v in pairs(val) do
-                local serialized = mod.serialize(v)
+                local serialized = M.serialize(v)
                 if serialized then
                     ret = ret .. [[.@"]] .. k .. [["=]] .. serialized .. ","
                 end
@@ -34,4 +34,4 @@ function mod.serialize(val)
     end
 end
 
-return mod
+return M

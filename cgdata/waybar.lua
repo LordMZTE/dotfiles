@@ -1,4 +1,4 @@
-local mod = {}
+local M = {}
 
 -- Maximum length for text modules
 local max_length = 32
@@ -6,7 +6,7 @@ local max_length = 32
 local bar_icons = { " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" }
 
 -- This is a function so we can re-execute it when the compositor changes.
-function mod.modulesLeft()
+function M.modulesLeft()
     if cg.opt.wayland_compositor == "river" then
         return { "river/tags", "river/window" }
     elseif cg.opt.wayland_compositor == "hyprland" then
@@ -18,7 +18,7 @@ function mod.modulesLeft()
     end
 end
 
-mod.modules_right = {
+M.modules_right = {
     "mpris",
     "cpu",
     "memory",
@@ -30,7 +30,7 @@ mod.modules_right = {
     "tray",
 }
 
-function mod.moduleConfig()
+function M.moduleConfig()
     local conf = {}
 
     if cg.opt.wayland_compositor == "river" then
@@ -167,4 +167,4 @@ function mod.moduleConfig()
     return conf
 end
 
-return mod
+return M
