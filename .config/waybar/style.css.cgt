@@ -19,6 +19,16 @@ window#waybar.hidden {
     opacity: 0.2;
 }
 
+<! local function animationConfig(name, secs) !>
+    /* Two steps per second to reduce CPU usage */
+    animation-timing-function: steps(<% secs * 2 %>);
+    animation-duration: <% secs %>s;
+
+    animation-iteration-count: infinite;
+    animation-name: <% name %>;
+    animation-direction: alternate;
+<! end !>
+
 /* Warning */
 @keyframes blink-warning {
     to {
@@ -27,11 +37,7 @@ window#waybar.hidden {
 }
 
 .warning {
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-name: blink-warning;
-    animation-duration: 1s;
+    <! animationConfig("blink-warning", 4) !>
 }
 
 /* Critical */
@@ -42,11 +48,7 @@ window#waybar.hidden {
 }
 
 .critical {
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-name: blink-critical;
-    animation-duration: 0.5s;
+    <! animationConfig("blink-critical", 2) !>
 }
 
 <! local function modcolorconf(module, fg, bg) !>
