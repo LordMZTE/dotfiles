@@ -34,11 +34,7 @@ pub fn initOptions() !void {
     try opt(opts.textwidth).setLog("textwidth", .both);
     try opt(true).setLog("cursorcolumn", .both);
     try opt(true).setLog("cursorline", .both);
-    // The reason we're not getting this from confgen is that nvim-qt (which I want to replace, but
-    // every other GUI is broken in some way) does not use fontconfig like a normal person but
-    // instead some dumb Qt font naming where the font has a completely different name for whatever
-    // reason.
-    try opt(opts.font ++ " SemCond:h12").setLog("guifont", .both);
+    try opt(opts.font).setLog("guifont", .both);
     try opt("a").setLog("mouse", .both);
     try opt(true).setLog("number", .both);
     try opt(true).setLog("relativenumber", .both);

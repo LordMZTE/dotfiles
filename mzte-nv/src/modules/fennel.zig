@@ -23,7 +23,11 @@ fn loadFennel(l: *c.lua_State) !void {
 
     std.log.debug("loading fennel", .{});
 
-    if (c.luaL_loadfile(l, opts.@"fennel.lua" orelse "/usr/share/lua/5.4/fennel.lua") != 0) {
+    if (c.luaL_loadfile(l, if (@hasField(@TypeOf(opts), "nix"))
+        opts.nix.@"fennel.lua"
+    else
+        "/usr/share/lua/5.4/fennel.lua") != 0)
+    {
         return error.FennelLoad;
     }
 

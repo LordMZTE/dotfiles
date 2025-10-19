@@ -41,7 +41,7 @@ const runtime_map = [_]Runtime{
 };
 
 fn lFindRuntimes(l: *c.lua_State) !c_int {
-    const jvmpath = opts.jvm orelse "/usr/lib/jvm";
+    const jvmpath = if (@hasField(@TypeOf(opts), "nix")) opts.nix.jvm else "/usr/lib/jvm";
     var jvmdir = std.fs.openDirAbsolute(jvmpath, .{ .iterate = true }) catch |e| switch (e) {
         error.FileNotFound => {
             std.log.warn("JVM Path @ '{s}' does not exist! Not registering any runtimes!", .{jvmpath});

@@ -69,9 +69,10 @@ let
       root = ../..;
       fileset = lib.fileset.unions [
         ../../lib/common-zig
-        ../../mzte-nv/src
         ../../mzte-nv/build.zig
         ../../mzte-nv/build.zig.zon
+        ../../mzte-nv/fallback-opts.zon
+        ../../mzte-nv/src
       ];
     };
     patchPhase = "cd mzte-nv";

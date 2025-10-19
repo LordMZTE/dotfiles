@@ -8,35 +8,6 @@ pub fn build(b: *std.Build) void {
     });
 }
 
-/// Retrieve some confgen options given a relative path to the dotfile root and a struct type
-/// with a field for each option.
-pub fn confgenGet(comptime T: type, alloc: std.mem.Allocator) !T {
-    const cgopt_env = std.posix.getenv("CGOPTS");
-    const optjson_path = optjson: {
-        if (cgopt_env) |env| break :optjson env;
-        const root = try findRepoRoot(alloc);
-        defer alloc.free(root);
-
-        break :optjson try std.fs.path.joinZ(alloc, &.{ root, "cgout/_cgfs/opts.json" });
-    };
-    defer if (cgopt_env == null) alloc.free(optjson_path);
-
-    var readbuf: [1024]u8 = undefined;
-    var file = try std.fs.cwd().openFileZ(optjson_path, .{});
-    defer file.close();
-
-    var file_reader = file.reader(&readbuf);
-
-    var reader = std.json.Reader.init(alloc, &file_reader.interface);
-    defer reader.deinit();
-
-    const ret = try std.json.parseFromTokenSource(T, alloc, &reader, confgen_json_opt);
-
-    // We just grab the value from the parse result as this data will almost certainly have been
-    // allocated with the builder's arena anyways.
-    return ret.value;
-}
-
 pub fn confgenPath(b: *std.Build, subpath: []const u8) std.Build.LazyPath {
     const path = std.fs.path.join(b.allocator, &.{
         std.posix.getenv("HOME") orelse @panic("HOME not set"),

@@ -45,7 +45,9 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "package");
     c.lua_getfield(l, -1, "path");
     ffi.luaPushString(l, ";");
-    ffi.luaPushString(l, opts.@"fennel.lua" orelse
+    ffi.luaPushString(l, if (@hasField(@TypeOf(opts), "nix"))
+        opts.nix.@"fennel.lua"
+    else
         (std.posix.getenv("MZTE_NV_FENNEL") orelse
             "/usr/share/lua/5.4/fennel.lua"));
     c.lua_concat(l, 3);
