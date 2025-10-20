@@ -12,7 +12,13 @@
     }@inputs: utils.lib.eachDefaultSystem
       (system:
       let
-        base-pkgs = (import nixpkgs { inherit system; });
+        base-pkgs = (import nixpkgs {
+          inherit system;
+          config.permittedInsecurePackages = [
+            # TODO: this is for haxe
+            "mbedtls-2.28.10"
+          ];
+        });
         common = base-pkgs.callPackage ./lib/common-nix { };
 
         root-mod = { config, pkgs, ... }: {
