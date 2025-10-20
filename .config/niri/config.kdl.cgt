@@ -11,6 +11,12 @@ input {
     }
 
     warp-mouse-to-focus
+
+    touchpad {
+        tap
+        click-method "clickfinger"
+        tap-button-map "left-right-middle"
+    }
 }
 
 cursor {
