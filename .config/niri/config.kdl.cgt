@@ -94,7 +94,7 @@ binds {
     <! end !>
 
     Super+Shift+C { consume-window-into-column; }
-    Super+Ctrl+C { expel-window-from-column; }
+    Super+Alt+C { expel-window-from-column; }
     Super+C { maximize-column; }
 
     Mod+Minus { set-column-width "-10%"; }
