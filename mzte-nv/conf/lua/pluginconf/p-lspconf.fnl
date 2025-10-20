@@ -7,12 +7,6 @@
   (when args (vim.lsp.config conf args))
   (vim.lsp.enable conf))
 
-(tset lsp-configs :cl-lsp {:default_config {:cmd [:cl-lsp]
-                                            :filetypes [:lisp :commonlisp]
-                                            :root_dir lspc.util.find_git_ancestor
-                                            :single_file_support true}
-                           :settings {}})
-
 (var caps
      ((. (require :cmp_nvim_lsp) :default_capabilities) (vim.lsp.protocol.make_client_capabilities)))
 
@@ -23,7 +17,6 @@
 
 (tset caps :offsetEncoding [:utf-8])
 
-(setup :cl-lsp)
 (setup :clangd)
 (setup :cssls)
 (setup :elixirls {:cmd [:elixir-ls]})
@@ -64,7 +57,7 @@
 (setup :taplo)
 (setup :tinymist
        {:single_file_support true
-        :root_dir (util.root_pattern :.typstroot)
+        :root_markers [:.typstroot]
         :settings {:formatterMode :typstyle :formatterPrintWidth 100}})
 
 (setup :zls)
