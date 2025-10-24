@@ -14,6 +14,7 @@ const modules = struct {
     const compile = @import("modules/compile.zig");
     const cpbuf = @import("modules/cpbuf.zig");
     const fennel = @import("modules/fennel.zig");
+    const inlay_hint = @import("modules/inlay_hint.zig");
     const jdtls = @import("modules/jdtls.zig");
     const lsp_progress = @import("modules/lsp_progress.zig");
     const telescope = @import("modules/telescope.zig");
@@ -89,6 +90,7 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
         .compile = modules.compile,
         .cpbuf = modules.cpbuf,
         .fennel = modules.fennel,
+        .inlay_hint = modules.inlay_hint,
         .jdtls = modules.jdtls,
         .lsp_progress = modules.lsp_progress,
         .telescope = modules.telescope,

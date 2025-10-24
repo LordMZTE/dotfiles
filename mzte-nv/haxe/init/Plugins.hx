@@ -18,6 +18,7 @@ class Plugins {
     public function new() {
         this.startupPlugins = [
             new PCatppuccin(), // avoid flicker of default theme
+            new LuaPlugin("inlay-hint"), // same reason as lspconf
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
         this.deferredPlugins = [new PIndentBlankline(), new PNu(), new PTSNActions()].concat([

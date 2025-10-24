@@ -8,6 +8,7 @@ let
     "20-nonels" = plugin "none-ls.nvim";
     "20-jdtls" = plugin "nvim-jdtls";
     "20-lsp-saga" = plugin "lspsaga.nvim";
+    "20-inlay-hint" = plugin "inlay-hint.nvim";
 
     # CMP
     "45-cmp" = plugin "nvim-cmp";
