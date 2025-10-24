@@ -24,8 +24,8 @@ pub fn build(b: *std.Build) !void {
     mod.addAnonymousImport("cg", .{
         .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
     });
-    mod.addAnonymousImport("cgkeys", .{
-        .root_source_file = common.confgenPath(b, "cgassets/mzteriver-keys.zon"),
+    mod.addAnonymousImport("cgopts", .{
+        .root_source_file = common.confgenPath(b, "cgassets/mzteriver-opts.zon"),
     });
     mod.addImport("common", b.dependency("common", .{}).module("common"));
     mod.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));

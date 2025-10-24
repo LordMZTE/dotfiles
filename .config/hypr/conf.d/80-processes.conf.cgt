@@ -1,5 +1,5 @@
-exec-once = waybar
-exec-once = wlbg
-<! if opt.commands.notification_daemon.wl then !>
-exec-once = <% opt.commands.notification_daemon.wl %>
+<! local wm = require "cgdata.wm" !>
+
+<! for _, cmd in ipairs(wm.startupCommands "hyprland") do !>
+exec-once = <% table.concat(cmd, ' ') %>
 <! end !>

@@ -81,4 +81,31 @@ M.launch_keys = {
     [{ kmods "mc", "V" }] = "vinput md",
 }
 
+-- Wayland compositors that we know about
+M.known_wayland_compositors = {
+    "river", "hyprland", "niri"
+}
+
+-- Startup commands to run for the given WM
+function M.startupCommands(wm)
+    local is_wayland = cg.lib.containsEq(M.known_wayland_compositors, wm)
+
+    local startup = { }
+
+    if is_wayland then
+        table.insert(startup, { "kanshi" }) -- output configuration daemon
+        table.insert(startup, { "wlbg" })   -- custom wallpaper
+        table.insert(startup, { "waybar" })
+        table.insert(startup, { "mako" }) -- notification daemon for WL
+    else
+        table.insert(startup, { "wired" }) -- notification daemon for X
+    end
+
+    if cg.opt.startupCommandFilter then
+        startup = cg.opt.startupCommandFilter(wm, is_wayland, startup)
+    end
+
+    return startup
+end
+
 return M

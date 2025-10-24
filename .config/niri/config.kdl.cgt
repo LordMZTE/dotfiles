@@ -115,6 +115,7 @@ environment {
 spawn-sh-at-startup "echo 'cg.opt.setCurrentWaylandCompositor [[niri]]' > ~/confgenfs/_cgfs/eval"
 spawn-at-startup "dbus-update-activation-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 spawn-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-spawn-at-startup "kanshi"
-spawn-at-startup "wlbg"
-spawn-at-startup "waybar"
+
+<! for _, cmd in ipairs(wm.startupCommands "niri") do !>
+spawn-at-startup "<% table.concat(cmd, ' ') %>"
+<! end !>

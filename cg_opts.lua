@@ -67,10 +67,6 @@ cg.opt.commands = {
     file_manager = "thunar",
     -- zenity-compatible dialoger
     zenity = "yad",
-    notification_daemon = {
-        x = "wired",
-        wl = "mako",
-    },
     screen_lock = string.format(
         "i3lock -ti %s/.local/share/backgrounds/mzte.png",
         os.getenv "HOME"

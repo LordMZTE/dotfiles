@@ -1,6 +1,6 @@
 const std = @import("std");
 const opt = @import("cg");
-const cgkeys = @import("cgkeys");
+const cgopts = @import("cgopts");
 
 const log = std.log.scoped(.init);
 
@@ -24,10 +24,10 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     // Normal-Mode keyboard mappings
     inline for (.{
         // control maps
-        cgkeys.control_keys.quit ++ .{"exit"},
-        cgkeys.control_keys.float ++ .{"toggle-float"},
-        cgkeys.control_keys.fullscreen ++ .{"toggle-fullscreen"},
-        cgkeys.control_keys.close_window ++ .{"close"},
+        cgopts.control_keys.quit ++ .{"exit"},
+        cgopts.control_keys.float ++ .{"toggle-float"},
+        cgopts.control_keys.fullscreen ++ .{"toggle-fullscreen"},
+        cgopts.control_keys.close_window ++ .{"close"},
 
         // "irregular" focus & move maps
         // (that is, they don't exist for all 4 directions)
@@ -49,7 +49,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
     }
 
     // Confgen'd keymaps
-    inline for (cgkeys.launch_keys) |mapping| {
+    inline for (cgopts.launch_keys) |mapping| {
         const cmd = &.{ "map", "normal", mapping.@"0", mapping.@"1", "spawn", mapping.@"2" };
         try con.runCommand(cmd);
     }
@@ -222,16 +222,16 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
         var child_arena = std.heap.ArenaAllocator.init(alloc);
         defer child_arena.deinit();
 
-        // spawn background processes
-        inline for (.{
-            .{ false, .{
+        // spawn initialization processes
+        for ([_][]const []const u8{
+            &.{
                 "dbus-update-activation-environment",
                 "DISPLAY",
                 "XAUTHORITY",
                 "WAYLAND_DISPLAY",
                 "XDG_CURRENT_DESKTOP",
-            } },
-            .{ false, .{
+            },
+            &.{
                 "systemctl",
                 "--user",
                 "import-environment",
@@ -239,22 +239,20 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
                 "XAUTHORITY",
                 "WAYLAND_DISPLAY",
                 "XDG_CURRENT_DESKTOP",
-            } },
-            .{ true, .{"wlbg"} },
-            .{ true, .{"waybar"} },
-            .{ true, .{ "rivertile", "-view-padding", "6", "-outer-padding", "6" } },
-        }) |arg| {
-            const background = arg[0];
-            const argv = arg[1];
+            },
+        }) |argv| {
+            var child = std.process.Child.init(argv, child_arena.allocator());
+            try child.spawn();
 
+            _ = try child.wait();
+        }
+
+        inline for (cgopts.startup_commands) |argv| {
             var child = std.process.Child.init(initCommand(&argv), child_arena.allocator());
             try child.spawn();
 
-            if (!background) {
-                // TODO: this is a resource leak if we don't wait. We should use the as of yet
-                // non-existant `detach`-API instead.
-                _ = try child.wait();
-            }
+            // TODO: this is a resource leak if we don't wait. We should use the as of yet
+            // non-existant `detach`-API instead.
         }
     }
 }

@@ -1,6 +1,7 @@
 <!
 tmpl:setAssumeDeterministic(true)
 local wm = require "cgdata.wm"
+local zon = require "lib.confgen.zon"
 
 local keymodconv = {
     meta = "Mod4",
@@ -28,4 +29,6 @@ end
             \\<% cmd %>
         },<! end !>
     },
+
+    .startup_commands = <% zon.serialize(wm.startupCommands "river") %>,
 }
