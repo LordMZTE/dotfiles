@@ -101,6 +101,10 @@ function M.startupCommands(wm)
         table.insert(startup, { "wired" }) -- notification daemon for X
     end
 
+    if wm == "river" then
+        table.insert(startup, { "rivertile" })
+    end
+
     if cg.opt.startupCommandFilter then
         startup = cg.opt.startupCommandFilter(wm, is_wayland, startup)
     end
