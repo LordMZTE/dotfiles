@@ -23,36 +23,7 @@ let
     })
     (flakePkg "git+https://git.mzte.de/LordMZTE/haxe-language-server.git")
     config.output.packages.jdtls-wrapped
-    (
-      pkgs.stdenvNoCC.mkDerivation rec {
-        pname = "ltex-ls-plus";
-        version = "18.6.0-alpha.nightly.2025-06-04";
-        src = fetchurl {
-          # Nightly releases are not persistent upstream,
-          # so they're (manually) reuploaded to MZTE Git.
-          url =
-            "https://git.mzte.de/api/packages/LordMZTE/generic/${pname}/${version}/${pname}-${version}.tar.gz";
-          hash = "sha256-WTNC2jK7+My0s6zLg208sjrkYri+kTVppXJkt73l4Gg=";
-        };
-
-        preferLocalBuild = true;
-
-        nativeBuildInputs = [ makeBinaryWrapper ];
-
-        installPhase = ''
-          runHook preInstall
-
-          mkdir -p $out
-          cp -rfv bin/ lib/ $out
-          rm -fv $out/bin/.lsp-cli.json $out/bin/*.bat
-          for file in $out/bin/{ltex-ls-plus,ltex-cli-plus}; do
-            wrapProgram $file --set JAVA_HOME "${jre_headless}"
-          done
-
-          runHook postInstall
-        '';
-      }
-    )
+    ltex-ls-plus
     lua-language-server
     nixd
     openscad-lsp
