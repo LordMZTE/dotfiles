@@ -3,7 +3,7 @@ local modi = {
     "window",
     "drun",
     "combi",
-    "calc",
+    "qalc",
 }
 
 local have_nheko = false
