@@ -33,21 +33,32 @@ fn lFormatHints(l: *c.lua_State) !c_int {
     c.lua_pushnil(l);
     while (c.lua_next(l, 1) != 0) {
         c.lua_getfield(l, -1, "label");
-        if (c.lua_isstring(l, -1) == 0) {
-            // TODO: support label parts:
-            // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#inlayHintLabelPart
-            continue;
-        }
-        const label = ffi.luaToString(l, -1);
+        const label = label: {
+            if (!c.lua_istable(l, -1)) {
+                const label_lua = ffi.luaToString(l, -1);
+                break :label try alloc.dupe(u8, trimHint(label_lua));
+            }
+
+            // parts label
+            var label_buf: std.Io.Writer.Allocating = .init(alloc);
+            
+            c.lua_pushnil(l);
+            while (c.lua_next(l, -2) != 0) {
+                c.lua_getfield(l, -1, "value");
+                try label_buf.writer.writeAll(ffi.luaToString(l, -1));
+                c.lua_pop(l, 2);
+            }
+
+            break :label trimHint(label_buf.written());
+        };
         c.lua_getfield(l, -2, "kind");
         const kind = c.lua_tointeger(l, -1);
-        const label_dupe = try alloc.dupe(u8, trimHint(label));
         c.lua_pop(l, 3);
 
         if (kind == 1) { // 1 signifies this inlay hint is for an output parameter
-            try output_hints.append(alloc, label_dupe);
+            try output_hints.append(alloc, label);
         } else {
-            try input_hints.append(alloc, label_dupe);
+            try input_hints.append(alloc, label);
         }
     }
 
