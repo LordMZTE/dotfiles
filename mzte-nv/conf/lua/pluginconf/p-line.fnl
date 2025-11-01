@@ -8,6 +8,7 @@
                                      ;; show file name
                                      :mode 1}]
                         :lualine_c [#(or (. (lspprogress.progress) :msg) "")]
+                        :lualine_x [:overseer]
                         :lualine_y [:branch]}})
 
 (vim.api.nvim_create_autocmd :User

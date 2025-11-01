@@ -47,6 +47,7 @@ let
     "50-neogit" = plugin "neogit";
     "50-telescope" = plugin "telescope.nvim";
     "50-toggleterm" = plugin "toggleterm.nvim";
+    "50-overseer" = plugin "overseer.nvim";
     "50-dressing" = plugin "dressing.nvim";
     "50-ufo" = plugin "nvim-ufo";
     "50-dap" = plugin "nvim-dap";

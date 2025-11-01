@@ -40,6 +40,7 @@ class Plugins {
             "treesitter",
             "ts-context",
             "tterm",
+            "overseer",
             "ufo",
             "mini",
         ].map(n -> (new LuaPlugin(n) : IPlugin)));
