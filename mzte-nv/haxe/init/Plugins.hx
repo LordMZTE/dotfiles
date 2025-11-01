@@ -21,7 +21,7 @@ class Plugins {
             new LuaPlugin("inlay-hint"), // same reason as lspconf
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
-        this.deferredPlugins = [new PIndentBlankline(), new PNu()].concat([
+        this.deferredPlugins = [cast(new PNu(), IPlugin)].concat([
             "cmp",
             "dap",
             "devicons",

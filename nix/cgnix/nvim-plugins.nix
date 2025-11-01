@@ -55,7 +55,6 @@ let
     "50-dap" = plugin "nvim-dap";
     "50-dapui" = plugin "nvim-dap-ui";
     "50-recorder" = plugin "nvim-recorder";
-    "50-ibl" = plugin "indent-blankline.nvim";
     "50-lsp-progress" = plugin "lsp-progress.nvim";
     "50-mini" = plugin "mini.nvim";
 

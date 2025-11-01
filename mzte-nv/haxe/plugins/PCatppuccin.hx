@@ -30,6 +30,10 @@ class PCatppuccin implements IPlugin {
                 },
                 lsp_saga: true,
                 markdown: true,
+                mini: {
+                    enabled: true,
+                    indentscope_color: "maroon",
+                },
                 native_lsp: {
                     enabled: true,
                     virtual_text: Table.fromMap(
@@ -45,10 +49,12 @@ class PCatppuccin implements IPlugin {
                 },
                 neogit: true,
                 nvimtree: true,
+                overseer: true,
                 rainbow_delimiters: true,
                 semantic_tokens: true,
                 telescope: {enabled: true},
                 treesitter: true,
+                ufo: true,
             },
         });
 
