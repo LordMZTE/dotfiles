@@ -1,16 +1,19 @@
-(local (ufo ts-parsers)
-       (values (require :ufo) (require :nvim-treesitter.parsers)))
+(local ufo (require :ufo))
 
 (fn lsp-folds? [bufnr]
   (accumulate [has false _ client (ipairs (vim.lsp.get_clients {: bufnr}))
                &until has]
     (not= client.server_capabilities.foldingRangeProvider nil)))
 
+(fn treesitter? [ft]
+  (let [lang (vim.treesitter.language.get_lang ft)
+        (have-ts _) (pcall vim.treesitter.language.inspect lang)]
+    have-ts))
+
 (ufo.setup {:open_fold_hl_timeout 0
             :provider_selector (fn [bufnr ft _]
                                  (if (lsp-folds? bufnr) [:lsp :indent]
-                                     (ts-parsers.has_parser ft) [:treesitter
-                                                                 :indent]
+                                     (treesitter? ft) [:treesitter :indent]
                                      [:indent]))})
 
 (tset vim :o :foldcolumn :0)

@@ -49,7 +49,6 @@ class PCatppuccin implements IPlugin {
                 semantic_tokens: true,
                 telescope: {enabled: true},
                 treesitter: true,
-                treesitter_context: true,
             },
         });
 

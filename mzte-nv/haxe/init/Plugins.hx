@@ -21,7 +21,7 @@ class Plugins {
             new LuaPlugin("inlay-hint"), // same reason as lspconf
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
         ];
-        this.deferredPlugins = [new PIndentBlankline(), new PNu(), new PTSNActions()].concat([
+        this.deferredPlugins = [new PIndentBlankline(), new PNu()].concat([
             "cmp",
             "dap",
             "devicons",
@@ -38,7 +38,7 @@ class Plugins {
             "recorder",
             "telescope",
             "treesitter",
-            "ts-context",
+            "ts-textobjects",
             "tterm",
             "overseer",
             "ufo",

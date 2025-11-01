@@ -24,12 +24,14 @@ let
     "50-colorful-menu" = plugin "colorful-menu.nvim";
 
     # Treesitter
-    "30-treesitter" = plugin "nvim-treesitter";
-    "30-ts-autotag" = plugin "nvim-ts-autotag";
-    "30-ts-context" = plugin "nvim-treesitter-context";
-    "30-tsn-actions" = plugin "ts-node-action";
-    "30-ts-playground" = plugin "playground";
-    "30-ts-textobjects" = plugin "nvim-treesitter-textobjects";
+    "30-treesitter" = fetchGit {
+      url = "https://git.mzte.de/nvim-plugins/nvim-treesitter.git";
+      ref = "main";
+    };
+    "30-ts-textobjects" = fetchGit {
+      url = "https://git.mzte.de/nvim-plugins/nvim-treesitter-textobjects.git";
+      ref = "main";
+    };
 
     # Language Support
     "30-fish" = plugin "vim-fish";

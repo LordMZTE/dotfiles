@@ -18,7 +18,6 @@ const modules = struct {
     const jdtls = @import("modules/jdtls.zig");
     const lsp_progress = @import("modules/lsp_progress.zig");
     const telescope = @import("modules/telescope.zig");
-    const tsn_actions = @import("modules/tsn_actions.zig");
     const utils = @import("modules/utils.zig");
 };
 
@@ -94,7 +93,6 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
         .jdtls = modules.jdtls,
         .lsp_progress = modules.lsp_progress,
         .telescope = modules.telescope,
-        .tsn_actions = modules.tsn_actions,
         .utils = modules.utils,
     });
     return 1;
@@ -107,7 +105,7 @@ fn lOnInit(l: *c.lua_State) !c_int {
     defer c.lua_pop(l, 1);
 
     if (@hasField(@TypeOf(opts), "nix")) {
-        inline for (.{ "nvim_plugins", "tree_sitter_parsers", "nvim_tools" }) |fname| {
+        inline for (.{ "nvim_plugins", "nvim_tools" }) |fname| {
             ffi.luaPushString(l, @field(opts.nix, fname));
             c.lua_setfield(l, -2, fname);
         }

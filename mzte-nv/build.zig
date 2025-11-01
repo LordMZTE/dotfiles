@@ -4,7 +4,6 @@ const common = @import("common");
 const CgOpts = struct {
     nix: struct {
         nvim_plugins: ?[:0]const u8 = null,
-        tree_sitter_parsers: ?[:0]const u8 = null,
         nvim_tools: ?[:0]const u8 = null,
         jvm: ?[:0]const u8 = null,
         @"fennel.lua": ?[:0]const u8 = null,

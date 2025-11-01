@@ -12,7 +12,6 @@ in
     ./nvim-tools
     ./jvm.nix
     ./nvim-plugins.nix
-    ./tree-sitter-parsers.nix
   ];
 
   options.cgnix.entries = lib.mkOption {
