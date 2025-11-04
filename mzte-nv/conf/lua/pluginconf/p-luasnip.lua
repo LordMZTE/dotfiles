@@ -63,6 +63,15 @@ ls.add_snippets("json", {
     ),
 })
 
+ls.add_snippets("typst", {
+    s(
+        "codeblock",
+        fmt("```{lang}\n```", {
+            lang = i(1),
+        })
+    ),
+})
+
 local racket_snippets = {
     s("lamb", {
         t [[(λ ]],
