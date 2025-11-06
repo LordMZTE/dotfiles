@@ -1,8 +1,4 @@
-(vim.filetype.add {:extension {:cgt (fn [path bufnr]
-                                      (local trimmed (path:gsub :.cgt$ ""))
-                                      (vim.filetype.match {:filename trimmed
-                                                           : bufnr}))
-                               ;; nvim defaults to scheme
+(vim.filetype.add {:extension {;; nvim defaults to scheme
                                :rkt :racket
                                :rktl :racket
                                :rktd :racket
@@ -18,4 +14,3 @@
                                ;; Ziggy
                                :ziggy :ziggy
                                :ziggy-schema :ziggy_schema}})
-

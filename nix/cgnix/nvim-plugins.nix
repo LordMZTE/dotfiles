@@ -34,6 +34,9 @@ let
     };
 
     # Language Support
+    "30-confgen" = fetchGit {
+      url = "https://git.mzte.de/LordMZTE/confgen.nvim.git";
+    };
     "30-fish" = plugin "vim-fish";
     "30-wgsl" = plugin "wgsl.vim";
     "30-nu" = plugin "nvim-nu";

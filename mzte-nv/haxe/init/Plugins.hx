@@ -24,6 +24,7 @@ class Plugins {
         ];
         this.deferredPlugins = [cast(new PNu(), IPlugin)].concat([
             "cmp",
+            "confgen",
             "dap",
             "devicons",
             "dressing",
