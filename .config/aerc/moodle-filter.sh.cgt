@@ -5,11 +5,9 @@
 <!
   tmpl:setMode "755"
   local class_map = {
-    [23013] = "Algorithmen \\& Datenstrukturen",
-    [9745] = "Algorithmen \\& Datenstrukturen - Übung",
-    [101637] = "Experimentalphysik II",
-    [9633] = "Grundlagen der Analysis",
-    [10018] = "Objektorientierte Programmierung",
+      [36469] = "Technische Informatik",
+      [19059] = "Compilerbau",
+      [19019] = "Einführung in die Wahrscheinlichkeitstheorie",
   }
 
   local ansi_yellow = "\x1b[0;33m"
