@@ -1,4 +1,4 @@
-<! local plugins = opt.nix.xplr_plugins !>
+--<! local plugins = opt.nix.xplr_plugins !>
 package.path = os.getenv "HOME" .. "/.config/xplr/?.lua;<% plugins %>/?/init.lua;<% plugins %>/?.lua;" .. package.path
 
 version = '<% "1.0.1" --[[require("cgdata.xplr").version()]] %>'
@@ -8,3 +8,19 @@ require "pluginconf.p-web-devicons"
 require "pluginconf.p-zoxide"
 
 require "exec-mode"
+
+xplr.config.modes.builtin.go_to.key_bindings.on_key["x"] = {
+    help = "open externally",
+    messages = {
+        -- This is a modified version of the default external opener that removes overcomplicated
+        -- logic for finding xdg-open and also runs in the background.
+        {
+            BashExecSilently0 = [[
+                while IFS= read -r -d '' PTH; do
+                    xdg-open "${PTH:?}" > /dev/null 2>&1 &
+                done < "${XPLR_PIPE_RESULT_OUT:?}"
+            ]]
+        },
+        "PopMode",
+    },
+}
