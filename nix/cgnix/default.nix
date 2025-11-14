@@ -12,6 +12,7 @@ in
     ./nvim-tools
     ./jvm.nix
     ./nvim-plugins.nix
+    ./xplr-plugins.nix
   ];
 
   options.cgnix.entries = lib.mkOption {
