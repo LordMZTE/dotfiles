@@ -1,14 +1,13 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const ffi = @import("../ffi.zig");
-const ser = @import("../ser.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 
 const fnl_regkey = "mzte-nv-fnl";
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .eval = ffi.luaFunc(lEval),
         .fnlMod = ffi.luaFunc(lFnlMod),
     });

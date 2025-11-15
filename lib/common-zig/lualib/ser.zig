@@ -1,5 +1,5 @@
 const std = @import("std");
-const ffi = @import("ffi.zig");
+const ffi = @import("main.zig");
 const c = ffi.c;
 
 pub fn luaPushAny(l: *c.lua_State, x: anytype) void {

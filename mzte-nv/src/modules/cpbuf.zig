@@ -1,12 +1,11 @@
 const std = @import("std");
 const nvim = @import("nvim");
 const znvim = @import("znvim");
-const ffi = @import("../ffi.zig");
-const ser = @import("../ser.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .copyBuf = ffi.luaFunc(lCopyBuf),
     });
 }

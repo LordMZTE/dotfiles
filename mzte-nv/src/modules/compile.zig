@@ -1,13 +1,12 @@
 //! Module for compiling lua files using luajit
 //! and mzte-nv-compiler.
 const std = @import("std");
-const ser = @import("../ser.zig");
-const ffi = @import("../ffi.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 const compiler = @import("../compiler.zig");
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .compilePath = ffi.luaFunc(lCompilePath),
     });
 }

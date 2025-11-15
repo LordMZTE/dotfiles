@@ -3,12 +3,11 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const ser = @import("../ser.zig");
-const ffi = @import("../ffi.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .min_avail_space = 12,
         .formatHints = ffi.luaFunc(lFormatHints),
     });

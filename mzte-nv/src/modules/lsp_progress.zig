@@ -2,11 +2,10 @@ const std = @import("std");
 const c = ffi.c;
 const common = @import("common");
 
-const ser = @import("../ser.zig");
-const ffi = @import("../ffi.zig");
+const ffi = @import("lualib");
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .formatSeries = ffi.luaFunc(lFormatSeries),
         .formatClient = ffi.luaFunc(lFormatClient),
     });

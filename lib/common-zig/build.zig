@@ -3,9 +3,23 @@ const std = @import("std");
 pub const confgen_json_opt = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
 pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
     _ = b.addModule("common", .{
         .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
     });
+
+    const lualib = b.addModule("lualib", .{
+        .root_source_file = b.path("lualib/main.zig"),
+        .link_libc = true,
+        .target = target,
+        .optimize = optimize,
+    });
+
+    lualib.linkSystemLibrary("luajit", .{});
 }
 
 pub fn confgenPath(b: *std.Build, subpath: []const u8) std.Build.LazyPath {

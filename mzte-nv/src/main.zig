@@ -3,8 +3,7 @@ const nvim = @import("nvim");
 const znvim = @import("znvim");
 const opts = @import("opts");
 
-const ffi = @import("ffi.zig");
-const ser = @import("ser.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 
 pub const version = "1.2.0";
@@ -56,7 +55,7 @@ pub const std_options = std.Options{
             c.lua_getfield(l, -1, "notify");
             ffi.luaPushString(l, msg);
             c.lua_pushinteger(l, lvl);
-            ser.luaPushAny(l, .{ .title = title });
+            ffi.ser.luaPushAny(l, .{ .title = title });
             _ = c.lua_pcall(l, 3, 0, 0);
         }
     }.logFn,
@@ -68,7 +67,7 @@ const reg_key = "mzte-nv-reg";
 
 export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
     const l = l_.?;
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .reg = struct {
             pub fn luaPush(lua: *c.lua_State) void {
                 c.lua_getfield(lua, c.LUA_REGISTRYINDEX, reg_key);
@@ -111,7 +110,7 @@ fn lOnInit(l: *c.lua_State) !c_int {
         }
     }
 
-    ser.luaPushAny(l, [_][]const u8{ "⬖", "⬘", "⬗", "⬙" });
+    ffi.ser.luaPushAny(l, [_][]const u8{ "⬖", "⬘", "⬗", "⬙" });
     c.lua_setfield(l, -2, "spinner");
 
     std.log.info(

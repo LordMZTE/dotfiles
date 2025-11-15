@@ -3,12 +3,11 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const ser = @import("../ser.zig");
-const ffi = @import("../ffi.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
 
 pub fn luaPush(l: *c.lua_State) void {
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .findRuntimes = ffi.luaFunc(lFindRuntimes),
         .getBundleInfo = ffi.luaFunc(lGetBundleInfo),
         .getDirs = ffi.luaFunc(lGetDirs),
@@ -68,7 +67,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
 
             // push a table with a name field (must be a name from runtime_map)
             // and a path field (path to the runtime's home)
-            ser.luaPushAny(l, .{
+            ffi.ser.luaPushAny(l, .{
                 .name = rt.name,
                 .path = try std.fmt.bufPrintZ(&buf, jvmpath ++ "/{s}/", .{jvm.name}),
             });
@@ -100,7 +99,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     var dir = std.fs.cwd().openDir(bundle_path, .{ .iterate = true }) catch |e| {
         if (e == error.FileNotFound) {
             // Just return an empty table if the bundles dir doesn't exist
-            ser.luaPushAny(l, .{
+            ffi.ser.luaPushAny(l, .{
                 .content_provider = .{},
                 .bundles = .{},
             });
@@ -168,7 +167,7 @@ fn lGetDirs(l: *c.lua_State) !c_int {
     );
     defer std.heap.c_allocator.free(workspace_path);
 
-    ser.luaPushAny(l, .{
+    ffi.ser.luaPushAny(l, .{
         .config = config_path,
         .workspace = workspace_path,
     });

@@ -1,5 +1,7 @@
 const std = @import("std");
 
+pub const ser = @import("ser.zig");
+
 pub const c = @cImport({
     @cInclude("lua.h");
     @cInclude("lualib.h");

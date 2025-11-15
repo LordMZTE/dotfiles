@@ -1,9 +1,8 @@
 const std = @import("std");
 const opts = @import("opts");
 
-const ffi = @import("ffi.zig");
+const ffi = @import("lualib");
 const c = ffi.c;
-const ser = @import("ser.zig");
 
 const log = std.log.scoped(.compiler);
 
@@ -145,7 +144,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             c.lua_getfield(l, -3, "compile-string");
             ffi.luaPushString(l, data);
             // push fennel compile options
-            ser.luaPushAny(l.?, .{
+            ffi.ser.luaPushAny(l.?, .{
                 .filename = luafile,
                 // no need for indenting, this code will likely not be seen by anyone
                 .indent = "",
