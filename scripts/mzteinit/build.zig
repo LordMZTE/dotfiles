@@ -6,7 +6,10 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     const ansi_term_mod = b.dependency("ansi_term", .{}).module("ansi_term");
-    const common_mod = b.dependency("common", .{}).module("common");
+    const common_mod = b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common");
 
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),

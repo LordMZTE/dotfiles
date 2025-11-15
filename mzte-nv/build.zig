@@ -26,7 +26,10 @@ pub fn build(b: *std.Build) !void {
 
     const mode = b.standardOptimizeOption(.{});
 
-    const common_dep = b.dependency("common", .{});
+    const common_dep = b.dependency("common", .{
+        .target = target,
+        .optimize = mode,
+    });
 
     const opts_path = common.confgenPath(b, "cgassets/mzte-nv-opts.zon");
     const opts_mod = b.createModule(.{
@@ -63,7 +66,7 @@ pub fn build(b: *std.Build) !void {
 
         lib.root_module.addImport("opts", opts_mod);
         lib.root_module.addImport("common", common_dep.module("common"));
-        lib.root_module.addImport("lualib", b.dependency("common", .{}).module("lualib"));
+        lib.root_module.addImport("lualib", common_dep.module("lualib"));
 
         // I have no idea what the difference between async and sync is here, but this works.
         lib.root_module.unwind_tables = .async;
@@ -84,8 +87,8 @@ pub fn build(b: *std.Build) !void {
     });
 
     compiler.root_module.addImport("opts", opts_mod);
-    compiler.root_module.addImport("common", b.dependency("common", .{}).module("common"));
-    compiler.root_module.addImport("lualib", b.dependency("common", .{}).module("lualib"));
+    compiler.root_module.addImport("common", common_dep.module("common"));
+    compiler.root_module.addImport("lualib", common_dep.module("lualib"));
 
     compiler.root_module.unwind_tables = .async;
 

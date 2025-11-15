@@ -18,7 +18,10 @@ pub fn build(b: *std.Build) void {
     exe.linkLibC();
     exe.linkSystemLibrary("libgit2");
 
-    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("common", b.dependency("common", .{
+        .target = target,
+        .optimize = mode,
+    }).module("common"));
     mod.addImport("ansi-term", b.dependency("ansi_term", .{}).module("ansi_term"));
     mod.addImport("known-folders", b.dependency("known_folders", .{}).module("known-folders"));
 

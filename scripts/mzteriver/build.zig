@@ -27,7 +27,10 @@ pub fn build(b: *std.Build) !void {
     mod.addAnonymousImport("cgopts", .{
         .root_source_file = common.confgenPath(b, "cgassets/mzteriver-opts.zon"),
     });
-    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("common", b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common"));
     mod.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
     scanner.addCustomProtocol(b.path("river-control-unstable-v1.xml"));

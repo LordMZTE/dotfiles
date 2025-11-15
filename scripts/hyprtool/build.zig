@@ -15,7 +15,10 @@ pub fn build(b: *std.Build) void {
         .name = "hyprtool",
     });
 
-    exe.root_module.addImport("common", b.dependency("common", .{}).module("common"));
+    exe.root_module.addImport("common", b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common"));
 
     b.installArtifact(exe);
 

@@ -10,7 +10,10 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .imports = &.{ .{
             .name = "common",
-            .module = b.dependency("common", .{}).module("common"),
+            .module = b.dependency("common", .{
+                .target = target,
+                .optimize = optimize,
+            }).module("common"),
         }, .{
             .name = "args",
             .module = b.dependency("args", .{

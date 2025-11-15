@@ -18,7 +18,10 @@ pub fn build(b: *std.Build) void {
 
     lib_mod.linkSystemLibrary("gtk+-3.0", .{});
 
-    const common_mod = b.dependency("common", .{}).module("common");
+    const common_mod = b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common");
 
     for (std.enums.values(Mode)) |mode| {
         const mod = b.createModule(.{

@@ -21,7 +21,10 @@ pub fn build(b: *std.Build) void {
         .root_module = mod,
     });
 
-    mod.addImport("common", b.dependency("common", .{}).module("common"));
+    mod.addImport("common", b.dependency("common", .{
+        .target = target,
+        .optimize = mode,
+    }).module("common"));
     mod.addImport("wayland", wayland_mod);
 
     scanner.addSystemProtocol("stable/xdg-shell/xdg-shell.xml");
