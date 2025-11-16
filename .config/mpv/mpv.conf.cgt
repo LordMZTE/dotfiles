@@ -4,7 +4,12 @@
   local hwdec_codecs = { "all" }
 
   if opt.mpvHwdecCodecPred then
-    hwdec_codecs = cg.lib.filter(require("cgdata.mpv").codecs(), opt.mpvHwdecCodecPred)
+    hwdec_codecs = {}
+    for _, v in ipairs(require("cgdata.mpv").codecs()) do
+      if opt.mpvHwdecCodecPred(v) then
+        table.insert(hwdec_codecs, v)
+      end
+    end
   end
 !>
 # Enable hardware decoding
