@@ -1,3 +1,4 @@
+<! tmpl:setAssumeDeterministic(true) !>
 font-family = "<% opt.term_font %>"
 
 # Translucent Background
