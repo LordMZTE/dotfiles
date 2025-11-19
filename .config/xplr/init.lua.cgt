@@ -6,6 +6,7 @@ version = '<% "1.0.1" --[[require("cgdata.xplr").version()]] %>'
 require "pluginconf.p-dragon"
 require "pluginconf.p-web-devicons"
 require "pluginconf.p-zoxide"
+require "pluginconf.p-udisks"
 
 require "exec-mode"
 
