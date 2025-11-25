@@ -106,7 +106,7 @@ function M.moduleConfig()
     }
 
     conf["battery"] = {
-        states = { warning = 50, critical = 20 },
+        states = { warning = 30, critical = 20 },
         format = "{capacity}% {icon}",
         ["format-charging"] = "{capacity}% 󰂄",
         ["format-plugged"] = "{capacity}% ",
