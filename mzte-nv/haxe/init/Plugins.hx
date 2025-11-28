@@ -39,7 +39,6 @@ class Plugins {
             "nvimtree",
             "recorder",
             "telescope",
-            "ts-textobjects",
             "tterm",
             "overseer",
             "ufo",
