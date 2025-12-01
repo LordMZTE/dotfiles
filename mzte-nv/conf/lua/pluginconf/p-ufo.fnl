@@ -23,6 +23,5 @@
 
 (let [mopt (. (require :mzte_nv) :utils :map_opt)]
   ;; toggle fold
-  (vim.keymap.set :n :t :za mopt)
   (vim.keymap.set :n :zO ufo.openAllFolds mopt)
   (vim.keymap.set :n :zC ufo.closeAllFolds mopt))
