@@ -26,7 +26,7 @@ def viewdoc [f: path] {
         },
         "pdf" => { zathura $f },
         "html" => { openbrowser $"file://($f | path expand)" }
-        $e if $e in [ "png", "webp", "jpg", "jpeg", "ff", "bmp" ] => { nsxiv $f },
+        $e if $e in [ "png", "webp", "jpg", "jpeg", "ff", "bmp" ] => { swayimg $f },
         _ => { mpv $f },
     }
 }

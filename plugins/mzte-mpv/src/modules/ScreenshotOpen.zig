@@ -67,7 +67,7 @@ fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
         @memcpy(fname_buf[0..tmpf_path.len], tmpf_path);
         fname_buf[tmpf_path.len] = 0;
 
-        const err = std.posix.execvpeZ("nsxiv", &.{ "nsxiv", @ptrCast(&fname_buf) }, std.c.environ);
+        const err = std.posix.execvpeZ("swayimg", &.{ "swayimg", @ptrCast(&fname_buf) }, std.c.environ);
         log.err("spawning child: {}", .{err});
         std.process.exit(1);
     }
