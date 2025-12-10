@@ -16,6 +16,10 @@ set newtab <% opt.homepage_url %>
         search = "https://github.com/search?type=repositories&q=",
         base = "https://github.com",
     },
+    codeberg = {
+        search = "https://codeberg.org/explore/repos?q=",
+        base = "https://codeberg.org",
+    },
     wiki = {
         search = "https://en.wikipedia.org/w/index.php?search=",
         base = "https://en.wikipedia.org",
