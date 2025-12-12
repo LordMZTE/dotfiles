@@ -1,7 +1,7 @@
 --<! local plugins = opt.nix.xplr_plugins !>
 package.path = os.getenv "HOME" .. "/.config/xplr/?.lua;<% plugins %>/?/init.lua;<% plugins %>/?.lua;" .. package.path
 
-version = '<% "1.0.1" --[[require("cgdata.xplr").version()]] %>'
+version = '<% require("cgdata.xplr").version() %>'
 
 require "pluginconf.p-dragon"
 require "pluginconf.p-web-devicons"
