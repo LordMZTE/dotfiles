@@ -308,19 +308,6 @@ const Renderer = struct {
             &counts,
         );
 
-        if (status_errno == git_timeout_ret) {
-            const bg_col = Color.Red;
-            try self.drawLeftSep(bg_col);
-            try self.setStyle(.{
-                .background = bg_col,
-                .foreground = .Black,
-                .font_style = .{ .italic = true },
-            });
-
-            try self.writer.writeAll(" <git timeout>");
-
-            return;
-        }
         try checkGitError(status_errno);
 
         // now render all that info!
@@ -371,10 +358,6 @@ const Renderer = struct {
     }
 };
 
-// We need some number that is unlikely to be used by libgit as we otherwise couldn't distinguish
-// this being returned by our callback from an error coming from libgit.
-const git_timeout_ret = -42069;
-
 fn gitStatusCb(
     _: [*c]const u8,
     flags: c_uint,
@@ -401,8 +384,6 @@ fn gitStatusCb(
 
     if (flags & unstaged_flags > 0)
         counts.unstaged += 1;
-
-    if (counts.start.read() > 100 * std.time.ns_per_ms) return git_timeout_ret;
 
     return 0;
 }
