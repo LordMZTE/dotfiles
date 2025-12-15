@@ -297,7 +297,7 @@ const Renderer = struct {
             c.GIT_STATUS_OPT_INCLUDE_UNTRACKED |
             c.GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
 
-        var counts = GitStatusCounts{};
+        var counts: GitStatusCounts = .{};
 
         const status_errno = c.git_status_foreach_ext(
             repo,
@@ -332,7 +332,12 @@ const Renderer = struct {
                 c.GIT_REPOSITORY_STATE_REBASE_MERGE => "RM",
                 c.GIT_REPOSITORY_STATE_APPLY_MAILBOX => "Mb",
                 c.GIT_REPOSITORY_STATE_APPLY_MAILBOX_OR_REBASE => "Mb/R",
-                else => unreachable,
+                else => |retv| {
+                    // git_repository_state returns -1 when a strdup call fails, refer to libgit2
+                    // source.
+                    if (retv < 0) return error.OutOfMemory;
+                    unreachable; // invalid return value
+                },
             };
 
             try self.writer.print(" [{s}]", .{state_str});
