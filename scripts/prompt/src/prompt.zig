@@ -297,9 +297,7 @@ const Renderer = struct {
             c.GIT_STATUS_OPT_INCLUDE_UNTRACKED |
             c.GIT_STATUS_OPT_RECURSE_UNTRACKED_DIRS;
 
-        var counts = GitStatusCounts{
-            .start = try std.time.Timer.start(),
-        };
+        var counts = GitStatusCounts{};
 
         const status_errno = c.git_status_foreach_ext(
             repo,
@@ -319,6 +317,27 @@ const Renderer = struct {
             .foreground = .Black,
             .font_style = .{ .bold = true },
         });
+
+        show_state: {
+            const state_str = switch (c.git_repository_state(repo)) {
+                c.GIT_REPOSITORY_STATE_NONE => break :show_state,
+                c.GIT_REPOSITORY_STATE_MERGE => "M",
+                c.GIT_REPOSITORY_STATE_REVERT => "Rv",
+                c.GIT_REPOSITORY_STATE_REVERT_SEQUENCE => "RvS",
+                c.GIT_REPOSITORY_STATE_CHERRYPICK => "C",
+                c.GIT_REPOSITORY_STATE_CHERRYPICK_SEQUENCE => "CS",
+                c.GIT_REPOSITORY_STATE_BISECT => "B",
+                c.GIT_REPOSITORY_STATE_REBASE => "R",
+                c.GIT_REPOSITORY_STATE_REBASE_INTERACTIVE => "RI",
+                c.GIT_REPOSITORY_STATE_REBASE_MERGE => "RM",
+                c.GIT_REPOSITORY_STATE_APPLY_MAILBOX => "Mb",
+                c.GIT_REPOSITORY_STATE_APPLY_MAILBOX_OR_REBASE => "Mb/R",
+                else => unreachable,
+            };
+
+            try self.writer.print(" [{s}]", .{state_str});
+        }
+
         // using print here because name is a cstring
         try self.writer.print(" {s}", .{name});
 
@@ -391,8 +410,6 @@ fn gitStatusCb(
 const GitStatusCounts = struct {
     staged: u32 = 0,
     unstaged: u32 = 0,
-
-    start: std.time.Timer,
 
     pub fn getColor(self: *GitStatusCounts) Color {
         const has_staged = self.staged > 0;
