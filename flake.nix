@@ -71,24 +71,12 @@
                 luajit
                 luajitPackages.luafilesystem
                 pkg-config
-                racket
                 wayland
                 wayland-protocols
                 wayland-scanner
                 haxe
                 mpv-unwrapped
                 zig_0_15
-              ] ++
-              # shorthands for setup.rkt
-              builtins.map
-                (cmd: pkgs.writeShellScriptBin cmd ''
-                  ./setup.rkt ${cmd}
-                '') [
-                "install-scripts"
-                "install-plugins"
-                "setup-nvim-config"
-                "setup-nix"
-                "run-confgen"
               ];
           };
 
