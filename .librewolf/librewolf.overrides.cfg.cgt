@@ -39,3 +39,6 @@ defaultPref("browser.startup.homepage", "<% opt.homepage_url %>")
 
 // Don't allow websites to auto-focus stuff, no good with tridactyl
 defaultPref("browser.autofocus", false);
+
+// Don't even ask to enable Videvine DRM
+defaultPref("browser.eme.ui.enabled", false)
