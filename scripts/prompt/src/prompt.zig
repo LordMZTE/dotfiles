@@ -19,6 +19,8 @@ const symbols = struct {
     const top_end = "";
     const staged = "";
     const unstaged = "";
+    const conflicted = "";
+    const partially_staged = "󱎖";
     const home = "";
     const root = "";
     const watch = "";
@@ -346,6 +348,26 @@ const Renderer = struct {
         // using print here because name is a cstring
         try self.writer.print(" {s}", .{name});
 
+        if (counts.conflicted > 0) {
+            try self.drawLeftSep(.Red);
+            try self.setStyle(.{
+                .background = .Red,
+                .foreground = .Black,
+            });
+
+            try self.writer.print(" {}{s}", .{ counts.staged, symbols.conflicted });
+        }
+
+        if (counts.partially_staged > 0) {
+            try self.drawLeftSep(.Yellow);
+            try self.setStyle(.{
+                .background = .Yellow,
+                .foreground = .Black,
+            });
+
+            try self.writer.print(" {}{s}", .{ counts.partially_staged, symbols.partially_staged });
+        }
+
         if (counts.staged > 0) {
             try self.drawLeftSep(.Green);
             try self.setStyle(.{
@@ -401,12 +423,20 @@ fn gitStatusCb(
         c.GIT_STATUS_WT_RENAMED |
         c.GIT_STATUS_WT_TYPECHANGE;
 
+    const conflict_flags = c.GIT_STATUS_CONFLICTED;
+
     const counts: *GitStatusCounts = @ptrCast(@alignCast(counts_));
 
-    if (flags & staged_flags > 0)
-        counts.staged += 1;
+    const is_staged = flags & staged_flags > 0;
+    const is_unstaged = flags & unstaged_flags > 0;
 
-    if (flags & unstaged_flags > 0)
+    if (flags & conflict_flags > 0)
+        counts.conflicted += 1
+    else if (is_staged and is_unstaged)
+        counts.partially_staged += 1
+    else if (is_staged)
+        counts.staged += 1
+    else if (is_unstaged)
         counts.unstaged += 1;
 
     return 0;
@@ -415,12 +445,16 @@ fn gitStatusCb(
 const GitStatusCounts = struct {
     staged: u32 = 0,
     unstaged: u32 = 0,
+    conflicted: u32 = 0,
+    partially_staged: u32 = 0,
 
     pub fn getColor(self: *GitStatusCounts) Color {
-        const has_staged = self.staged > 0;
-        const has_unstaged = self.unstaged > 0;
+        const has_staged = self.staged > 0 or self.partially_staged > 0;
+        const has_unstaged = self.unstaged > 0 or self.partially_staged > 0;
 
-        return if (!has_staged and !has_unstaged)
+        return if (self.conflicted > 0)
+            .Red
+        else if (!has_staged and !has_unstaged)
             .Blue
         else if (has_staged and has_unstaged)
             .Magenta
