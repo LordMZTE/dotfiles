@@ -144,6 +144,14 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         try b.push("-Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 
         try env.put("_JAVA_OPTIONS", bufstream.buffered());
+
+        // A reparenting X11 WM is a WM which, when a window is created changes that windows parent
+        // to be a custom window (usually a frame with SSDs) instead of keeping the root window the
+        // parent. XWayland typically doesn't do this, and neither do most non-bloated X11 WMs. Most
+        // other WMs do though, and AWT defaults to it. For reasons unknown, this incorrect
+        // assumption causes windows to draw empty and misbehave in other ways. Why AWT needs to
+        // know if the WM reparents or not is unclear.
+        try env.put("_JAVA_AWT_WM_NONREPARENTING", "1");
     }
 
     // GUI options
