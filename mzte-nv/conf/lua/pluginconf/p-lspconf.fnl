@@ -23,6 +23,7 @@
 (setup :eslint)
 (setup :glsl_analyzer)
 (setup :haxe_language_server)
+(setup :hls)
 (setup :html)
 (setup :jsonls)
 (setup :julials)
