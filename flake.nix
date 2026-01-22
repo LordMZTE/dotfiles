@@ -16,7 +16,7 @@
           inherit system;
           config.permittedInsecurePackages = [
             # TODO: this is for haxe
-            "mbedtls-2.28.10"
+            "mbedtls2-no-checks-2.28.10"
           ];
         });
         common = base-pkgs.callPackage ./lib/common-nix { };
@@ -80,13 +80,27 @@
               ];
           };
 
+          config.nixpkgs.overlays = [
+            (final: prev: {
+              # Some test fail here. It's just a build dependency, so who cares.
+              # This is currently a transitive dependency through Haxe. They've upgraded upstream,
+              # but that hasn't made it to nixpkgs yet.
+              mbedtls_2 = prev.mbedtls_2.overrideAttrs {
+                pname = "mbedtls2-no-checks";
+
+                doCheck = false;
+                checkPhase = null;
+              };
+            })
+          ];
+
           config.output.mzteinit = base-pkgs.callPackage ./scripts/mzteinit/package.nix { };
 
           config.output.packages = builtins.mapAttrs
             (_: f: pkgs.callPackage f { })
             config.output.packfuncs;
 
-          # TODO: This causes infinite recursing, but copying exactly the same code to the caller
+          # TODO: This causes infinite recursion, but copying exactly the same code to the caller
           # works. I call bullshit.
           #config.output.overlay = final: prev: builtins.mapAttrs
           #  (_: f: final.callPackage f { })
