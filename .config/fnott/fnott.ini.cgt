@@ -1,0 +1,32 @@
+anchor=bottom-right
+icon-theme=<% cg.opt.icon_theme %>
+selection-helper=rofi -dmenu -mesg "Notification Action"
+
+layer=overlay
+background=<% opt.catppuccin.base %>e0
+border-color=<% opt.catppuccin.sky %>ff
+
+<! for _, text in ipairs { "title", "summary", "body" } do !>
+<% text %>-color=<% opt.catppuccin.text %>ff
+<! end !>
+
+title-font=<% opt.font %>:size=<% cg.opt.mulFontSize(10) %>
+summary-font=<% opt.font %>:size=<% cg.opt.mulFontSize(13) %>
+body-font=<% opt.font %>:size=<% cg.opt.mulFontSize(12) %>
+
+progress-style=background
+progress-color=<% opt.catppuccin.surface0 %>e0
+
+default-timeout=4
+idle-timeout=30
+
+notification-margin=5
+padding-vertical=4
+padding-horizontal=4
+
+[low]
+border-color=<% opt.catppuccin.green %>ff
+
+[critical]
+border-color=<% opt.catppuccin.red %>ff
+default-timeout=0

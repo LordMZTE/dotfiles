@@ -7,8 +7,8 @@ font=<% opt.font %> <% opt.mulFontSize(10) %>
 default-timeout=4000
 max-visible=4
 
-layer=overlay
-anchor=bottom-right
+layer=top
+anchor=top-left
 icon-location=right
 
 # Colors

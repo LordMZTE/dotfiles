@@ -96,7 +96,7 @@ function M.startupCommands(wm)
         table.insert(startup, { "kanshi" }) -- output configuration daemon
         table.insert(startup, { "wlbg" })   -- custom wallpaper
         table.insert(startup, { "waybar" })
-        table.insert(startup, { "mako" }) -- notification daemon for WL
+        table.insert(startup, { "fnott" }) -- notification daemon for WL
     else
         table.insert(startup, { "wired" }) -- notification daemon for X
     end
