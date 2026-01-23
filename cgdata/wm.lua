@@ -71,6 +71,10 @@ M.launch_keys = {
     -- Safe mode
     [{ kmods "m", "S" }] = [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
 
+    -- Fnott control
+    -- TODO: only add these on wayland
+    [{ kmods "mc", "Space" }] = "fnottctl actions || fnottctl dismiss",
+
     -- Application Launchers
     [{ kmods "m", "Return" }] = cg.opt.term.command,
     [{ kmods "a", "Space" }] = "rofi -show combi",
@@ -90,15 +94,15 @@ M.known_wayland_compositors = {
 function M.startupCommands(wm)
     local is_wayland = cg.lib.containsEq(M.known_wayland_compositors, wm)
 
-    local startup = { }
+    local startup = {}
 
     if is_wayland then
         table.insert(startup, { "kanshi" }) -- output configuration daemon
         table.insert(startup, { "wlbg" })   -- custom wallpaper
         table.insert(startup, { "waybar" })
-        table.insert(startup, { "fnott" }) -- notification daemon for WL
+        table.insert(startup, { "fnott" })  -- notification daemon for WL
     else
-        table.insert(startup, { "wired" }) -- notification daemon for X
+        table.insert(startup, { "wired" })  -- notification daemon for X
     end
 
     if wm == "river" then
