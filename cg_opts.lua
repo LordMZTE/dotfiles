@@ -87,8 +87,8 @@ cg.opt.commands = {
 }
 
 cg.opt.gamemode = {
-    on_start = "notify-send 'Gamemode' 'Gamemode Active'",
-    on_stop = "notify-send 'Gamemode' 'Gamemode Inactive'",
+    on_start = "notify-send -a 'Gamemode' 'Gamemode Active'",
+    on_stop = "notify-send -a 'Gamemode' 'Gamemode Inactive'",
 }
 
 cg.opt.dev_dir = os.getenv "HOME" .. "/dev"

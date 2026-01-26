@@ -116,9 +116,9 @@ end
 cg.opt.toggleSafeMode = function()
     cg.opt.safe_mode = not cg.opt.safe_mode
     if cg.opt.safe_mode then
-        cg.opt.system [[notify-send "Safe mode enabled"]]
+        cg.opt.system [[notify-send -a "MZTE System" "Safe mode enabled"]]
     else
-        cg.opt.system [[notify-send "Safe mode disabled"]]
+        cg.opt.system [[notify-send -a "MZTE System" "Safe mode disabled"]]
     end
 end
 
