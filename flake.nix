@@ -77,7 +77,7 @@
                 haxe
                 mpv-unwrapped
                 zig_0_15
-              ];
+              ] ++ (with pkgs.haskellPackages; [ ghc haskell-language-server ]);
           };
 
           config.nixpkgs.overlays = [
