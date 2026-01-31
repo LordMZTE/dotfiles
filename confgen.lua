@@ -1,16 +1,17 @@
 cg.addPath "cgassets"
 
+cg.addPath ".cargo"
 cg.addPath ".config"
 cg.addPath ".julia"
 cg.addPath ".librewolf"
 cg.addPath ".local"
 cg.addPath ".ssh"
-cg.addPath ".cargo"
 cg.addPath "etc"
 
 cg.addFile ".Xresources.cgt"
 cg.addFile ".bashrc"
 cg.addFile ".clang-format.cgt"
+cg.addFile ".ghci"
 cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".inputrc"
 cg.addFile ".stylua.toml.cgt"
