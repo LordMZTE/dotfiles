@@ -5,6 +5,8 @@ dbus-user filter
 dbus-user.talk com.feralinteractive.GameMode
 dbus-system none
 
+env XDG_CACHE_HOME=/tmp/cache # don't try to use ~/.local/cache
+
 mkdir ~/.local/share/PolyMC
 mkdir ~/.config/PolyMC
 whitelist ~/.local/share/PolyMC
