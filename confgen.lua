@@ -14,6 +14,7 @@ cg.addFile ".clang-format.cgt"
 cg.addFile ".ghci"
 cg.addFile ".gtkrc-2.0.cgt"
 cg.addFile ".inputrc"
+cg.addFile ".screenrc"
 cg.addFile ".stylua.toml.cgt"
 cg.addFile "hxformat.json.cgt"
 
