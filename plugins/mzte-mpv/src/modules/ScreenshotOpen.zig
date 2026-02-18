@@ -49,7 +49,7 @@ pub fn onEvent(self: *ScreenshotOpen, mpv: *c.mpv_handle, ev: *c.mpv_event) !voi
 fn screenshotOpen(self: *ScreenshotOpen, mpv: *c.mpv_handle) !void {
     const tmpf_path = try std.fmt.allocPrintSentinel(
         std.heap.c_allocator,
-        "/tmp/mzte-mpv-screenshot-{}-{}.jpg",
+        "/tmp/mzte-mpv-screenshot-{}-{}.png",
         .{ std.os.linux.getuid(), @rem(std.time.milliTimestamp(), std.time.ms_per_day) },
         0,
     );
