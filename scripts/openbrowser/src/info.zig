@@ -37,11 +37,9 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
         var cmdline_reader = cmdline_f.reader(&buf);
 
         // read first part of null-separated data (binary path)
-        const exepath = cmdline_reader.interface.takeDelimiterExclusive(0) catch |e| switch (e) {
-            // occurs if the file is empty, continue
-            error.EndOfStream => continue,
-            else => return e,
-        };
+        const exepath = try cmdline_reader.interface.takeDelimiter(0) orelse continue;
+
+        const arg1 = try cmdline_reader.interface.takeDelimiter(0);
 
         var found_all = true;
 
@@ -51,11 +49,15 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
 
             found_all = false;
 
+            const exe_name = std.fs.path.basename(exepath);
+
             // this is a startsWith instead of an eql because the arguments in the
             // cmdline file are sometimes (and only sometimes!) separated by spaces
             // and not null bytes.
-            if (!std.mem.startsWith(u8, std.fs.path.basename(exepath), q.name))
-                continue;
+            if (!std.mem.startsWith(u8, exe_name, q.name) and
+                // qutebrowser clause
+                (!std.mem.startsWith(u8, exe_name, "python") or
+                    arg1 == null or !std.mem.containsAtLeast(u8, arg1.?, 1, q.name))) continue;
 
             // Tor Browser's binary is named firefox. This trips this algorithm up, because it will
             // think firefox is running and attempt to start firefox. Since we don't want to open

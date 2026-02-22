@@ -9,6 +9,7 @@ pub const std_options = std.Options{
 };
 
 const browsers = &[_][]const u8{
+    "qutebrowser",
     "librewolf",
     "firefox",
     "brave",
@@ -52,8 +53,8 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
         childarg.* = std.mem.span(arg);
     }
 
-    // Luakit doesn't support conventional 'app' mode, so instead, we just open the page normally.
-    if (std.mem.eql(u8, browser, "luakit")) {
+    // Luakit and qutebrowser don't support conventional 'app' mode, so instead, we just open the page normally.
+    if (std.mem.eql(u8, browser, "luakit") or std.mem.eql(u8, browser, "qutebrowser")) {
         for (argv) |*arg| {
             if (arg.len > 6 and std.mem.startsWith(u8, arg.*, "--app=")) {
                 arg.* = arg.*[6..];
