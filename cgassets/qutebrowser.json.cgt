@@ -1,0 +1,5 @@
+<% cg.fmt.json.serialize {
+    font = opt.font,
+    hint_font_size = opt.mulFontSize(12),
+    default_font_size = opt.mulFontSize(10),
+} %>
