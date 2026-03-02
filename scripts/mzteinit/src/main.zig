@@ -98,6 +98,9 @@ fn tryMain() !void {
         };
     }
 
+    @import("keyring.zig").linkUserKeyring() catch |e|
+        std.log.err("failed to link user keyring: {} ", .{e});
+
     var srv: ?Server = null;
     if (env_map.data.get("XDG_RUNTIME_DIR")) |xrd| {
         var sockaddr_buf: [std.fs.max_path_bytes]u8 = undefined;
