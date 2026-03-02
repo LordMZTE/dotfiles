@@ -17,8 +17,6 @@ let
         hash = "sha256-ZBWymj1xXgWOfKTliej/bcuv1n5WfEi5rxD9SFj6t3A=";
       };
 
-      dontConfigure = true;
-
       nativeBuildInputs = with pkgs; [ zig_0_14.hook git ];
     })
     (flakePkg "git+https://git.mzte.de/LordMZTE/haxe-language-server.git")
