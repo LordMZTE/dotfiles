@@ -58,23 +58,21 @@ dwindle {
     preserve_split = yes
 }
 
-gestures {
-    workspace_swipe = true
-}
+gesture = 3, horizontal, workspace
 
 ecosystem {
     no_donation_nag = true # WTF
 }
 
-experimental {
-    #hdr = true
-    xx_color_management_v4 = true
-}
-
 monitor = , preferred, auto, 1
 
-windowrule = float,^(vinput-editor)$
-windowrule = center,^(vinput-editor)$
+windowrule {
+    name = vinput
+    match:class = vinput-editor
+
+    float = on
+    center = on
+}
 
 env = XCURSOR_SIZE, <% opt.cursor.size %>
 
