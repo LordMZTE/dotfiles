@@ -5,6 +5,8 @@ window = extend
 [keys.viewer]
 Shift+j = next_file
 Shift+k = prev_file
+Ctrl+n  = next_file
+Ctrl+p  = prev_file
 
 h = step_left  10
 j = step_down  10
