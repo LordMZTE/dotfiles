@@ -1,7 +1,7 @@
 (local (mztenv lline lspprogress)
        (values (require :mzte_nv) (require :lualine) (require :lsp-progress)))
 
-(lline.setup {:options {:theme :catppuccin}
+(lline.setup {:options {:theme :catppuccin-nvim}
               :sections {:lualine_b [:filename :diff]
                          :lualine_c [:diagnostics]}
               :tabline {:lualine_a [{1 :tabs

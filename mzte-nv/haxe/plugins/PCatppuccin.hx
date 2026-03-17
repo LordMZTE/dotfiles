@@ -58,6 +58,6 @@ class PCatppuccin implements IPlugin {
             },
         });
 
-        Vim.cmd("colorscheme catppuccin");
+        Vim.cmd("colorscheme catppuccin-nvim");
     }
 }
