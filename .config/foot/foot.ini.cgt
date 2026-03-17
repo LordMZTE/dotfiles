@@ -13,10 +13,8 @@ end
 [main]
 font=<% opt.term_font %>:size=<% opt.mulFontSize(base_fontsiz) %>
 
-[colors]
+[colors-dark]
 alpha=0.8
-
-[colors]
 foreground=<% opt.catppuccin.text %>
 background=<% opt.catppuccin.base %>
 regular0=<% opt.catppuccin.surface1 %>
