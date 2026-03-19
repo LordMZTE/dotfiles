@@ -98,7 +98,7 @@ end !>
     color: #<% opt.catppuccin.maroon %>;
 }
 
-#workspaces button.active, #tags button.focused {
+#workspaces button.active, #tags button.selected, #tags button.focused {
     color: #<% opt.catppuccin.sky %>;
     background: #<% opt.catppuccin.surface1 %>;
 }
