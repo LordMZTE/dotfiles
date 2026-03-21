@@ -7,8 +7,10 @@ local bar_icons = { " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" 
 
 -- This is a function so we can re-execute it when the compositor changes.
 function M.modulesLeft()
-    if cg.opt.wayland_compositor == "river" then
+    if cg.opt.wayland_compositor == "river-classic" then
         return { "river/tags", "river/window" }
+    elseif cg.opt.wayland_compositor == "river" then
+        return { "cffi/mzterwm-tags" }
     elseif cg.opt.wayland_compositor == "hyprland" then
         return { "hyprland/workspaces", "hyprland/window" }
     elseif cg.opt.wayland_compositor == "niri" then
@@ -33,12 +35,31 @@ M.modules_right = {
 function M.moduleConfig()
     local conf = {}
 
+    -- "S" for scratchpad
+    local river_labels = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "S" }
     if cg.opt.wayland_compositor == "river" then
-        -- "S" for scratchpad
-        local labels = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "S" }
+        local findlib = require "lib.confgen.findlib"
+
+        local function ctpColor(name, alpha)
+            local rgb = cg.opt.catppuccin.rgb[name]
+            return { rgb.r, rgb.g, rgb.b, alpha }
+        end
+
+        conf["cffi/mzterwm-tags"] = {
+            module_path = findlib "libwaybar-mzterwm.so",
+            labels = river_labels,
+            focus_indicator = {
+                color = ctpColor("maroon", 255),
+                position = "top",
+            },
+            switching_indicator = {
+                color = ctpColor("flamingo", 128),
+            },
+        }
+    elseif cg.opt.wayland_compositor == "river-classic" then
         conf["river/tags"] = {
-            ["num-tags"] = #labels,
-            ["tag-labels"] = labels,
+            ["num-tags"] = #river_labels,
+            ["tag-labels"] = river_labels,
             ["hide-vacant"] = true,
         }
 

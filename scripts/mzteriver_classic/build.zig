@@ -1,32 +1,44 @@
 const std = @import("std");
 const common = @import("common");
 
-pub fn build(b: *std.Build) void {
+const Scanner = @import("wayland").Scanner;
+
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const common_dep = b.dependency("common", .{ .target = target, .optimize = optimize });
-    const common_mod = common_dep.module("common");
+    const scanner = Scanner.create(b, .{});
 
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
-        .imports = &.{
-            .{ .name = "common", .module = common_mod },
-        },
+        .link_libc = true,
     });
+
+    const exe = b.addExecutable(.{
+        .name = "mzteriver-classic",
+        .root_module = mod,
+    });
+
     mod.addAnonymousImport("cg", .{
         .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
     });
     mod.addAnonymousImport("cgopts", .{
         .root_source_file = common.confgenPath(b, "cgassets/mzteriver-opts.zon"),
     });
+    mod.addImport("common", b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common"));
+    mod.addImport("wayland", b.createModule(.{ .root_source_file = scanner.result }));
 
-    const exe = b.addExecutable(.{
-        .name = "mzteriver",
-        .root_module = mod,
-    });
+    scanner.addCustomProtocol(b.path("river-control-unstable-v1.xml"));
+
+    scanner.generate("zriver_control_v1", 1);
+    scanner.generate("wl_seat", 7);
+
+    mod.linkSystemLibrary("wayland-client", .{});
 
     b.installArtifact(exe);
 

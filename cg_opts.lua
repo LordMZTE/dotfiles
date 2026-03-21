@@ -1,13 +1,14 @@
 cg.opt.mzteinit_entries = {
     -- TODO: the `which` invocations here are a workaround in case the relevant binaries
     -- are installed in a directory that mzteinit adds to $PATH, which it currently doesn't handle.
-    { key = "z", label = "river",    cmd = { cg.opt.system "which mzteriver" } },
-    { key = "h", label = "hyprland", cmd = { "Hyprland" } },
-    { key = "n", label = "niri",     cmd = { "niri", "--session" } },
-    { key = "s", label = "shell",    cmd = { "nu" } },
-    { key = "l", label = "logout",   cmd = { "!quit" } },
-    { key = "p", label = "shutdown", cmd = { "systemctl", "poweroff" },        quit = true },
-    { key = "r", label = "reboot",   cmd = { "systemctl", "reboot" },          quit = true },
+    { key = "z", label = "river",         cmd = { cg.opt.system "which mzteriver" } },
+    { key = "u", label = "river-classic", cmd = { cg.opt.system "which mzteriver-classic" } },
+    { key = "h", label = "hyprland",      cmd = { "Hyprland" } },
+    { key = "n", label = "niri",          cmd = { "niri", "--session" } },
+    { key = "s", label = "shell",         cmd = { "nu" } },
+    { key = "l", label = "logout",        cmd = { "!quit" } },
+    { key = "p", label = "shutdown",      cmd = { "systemctl", "poweroff" },                   quit = true },
+    { key = "r", label = "reboot",        cmd = { "systemctl", "reboot" },                     quit = true },
 }
 
 -- Enable if you have good internet, used for stuff like making

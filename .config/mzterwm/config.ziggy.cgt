@@ -1,0 +1,25 @@
+<! local wm = require "cgdata.wm" !>
+
+<! local function ziggyEscape(str)
+    return str:gsub('\"', '\\"')
+end !>
+
+<! local function modspec(mods) !>
+{<! for _, k in ipairs(mods) do !>.<% k %> = true,<! end !>}<! end !>
+
+<! local function ctrlKey(spec, action) !>
+{ .key = "<% spec[2] %>", .mods = <! modspec(spec[1]) !>, .action = <% action %> }<! end !>
+
+.borders = {
+    .width = 2,
+    .base_color = "<% opt.catppuccin.sky %>ff",
+    .focus_color = "<% opt.catppuccin.red %>ff",
+},
+
+.keybinds = [
+    <! for keydat, cmd in pairs(wm.launch_keys) do !>
+    { .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = Spawn { .argv = ["sh", "-c", "<% ziggyEscape(cmd) %>"] } },<! end !>
+    <! ctrlKey(wm.control_keys.quit, "Quit {}") !>,
+    <! ctrlKey(wm.control_keys.close_window, "CloseWindow {}") !>,
+    // TODO: fullscreen
+],

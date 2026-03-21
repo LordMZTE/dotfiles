@@ -9,7 +9,7 @@ pub const std_options = std.Options{
 };
 
 pub const mztecommon_opts = common.Opts{
-    .log_pfx = "mzteriver",
+    .log_pfx = "mzteriver-classic",
 };
 
 pub fn main() !void {
@@ -17,13 +17,18 @@ pub fn main() !void {
     defer if (@TypeOf(dbg_gpa) != void) {
         _ = dbg_gpa.deinit();
     };
-    const alloc = if (@TypeOf(dbg_gpa) == void) std.heap.smp_allocator else dbg_gpa.allocator();
+    const alloc = if (@TypeOf(dbg_gpa) == void) std.heap.c_allocator else dbg_gpa.allocator();
 
     if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "init") or
         (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "init") == .eq))
     {
         std.log.info("running in init mode", .{});
-        try init(alloc);
+        try init(alloc, true);
+    } else if (std.mem.endsWith(u8, std.mem.span(std.os.argv[0]), "reinit") or
+        (std.os.argv.len >= 2 and std.mem.orderZ(u8, std.os.argv[1], "reinit") == .eq))
+    {
+        std.log.info("running in reinit mode", .{});
+        try init(alloc, false);
     } else {
         std.log.info("running in launch mode", .{});
 
@@ -31,11 +36,11 @@ pub fn main() !void {
             var logf_pathbuf: [std.fs.max_path_bytes]u8 = undefined;
             const logf_path = try std.fmt.bufPrintZ(
                 &logf_pathbuf,
-                "/tmp/mzteriver-{}-{}.log",
+                "/tmp/mzteriver-classic-{}-{}.log",
                 .{ std.os.linux.getuid(), std.os.linux.getpid() },
             );
 
-            std.log.info("river log file: {s}", .{logf_path});
+            std.log.info("river-classic log file: {s}", .{logf_path});
 
             break :logf try std.posix.openatZ(
                 std.posix.AT.FDCWD,
@@ -76,6 +81,18 @@ pub fn main() !void {
             break :env @ptrCast(env.items.ptr);
         };
 
-        return std.posix.execvpeZ("river", &[_:null]?[*:0]const u8{"river"}, envp);
+        var conffile_buf: [std.fs.max_path_bytes]u8 = undefined;
+        const home = std.posix.getenv("HOME") orelse return error.MissingEnv;
+        const conffile = try std.fmt.bufPrintZ(
+            &conffile_buf,
+            "{s}/.config/river-classic/init",
+            .{home},
+        );
+
+        return std.posix.execvpeZ("river-classic", &[_:null]?[*:0]const u8{
+            "river-classic",
+            "-c",
+            conffile.ptr,
+        }, envp);
     }
 }

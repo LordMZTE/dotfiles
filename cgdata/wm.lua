@@ -87,7 +87,7 @@ M.launch_keys = {
 
 -- Wayland compositors that we know about
 M.known_wayland_compositors = {
-    "river", "hyprland", "niri"
+    "river", "river-classic", "hyprland", "niri"
 }
 
 -- Startup commands to run for the given WM
