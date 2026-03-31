@@ -11,6 +11,27 @@ fn initCommand(comptime argv: []const [:0]const u8) []const [:0]const u8 {
 }
 
 pub fn init(alloc: std.mem.Allocator) !void {
+    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
+
+    // tell confgenfs we're now using river
+    confgenfs: {
+        const cgfs_eval_path = try std.fs.path.join(
+            alloc,
+            &.{ home, "confgenfs", "_cgfs", "eval" },
+        );
+        defer alloc.free(cgfs_eval_path);
+
+        const evalf = std.fs.cwd().openFile(cgfs_eval_path, .{ .mode = .write_only }) catch {
+            std.log.warn("unable to open confgenfs eval file", .{});
+            break :confgenfs;
+        };
+        defer evalf.close();
+
+        try evalf.writeAll(
+            \\cg.opt.setCurrentWaylandCompositor "river"
+        );
+    }
+
     std.log.info("spawning processes", .{});
 
     var child_arena = std.heap.ArenaAllocator.init(alloc);

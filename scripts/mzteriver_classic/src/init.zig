@@ -197,7 +197,7 @@ pub fn init(alloc: std.mem.Allocator, initial: bool) !void {
 
     log.info("configuration finished, initial: {}", .{initial});
 
-    // tell confgenfs we're now using river
+    // tell confgenfs we're now using river-classic
     confgenfs: {
         const cgfs_eval_path = try std.fs.path.join(
             alloc,

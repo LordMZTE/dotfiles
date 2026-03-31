@@ -12,14 +12,47 @@ end !>
 
 .borders = {
     .width = 2,
-    .base_color = "<% opt.catppuccin.sky %>ff",
+    .base_color = "<% opt.catppuccin.sky %>80",
     .focus_color = "<% opt.catppuccin.red %>ff",
+    .fullscreen_color = "<% opt.catppuccin.purple %>ff",
 },
 
 .keybinds = [
     <! for keydat, cmd in pairs(wm.launch_keys) do !>
     { .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = Spawn { .argv = ["sh", "-c", "<% ziggyEscape(cmd) %>"] } },<! end !>
+
     <! ctrlKey(wm.control_keys.quit, "Quit {}") !>,
     <! ctrlKey(wm.control_keys.close_window, "CloseWindow {}") !>,
-    // TODO: fullscreen
+    <! ctrlKey(wm.control_keys.fullscreen, "ToggleWindowFullscreen {}") !>,
+
+
+    { .key = "j", .mods = { .meta = true }, .action = FocusWindow { .direction = "next" } },
+    { .key = "k", .mods = { .meta = true }, .action = FocusWindow { .direction = "prev" } },
+    { .key = "j", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "next" } },
+    { .key = "k", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "prev" } },
+    { .key = "period", .mods = { .meta = true }, .action = FocusOutput { .direction = "next" } },
+    { .key = "comma", .mods = { .meta = true }, .action = FocusOutput { .direction = "prev" } },
+    { .key = "period", .mods = { .meta = true, .shift = true }, .action = MoveWindowOutput { .direction = "next" } },
+    { .key = "comma", .mods = { .meta = true, .shift = true }, .action = MoveWindowOutput { .direction = "prev" } },
+    { .key = "q", .mods = { .meta = true, .shift = true }, .action = CloseWindow {} },
+    { .key = "e", .mods = { .meta = true, .shift = true }, .action = Quit {} },
+    { .key = "f", .mods = { .meta = true }, .action = ToggleWindowFullscreen {} },
+
+    <! local mask = 1; for i = 1, 9 do !>
+    { .key = "<% i %>", .mods = { .meta = true, .shift = true }, .action = SetWindowTags { .to = <% mask %> } },
+    { .key = "<% i %>", .mods = { .meta = true, .shift = true, .ctrl = true }, .action = AddWindowTags { .tags = <% mask %> } },
+    <! mask = mask * 2; end !>
 ],
+
+.layouts = {
+    .focus = {
+        .keybinds = [
+            { .key = "l", .mods = { .meta = true }, .action = ResizePrimaryDirectional { .by = 16 } },
+            { .key = "h", .mods = { .meta = true }, .action = ResizePrimaryDirectional { .by = -16 } },
+            { .key = "Up", .mods = { .meta = true }, .action = SetDirection { .to = "up" } },
+            { .key = "Down", .mods = { .meta = true }, .action = SetDirection { .to = "down" } },
+            { .key = "Left", .mods = { .meta = true }, .action = SetDirection { .to = "left" } },
+            { .key = "Right", .mods = { .meta = true }, .action = SetDirection { .to = "right" } },
+        ],
+    },
+}
