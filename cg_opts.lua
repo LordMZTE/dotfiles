@@ -83,8 +83,8 @@ cg.opt.commands = {
         next = "playerctl next",
         prev = "playerctl previous",
     },
-    backlight_up = "brightnessctl s +15%",
-    backlight_down = "brightnessctl s -15%",
+    backlight_up = "brightnessctl s 15%+",
+    backlight_down = "brightnessctl s 15%-",
 }
 
 cg.opt.gamemode = {
