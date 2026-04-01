@@ -36,10 +36,10 @@ local M = {}
 -- keys as well as workspace keys with meta and numbers. Due to how different layout strategies make
 -- for different setups here, this is to be defined separately for each compositor.
 M.control_keys = {
-    quit = { kmods "ms", "E" },
-    close_window = { kmods "ms", "Q" },
+    quit = { kmods "ms", "e" },
+    close_window = { kmods "ms", "q" },
     float = { kmods "m", "Space" },
-    fullscreen = { kmods "m", "F" },
+    fullscreen = { kmods "m", "f" },
 }
 
 local cmds = cg.opt.commands
@@ -65,11 +65,11 @@ M.launch_keys = {
     [{ {}, "Print" }] = [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
 
     -- Background controls
-    [{ kmods "m", "W" }] = "pkill -USR1 wlbg",  -- Randomize background
-    [{ kmods "ms", "W" }] = "pkill -USR2 wlbg", -- Toggle solid background
+    [{ kmods "m", "w" }] = "pkill -USR1 wlbg",  -- Randomize background
+    [{ kmods "ms", "w" }] = "pkill -USR2 wlbg", -- Toggle solid background
 
     -- Safe mode
-    [{ kmods "m", "S" }] = [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
+    [{ kmods "m", "s" }] = [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
 
     -- Fnott control
     -- TODO: only add these on wayland
@@ -79,10 +79,10 @@ M.launch_keys = {
     [{ kmods "m", "Return" }] = cg.opt.term.command,
     [{ kmods "a", "Space" }] = "rofi -show combi",
     [{ kmods "ma", "Space" }] = "rofi -show emoji",
-    [{ kmods "mc", "C" }] = "rofi -show qalc",
-    [{ kmods "mc", "E" }] = cmds.file_manager,
-    [{ kmods "mc", "B" }] = cmds.browser,
-    [{ kmods "mc", "V" }] = "vinput md",
+    [{ kmods "mc", "c" }] = "rofi -show qalc",
+    [{ kmods "mc", "e" }] = cmds.file_manager,
+    [{ kmods "mc", "b" }] = cmds.browser,
+    [{ kmods "mc", "v" }] = "vinput md",
 }
 
 -- Wayland compositors that we know about
