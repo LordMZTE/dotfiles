@@ -10,6 +10,11 @@ end !>
 <! local function ctrlKey(spec, action) !>
 { .key = "<% spec[2] %>", .mods = <! modspec(spec[1]) !>, .action = <% action %> }<! end !>
 
+.cursor = {
+    .theme = "<% opt.cursor.theme %>",
+    .size = <% opt.cursor.size %>,
+},
+
 .borders = {
     .width = 2,
     .base_color = "<% opt.catppuccin.sky %>80",
@@ -30,6 +35,7 @@ end !>
     { .key = "k", .mods = { .meta = true }, .action = FocusWindow { .direction = "prev" } },
     { .key = "j", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "next" } },
     { .key = "k", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "prev" } },
+    { .key = "Return", .mods = { .meta = true, .shift = true }, .action = SwapTop {} },
     { .key = "period", .mods = { .meta = true }, .action = FocusOutput { .direction = "next" } },
     { .key = "comma", .mods = { .meta = true }, .action = FocusOutput { .direction = "prev" } },
     { .key = "period", .mods = { .meta = true, .shift = true }, .action = MoveWindowOutput { .direction = "next" } },
