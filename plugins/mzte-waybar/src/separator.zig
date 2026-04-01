@@ -123,13 +123,25 @@ fn showCb(widget: *c.GtkWidget, instance: *Instance) callconv(.c) void {
 
     for ([_]*?*c.GtkWidget{ &before, &after }) |maybe_neighbor| {
         if (maybe_neighbor.*) |neighbor| {
-            // The immediate neighbor widget is just a container, grab its child which has a background
-            // we can draw onto ourselves.
+            // The immediate neighbor widget is just a container, grab its child which has a
+            // background we can draw onto ourselves.
 
             const ChildGrabber = struct {
                 fn foreachCb(child: *c.GtkWidget, out_ptr: *?*c.GtkWidget) callconv(.c) void {
                     if (out_ptr.* == null) {
-                        out_ptr.* = child;
+                        // This is a workaround to deal with how waybar-mzterwm works.
+                        // Since it uses a top-level GtkOverlay with no background, we have to grab
+                        // the underlying GtkBox.
+                        if (c.g_type_check_instance_is_a(
+                            @ptrCast(child),
+                            c.gtk_overlay_get_type(),
+                        ) != 0) {
+                            out_ptr.* = c.gtk_bin_get_child(@ptrCast(child));
+                            std.log.debug("Found overlay {*}, using child {*}", .{
+                                child,
+                                out_ptr.*,
+                            });
+                        } else out_ptr.* = child;
                     }
                 }
             };
