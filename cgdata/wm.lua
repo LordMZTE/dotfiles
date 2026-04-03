@@ -11,8 +11,10 @@ local mod_shorthands = {
     a = "alt",
 }
 
+local M = {}
+
 -- Shorthand to convert a string with single-char key modifiers to a key modifier table.
-local function kmods(str)
+function M.kmods(str)
     local modtable = {}
     str:gsub(".", function(c)
         local kmod = mod_shorthands[c]
@@ -23,7 +25,7 @@ local function kmods(str)
     return modtable
 end
 
-local M = {}
+local kmods = M.kmods
 
 -- Keybinds in this section are expressed as tuples with a list of modifiers from `mod_shorthands`
 -- and an XKB key.
@@ -43,6 +45,8 @@ M.control_keys = {
 }
 
 local cmds = cg.opt.commands
+
+local dev_conf = cg.opt.getLuaDeviceConf("wm") or {}
 
 -- Keys that start some command expressed in shell notation.
 M.launch_keys = {
@@ -106,6 +110,9 @@ function M.startupCommands(wm)
     end
 
     if wm == "river" then
+        table.insert(startup, { "mzterwm" })
+        table.insert(startup, { "channel" })
+    elseif wm == "river-classic" then
         table.insert(startup, { "rivertile" })
     end
 
@@ -114,6 +121,10 @@ function M.startupCommands(wm)
     end
 
     return startup
+end
+
+if dev_conf.modifyLaunchKeys then
+    M.launch_keys = dev_conf.modifyLaunchKeys(M, M.launch_keys)
 end
 
 return M

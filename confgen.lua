@@ -41,14 +41,24 @@ cg.opt.nix = nix
 
 local fennel = (loadfile(nix["fennel.lua"] or "/usr/share/lua/5.4/fennel.lua")())
 
+cg.opt.getDeviceConfPath = function(id)
+    return os.getenv "HOME" .. "/.config/mzte_localconf/" .. id
+end
+
 -- This function is called in templates to allow adding device-specific configs.
 cg.opt.getDeviceConf = function(id)
-    local path = os.getenv "HOME" .. "/.config/mzte_localconf/" .. id
+    local path = cg.opt.getDeviceConfPath(id)
     local file = io.open(path, "r")
 
     if not file then return "" end
 
     return file:read "*a"
+end
+
+cg.opt.getLuaDeviceConf = function(id)
+    local chunk = loadfile(cg.opt.getDeviceConfPath(id .. ".lua"))
+    if not chunk then return nil end
+    return chunk()
 end
 
 -- Returns the contents of a file
