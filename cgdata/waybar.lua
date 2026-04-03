@@ -10,7 +10,7 @@ function M.modulesLeft()
     if cg.opt.wayland_compositor == "river-classic" then
         return { "river/tags", "river/window" }
     elseif cg.opt.wayland_compositor == "river" then
-        return { "cffi/mzterwm-tags" }
+        return { "cffi/mzterwm-tags", "cffi/mzterwm-title" }
     elseif cg.opt.wayland_compositor == "hyprland" then
         return { "hyprland/workspaces", "hyprland/window" }
     elseif cg.opt.wayland_compositor == "niri" then
@@ -45,8 +45,10 @@ function M.moduleConfig()
             return { rgb.r, rgb.g, rgb.b, alpha }
         end
 
+        local module_path = findlib "libwaybar-mzterwm.so"
         conf["cffi/mzterwm-tags"] = {
-            module_path = findlib "libwaybar-mzterwm.so",
+            module_path = module_path,
+            mode = "tags",
             labels = river_labels,
             focus_indicator = {
                 color = ctpColor("maroon", 255),
@@ -55,6 +57,10 @@ function M.moduleConfig()
             switching_indicator = {
                 color = ctpColor("flamingo", 128),
             },
+        }
+        conf["cffi/mzterwm-title"] = {
+            module_path = module_path,
+            mode = "title",
         }
     elseif cg.opt.wayland_compositor == "river-classic" then
         conf["river/tags"] = {

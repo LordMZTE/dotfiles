@@ -62,9 +62,6 @@ pub fn init(alloc: std.mem.Allocator) !void {
         _ = try child.wait();
     }
 
-    var mzterwm_child = std.process.Child.init(&.{"mzterwm"}, child_arena.allocator());
-    try mzterwm_child.spawn();
-
     inline for (cgopts.startup_commands) |argv| {
         var child = std.process.Child.init(initCommand(&argv), child_arena.allocator());
         try child.spawn();
