@@ -20,7 +20,7 @@ pub fn main() !void {
     var sockpath_buf: [std.fs.max_path_bytes]u8 = undefined;
     const sockpath = try std.fmt.bufPrintZ(
         &sockpath_buf,
-        "{s}/{s}-swww-daemon..sock",
+        "{s}/{s}-awww-daemon.sock",
         .{ xdgrtdir, wl_dpy_name },
     );
 
@@ -42,14 +42,14 @@ pub fn main() !void {
     };
 
     // Don't spawn daemon if the socket exists, one must already be running.
-    var swww_daemon = if (std.fs.cwd().statFile(sockpath)) |_|
+    var awww_daemon = if (std.fs.cwd().statFile(sockpath)) |_|
         null
     else |_|
-        std.process.Child.init(&.{"swww-daemon"}, alloc);
-    if (swww_daemon) |*d| try d.spawn();
+        std.process.Child.init(&.{"awww-daemon"}, alloc);
+    if (awww_daemon) |*d| try d.spawn();
 
-    defer if (swww_daemon) |*d| {
-        _ = d.kill() catch |e| std.log.err("could not kill swww-daemon: {}", .{e});
+    defer if (awww_daemon) |*d| {
+        _ = d.kill() catch |e| std.log.err("could not kill awww-daemon: {}", .{e});
     };
 
     const epfd = try std.posix.epoll_create1(0);

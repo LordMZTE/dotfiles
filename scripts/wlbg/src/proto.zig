@@ -1,4 +1,4 @@
-//! Implementation of the swww IPC protocol. Swww version: 0.11.2
+//! Implementation of the awww IPC protocol. Awww version: 0.11.2
 const std = @import("std");
 const builtin = @import("builtin");
 const c = ffi.c;
@@ -21,12 +21,12 @@ const cmsghdr = extern struct {
     cmsg_type: i32,
 };
 
-const SwwwTransitionType = enum(u8) { simple, fade, outer, wipe, grow, wave, none };
+const AwwwTransitionType = enum(u8) { simple, fade, outer, wipe, grow, wave, none };
 
-// All the structs starting with Swww* represent some swww IPC data type as represented by the wire
+// All the structs starting with Awww* represent some Awww IPC data type as represented by the wire
 // protocol.
-const SwwwTransition = packed struct {
-    transition_type: SwwwTransitionType,
+const AwwwTransition = packed struct {
+    transition_type: AwwwTransitionType,
     duration: f32,
     step: u8, // nonzero
     fps: u16,
@@ -43,9 +43,9 @@ const SwwwTransition = packed struct {
     wave1: f32,
     invert_y: u8, // boolean
 
-    fn makeRandom(rand: std.Random) SwwwTransition {
+    fn makeRandom(rand: std.Random) AwwwTransition {
         // We don't want simple or none.
-        const typ: SwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
+        const typ: AwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
 
         return .{
             .transition_type = typ,
@@ -91,7 +91,7 @@ const SwwwTransition = packed struct {
 };
 
 comptime {
-    std.debug.assert(@bitSizeOf(SwwwTransition) / 8 == 51);
+    std.debug.assert(@bitSizeOf(AwwwTransition) / 8 == 51);
 }
 
 pub const WallpaperMode = enum {
@@ -255,7 +255,7 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     const quer = try query(state);
     defer quer.arena.deinit();
 
-    const memfd = try std.posix.memfd_create("swww-ipc", 0);
+    const memfd = try std.posix.memfd_create("wlbg-awww-ipc", 0);
     defer std.posix.close(memfd);
 
     const sock = try connect(state.sockpath);
@@ -277,7 +277,7 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
 
     {
         // shm data layout:
-        // 0-50: SwwwTransition
+        // 0-50: AwwwTransition
         // 51: number of following ImgReqs
         // ImgReqs
 
@@ -286,8 +286,8 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
         const wr = &mfdwriter.interface;
 
         try wr.writeAll(std.mem.toBytes(
-            SwwwTransition.makeRandom(state.rand.random()),
-        )[0..(@bitSizeOf(SwwwTransition) / 8)]);
+            AwwwTransition.makeRandom(state.rand.random()),
+        )[0..(@bitSizeOf(AwwwTransition) / 8)]);
 
         try wr.writeByte(@truncate(quer.bgs.len));
 
