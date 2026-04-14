@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 const proto = @import("proto.zig");
 
@@ -10,9 +11,11 @@ pub const std_options = std.Options{
 };
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const alloc = gpa.allocator();
+    var gpa = if (builtin.mode == .Debug) std.heap.DebugAllocator(.{}).init else {};
+    defer if (builtin.mode == .Debug) {
+        _ = gpa.deinit();
+    };
+    const alloc = if (builtin.mode == .Debug) gpa.allocator() else std.heap.smp_allocator;
 
     const wl_dpy_name = std.posix.getenv("WAYLAND_DISPLAY") orelse return error.NoDisplay;
     const xdgrtdir = std.posix.getenv("XDG_RUNTIME_DIR") orelse return error.NoRuntimeDir;
@@ -23,9 +26,6 @@ pub fn main() !void {
         "{s}/{s}-awww-daemon.sock",
         .{ xdgrtdir, wl_dpy_name },
     );
-
-    var wp_arena = std.heap.ArenaAllocator.init(alloc);
-    defer wp_arena.deinit();
 
     var walker = @import("Walker.zig").init(alloc);
     defer walker.deinit();
