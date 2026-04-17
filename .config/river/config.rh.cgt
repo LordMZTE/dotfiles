@@ -1,18 +1,30 @@
 # This config is only for channel.  I don't use Rhine.
-keyboard {
-    layout <% opt.keyboard.layout %>
-    <! if opt.keyboard.options then !>options <% opt.keyboard.options %><! end !>
+input {
+    profiles {
+        kb {
+            keyboard {
+                layout <% opt.keyboard.layout %>
+                <! if opt.keyboard.options then !>options <% opt.keyboard.options %><! end !>
 
-    repeat {
-        rate 50
-        delay 300
+                repeat {
+                    rate 50
+                    delay 300
+                }
+            }
+        }
+        touchpad {
+            libinput {
+                # nothing natural about that crap lol
+                natural_scroll false
+                tap_to_click true
+                click_method clickfinger
+                accel_profile adaptive
+            }
+        }
     }
-}
 
-touchpad {
-    # nothing natural about that crap lol
-    natural_scroll false
-    tap_to_click true
-    click_method clickfinger
-    accel_profile adaptive
+    rules [
+        type, keyboard, kb
+        name, * Touchpad, touchpad
+    ]
 }
