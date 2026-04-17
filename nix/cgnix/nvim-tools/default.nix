@@ -32,7 +32,7 @@ let
     zls_0_15
 
     # Formatters
-    (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${nodePackages.prettier}/bin/prettier"; }]) # needed due to symlink shenanigans
+    (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${prettier}/bin/prettier"; }]) # needed due to symlink shenanigans
     fnlfmt
     nixpkgs-fmt
     rustfmt
