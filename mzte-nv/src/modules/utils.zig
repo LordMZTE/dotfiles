@@ -1,6 +1,9 @@
 const std = @import("std");
 const ffi = @import("lualib");
+const com = @import("common");
 const c = ffi.c;
+
+const iomod = @import("../io.zig");
 
 pub fn luaPush(l: *c.lua_State) void {
     ffi.ser.luaPushAny(l, .{
@@ -12,8 +15,9 @@ pub fn luaPush(l: *c.lua_State) void {
 
 /// This is basically a reimplementation of `which`.
 fn lFindInPath(l: *c.lua_State) !c_int {
+    const io = iomod.getIo(l);
     const bin = ffi.luaCheckstring(l, 1);
-    const path = std.posix.getenv("PATH") orelse return error.PathNotSet;
+    const path = com.cGetenv("PATH") orelse return error.PathNotSet;
 
     var splits = std.mem.splitScalar(u8, path, ':');
     while (splits.next()) |p| {
@@ -27,7 +31,7 @@ fn lFindInPath(l: *c.lua_State) !c_int {
         );
         defer std.heap.c_allocator.free(joined);
 
-        _ = std.fs.cwd().statFile(joined) catch |e| {
+        _ = std.Io.Dir.cwd().statFile(io, joined, .{}) catch |e| {
             if (e == error.FileNotFound)
                 continue;
 

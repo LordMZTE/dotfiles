@@ -6,7 +6,9 @@ const opts = @import("opts");
 const ffi = @import("lualib");
 const c = ffi.c;
 
-pub const version = "1.2.0";
+const io = @import("io.zig");
+
+pub const version = "1.3.0";
 
 const modules = struct {
     const cmp = @import("modules/cmp.zig");
@@ -99,6 +101,7 @@ export fn luaopen_mzte_nv(l_: ?*c.lua_State) c_int {
 
 fn lOnInit(l: *c.lua_State) !c_int {
     try @import("options.zig").initOptions();
+    io.initIo(l);
 
     c.lua_getfield(l, c.LUA_REGISTRYINDEX, reg_key);
     defer c.lua_pop(l, 1);

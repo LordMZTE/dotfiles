@@ -11,7 +11,7 @@ pub fn linkUserKeyring() !void {
         @bitCast(@as(isize, -3)), // KEY_SPEC_SESSION_KEYRING
     );
 
-    return switch (std.posix.E.init(rc)) {
+    return switch (std.posix.errno(rc)) {
         .SUCCESS => {},
         .NOKEY, .KEYEXPIRED, .KEYREVOKED, .ACCES => error.KeyError,
         else => |err| std.posix.unexpectedErrno(err),

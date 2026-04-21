@@ -1,7 +1,7 @@
 const std = @import("std");
 const lib = @import("lib");
+const c = @import("c");
 const wb = lib.wb;
-const c = lib.c;
 
 comptime {
     lib.wb.defineStandardExterns();

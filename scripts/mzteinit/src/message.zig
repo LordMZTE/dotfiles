@@ -5,7 +5,7 @@ const util = @import("util.zig");
 
 pub fn msg(comptime fmt: []const u8, args: anytype) !void {
     var buf: [512]u8 = undefined;
-    var writer = std.fs.File.stdout().writer(&buf);
+    var writer = std.Io.File.stdout().writer(std.Options.debug_io, &buf);
 
     var style: ?at.style.Style = null;
 

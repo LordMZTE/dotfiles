@@ -12,19 +12,20 @@ pub const ProcessQuery = struct {
     }
 };
 
-pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
-    var proc_dir = try std.fs.openDirAbsolute("/proc", .{ .iterate = true });
-    defer proc_dir.close();
+pub fn query(alloc: std.mem.Allocator, io: std.Io, queries: []ProcessQuery) !void {
+    var proc_dir = try std.Io.Dir.openDirAbsolute(io, "/proc", .{ .iterate = true });
+    defer proc_dir.close(io);
 
     var proc_iter = proc_dir.iterate();
-    procs: while (try proc_iter.next()) |proc| {
+    procs: while (try proc_iter.next(io)) |proc| {
         // only look at directories which represent PIDs
         for (std.fs.path.basename(proc.name)) |c|
             if (!std.ascii.isDigit(c))
                 continue :procs;
 
         var buf: [std.fs.max_path_bytes]u8 = undefined;
-        const cmdline_f = std.fs.openFileAbsolute(
+        const cmdline_f = std.Io.Dir.openFileAbsolute(
+            io,
             try std.fmt.bufPrint(&buf, "/proc/{s}/cmdline", .{proc.name}),
             .{},
         ) catch |e| switch (e) {
@@ -32,9 +33,9 @@ pub fn query(alloc: std.mem.Allocator, queries: []ProcessQuery) !void {
             error.AccessDenied => continue,
             else => return e,
         };
-        defer cmdline_f.close();
+        defer cmdline_f.close(io);
 
-        var cmdline_reader = cmdline_f.reader(&buf);
+        var cmdline_reader = cmdline_f.reader(io, &buf);
 
         // read first part of null-separated data (binary path)
         const exepath = try cmdline_reader.interface.takeDelimiter(0) orelse continue;

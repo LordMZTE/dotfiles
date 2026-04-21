@@ -2,10 +2,12 @@
 //! is then transferred to mpv via a pipe.
 //! The live_chat file must be next to the video being viewed.
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
+
+const State = @import("../State.zig");
 
 const log = std.log.scoped(.@"live-chat");
 
@@ -14,7 +16,7 @@ padding: u1 = 0,
 
 const LiveChat = @This();
 
-pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
     _ = self;
     switch (ev.event_id) {
         c.MPV_EVENT_PROPERTY_CHANGE => {
@@ -28,20 +30,22 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 if (!util.pathIsRegularFile(str)) return;
                 const fname = fname: {
                     const dot_idx = std.mem.lastIndexOfScalar(u8, str, '.') orelse return;
-                    break :fname try std.fmt.bufPrintZ(&buf, "{s}.live_chat.json", .{str[0..dot_idx]});
+                    break :fname try std.fmt.bufPrint(&buf, "{s}.live_chat.json", .{str[0..dot_idx]});
                 };
-                const file = std.fs.cwd().openFileZ(fname, .{}) catch |e| switch (e) {
+                const file = std.Io.Dir.cwd().openFile(io, fname, .{}) catch |e| switch (e) {
                     error.FileNotFound => return,
                     else => return e,
                 };
-                errdefer file.close();
+                errdefer file.close(io);
                 log.info("initializing subtitle transcoder: {s}", .{fname});
 
-                const pipe = try std.posix.pipe2(.{});
+                const pipe = try std.Io.Threaded.pipe2(.{});
 
                 // This needs to be done here instead of the separate thread. MPV will instantly
                 // give up if there's nothing to be read from the pipe when the command is called.
-                try (std.fs.File{ .handle = pipe[1] }).writeAll(
+                var writer = (std.Io.File{ .handle = pipe[1], .flags = .{ .nonblocking = false } })
+                    .writerStreaming(io, &.{});
+                try writer.interface.writeAll(
                     \\WEBVTT - MZTE-MPV transcoded live stream chat
                     \\
                     \\00:00.000 --> 00:01.000
@@ -49,6 +53,8 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                     \\
                     \\
                 );
+
+                // no need to flush, there's no buffer.
 
                 const sub_addr = try std.fmt.bufPrintZ(&buf, "fdclose://{}", .{pipe[0]});
                 try ffi.checkMpvError(c.mpv_command_async(
@@ -60,31 +66,42 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
                 // Quite stupidly, MPV will wait until the WHOLE subtitle stream is received before
                 // adding the track. We still do this in a separate thread so we don't have to
                 // buffer the WEBVTT data and MPV can concurrently decode it.
-                (try std.Thread.spawn(.{}, transcoderThread, .{ file, pipe[1] })).detach();
+                try state.job_pool.concurrent(io, tryTranscoderTask, .{ io, file, pipe[1] });
             }
         },
         else => {},
     }
 }
 
-fn transcoderThread(jsonf: std.fs.File, pipefd: std.posix.fd_t) !void {
-    defer jsonf.close();
-    var pipe = std.fs.File{ .handle = pipefd };
-    defer pipe.close();
+fn tryTranscoderTask(
+    io: std.Io,
+    jsonf: std.Io.File,
+    pipefd: std.posix.fd_t,
+) std.Io.Cancelable!void {
+    transcoderTask(io, jsonf, pipefd) catch |e| switch (e) {
+        error.Canceled => return error.Canceled,
+        else => log.err("failure in transcoder: {}", .{e}),
+    };
+}
+
+fn transcoderTask(io: std.Io, jsonf: std.Io.File, pipefd: std.posix.fd_t) !void {
+    defer jsonf.close(io);
+    var pipe = std.Io.File{ .handle = pipefd, .flags = .{ .nonblocking = false } };
+    defer pipe.close(io);
 
     var write_buf: [1024 * 4]u8 = undefined;
-    var fwriter = pipe.writerStreaming(&write_buf);
+    var fwriter = pipe.writerStreaming(io, &write_buf);
     const writer = &fwriter.interface;
 
     var read_buf: [1024 * 4]u8 = undefined;
-    var freader = jsonf.reader(&read_buf);
+    var freader = jsonf.reader(io, &read_buf);
     var reader = &freader.interface;
 
     while (reader.takeDelimiterExclusive('\n')) |line| {
-        processLine(line, writer) catch |e| {
+        processLine(line, writer) catch |e|
             log.warn("failed to parse chat entry: {}", .{e});
-        };
     } else |e| switch (e) {
+        error.ReadFailed => return freader.err orelse error.ReadFailed,
         error.EndOfStream => {},
         else => return e,
     }
@@ -184,7 +201,8 @@ fn processLine(line: []const u8, pipe: anytype) !void {
     try pipe.writeByte('\n');
 }
 
-pub fn create() LiveChat {
+pub fn create(io: std.Io) LiveChat {
+    _ = io;
     return .{};
 }
 

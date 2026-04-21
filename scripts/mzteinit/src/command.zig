@@ -17,9 +17,9 @@ pub const Command = struct {
 
     pub fn run(
         self: Command,
-        alloc: std.mem.Allocator,
+        io: std.Io,
         exit: *@import("util.zig").ExitMode,
-        env: *Mutex(std.process.EnvMap),
+        env: *Mutex(*std.process.Environ.Map),
     ) !void {
         if (std.mem.eql(u8, self.command[0], "!quit")) {
             exit.* = .delayed;
@@ -30,14 +30,15 @@ pub const Command = struct {
         if (self.exit) exit.* = .immediate;
 
         log.info("run cmd: {f}", .{common.fmt.command(self.command)});
-        var child = std.process.Child.init(self.command, alloc);
-        {
-            env.mtx.lock();
-            defer env.mtx.unlock();
-            child.env_map = &env.data;
-            try child.spawn();
-        }
-        _ = try child.wait();
+        var child = spawn: {
+            try env.mtx.lock(io);
+            defer env.mtx.unlock(io);
+            break :spawn try std.process.spawn(io, .{
+                .argv = self.command,
+                .environ_map = env.data,
+            });
+        };
+        _ = try child.wait(io);
     }
 };
 

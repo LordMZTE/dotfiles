@@ -29,7 +29,7 @@ let
     taplo
     tinymist
     vscode-langservers-extracted # cssls, eslint, html, jsonls
-    zls_0_15
+    zls_0_16
 
     # Formatters
     (pkgs.linkFarm "prettier" [{ name = "bin/prettier"; path = "${prettier}/bin/prettier"; }]) # needed due to symlink shenanigans

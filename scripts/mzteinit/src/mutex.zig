@@ -4,6 +4,6 @@ const std = @import("std");
 pub fn Mutex(comptime T: type) type {
     return struct {
         data: T,
-        mtx: std.Thread.Mutex = .{},
+        mtx: std.Io.Mutex = .init,
     };
 }

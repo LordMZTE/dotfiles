@@ -1,8 +1,5 @@
 const std = @import("std");
-
-pub const c = @cImport({
-    @cInclude("gdk-pixbuf/gdk-pixbuf.h");
-});
+const c = @import("c");
 
 pub fn checkGError(err: ?*c.GError) !void {
     if (err) |e| {

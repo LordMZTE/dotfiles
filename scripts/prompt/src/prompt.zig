@@ -1,9 +1,8 @@
 const std = @import("std");
 const at = @import("ansi-term");
-const known_folders = @import("known-folders");
 const ffi = @import("ffi.zig");
 const checkGitError = ffi.checkGitError;
-const c = ffi.c;
+const c = @import("c");
 const ViMode = @import("vi_mode.zig").ViMode;
 const Shell = @import("shell.zig").Shell;
 
@@ -39,11 +38,18 @@ pub const Options = struct {
     shell: Shell,
 };
 
-pub fn render(writer: *std.Io.Writer, options: Options) !void {
+pub fn render(
+    io: std.Io,
+    env: *std.process.Environ.Map,
+    writer: *std.Io.Writer,
+    options: Options,
+) !void {
     var renderer = Renderer{
         .last_style = null,
         .writer = writer,
         .options = options,
+        .io = io,
+        .env = env,
     };
     try renderer.render();
 }
@@ -52,6 +58,8 @@ const Renderer = struct {
     last_style: ?Style,
     writer: *std.Io.Writer,
     options: Options,
+    io: std.Io,
+    env: *std.process.Environ.Map,
 
     const Self = @This();
 
@@ -185,15 +193,12 @@ const Renderer = struct {
     }
 
     fn renderCwd(self: *Self) !void {
-        var cwd_buf: [512]u8 = undefined;
-        const cwd = try std.posix.getcwd(&cwd_buf);
-
-        const home_path = (try known_folders.getPath(std.heap.c_allocator, .home));
+        var cwd_buf: [std.Io.Dir.max_path_bytes]u8 = undefined;
+        const cwd = cwd_buf[0..try std.process.currentPath(self.io, &cwd_buf)];
 
         try self.drawLeftSep(.{ .Yellow = {} });
         var written_path = false;
-        if (home_path) |home| {
-            defer std.heap.c_allocator.free(home);
+        if (self.env.get("HOME")) |home| {
             if (std.mem.startsWith(u8, cwd, home)) {
                 try self.setStyle(.{
                     .background = .Yellow,

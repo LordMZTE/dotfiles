@@ -7,13 +7,12 @@
     .dependencies = .{
         // Setup Deps
         .ziggy = .{
-            .url = "git+https://github.com/kristoff-it/ziggy.git#4353b20ef2ac750e35c6d68e4eb2a07c2d7cf901",
-            .hash = "ziggy-0.1.0-kTg8v5pABgDztlefWHceH-Sh8tVveguFC61QkmLkIRaA",
+            .url = "git+https://github.com/kristoff-it/ziggy.git?ref=new#1d09a051b66360af0abb17ca9c1450ab9402c641",
+            .hash = "ziggy-0.1.0-kTg8v0NUBgDw02WjSWvj82KR1RRawVs0P3_6Xubfa9Os",
         },
 
         // Scripts
         .brightness = .{ .path = "scripts/brightness" },
-        .hyprtool = .{ .path = "scripts/hyprtool" },
         .mzteinit = .{ .path = "scripts/mzteinit" },
         .mzteriver = .{ .path = "scripts/mzteriver" },
         .mzteriver_classic = .{ .path = "scripts/mzteriver_classic" },

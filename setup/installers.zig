@@ -40,23 +40,24 @@ pub const InstallDepStep = struct {
     fn make(step: *std.Build.Step, options: std.Build.Step.MakeOptions) anyerror!void {
         _ = options;
         const self: *InstallDepStep = @fieldParentPtr("step", step);
+        const io = self.dep.builder.graph.io;
 
-        var dir = try std.fs.cwd().openDir(self.dep.builder.install_prefix, .{
+        var dir = try std.Io.Dir.cwd().openDir(io, self.dep.builder.install_prefix, .{
             .iterate = true,
         });
-        defer dir.close();
+        defer dir.close(io);
 
         var iter = try dir.walk(step.owner.allocator);
-        while (try iter.next()) |ent| {
+        while (try iter.next(io)) |ent| {
             const outpath = step.owner.pathJoin(&.{ step.owner.install_prefix, ent.path });
             switch (ent.kind) {
-                .directory => std.fs.cwd().makeDir(outpath) catch |e| switch (e) {
+                .directory => std.Io.Dir.cwd().createDirPath(io, outpath) catch |e| switch (e) {
                     error.PathAlreadyExists => {},
                     else => return e,
                 },
                 else => {
                     const inpath = step.owner.pathJoin(&.{ self.dep.builder.install_prefix, ent.path });
-                    try std.fs.cwd().copyFile(inpath, std.fs.cwd(), outpath, .{});
+                    try std.Io.Dir.cwd().copyFile(inpath, std.Io.Dir.cwd(), outpath, io, .{});
                 },
             }
         }

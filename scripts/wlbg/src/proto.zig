@@ -1,8 +1,9 @@
 //! Implementation of the awww IPC protocol. Awww version: 0.11.2
 const std = @import("std");
 const builtin = @import("builtin");
-const c = ffi.c;
 const cg = @import("cg");
+const posix = @import("common").posix;
+const c = @import("c");
 
 const ffi = @import("ffi.zig");
 
@@ -145,15 +146,15 @@ pub const PixelFormat = enum(u8) {
     }
 };
 
-pub fn query(state: *State) !QueryAnswer {
+pub fn query(io: std.Io, state: *State) !QueryAnswer {
     const sock = try connect(state.sockpath);
-    defer std.posix.close(sock);
+    defer _ = std.posix.system.close(sock);
 
     // send request
     {
         var iov_data = [_]u8{0} ** 16;
         std.mem.bytesAsValue(u64, iov_data[0..8]).* = 1; // "code", 1 for query
-        std.debug.assert(try std.posix.sendmsg(sock, &.{
+        std.debug.assert(try posix.sendmsg(sock, &.{
             .name = null,
             .namelen = 0,
             .iov = &.{.{ .base = &iov_data, .len = iov_data.len }},
@@ -196,10 +197,11 @@ pub fn query(state: *State) !QueryAnswer {
             // SCM_RIGHTS
             header.cmsg_type != 0x01) return error.ProtocolViolation;
         const fd = std.mem.bytesToValue(std.posix.fd_t, ancillary_buf[@sizeOf(cmsghdr)..]);
-        defer std.posix.close(fd);
+        defer _ = std.posix.system.close(fd);
 
         var read_buffer: [512]u8 = undefined;
-        var reader = (std.fs.File{ .handle = fd }).reader(&read_buffer);
+        var reader = (std.Io.File{ .handle = fd, .flags = .{ .nonblocking = false } })
+            .reader(io, &read_buffer);
         const r = &reader.interface;
 
         var ret_arena = std.heap.ArenaAllocator.init(state.alloc);
@@ -229,10 +231,10 @@ pub fn query(state: *State) !QueryAnswer {
                 else => return error.ProtocolViolation,
             };
 
-            const pixfmt = std.meta.intToEnum(
+            const pixfmt = std.enums.fromInt(
                 PixelFormat,
                 try r.takeByte(),
-            ) catch return error.ProtocolViolation;
+            ) orelse return error.ProtocolViolation;
 
             bgs[i] = .{
                 .name = name,
@@ -251,15 +253,15 @@ pub fn query(state: *State) !QueryAnswer {
     }
 }
 
-pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
-    const quer = try query(state);
+pub fn randomizeWallpapers(io: std.Io, state: *State, how: WallpaperMode) !void {
+    const quer = try query(io, state);
     defer quer.arena.deinit();
 
     const memfd = try std.posix.memfd_create("wlbg-awww-ipc", 0);
-    defer std.posix.close(memfd);
+    defer _ = std.posix.system.close(memfd);
 
     const sock = try connect(state.sockpath);
-    defer std.posix.close(sock);
+    defer _ = std.posix.system.close(sock);
 
     var ancillary_buf: [@sizeOf(cmsghdr) + @sizeOf(std.posix.fd_t)]u8 = undefined;
 
@@ -282,7 +284,8 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
         // ImgReqs
 
         var mfdwritebuf: [1024 * 1024]u8 = undefined;
-        var mfdwriter = (std.fs.File{ .handle = memfd }).writer(&mfdwritebuf);
+        var mfdwriter = (std.Io.File{ .handle = memfd, .flags = .{ .nonblocking = false } })
+            .writer(io, &mfdwritebuf);
         const wr = &mfdwriter.interface;
 
         try wr.writeAll(std.mem.toBytes(
@@ -339,10 +342,8 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
                     // GDK Pixbuf is always either RGB or RGBA
                     if (c.gdk_pixbuf_get_has_alpha(pixbuf) != 0) {
                         std.debug.assert(c.gdk_pixbuf_get_n_channels(pixbuf) == 4);
-                        var pixels: []u8 = undefined;
-                        var pixel_len: c.guint = 0;
-                        pixels.ptr = c.gdk_pixbuf_get_pixels_with_length(pixbuf, &pixel_len);
-                        pixels.len = pixel_len;
+                        const pixbuflen = c.gdk_pixbuf_get_byte_length(pixbuf);
+                        const pixels = c.gdk_pixbuf_read_pixels(pixbuf)[0..pixbuflen];
 
                         switch (outp.pixfmt) {
                             .bgra => {
@@ -487,7 +488,7 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
         std.mem.bytesAsValue(u64, iov_data[8..]).* = @truncate(mfdwriter.pos); // length of shmfd
     }
 
-    std.debug.assert(try std.posix.sendmsg(sock, &.{
+    std.debug.assert(try posix.sendmsg(sock, &.{
         .name = null,
         .namelen = 0,
         .iov = &.{.{ .base = &iov_data, .len = iov_data.len }},
@@ -498,19 +499,23 @@ pub fn randomizeWallpapers(state: *State, how: WallpaperMode) !void {
     }, 0) == 16);
 
     var resp_buf: [1024]u8 = undefined;
-    const read = try (std.fs.File{ .handle = sock }).readAll(&resp_buf);
-    if (read < 8 or std.mem.bytesToValue(u64, resp_buf[0..read][0..8]) != 5) {
+    var reader = (std.Io.File{ .handle = sock, .flags = .{ .nonblocking = false } })
+        .readerStreaming(io, &resp_buf);
+    try reader.interface.fill(8);
+    if (std.mem.bytesToValue(u64, reader.interface.buffered()[0..8]) != 5) {
         std.log.warn("daemon sent bad response to img command", .{});
     }
 }
 
 fn connect(sockpath: []const u8) !std.posix.fd_t {
-    const addr = try std.net.Address.initUnix(sockpath);
+    const addr = try std.Io.net.UnixAddress.init(sockpath);
 
-    const sock = try std.posix.socket(std.posix.AF.UNIX, std.posix.SOCK.STREAM, 0);
-    errdefer std.posix.close(sock);
+    const sock = try posix.socket(std.posix.AF.UNIX, std.posix.SOCK.STREAM, 0);
+    errdefer _ = std.posix.system.close(sock);
 
-    try std.posix.connect(sock, &addr.any, addr.getOsSockLen());
+    var posix_addr: posix.UnixAddress = undefined;
+    const addrlen = posix.addressUnixToPosix(&addr, &posix_addr);
+    try posix.connect(sock, &posix_addr.any, addrlen);
 
     return sock;
 }

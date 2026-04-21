@@ -1,5 +1,9 @@
-;<! tmpl:setPostProcessor(opt.fennelToJSON) !>
 ;; vim: ft=fennel
+<!
+    tmpl:setPostProcessor(opt.fennelToJSON)
+    -- Needed because ZLS fell victim to Zig std's default use of pread with stat.
+    tmpl:setAssumeDeterministic(true)
+!>
 {:warn_style true
  :enable_build_on_save true
  :enable_autofix true

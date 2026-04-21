@@ -1,14 +1,17 @@
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
+
+const State = @import("../State.zig");
 
 const Shuffle = @This();
 
 shuffled: bool,
 
-pub fn create() Shuffle {
+pub fn create(io: std.Io) Shuffle {
+    _ = io;
     return .{ .shuffled = false };
 }
 
@@ -21,7 +24,9 @@ pub fn deinit(self: *Shuffle) void {
     _ = self;
 }
 
-pub fn onEvent(self: *Shuffle, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *Shuffle, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
+    _ = io;
+    _ = state;
     switch (ev.event_id) {
         c.MPV_EVENT_CLIENT_MESSAGE => {
             const cmsg: *c.mpv_event_client_message = @ptrCast(@alignCast(ev.data));

@@ -1,9 +1,11 @@
 const std = @import("std");
 const common = @import("common");
-const c = ffi.c;
+const c = @import("c");
 
 const ffi = @import("ffi.zig");
 const util = @import("util.zig");
+
+const State = @import("State.zig");
 
 pub const std_options = std.Options{
     .log_level = .debug,
@@ -18,7 +20,7 @@ pub const mztecommon_opts = common.Opts{
 export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.c) c_int {
     tryMain(handle) catch |e| {
         if (@errorReturnTrace()) |ert|
-            std.debug.dumpStackTrace(ert.*);
+            std.debug.dumpErrorReturnTrace(ert);
         std.log.err("FATAL: {}\n", .{e});
         return -1;
     };
@@ -26,14 +28,23 @@ export fn mpv_open_cplugin(handle: *c.mpv_handle) callconv(.c) c_int {
 }
 
 fn tryMain(mpv: *c.mpv_handle) !void {
+    var io_impl: std.Io.Threaded = .init(std.heap.c_allocator, .{});
+    defer io_impl.deinit();
+    const io = io_impl.io();
+
+    var state: State = .{
+        .job_pool = .init,
+    };
+    defer state.job_pool.cancel(io);
+
     var modules = .{
-        @import("modules/BackgroundColor.zig").create(),
-        @import("modules/BetterTags.zig").create(),
-        @import("modules/LiveChat.zig").create(),
-        @import("modules/LocalVids.zig").create(),
-        @import("modules/SBSkip.zig").create(),
-        @import("modules/ScreenshotOpen.zig").create(),
-        @import("modules/Shuffle.zig").create(),
+        @import("modules/BackgroundColor.zig").create(io),
+        @import("modules/BetterTags.zig").create(io),
+        @import("modules/LiveChat.zig").create(io),
+        @import("modules/LocalVids.zig").create(io),
+        @import("modules/SBSkip.zig").create(io),
+        @import("modules/ScreenshotOpen.zig").create(io),
+        @import("modules/Shuffle.zig").create(io),
     };
 
     // need this weird loop here for pointer access for fields to work
@@ -51,7 +62,7 @@ fn tryMain(mpv: *c.mpv_handle) !void {
         const ev = @as(*c.mpv_event, c.mpv_wait_event(mpv, -1));
         try ffi.checkMpvError(ev.@"error");
         inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
-            try @field(modules, f).onEvent(mpv, ev);
+            try @field(modules, f).onEvent(mpv, io, &state, ev);
 
         switch (ev.event_id) {
             c.MPV_EVENT_SHUTDOWN => break,

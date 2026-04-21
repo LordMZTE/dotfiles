@@ -33,7 +33,7 @@ pub fn build(b: *std.Build) !void {
 
     const opts_path = common.confgenPath(b, "cgassets/mzte-nv-opts.zon");
     const opts_mod = b.createModule(.{
-        .root_source_file = if (std.fs.cwd().access(opts_path.cwd_relative, .{}))
+        .root_source_file = if (std.Io.Dir.cwd().access(b.graph.io, opts_path.cwd_relative, .{}))
             opts_path
         else |_|
             b.path("fallback-opts.zon"),

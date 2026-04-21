@@ -1,5 +1,6 @@
 const std = @import("std");
 const builtin = @import("builtin");
+const posix = @import("common").posix;
 
 const proto = @import("proto.zig");
 
@@ -10,15 +11,9 @@ pub const std_options = std.Options{
     .logFn = @import("common").logFn,
 };
 
-pub fn main() !void {
-    var gpa = if (builtin.mode == .Debug) std.heap.DebugAllocator(.{}).init else {};
-    defer if (builtin.mode == .Debug) {
-        _ = gpa.deinit();
-    };
-    const alloc = if (builtin.mode == .Debug) gpa.allocator() else std.heap.smp_allocator;
-
-    const wl_dpy_name = std.posix.getenv("WAYLAND_DISPLAY") orelse return error.NoDisplay;
-    const xdgrtdir = std.posix.getenv("XDG_RUNTIME_DIR") orelse return error.NoRuntimeDir;
+pub fn main(init: std.process.Init) !void {
+    const wl_dpy_name = init.environ_map.get("WAYLAND_DISPLAY") orelse return error.NoDisplay;
+    const xdgrtdir = init.environ_map.get("XDG_RUNTIME_DIR") orelse return error.NoRuntimeDir;
 
     var sockpath_buf: [std.fs.max_path_bytes]u8 = undefined;
     const sockpath = try std.fmt.bufPrintZ(
@@ -27,33 +22,36 @@ pub fn main() !void {
         .{ xdgrtdir, wl_dpy_name },
     );
 
-    var walker = @import("Walker.zig").init(alloc);
+    var walker = @import("Walker.zig").init(init.gpa);
     defer walker.deinit();
-    try walker.findWallpapers();
+    try walker.findWallpapers(init.io, init.environ_map);
 
     std.log.info("found {} wallpapers", .{walker.files.items.len});
     if (walker.files.items.len == 0) return error.NoWallpapers;
 
+    // randomSecure is actually faster in our case because Io.Threaded's random function will create
+    // it's own RNG instance and initialize it with randomSecure, wheras randomSecure uses a syscall
+    // or libc.
+    var rand_seed: u64 = undefined;
+    try init.io.randomSecure(std.mem.asBytes(&rand_seed));
+
     var state = State{
-        .alloc = alloc,
+        .alloc = init.gpa,
         .wps = walker.files.items,
-        .rand = std.Random.DefaultPrng.init(std.crypto.random.int(u64)),
+        .rand = std.Random.DefaultPrng.init(rand_seed),
         .sockpath = sockpath,
     };
 
     // Don't spawn daemon if the socket exists, one must already be running.
-    var awww_daemon = if (std.fs.cwd().statFile(sockpath)) |_|
+    var awww_daemon = if (std.Io.Dir.cwd().statFile(init.io, sockpath, .{})) |_|
         null
     else |_|
-        std.process.Child.init(&.{"awww-daemon"}, alloc);
-    if (awww_daemon) |*d| try d.spawn();
+        try std.process.spawn(init.io, .{ .argv = &.{"awww-daemon"} });
 
-    defer if (awww_daemon) |*d| {
-        _ = d.kill() catch |e| std.log.err("could not kill awww-daemon: {}", .{e});
-    };
+    defer if (awww_daemon) |*d| d.kill(init.io);
 
-    const epfd = try std.posix.epoll_create1(0);
-    defer std.posix.close(epfd);
+    const epfd: posix.EPoll = try .init();
+    defer epfd.deinit();
 
     const sigset = sigs: {
         var sigs = std.posix.sigemptyset();
@@ -67,71 +65,61 @@ pub fn main() !void {
     std.posix.sigprocmask(std.posix.SIG.BLOCK, &sigset, null);
 
     const sigfd = try std.posix.signalfd(-1, &sigset, 0);
-    defer std.posix.close(sigfd);
+    defer _ = std.posix.system.close(sigfd);
 
-    var sigfdev = std.os.linux.epoll_event{
-        .events = std.os.linux.EPOLL.IN,
-        .data = .{ .fd = sigfd },
-    };
+    try epfd.addFd(sigfd, std.os.linux.EPOLL.IN);
 
-    try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, sigfd, &sigfdev);
-
-    const refresh_tfd = try std.posix.timerfd_create(.MONOTONIC, .{});
-    defer std.posix.close(refresh_tfd);
+    const refresh_tfd: posix.TimerFd = try .init(.MONOTONIC, 0);
+    defer refresh_tfd.deinit();
 
     try resetRefreshTime(refresh_tfd);
 
-    var refresh_tfdev = std.os.linux.epoll_event{
-        .events = std.os.linux.EPOLL.IN,
-        .data = .{ .fd = refresh_tfd },
-    };
-
-    try std.posix.epoll_ctl(epfd, std.os.linux.EPOLL.CTL_ADD, refresh_tfd, &refresh_tfdev);
+    try epfd.addFd(refresh_tfd.handle, std.os.linux.EPOLL.IN);
 
     var mode = proto.WallpaperMode.random;
 
     while (true) {
         var evbuf: [32]std.os.linux.epoll_event = undefined;
-        const evs = evbuf[0..std.posix.epoll_wait(epfd, &evbuf, -1)];
+        const evs = try epfd.wait(&evbuf, -1);
 
         for (evs) |ev| {
             if (ev.data.fd == sigfd) {
                 var siginf: std.os.linux.signalfd_siginfo = undefined;
                 std.debug.assert(try std.posix.read(sigfd, std.mem.asBytes(&siginf)) == @sizeOf(std.os.linux.signalfd_siginfo));
 
-                if (siginf.signo == std.os.linux.SIG.USR1) {
+                if (siginf.signo == @intFromEnum(std.os.linux.SIG.USR1)) {
                     if (mode == .random)
-                        try proto.randomizeWallpapers(&state, .random);
-                } else if (siginf.signo == std.os.linux.SIG.USR2) {
+                        try proto.randomizeWallpapers(init.io, &state, .random);
+                } else if (siginf.signo == @intFromEnum(std.os.linux.SIG.USR2)) {
                     mode = switch (mode) {
                         .random => .dark,
                         .dark => .random,
                     };
                     if (mode == .dark)
-                        try proto.randomizeWallpapers(&state, .dark)
+                        try proto.randomizeWallpapers(init.io, &state, .dark)
                     else
                         try resetRefreshTime(refresh_tfd);
                 } else {
                     std.log.info("got signal {}, exiting", .{siginf.signo});
                     return;
                 }
-            } else if (ev.data.fd == refresh_tfd) {
+            } else if (ev.data.fd == refresh_tfd.handle) {
                 var tfd_buf: [@sizeOf(usize)]u8 = undefined;
-                std.debug.assert(try std.posix.read(refresh_tfd, &tfd_buf) == tfd_buf.len);
+                std.debug.assert(try std.posix.read(refresh_tfd.handle, &tfd_buf) == tfd_buf.len);
                 if (mode == .random)
-                    proto.randomizeWallpapers(&state, .random) catch |e|
+                    proto.randomizeWallpapers(init.io, &state, .random) catch |e|
                         std.log.warn("changing wallpapers: {}", .{e});
             }
         }
     }
 }
 
-fn resetRefreshTime(tfd: std.os.linux.fd_t) !void {
-    try std.posix.timerfd_settime(tfd, .{}, &.{
-        .it_value = .{ .sec = 1, .nsec = 0 },
-        .it_interval = .{
+fn resetRefreshTime(tfd: posix.TimerFd) !void {
+    try tfd.setTime(
+        .{ .sec = 1, .nsec = 0 },
+        .{
             .sec = std.time.s_per_min * 5, // refresh every 5 minutes
             .nsec = 0,
         },
-    }, null);
+    );
 }

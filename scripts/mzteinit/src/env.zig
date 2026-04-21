@@ -12,7 +12,7 @@ const log = std.log.scoped(.env);
 
 /// Initialize the environment.
 /// Returns true if the environment should be transferred to the system daemon.
-pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
+pub fn populateEnvironment(alloc: std.mem.Allocator, io: std.Io, env: *std.process.Environ.Map) !bool {
     try msg("loading environment...", .{});
     // buffer for building values for env vars
     var buf: [1024 * 8]u8 = undefined;
@@ -23,10 +23,10 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     if (env.get("MZTE_ENV_SET")) |_|
         return false;
 
-    const alloc = env.hash_map.allocator;
-    const home = if (env.get("HOME")) |home| try alloc.dupe(u8, home) else blk: {
+    var home_buf: [std.Io.Dir.max_path_bytes]u8 = undefined;
+    const home = env.get("HOME") orelse default_home: {
         log.warn("Home not set, defaulting to current directory", .{});
-        break :blk try std.fs.realpathAlloc(alloc, ".");
+        break :default_home home_buf[0..try std.Io.Dir.cwd().realPath(io, &home_buf)];
     };
     defer alloc.free(home);
 
@@ -49,8 +49,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
         // racket bins
         racket: {
             try msg("acquiring racket binary path...", .{});
-            const res = std.process.Child.run(.{
-                .allocator = alloc,
+            const res = std.process.run(alloc, io, .{
                 .argv = &.{
                     "racket",
                     "-l",
@@ -109,6 +108,7 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     // set shell to nu to prevent anything from defaulting to mzteinit
     if (try util.findInPath(
         alloc,
+        io,
         env.get("PATH") orelse unreachable,
         "nu",
     )) |nu| {
@@ -165,36 +165,6 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
 
         // use xdg-desktop-portal
         try env.put("GTK_USE_PORTAL", "1");
-
-        // icon path
-        icons: {
-            try msg("building $ICONPATH...", .{});
-            const path = "/usr/share/icons/candy-icons";
-            var dir = std.fs.openDirAbsolute(path, .{ .iterate = true }) catch {
-                log.warn(
-                    "Couldn't open candy-icons directory @ `{s}`, not setting ICONPATH",
-                    .{path},
-                );
-                break :icons;
-            };
-            defer dir.close();
-
-            var bufstream = std.Io.Writer.fixed(&buf);
-            var b = common.DelimitedWriter{ .writer = &bufstream, .delimiter = ':' };
-
-            var iter = dir.iterate();
-            while (try iter.next()) |entry| {
-                if (entry.kind != .directory)
-                    continue;
-
-                const dpath = try std.fs.path.join(alloc, &.{ path, entry.name });
-                defer alloc.free(dpath);
-
-                try b.push(dpath);
-            }
-
-            try env.put("ICONPATH", bufstream.buffered());
-        }
     }
 
     // Rofi path
@@ -223,23 +193,23 @@ pub fn populateEnvironment(env: *std.process.EnvMap) !bool {
     return true;
 }
 
-pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
-    if (try sysdaemon.getCurrentSystemDaemon() != .systemd)
+pub fn populateSysdaemonEnvironment(alloc: std.mem.Allocator, io: std.Io, env: *const std.process.Environ.Map) !void {
+    if (try sysdaemon.getCurrentSystemDaemon(io) != .systemd)
         return;
 
     try msg("updating SystemD environment...", .{});
 
-    var argv = try std.ArrayListUnmanaged([]const u8).initCapacity(env.hash_map.allocator, env.count() + 3);
-    defer argv.deinit(env.hash_map.allocator);
+    var argv = try std.ArrayListUnmanaged([]const u8).initCapacity(alloc, env.count() + 3);
+    defer argv.deinit(alloc);
 
-    var arg_arena = std.heap.ArenaAllocator.init(env.hash_map.allocator);
+    var arg_arena = std.heap.ArenaAllocator.init(alloc);
     defer arg_arena.deinit();
 
-    try argv.appendSlice(env.hash_map.allocator, &.{ "systemctl", "--user", "set-environment" });
+    try argv.appendSlice(alloc, &.{ "systemctl", "--user", "set-environment" });
 
     var env_iter = env.iterator();
     while (env_iter.next()) |entry| {
-        try argv.append(env.hash_map.allocator, try std.fmt.allocPrint(
+        try argv.append(alloc, try std.fmt.allocPrint(
             arg_arena.allocator(),
             "{s}={s}",
             .{ entry.key_ptr.*, entry.value_ptr.* },
@@ -248,10 +218,10 @@ pub fn populateSysdaemonEnvironment(env: *const std.process.EnvMap) !void {
 
     log.debug("sysdaemon env cmd: {f}", .{common.fmt.command(argv.items)});
 
-    var child = std.process.Child.init(argv.items, env.hash_map.allocator);
-    const term = try child.spawnAndWait();
+    var child = try std.process.spawn(io, .{ .argv = argv.items, .environ_map = env });
+    const term = try child.wait(io);
 
-    if (!std.meta.eql(term, .{ .Exited = 0 })) {
+    if (!std.meta.eql(term, .{ .exited = 0 })) {
         log.warn("Failed setting system environment, process exited with {}", .{term});
     }
 }

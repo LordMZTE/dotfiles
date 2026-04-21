@@ -1,8 +1,10 @@
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 const ansiterm = @import("ansi-term");
 
 const ffi = @import("../ffi.zig");
+
+const State = @import("../State.zig");
 
 const BetterTags = @This();
 
@@ -12,7 +14,8 @@ const log = std.log.scoped(.@"better-tags");
 // a comptime var or something.
 _placeholder: u1 = 0,
 
-pub fn create() BetterTags {
+pub fn create(io: std.Io) BetterTags {
+    _ = io;
     return .{};
 }
 
@@ -26,19 +29,20 @@ pub fn setup(self: *BetterTags, mpv: *c.mpv_handle) !void {
     ));
 }
 
-pub fn onEvent(self: *BetterTags, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *BetterTags, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
+    _ = state;
     switch (ev.event_id) {
         c.MPV_EVENT_PROPERTY_CHANGE => {
             const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
             if (std.mem.orderZ(u8, evprop.name, "metadata") == .eq) {
-                try self.onMetaChange(mpv);
+                try self.onMetaChange(mpv, io);
             }
         },
         else => {},
     }
 }
 
-fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
+fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle, io: std.Io) !void {
     _ = self;
     var meta_node: c.mpv_node = undefined;
     ffi.checkMpvError(c.mpv_get_property(
@@ -91,7 +95,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle) !void {
     }
 
     var out_buf: [1024]u8 = undefined;
-    var out_fw = std.fs.File.stdout().writer(&out_buf);
+    var out_fw = std.Io.File.stdout().writer(io, &out_buf);
     const out = &out_fw.interface;
 
     const textwidth = 100;

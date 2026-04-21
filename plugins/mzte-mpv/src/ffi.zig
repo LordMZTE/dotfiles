@@ -1,7 +1,5 @@
 const std = @import("std");
-pub const c = @cImport({
-    @cInclude("mpv/client.h");
-});
+const c = @import("c");
 
 pub fn checkMpvError(err: c_int) !void {
     if (err >= 0)

@@ -2,11 +2,7 @@ const std = @import("std");
 
 pub const ser = @import("ser.zig");
 
-pub const c = @cImport({
-    @cInclude("lua.h");
-    @cInclude("lualib.h");
-    @cInclude("lauxlib.h");
-});
+pub const c = @import("c");
 
 /// Generates a wrapper function with error handling for a lua CFunction
 /// func should be `fn(*c.lua_State) !c_int` ()
@@ -18,11 +14,13 @@ pub fn luaFunc(comptime func: anytype) c.lua_CFunction {
                 var fbs = std.Io.Writer.fixed(&buf);
                 fbs.print("Zig Error: {t}\n", .{e}) catch @panic("OOM");
                 if (@errorReturnTrace()) |ert| {
-                    std.debug.writeStackTrace(
-                        ert.*,
-                        &fbs,
-                        std.debug.getSelfDebugInfo() catch @panic("WTF"),
-                        .no_color,
+                    const term: std.Io.Terminal = .{
+                        .writer = &fbs,
+                        .mode = .no_color,
+                    };
+                    std.debug.writeErrorReturnTrace(
+                        ert,
+                        term,
                     ) catch @panic("OOM");
                 }
 

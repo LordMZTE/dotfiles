@@ -1,9 +1,11 @@
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 const cg = @import("cg");
 
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
+
+const State = @import("../State.zig");
 
 const BackgroundColor = @This();
 
@@ -29,7 +31,8 @@ const Background = enum(u8) {
 
 bg: Background,
 
-pub fn create() BackgroundColor {
+pub fn create(io: std.Io) BackgroundColor {
+    _ = io;
     return .{ .bg = .transparent };
 }
 
@@ -43,7 +46,9 @@ pub fn deinit(self: *BackgroundColor) void {
     _ = self;
 }
 
-pub fn onEvent(self: *BackgroundColor, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *BackgroundColor, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
+    _ = io;
+    _ = state;
     // TODO: dedupe this
     switch (ev.event_id) {
         c.MPV_EVENT_CLIENT_MESSAGE => {

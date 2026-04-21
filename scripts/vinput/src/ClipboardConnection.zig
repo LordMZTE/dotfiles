@@ -51,8 +51,8 @@ const PopupWindow = struct {
         const size = stride * height; // 1x1x4 bytes
 
         const memfd = try std.posix.memfd_create("surface_shm", 0);
-        defer std.posix.close(memfd);
-        try std.posix.ftruncate(memfd, size);
+        defer _ = std.posix.system.close(memfd);
+        if (std.posix.system.ftruncate(memfd, size) != 0) return error.OutOfMemory;
 
         const shm_pool = try cc.shm.createPool(memfd, size);
         errdefer shm_pool.destroy();
@@ -222,9 +222,10 @@ pub fn serveContent(self: *ClipboardConnection, data: []const u8) !void {
             switch (ev) {
                 .send => |send| {
                     log.info("sending data", .{});
-                    var file = std.fs.File{ .handle = send.fd };
-                    defer file.close();
-                    file.writeAll(ds.data) catch |e| {
+                    var file = std.Io.File{ .handle = send.fd, .flags = .{ .nonblocking = false } };
+                    defer file.close(std.Options.debug_io);
+                    var writer = file.writerStreaming(std.Options.debug_io, &.{});
+                    writer.interface.writeAll(ds.data) catch |e| {
                         log.err("unable to send clipboard content: {}", .{e});
                     };
                 },

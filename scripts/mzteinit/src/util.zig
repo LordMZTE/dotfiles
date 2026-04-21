@@ -10,7 +10,7 @@ pub inline fn updateStyle(writer: *std.Io.Writer, current: *?at.style.Style, new
     current.* = new;
 }
 
-pub fn findInPath(alloc: std.mem.Allocator, path: []const u8, bin: []const u8) !?[]const u8 {
+pub fn findInPath(alloc: std.mem.Allocator, io: std.Io, path: []const u8, bin: []const u8) !?[]const u8 {
     var splits = std.mem.splitScalar(u8, path, ':');
     while (splits.next()) |p| {
         const trimmed = std.mem.trim(u8, p, " \n\r");
@@ -22,7 +22,7 @@ pub fn findInPath(alloc: std.mem.Allocator, path: []const u8, bin: []const u8) !
             &.{ trimmed, bin },
         );
 
-        _ = std.fs.cwd().statFile(joined) catch |e| {
+        _ = std.Io.Dir.cwd().statFile(io, joined, .{}) catch |e| {
             alloc.free(joined);
             switch (e) {
                 error.FileNotFound, error.AccessDenied => continue,

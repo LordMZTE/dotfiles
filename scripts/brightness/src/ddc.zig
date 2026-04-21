@@ -1,5 +1,5 @@
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 
 const ffi = @import("ffi.zig");
 
@@ -8,7 +8,8 @@ const log = std.log.scoped(.ddc);
 const brightness_featurecode: c.DDCA_Vcp_Feature_Code = 0x10;
 const brightness_maxvalue: u8 = 100;
 
-pub fn setBrightness(alloc: std.mem.Allocator, brightness: u8) !void {
+pub fn setBrightness(io: std.Io, alloc: std.mem.Allocator, brightness: u8) !void {
+    _ = io;
     _ = alloc;
     log.info("ddcutil {s}", .{c.ddca_ddcutil_extended_version_string()});
     try ffi.checkDDCAError(c.ddca_init2(

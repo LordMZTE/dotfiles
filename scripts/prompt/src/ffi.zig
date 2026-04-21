@@ -1,8 +1,5 @@
 const std = @import("std");
-
-pub const c = @cImport({
-    @cInclude("git2.h");
-});
+const c = @import("c");
 
 pub fn checkGitError(errno: c_int) !void {
     if (errno < 0) {

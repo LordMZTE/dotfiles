@@ -1,8 +1,10 @@
 const std = @import("std");
-const c = ffi.c;
+
 const opts = @import("opts");
 
 const ffi = @import("../ffi.zig");
+const c = @import("c");
+const State = @import("../State.zig");
 const util = @import("../util.zig");
 
 const log = std.log.scoped(.@"local-vids");
@@ -28,13 +30,16 @@ set_path_to: ?[:0]u8,
 /// property anymore.
 last_stream_open_filename: ?[:0]u8,
 
-pub fn create() LocalVids {
+io: std.Io,
+
+pub fn create(io: std.Io) LocalVids {
     return .{
         // initialized in setup
         .old_watch_later = null,
         .vids_dir = null,
         .set_path_to = null,
         .last_stream_open_filename = null,
+        .io = io,
     };
 }
 
@@ -51,7 +56,7 @@ pub fn setup(self: *LocalVids, mpv: *c.mpv_handle) !void {
 }
 
 pub fn deinit(self: *LocalVids) void {
-    self.handleDeletionOnExit() catch |e| {
+    self.handleDeletionOnExit(self.io) catch |e| {
         log.err("deletion handler failed: {}", .{e});
     };
 
@@ -61,7 +66,9 @@ pub fn deinit(self: *LocalVids) void {
     if (self.last_stream_open_filename) |l| std.heap.c_allocator.free(l);
 }
 
-pub fn onEvent(self: *LocalVids, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *LocalVids, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
+    _ = io;
+    _ = state;
     switch (ev.event_id) {
         c.MPV_EVENT_HOOK => {
             // When we get an on_before_start_file hook, we check if we're playing a regular file and then find a
@@ -138,10 +145,12 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
     }
 
     var path_buf: [std.fs.max_path_bytes]u8 = undefined;
-    const path = std.fs.realpath(filename, &path_buf) catch |e| {
+    const path_len = std.Io.Dir.cwd().realPathFile(self.io, filename, &path_buf) catch |e| {
         log.warn("couldn't resolve filename '{s}': {}", .{ filename, e });
         return;
     };
+
+    const path = path_buf[0..path_len];
 
     var dir = std.fs.path.dirname(path) orelse ".";
     var subpath_buf: [std.fs.max_path_bytes]u8 = undefined;
@@ -149,7 +158,7 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
     // find vids dir
     while (true) {
         const guess = try std.fmt.bufPrintZ(&subpath_buf, "{s}/" ++ vids_dirname, .{dir});
-        if (std.fs.cwd().statFile(guess)) |_| {
+        if (std.Io.Dir.cwd().statFile(self.io, guess, .{})) |_| {
             if (self.vids_dir) |v| std.heap.c_allocator.free(v);
             self.vids_dir = try std.heap.c_allocator.dupeZ(u8, guess);
             break;
@@ -207,14 +216,14 @@ fn onLoad(self: *LocalVids, mpv: *c.mpv_handle) !void {
     }
 }
 
-fn handleDeletionOnExit(self: *LocalVids) !void {
+fn handleDeletionOnExit(self: *LocalVids, io: std.Io) !void {
     // If we're not in a vids dir or don't know a path, we don't ask the user if they want to delete
     // the file.
     if (self.vids_dir == null or self.last_stream_open_filename == null) return;
 
-    if (try promptForDeletion(self.last_stream_open_filename.?)) {
+    if (try promptForDeletion(io, self.last_stream_open_filename.?)) {
         log.info("deleting: '{s}'\n", .{self.last_stream_open_filename.?});
-        try std.fs.cwd().deleteFile(self.last_stream_open_filename.?);
+        try std.Io.Dir.cwd().deleteFile(self.io, self.last_stream_open_filename.?);
 
         // Also delete the live_chat file from yt-dlp if present
         if (std.mem.lastIndexOfScalar(u8, self.last_stream_open_filename.?, '.')) |dot_idx| {
@@ -225,7 +234,7 @@ fn handleDeletionOnExit(self: *LocalVids) !void {
                 .{self.last_stream_open_filename.?[0..dot_idx]},
             );
 
-            std.fs.cwd().deleteFile(livechat_fname) catch |e| switch (e) {
+            std.Io.Dir.cwd().deleteFile(io, livechat_fname) catch |e| switch (e) {
                 error.FileNotFound => {},
                 else => return e,
             };
@@ -247,7 +256,6 @@ fn resetWatchLater(self: *LocalVids, mpv: *c.mpv_handle) !void {
 }
 
 fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) ![]const u8 {
-    _ = self;
     if (std.mem.eql(u8, raw_filename, "!rand")) {
         var files: std.ArrayListUnmanaged([]const u8) = .empty;
         defer {
@@ -258,7 +266,7 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
         }
 
         // 1. Collect all regular files in CWD into a list
-        try collectFilesInCWD(&files);
+        try collectFilesInCWD(self.io, &files);
 
         if (files.items.len == 0) {
             log.err("Random file was requested but directory is empty!", .{});
@@ -266,7 +274,8 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
         }
 
         // 2. Pick a random one
-        const idx = std.crypto.random.uintLessThan(usize, files.items.len);
+        var rand: std.Random.IoSource = .{ .io = self.io };
+        const idx = rand.interface().uintLessThan(usize, files.items.len);
         const file = files.items[idx];
 
         log.info("chose random file '{s}'", .{file});
@@ -285,7 +294,7 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
         }
 
         // 1. Collect all regular files in CWD into a list
-        try collectFilesInCWD(&files);
+        try collectFilesInCWD(self.io, &files);
 
         const file = std.sort.min([]const u8, files.items, {}, fnameLessThanByIdx) orelse {
             log.err("Next file was requested but directory is empty!", .{});
@@ -301,11 +310,11 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
     return raw_filename;
 }
 
-fn collectFilesInCWD(into: *std.ArrayListUnmanaged([]const u8)) !void {
-    var cur_dir = try std.fs.cwd().openDir(".", .{ .iterate = true });
-    defer cur_dir.close();
+fn collectFilesInCWD(io: std.Io, into: *std.ArrayListUnmanaged([]const u8)) !void {
+    var cur_dir = try std.Io.Dir.cwd().openDir(io, ".", .{ .iterate = true });
+    defer cur_dir.close(io);
     var iter = cur_dir.iterate();
-    while (try iter.next()) |ent| {
+    while (try iter.next(io)) |ent| {
         if (ent.kind != .file) continue;
 
         // filter out yt-dlp live chat
@@ -363,9 +372,9 @@ fn fnameLessThanByIdx(_: void, a: []const u8, b: []const u8) bool {
     return false; // both null
 }
 
-fn promptForDeletion(file: []const u8) !bool {
+fn promptForDeletion(io: std.Io, file: []const u8) !bool {
     var buf: [64]u8 = undefined;
-    var writer = std.fs.File.stdout().writer(&buf);
+    var writer = std.Io.File.stdout().writer(io, &buf);
     try writer.interface.print("delete file '{s}'? [Y/N] ", .{file});
     try writer.interface.flush();
 
@@ -376,7 +385,8 @@ fn promptForDeletion(file: []const u8) !bool {
     defer std.posix.tcsetattr(std.posix.STDIN_FILENO, .NOW, old_termios) catch {};
 
     var answer: [1]u8 = undefined;
-    std.debug.assert(try std.fs.File.stdin().read(&answer) == 1);
+    var reader = std.Io.File.stdin().reader(io, &answer);
+    try reader.interface.fill(1);
     const ret = switch (answer[0]) {
         'y', 'Y' => true,
         else => false,

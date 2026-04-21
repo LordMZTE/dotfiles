@@ -19,7 +19,7 @@
 
 ;; Functions
 ((builtin_identifier) @include
-  (#any-of? @include "@import" "@cImport")
+  (#eq? @include "@import")
   (#set! conceal ""))
 
 ;; Common Variables

@@ -12,19 +12,27 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const lualib = b.addModule("lualib", .{
-        .root_source_file = b.path("lualib/main.zig"),
-        .link_libc = true,
+    const lua_translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("lua.h"),
         .target = target,
         .optimize = optimize,
     });
 
-    lualib.linkSystemLibrary("luajit", .{});
+    lua_translate_c.linkSystemLibrary("luajit", .{});
+
+    _ = b.addModule("lualib", .{
+        .root_source_file = b.path("lualib/main.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{ .name = "c", .module = lua_translate_c.createModule() },
+        },
+    });
 }
 
 pub fn confgenPath(b: *std.Build, subpath: []const u8) std.Build.LazyPath {
     const path = std.fs.path.join(b.allocator, &.{
-        std.posix.getenv("HOME") orelse @panic("HOME not set"),
+        b.graph.environ_map.get("HOME") orelse @panic("HOME not set"),
         "confgenfs",
         subpath,
     }) catch @panic("OOM");
@@ -32,8 +40,8 @@ pub fn confgenPath(b: *std.Build, subpath: []const u8) std.Build.LazyPath {
     return .{ .cwd_relative = path };
 }
 
-pub fn findRepoRoot(alloc: std.mem.Allocator) ![:0]const u8 {
-    if (std.fs.cwd().access(".git", .{})) |_|
+pub fn findRepoRoot(b: *std.Build, alloc: std.mem.Allocator) ![:0]const u8 {
+    if (std.Io.Dir.cwd().access(b.graph.io, ".git", .{})) |_|
         return try alloc.dupeZ(u8, ".")
     else |err| if (err != error.FileNotFound) return err;
 

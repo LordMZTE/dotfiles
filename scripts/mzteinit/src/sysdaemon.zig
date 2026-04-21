@@ -1,4 +1,4 @@
-//! Utilities regarding the system daemon (systemd)
+//! Utilities regarding the system daemon (such as systemd)
 
 const std = @import("std");
 
@@ -7,7 +7,7 @@ pub const SystemDaemon = enum {
     systemd,
 };
 
-pub fn getCurrentSystemDaemon() !SystemDaemon {
+pub fn getCurrentSystemDaemon(io: std.Io) !SystemDaemon {
     const cache = struct {
         var daemon: ?SystemDaemon = null;
     };
@@ -15,7 +15,11 @@ pub fn getCurrentSystemDaemon() !SystemDaemon {
     if (cache.daemon) |d|
         return d;
 
-    const systemd_stat: ?std.fs.File.Stat = std.fs.cwd().statFile("/etc/systemd") catch |e| switch (e) {
+    const systemd_stat: ?std.Io.File.Stat = std.Io.Dir.cwd().statFile(
+        io,
+        "/etc/systemd",
+        .{},
+    ) catch |e| switch (e) {
         error.FileNotFound => null,
         else => return e,
     };

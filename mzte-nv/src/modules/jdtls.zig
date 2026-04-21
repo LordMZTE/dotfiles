@@ -2,9 +2,12 @@
 //! for setting up nvim-jdtls
 const std = @import("std");
 const opts = @import("opts");
+const com = @import("common");
 
 const ffi = @import("lualib");
 const c = ffi.c;
+
+const iomod = @import("../io.zig");
 
 pub fn luaPush(l: *c.lua_State) void {
     ffi.ser.luaPushAny(l, .{
@@ -40,8 +43,9 @@ const runtime_map = [_]Runtime{
 };
 
 fn lFindRuntimes(l: *c.lua_State) !c_int {
+    const io = iomod.getIo(l);
     const jvmpath = if (@hasField(@TypeOf(opts), "nix")) opts.nix.jvm else "/usr/lib/jvm";
-    var jvmdir = std.fs.openDirAbsolute(jvmpath, .{ .iterate = true }) catch |e| switch (e) {
+    var jvmdir = std.Io.Dir.openDirAbsolute(io, jvmpath, .{ .iterate = true }) catch |e| switch (e) {
         error.FileNotFound => {
             std.log.warn("JVM Path @ '{s}' does not exist! Not registering any runtimes!", .{jvmpath});
             c.lua_newtable(l);
@@ -49,14 +53,14 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
         },
         else => return e,
     };
-    defer jvmdir.close();
+    defer jvmdir.close(io);
 
     c.lua_newtable(l);
 
     var buf: [512]u8 = undefined;
     var idx: c_int = 1;
     var iter = jvmdir.iterate();
-    while (try iter.next()) |jvm| {
+    while (try iter.next(io)) |jvm| {
         if ((jvm.kind != .directory and jvm.kind != .sym_link) or
             !std.mem.startsWith(u8, jvm.name, "java-"))
             continue;
@@ -87,7 +91,8 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
 ///
 /// https://github.com/dgileadi/vscode-java-decompiler/tree/master/server
 fn lGetBundleInfo(l: *c.lua_State) !c_int {
-    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
+    const home = com.cGetenv("HOME") orelse return error.HomeNotSet;
+    const io = iomod.getIo(l);
 
     const bundle_path = try std.fs.path.join(
         std.heap.c_allocator,
@@ -96,7 +101,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     );
     defer std.heap.c_allocator.free(bundle_path);
 
-    var dir = std.fs.cwd().openDir(bundle_path, .{ .iterate = true }) catch |e| {
+    var dir = std.Io.Dir.cwd().openDir(io, bundle_path, .{ .iterate = true }) catch |e| {
         if (e == error.FileNotFound) {
             // Just return an empty table if the bundles dir doesn't exist
             ffi.ser.luaPushAny(l, .{
@@ -108,7 +113,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
 
         return e;
     };
-    defer dir.close();
+    defer dir.close(io);
 
     // return value
     c.lua_newtable(l);
@@ -119,7 +124,7 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
     var has_cfr = false;
     var iter = dir.iterate();
     var idx: c_int = 1;
-    while (try iter.next()) |f| {
+    while (try iter.next(io)) |f| {
         if (!std.mem.endsWith(u8, f.name, ".jar"))
             continue;
 
@@ -150,10 +155,13 @@ fn lGetBundleInfo(l: *c.lua_State) !c_int {
 }
 
 fn lGetDirs(l: *c.lua_State) !c_int {
-    const home = std.posix.getenv("HOME") orelse return error.HomeNotSet;
+    const home = com.cGetenv("HOME") orelse return error.HomeNotSet;
+    const io = iomod.getIo(l);
 
     var cwd_buf: [256]u8 = undefined;
-    const cwd_basename = std.fs.path.basename(try std.posix.getcwd(&cwd_buf));
+    const cwd_basename = std.fs.path.basename(
+        cwd_buf[0..try std.process.currentPath(io, &cwd_buf)],
+    );
 
     const config_path = try std.fs.path.joinZ(
         std.heap.c_allocator,

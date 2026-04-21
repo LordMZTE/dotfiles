@@ -83,7 +83,7 @@ let
     };
     patchPhase = "cd mzte-nv";
 
-    nativeBuildInputs = with pkgs; [ zig_0_15.hook makeBinaryWrapper ];
+    nativeBuildInputs = with pkgs; [ zig_0_16.hook makeBinaryWrapper ];
     buildInputs = with pkgs; [ pkg-config luajit ];
 
     zigBuildFlags = [ "-Dcompiler-only" ];

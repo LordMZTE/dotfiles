@@ -18,38 +18,36 @@ const browsers = &[_][]const u8{
     "chromium",
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const alloc = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const alloc = init.gpa;
 
     var queries: [browsers.len]info.ProcessQuery = undefined;
     for (browsers, &queries) |b, *q|
         q.* = .{ .name = b };
 
-    try info.query(alloc, &queries);
+    try info.query(alloc, init.io, &queries);
     defer for (&queries) |*q| q.deinit(alloc);
 
     for (queries) |q| {
         if (q.found_exepath) |path| {
             std.log.info("found running browser: {s}", .{path});
 
-            try start(q.name, alloc);
+            try start(alloc, init.io, init.minimal.args.vector, q.name);
             return;
         }
     }
 
     std.log.info("no running browser, using first choice", .{});
-    try start(browsers[0], alloc);
+    try start(alloc, init.io, init.minimal.args.vector, browsers[0]);
 }
 
-fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
+fn start(alloc: std.mem.Allocator, io: std.Io, this_argv: []const [*:0]const u8, browser: []const u8,) !void {
     // args to browser will be same length as argv
-    const argv = try alloc.alloc([]const u8, std.os.argv.len);
+    const argv = try alloc.alloc([]const u8, this_argv.len);
     defer alloc.free(argv);
     argv[0] = browser;
 
-    for (std.os.argv[1..], argv[1..]) |arg, *childarg| {
+    for (this_argv[1..], argv[1..]) |arg, *childarg| {
         childarg.* = std.mem.span(arg);
     }
 
@@ -64,6 +62,6 @@ fn start(browser: []const u8, alloc: std.mem.Allocator) !void {
 
     std.log.info("child argv: {f}", .{common.fmt.command(argv)});
 
-    var child = std.process.Child.init(argv, alloc);
-    _ = try child.spawnAndWait();
+    var child = try std.process.spawn(io, .{ .argv = argv });
+    _ = try child.wait(io);
 }

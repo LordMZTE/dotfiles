@@ -10,7 +10,11 @@ pub fn build(b: *std.Build) !void {
 
     const zargs = .{ .target = target, .optimize = optimize };
 
-    const opts = try Options.parseConfig(b.allocator);
+    const opts = try Options.parseConfig(
+        b.allocator,
+        b.graph.io,
+        b.graph.environ_map.get("HOME") orelse return error.HomeNotSet,
+    );
 
     // Symlink Scripts
     inst.addScript(b, opts, "pluto.jl", "pluto");
@@ -18,7 +22,6 @@ pub fn build(b: *std.Build) !void {
 
     // Scripts
     inst.addZBuild(b, opts, zargs, "brightness");
-    inst.addZBuild(b, opts, zargs, "hyprtool");
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");
     inst.addZBuild(b, opts, zargs, "mzteriver_classic");

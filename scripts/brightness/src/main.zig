@@ -6,8 +6,7 @@ pub const std_options = std.Options{
     .logFn = common.logFn,
 };
 
-pub fn main() !u8 {
-    const alloc = std.heap.c_allocator;
+pub fn main(init: std.process.Init) !u8 {
     const opts = args.parseForCurrentProcess(struct {
         @"no-sysfs": bool = false,
         @"no-ddc": bool = false,
@@ -16,7 +15,7 @@ pub fn main() !u8 {
             .s = "no-sysfs",
             .d = "no-ddc",
         };
-    }, alloc, .print) catch return 1;
+    }, init, .print) catch return 1;
     defer opts.deinit();
 
     if (opts.positionals.len != 1) {
@@ -29,8 +28,8 @@ pub fn main() !u8 {
         return 1;
     };
 
-    if (!opts.options.@"no-sysfs") try @import("sysfs.zig").setBrightness(alloc, brightness);
-    if (!opts.options.@"no-ddc") try @import("ddc.zig").setBrightness(alloc, brightness);
+    if (!opts.options.@"no-sysfs") try @import("sysfs.zig").setBrightness(init.io, init.gpa, brightness);
+    if (!opts.options.@"no-ddc") try @import("ddc.zig").setBrightness(init.io, init.gpa, brightness);
 
     return 0;
 }

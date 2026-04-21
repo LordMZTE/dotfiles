@@ -3,6 +3,7 @@ const root = @import("root");
 
 pub const fmt = @import("fmt.zig");
 pub const paths = @import("paths.zig");
+pub const posix = @import("posix.zig");
 
 pub const DelimitedWriter = @import("DelimitedWriter.zig");
 
@@ -15,7 +16,10 @@ const opts: Opts = if (@hasDecl(root, "mztecommon_opts")) root.mztecommon_opts e
 
 var stderr_isatty: ?bool = null;
 
-pub var log_file: ?std.fs.File = null;
+pub var log_file: ?struct {
+    file: std.Io.File,
+    io: std.Io,
+} = null;
 
 pub fn logFn(
     comptime level: std.log.Level,
@@ -26,17 +30,19 @@ pub fn logFn(
     const logfile = log_file; // Copied here to pretend this is atomic.
 
     const color = log_file == null and stderr_isatty orelse blk: {
-        const isatty = std.posix.isatty(std.posix.STDERR_FILENO);
+        const isatty = std.Io.File.stderr().isTty(std.Options.debug_io) catch
+            // This can only return error.Cancelled
+            return;
         stderr_isatty = isatty;
         break :blk isatty;
     };
 
     var writebuf: [512]u8 = undefined;
     var writer = if (logfile) |f| fwriter: {
-        var fwriter = f.writerStreaming(&writebuf);
+        var fwriter = f.file.writerStreaming(f.io, &writebuf);
         break :fwriter &fwriter.interface;
-    } else std.debug.lockStderrWriter(&writebuf);
-    defer if (logfile == null) std.debug.unlockStderrWriter();
+    } else &std.debug.lockStderr(&writebuf).file_writer.interface;
+    defer if (logfile == null) std.debug.unlockStderr();
 
     if (opts.log_clear_line) {
         writer.writeAll("\x1b[2K\r") catch {};
@@ -71,4 +77,9 @@ pub fn logFn(
     }
 
     writer.flush() catch {};
+}
+
+/// A thin wrapper around libc getenv.
+pub fn cGetenv(name: [*:0]const u8) ?[:0]const u8 {
+    return std.mem.span(std.c.getenv(name) orelse return null);
 }

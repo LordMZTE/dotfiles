@@ -17,23 +17,23 @@ pub const std_options = std.Options{
     .logFn = common.logFn,
 };
 
-pub fn main() void {
-    common.log_file = createLogFile() catch null;
-    defer if (common.log_file) |lf| lf.close();
+pub fn main(init: std.process.Init) void {
+    if (createLogFile(init.io)) |logf| {
+        common.log_file = .{ .io = init.io, .file = logf };
+    } else |e| {
+        std.log.warn("Couldn't create logfile: {}", .{e});
+    }
+    defer if (common.log_file) |lf| lf.file.close(init.io);
 
-    tryMain() catch |e| {
+    tryMain(init) catch |e| {
         std.log.err("FATAL ERROR: {}", .{e});
         if (@errorReturnTrace()) |trace| {
             var buf: [1024 * 8]u8 = undefined;
             const trace_s = s: {
-                const deb_inf = std.debug.getSelfDebugInfo() catch break :s null;
-
                 var fbs = std.Io.Writer.fixed(&buf);
-                std.debug.writeStackTrace(
-                    trace.*,
-                    &fbs,
-                    deb_inf,
-                    .no_color,
+                std.debug.writeErrorReturnTrace(
+                    trace,
+                    .{ .writer = &fbs, .mode = .no_color },
                 ) catch break :s null;
                 break :s fbs.buffered();
             };
@@ -44,56 +44,47 @@ pub fn main() void {
         }
         std.debug.print("Encountered fatal error (check log), starting emergency shell!\n", .{});
 
-        @panic(@errorName(std.posix.execveZ(
-            "/bin/sh",
-            &[_:null]?[*:0]const u8{"/bin/sh"},
-            &[_:null]?[*:0]const u8{},
-        )));
+        @panic(@errorName(std.process.replace(init.io, .{
+            .argv = &.{"/bin/sh"},
+        })));
     };
 }
 
-fn tryMain() !void {
-    var stdout_f = std.fs.File.stdout();
+fn tryMain(init: std.process.Init) !void {
+    var stdout_f = std.Io.File.stdout();
     var stdout_buf: [1024]u8 = undefined;
-    var stdout = stdout_f.writer(&stdout_buf);
+    var stdout = stdout_f.writer(init.io, &stdout_buf);
 
-    var dbg_alloc = if (builtin.mode == .Debug) std.heap.DebugAllocator(.{}){} else {};
-    defer if (builtin.mode == .Debug) {
-        _ = dbg_alloc.deinit();
-    };
-
-    const alloc = if (builtin.mode == .Debug) dbg_alloc.allocator() else std.heap.smp_allocator;
+    const alloc = init.gpa;
 
     var launch_cmd: ?[][]const u8 = null;
     defer if (launch_cmd) |cmd| alloc.free(cmd);
 
-    if (std.os.argv.len >= 2) {
-        if (!std.mem.eql(u8, std.mem.span(std.os.argv[1]), "cmd") or std.os.argv.len < 3)
+    if (init.minimal.args.vector.len >= 2) {
+        if (!std.mem.eql(u8, std.mem.span(init.minimal.args.vector[1]), "cmd") or
+            init.minimal.args.vector.len < 3)
             return error.InvalidCommand;
 
-        launch_cmd = try alloc.alloc([]const u8, std.os.argv[2..].len);
-        for (launch_cmd.?, std.os.argv[2..]) |*arg, arg_in| {
+        launch_cmd = try alloc.alloc([]const u8, init.minimal.args.vector[2..].len);
+        for (launch_cmd.?, init.minimal.args.vector[2..]) |*arg, arg_in| {
             arg.* = std.mem.span(arg_in);
         }
     }
 
-    var env_map = Mutex(std.process.EnvMap){
-        .data = try std.process.getEnvMap(alloc),
+    var env_map: Mutex(*std.process.Environ.Map) = .{
+        .data = init.environ_map,
     };
-    defer env_map.data.deinit();
 
     if (env_map.data.get("MZTEINIT")) |_| {
         try stdout.interface.writeAll("mzteinit running already, starting shell\n");
         try stdout.interface.flush();
-        var child = std.process.Child.init(launch_cmd orelse &.{"nu"}, alloc);
-        _ = try child.spawnAndWait();
-        return;
+        return std.process.replace(init.io, .{ .argv = launch_cmd orelse &.{"nu"} });
     } else {
         try env_map.data.put("MZTEINIT", "1");
     }
 
-    if (try env.populateEnvironment(&env_map.data)) {
-        env.populateSysdaemonEnvironment(&env_map.data) catch |e| {
+    if (try env.populateEnvironment(alloc, init.io, env_map.data)) {
+        env.populateSysdaemonEnvironment(alloc, init.io, env_map.data) catch |e| {
             std.log.err("failed to set sysdaemon environment: {}", .{e});
         };
     }
@@ -102,6 +93,7 @@ fn tryMain() !void {
         std.log.err("failed to link user keyring: {} ", .{e});
 
     var srv: ?Server = null;
+    var srv_future: ?std.Io.Future(Server.RunError!void) = null;
     if (env_map.data.get("XDG_RUNTIME_DIR")) |xrd| {
         var sockaddr_buf: [std.fs.max_path_bytes]u8 = undefined;
         const sockaddr = try std.fmt.bufPrintZ(
@@ -112,31 +104,32 @@ fn tryMain() !void {
 
         try msg("starting socket server @ {s}...", .{sockaddr});
 
-        srv = try Server.init(alloc, sockaddr, &env_map);
-        errdefer srv.?.ss.deinit();
-        (try std.Thread.spawn(.{}, Server.run, .{&srv.?})).detach();
+        srv = try Server.init(alloc, init.io, sockaddr, &env_map);
+        errdefer srv.?.ss.deinit(init.io);
+        srv_future = try init.io.concurrent(Server.run, .{&srv.?});
+        errdefer srv_future.?.cancel(init.io) catch {};
 
         std.log.info("socket server started @ {s}", .{sockaddr});
 
-        env_map.mtx.lock();
-        defer env_map.mtx.unlock();
+        try env_map.mtx.lock(init.io);
+        defer env_map.mtx.unlock(init.io);
 
         try env_map.data.put("MZTEINIT_SOCKET", sockaddr);
     } else {
         std.log.warn("XDG_RUNTIME_DIR is not set, no socket server will be started!", .{});
     }
-    defer if (srv) |*s| s.ss.deinit();
+    defer if (srv) |*s| s.ss.deinit(init.io);
+    defer if (srv_future) |*fut| fut.cancel(init.io) catch {};
 
     if (launch_cmd) |cmd| {
         try msg("using launch command", .{});
-        var child = std.process.Child.init(cmd, alloc);
-        {
-            env_map.mtx.lock();
-            defer env_map.mtx.unlock();
-            child.env_map = &env_map.data;
-            try child.spawn();
-        }
-        _ = try child.wait();
+        var child = spawn: {
+            try env_map.mtx.lock(init.io);
+            defer env_map.mtx.unlock(init.io);
+            break :spawn try std.process.spawn(init.io, .{ .argv = cmd, .environ_map = env_map.data });
+        };
+
+        _ = try child.wait(init.io);
         return;
     }
 
@@ -149,10 +142,11 @@ fn tryMain() !void {
 
     std.log.info("entries file: {s}", .{entries_config_path});
 
-    var entries_config_file = try std.fs.cwd().openFile(entries_config_path, .{});
-    defer entries_config_file.close();
+    var entries_config_file = try std.Io.Dir.cwd().openFile(init.io, entries_config_path, .{});
+    defer entries_config_file.close(init.io);
 
-    const entries_config_data = try entries_config_file.readToEndAlloc(alloc, std.math.maxInt(usize));
+    var entries_config_reader = entries_config_file.reader(init.io, &.{});
+    const entries_config_data = try entries_config_reader.interface.allocRemaining(alloc, .unlimited);
     defer alloc.free(entries_config_data);
 
     const entries = try command.parseEntriesConfig(alloc, entries_config_data);
@@ -165,7 +159,7 @@ fn tryMain() !void {
     while (true) {
         try stdout.interface.writeAll(util.ansi_clear);
 
-        const cmd = ui(&stdout.interface, entries) catch |e| {
+        const cmd = ui(init.io, &stdout.interface, entries) catch |e| {
             std.debug.print("Error rendering the UI: {}\n", .{e});
             return e;
         };
@@ -174,7 +168,7 @@ fn tryMain() !void {
         try stdout.interface.flush();
 
         var exit = util.ExitMode.run;
-        cmd.run(alloc, &exit, &env_map) catch |e| {
+        cmd.run(init.io, &exit, &env_map) catch |e| {
             try stdout.interface.print("Error running command: {}\n\n", .{e});
             continue;
         };
@@ -183,16 +177,16 @@ fn tryMain() !void {
             .run => {},
             .immediate => return,
             .delayed => {
-                try stdout.interface.writeAll("Goodbye!");
+                try stdout.interface.writeAll("Goodbye!\n");
                 try stdout.interface.flush();
-                std.Thread.sleep(2 * std.time.ns_per_s);
+                try init.io.sleep(.fromSeconds(2), .awake);
                 return;
             },
         }
     }
 }
 
-fn ui(w: *std.Io.Writer, entries: []command.Command) !command.Command {
+fn ui(io: std.Io, w: *std.Io.Writer, entries: []command.Command) !command.Command {
     var style: ?at.style.Style = null;
 
     try @import("figlet.zig").writeFiglet(w);
@@ -235,7 +229,8 @@ fn ui(w: *std.Io.Writer, entries: []command.Command) !command.Command {
     var cmd: ?command.Command = null;
     var c: [1]u8 = undefined;
     while (cmd == null) {
-        std.debug.assert(try std.fs.File.stdin().read(&c) == 1);
+        var reader = std.Io.File.stdin().readerStreaming(io, &c);
+        try reader.interface.fill(1);
         if (c[0] == '#') {
             return error.ManualEmergency;
         }
@@ -256,14 +251,14 @@ fn ui(w: *std.Io.Writer, entries: []command.Command) !command.Command {
     return cmd.?;
 }
 
-fn createLogFile() !std.fs.File {
+fn createLogFile(io: std.Io) !std.Io.File {
     var fname_buf: [128]u8 = undefined;
     const fname = try std.fmt.bufPrintZ(
         &fname_buf,
         "/tmp/mzteinit-{}-{}.log",
         .{ std.os.linux.getuid(), std.os.linux.getpid() },
     );
-    return try std.fs.createFileAbsoluteZ(fname, .{});
+    return try std.Io.Dir.createFileAbsolute(io, fname, .{});
 }
 
 fn updateStyle(

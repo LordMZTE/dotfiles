@@ -9,11 +9,22 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("c.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    translate_c.linkSystemLibrary("gdk-pixbuf-2.0", .{});
+
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
+        .imports = &.{
+            .{ .name = "c", .module = translate_c.createModule() },
+        },
     });
 
     const exe = b.addExecutable(.{
@@ -25,8 +36,6 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     }).module("common"));
-    mod.linkSystemLibrary("wayland-client", .{});
-    mod.linkSystemLibrary("gdk-pixbuf-2.0", .{});
 
     mod.addAnonymousImport("cg", .{
         .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),

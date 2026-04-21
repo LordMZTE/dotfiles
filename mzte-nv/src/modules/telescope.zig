@@ -29,9 +29,9 @@ fn lPathTransformerClosure(l: *c.lua_State) !c_int {
     const prefix = "jdt://contents/";
     if (std.mem.startsWith(u8, path, prefix)) {
         var buf: [1024 * 4]u8 = undefined;
-        var fbs = std.io.fixedBufferStream(&buf);
-        if (transformJdtlsURI(path, fbs.writer())) {
-            ffi.luaPushString(l, fbs.getWritten());
+        var writer: std.Io.Writer = .fixed(&buf);
+        if (transformJdtlsURI(path, &writer)) {
+            ffi.luaPushString(l, writer.buffered());
         } else |e| {
             std.log.err("transforming JDTLS URI: {}", .{e});
             ffi.luaPushString(l, path);
@@ -51,8 +51,7 @@ fn transformJdtlsURI(uri_str: []const u8, writer: anytype) !void {
         switch (uri.path) {
             inline else => |s| s,
         },
-    ) catch
-        unreachable; // this can only error on windows lol
+    );
 
     _ = fname_iter.next() orelse return error.InvalidPath; // name of the JAR
 

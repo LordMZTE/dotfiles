@@ -9,14 +9,25 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("c.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    translate_c.linkSystemLibrary("gtk+-3.0", .{});
+
+    const translate_c_mod = translate_c.createModule();
+
     const lib_mod = b.createModule(.{
         .root_source_file = b.path("lib/main.zig"),
         .link_libc = true,
         .target = target,
         .optimize = optimize,
+        .imports = &.{
+            .{ .name = "c", .module = translate_c_mod },
+        },
     });
-
-    lib_mod.linkSystemLibrary("gtk+-3.0", .{});
 
     const common_mod = b.dependency("common", .{
         .target = target,
@@ -31,6 +42,7 @@ pub fn build(b: *std.Build) void {
             .imports = &.{
                 .{ .name = "lib", .module = lib_mod },
                 .{ .name = "common", .module = common_mod },
+                .{ .name = "c", .module = translate_c_mod },
             },
         });
 

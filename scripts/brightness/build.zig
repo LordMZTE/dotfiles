@@ -4,6 +4,14 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("c.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    translate_c.linkSystemLibrary("ddcutil", .{});
+
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
@@ -20,17 +28,16 @@ pub fn build(b: *std.Build) void {
                 .target = target,
                 .optimize = optimize,
             }).module("args"),
+        }, .{
+            .name = "c",
+            .module = translate_c.createModule(),
         } },
         .link_libc = true,
     });
 
-    mod.linkSystemLibrary("ddcutil", .{});
-
     const exe = b.addExecutable(.{
         .root_module = mod,
         .name = "brightness",
-        // TODO https://github.com/ziglang/zig/issues/24364
-        .use_llvm = true,
     });
 
     b.installArtifact(exe);

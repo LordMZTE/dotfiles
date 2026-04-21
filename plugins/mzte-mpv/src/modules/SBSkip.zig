@@ -1,8 +1,10 @@
 const std = @import("std");
-const c = ffi.c;
+const c = @import("c");
 
 const ffi = @import("../ffi.zig");
 const util = @import("../util.zig");
+
+const State = @import("../State.zig");
 
 const log = std.log.scoped(.@"sb-skip");
 
@@ -22,7 +24,9 @@ const blacklist = std.StaticStringMap(void).initComptime(.{
     .{ "Unpaid/Self Promotion", {} },
 });
 
-pub fn onEvent(self: *SBSkip, mpv: *c.mpv_handle, ev: *c.mpv_event) !void {
+pub fn onEvent(self: *SBSkip, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
+    _ = io;
+    _ = state;
     switch (ev.event_id) {
         c.MPV_EVENT_PROPERTY_CHANGE => {
             const evprop: *c.mpv_event_property = @ptrCast(@alignCast(ev.data));
@@ -144,7 +148,8 @@ pub fn setup(self: *SBSkip, mpv: *c.mpv_handle) !void {
     try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "chapter", c.MPV_FORMAT_INT64));
 }
 
-pub fn create() SBSkip {
+pub fn create(io: std.Io) SBSkip {
+    _ = io;
     return .{
         .skipped_chapters = .empty,
     };

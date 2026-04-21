@@ -11,28 +11,42 @@ pub const std_options = std.Options{
     .logFn = @import("common").logFn,
 };
 
-pub fn main() !void {
-    if (std.os.argv.len != 2) {
+pub const fnl_env_var = "MZTE_NV_FENNEL";
+
+pub fn main(init: std.process.Init) !void {
+    var arg_iter = try init.minimal.args.iterateAllocator(init.gpa);
+    defer arg_iter.deinit();
+
+    var argv0: ?[]const u8 = null;
+    const maybe_input_arg = arg: {
+        argv0 = arg_iter.next() orelse break :arg null;
+        const arg = arg_iter.next() orelse break :arg null;
+        if (arg_iter.skip()) break :arg null; // too many args
+        break :arg arg;
+    };
+
+    const input_arg = maybe_input_arg orelse {
         log.err(
-            \\Usage: {s} [dir]
+            \\Usage: {?s} [dir]
             \\
             \\`dir` is a path to a normal lua neovim configuration
             \\(or any other path containing lua files.)
         ,
-            .{std.os.argv[0]},
+            .{argv0},
         );
 
         return error.InvalidArgs;
-    }
+    };
 
-    const input_arg = std.mem.span(std.os.argv[1]);
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    try doCompile(input_arg, gpa.allocator());
+    try doCompile(input_arg, init.io, init.gpa, init.environ_map.get(fnl_env_var));
 }
 
-pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
+pub fn doCompile(
+    path: []const u8,
+    io: std.Io,
+    alloc: std.mem.Allocator,
+    fnl_path: ?[]const u8,
+) !void {
     const l = c.luaL_newstate();
     defer c.lua_close(l);
 
@@ -47,8 +61,7 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     ffi.luaPushString(l, if (@hasField(@TypeOf(opts), "nix"))
         opts.nix.@"fennel.lua"
     else
-        (std.posix.getenv("MZTE_NV_FENNEL") orelse
-            "/usr/share/lua/5.4/fennel.lua"));
+        (fnl_path orelse "/usr/share/lua/5.4/fennel.lua"));
     c.lua_concat(l, 3);
     c.lua_setfield(l, -2, "path");
     c.lua_pop(l, 1);
@@ -82,14 +95,14 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
     var files: std.ArrayListUnmanaged([]const u8) = .empty;
     defer files.deinit(alloc);
 
-    if ((try std.fs.cwd().statFile(path)).kind == .directory) {
-        var dir = try std.fs.cwd().openDir(path, .{ .iterate = true });
-        defer dir.close();
+    if ((try std.Io.Dir.cwd().statFile(io, path, .{})).kind == .directory) {
+        var dir = try std.Io.Dir.cwd().openDir(io, path, .{ .iterate = true });
+        defer dir.close(io);
 
         var walker = try dir.walk(alloc);
         defer walker.deinit();
 
-        while (try walker.next()) |entry| {
+        while (try walker.next(io)) |entry| {
             const entry_path = try std.fs.path.join(build_alloc, &.{ path, entry.path });
 
             switch (entry.kind) {
@@ -135,10 +148,16 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
             // replace file extension
             @memcpy(outname[outname.len - 3 ..], "lua");
 
-            var file = try std.fs.cwd().openFile(luafile, .{});
-            defer file.close();
+            var file = try std.Io.Dir.cwd().openFile(io, luafile, .{});
+            defer file.close(io);
+
+            var reader = file.reader(io, &.{});
+
             // 16 MB better be enough
-            const data = try file.readToEndAlloc(build_alloc, 1024 * 1024 * 16);
+            const data = try reader.interface.allocRemaining(
+                build_alloc,
+                .limited(1024 * 1024 * 16),
+            );
 
             // fennel.compile-string
             c.lua_getfield(l, -3, "compile-string");
@@ -188,9 +207,9 @@ pub fn doCompile(path: []const u8, alloc: std.mem.Allocator) !void {
 
         const outdata = ffi.luaToString(l, -1);
 
-        var outfile = try std.fs.cwd().createFile(outname, .{});
-        defer outfile.close();
-        try outfile.writeAll(outdata);
+        var outfile = try std.Io.Dir.cwd().createFile(io, outname, .{});
+        defer outfile.close(io);
+        try outfile.writeStreamingAll(io, outdata);
 
         if (is_fennel) {
             n_fnl += 1;
