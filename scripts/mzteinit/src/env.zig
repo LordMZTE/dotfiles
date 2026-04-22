@@ -26,9 +26,8 @@ pub fn populateEnvironment(alloc: std.mem.Allocator, io: std.Io, env: *std.proce
     var home_buf: [std.Io.Dir.max_path_bytes]u8 = undefined;
     const home = env.get("HOME") orelse default_home: {
         log.warn("Home not set, defaulting to current directory", .{});
-        break :default_home home_buf[0..try std.Io.Dir.cwd().realPath(io, &home_buf)];
+        break :default_home home_buf[0..try std.process.currentPath(io, &home_buf)];
     };
-    defer alloc.free(home);
 
     // PATH
     {
