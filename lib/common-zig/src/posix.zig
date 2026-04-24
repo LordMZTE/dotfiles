@@ -8,7 +8,7 @@ pub const EPoll = struct {
 
     pub fn init() !EPoll {
         const epfd = std.posix.system.epoll_create1(0);
-        switch (std.posix.errno(epfd)) {
+        switch (std.posix.system.errno(epfd)) {
             .SUCCESS => {},
             .MFILE => return error.ProcessFdQuoteExceeded,
             .NFILE => return error.SystemFdQuoteExceeded,
@@ -30,7 +30,7 @@ pub const EPoll = struct {
         };
 
         const rc = std.os.linux.epoll_ctl(self.handle, std.os.linux.EPOLL.CTL_ADD, fd, &ev);
-        switch (std.posix.errno(rc)) {
+        switch (std.os.linux.errno(rc)) {
             .SUCCESS => {},
             .EXIST => return error.FileDescriptorAlreadyRegistered,
             .LOOP => return error.Loop,
@@ -45,13 +45,16 @@ pub const EPoll = struct {
         buf: []std.os.linux.epoll_event,
         timeout: i32,
     ) ![]std.os.linux.epoll_event {
-        const rc = std.os.linux.epoll_wait(self.handle, buf.ptr, @intCast(buf.len), timeout);
-        switch (std.posix.errno(rc)) {
-            .SUCCESS => {},
-            .INTR => return error.Timeout,
-            else => |errno| return std.posix.unexpectedErrno(errno),
+        while (true) {
+            const rc = std.os.linux.epoll_wait(self.handle, buf.ptr, @intCast(buf.len), timeout);
+            switch (std.os.linux.errno(rc)) {
+                .SUCCESS => {},
+                .INTR => continue,
+                else => |errno| return std.posix.unexpectedErrno(errno),
+            }
+
+            return buf[0..rc];
         }
-        return buf[0..rc];
     }
 };
 
@@ -60,7 +63,7 @@ pub const TimerFd = struct {
 
     pub fn init(clock: std.posix.system.timerfd_clockid_t, flags: c_int) !TimerFd {
         const rc = std.posix.system.timerfd_create(clock, flags);
-        switch (std.posix.errno(rc)) {
+        switch (std.posix.system.errno(rc)) {
             .SUCCESS => {},
             .MFILE => return error.ProcessFdQuoteExceeded,
             .NFILE => return error.SystemFdQuoteExceeded,
@@ -81,7 +84,7 @@ pub const TimerFd = struct {
             .it_interval = interval,
         }, null);
 
-        switch (std.posix.errno(rc)) {
+        switch (std.posix.system.errno(rc)) {
             .SUCCESS => {},
             else => |errno| return std.posix.unexpectedErrno(errno),
         }
@@ -90,7 +93,7 @@ pub const TimerFd = struct {
 
 pub fn socket(domain: u32, socket_type: u32, protocol: u32) !std.posix.fd_t {
     const rc = std.posix.system.socket(domain, socket_type, protocol);
-    switch (std.posix.errno(rc)) {
+    switch (std.posix.system.errno(rc)) {
         .SUCCESS => {},
         .AFNOSUPPORT => return error.AddressFamilyUnsupported,
         .MFILE => return error.ProcessFdQuoteExceeded,
@@ -104,7 +107,7 @@ pub fn socket(domain: u32, socket_type: u32, protocol: u32) !std.posix.fd_t {
 
 pub fn connect(sockfd: std.posix.fd_t, sockaddr: *const std.posix.sockaddr, addrlen: u32) !void {
     const rc = std.posix.system.connect(sockfd, sockaddr, addrlen);
-    switch (std.posix.errno(rc)) {
+    switch (std.posix.system.errno(rc)) {
         .SUCCESS => {},
         .ADDRNOTAVAIL => return error.AddressNotAvailable,
         .AFNOSUPPORT => return error.AddressFamilyUnsupported,
@@ -159,7 +162,7 @@ pub fn addressUnixToPosix(a: *const std.Io.net.UnixAddress, storage: *UnixAddres
 pub fn sendmsg(fd: std.posix.fd_t, msg: *const std.posix.msghdr_const, flags: u32) !usize {
     const rc = std.posix.system.sendmsg(fd, msg, flags);
 
-    switch (std.posix.errno(rc)) {
+    switch (std.posix.system.errno(rc)) {
         .SUCCESS => {},
         .AGAIN => return error.WouldBlock,
         .CONNRESET => return error.ConnectionReset,
