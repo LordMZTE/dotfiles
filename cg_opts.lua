@@ -105,7 +105,10 @@ cg.opt.matrix = {
 
 cg.opt.keyboard = {
     layout = "de",
-    options = nil, -- for example "caps:swapescape"
+    options = {
+        -- you could add, for example { "caps:swapescape" }
+        "compose:menu",
+    },
 }
 
 local ctp_rgb = {}

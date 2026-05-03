@@ -4,7 +4,7 @@ input {
         kb {
             keyboard {
                 layout <% opt.keyboard.layout %>
-                <! if opt.keyboard.options then !>options <% opt.keyboard.options %><! end !>
+                <! if #opt.keyboard.options > 0 then !>options <% table.concat(opt.keyboard.options, ",") %><! end !>
 
                 repeat {
                     rate 50
