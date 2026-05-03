@@ -5,19 +5,19 @@
 end !>
 
 <! local function modspec(mods) !>
-{<! for _, k in ipairs(mods) do !>.<% k %> = true,<! end !>}<! end !>
+{<! for _, k in ipairs(mods) do !>"<% k %>": true,<! end !>}<! end !>
 
 <! local function ctrlKey(spec, action) !>
-{ .key = "<% spec[2] %>", .mods = <! modspec(spec[1]) !>, .action = <% action %> }<! end !>
+.{ .key = "<% spec[2] %>", .mods = <! modspec(spec[1]) !>, .action = <% action %> }<! end !>
 
-.cursor = {
+.cursor = .{
     .theme = "<% opt.cursor.theme %>",
     .size = <% opt.cursor.size %>,
 },
 
-.pointer_warp = "window",
+.pointer_warp = .window,
 
-.borders = {
+.borders = .{
     .width = 2,
     .base_color = "<% opt.catppuccin.sky %>80",
     .focus_color = "<% opt.catppuccin.red %>ff",
@@ -26,41 +26,38 @@ end !>
 
 .keybinds = [
     <! for keydat, cmd in pairs(wm.launch_keys) do !>
-    { .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = Spawn { .argv = ["sh", "-c", "<% ziggyEscape(cmd) %>"] } },<! end !>
+    .{ .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = .spawn(["sh", "-c", "<% ziggyEscape(cmd) %>"]) },<! end !>
 
-    <! ctrlKey(wm.control_keys.quit, "Quit {}") !>,
-    <! ctrlKey(wm.control_keys.close_window, "CloseWindow {}") !>,
-    <! ctrlKey(wm.control_keys.fullscreen, "ToggleWindowFullscreen {}") !>,
+    <! ctrlKey(wm.control_keys.quit, ".quit") !>,
+    <! ctrlKey(wm.control_keys.close_window, ".close_window") !>,
+    <! ctrlKey(wm.control_keys.fullscreen, ".toggle_window_fullscreen") !>,
 
 
-    { .key = "j", .mods = { .meta = true }, .action = FocusWindow { .direction = "next" } },
-    { .key = "k", .mods = { .meta = true }, .action = FocusWindow { .direction = "prev" } },
-    { .key = "j", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "next" } },
-    { .key = "k", .mods = { .meta = true, .shift = true }, .action = MoveWindow { .direction = "prev" } },
-    { .key = "Return", .mods = { .meta = true, .shift = true }, .action = SwapTop {} },
-    { .key = "period", .mods = { .meta = true }, .action = FocusOutput { .direction = "next" } },
-    { .key = "comma", .mods = { .meta = true }, .action = FocusOutput { .direction = "prev" } },
-    { .key = "period", .mods = { .meta = true, .shift = true }, .action = MoveWindowOutput { .direction = "next" } },
-    { .key = "comma", .mods = { .meta = true, .shift = true }, .action = MoveWindowOutput { .direction = "prev" } },
-    { .key = "q", .mods = { .meta = true, .shift = true }, .action = CloseWindow {} },
-    { .key = "e", .mods = { .meta = true, .shift = true }, .action = Quit {} },
-    { .key = "f", .mods = { .meta = true }, .action = ToggleWindowFullscreen {} },
+    .{ .key = "j", .mods = .{ .meta = true }, .action = .focus_window(.next) },
+    .{ .key = "k", .mods = .{ .meta = true }, .action = .focus_window(.prev) },
+    .{ .key = "j", .mods = .{ .meta = true, .shift = true }, .action = .move_window(.next) },
+    .{ .key = "k", .mods = .{ .meta = true, .shift = true }, .action = .move_window(.prev) },
+    .{ .key = "Return", .mods = .{ .meta = true, .shift = true }, .action = .swap_top },
+    .{ .key = "period", .mods = .{ .meta = true }, .action = .focus_output(.next) },
+    .{ .key = "comma", .mods = .{ .meta = true }, .action = .focus_output(.prev) },
+    .{ .key = "period", .mods = .{ .meta = true, .shift = true }, .action = .move_window_output(.next) },
+    .{ .key = "comma", .mods = .{ .meta = true, .shift = true }, .action = .move_window_output(.prev) },
 
     <! local mask = 1; for i = 1, 9 do !>
-    { .key = "<% i %>", .mods = { .meta = true, .shift = true }, .action = SetWindowTags { .to = <% mask %> } },
-    { .key = "<% i %>", .mods = { .meta = true, .shift = true, .ctrl = true }, .action = AddWindowTags { .tags = <% mask %> } },
+    .{ .key = "<% i %>", .mods = .{ .meta = true, .shift = true }, .action = .set_window_tags(<% mask %>) },
+    .{ .key = "<% i %>", .mods = .{ .meta = true, .shift = true, .ctrl = true }, .action = .add_window_tags(<% mask %>) },
     <! mask = mask * 2; end !>
 ],
 
-.layouts = {
-    .focus = {
+.layouts = .{
+    .focus = .{
         .keybinds = [
-            { .key = "l", .mods = { .meta = true }, .action = ResizePrimaryDirectional { .by = 16 } },
-            { .key = "h", .mods = { .meta = true }, .action = ResizePrimaryDirectional { .by = -16 } },
-            { .key = "Up", .mods = { .meta = true }, .action = SetDirection { .to = "up" } },
-            { .key = "Down", .mods = { .meta = true }, .action = SetDirection { .to = "down" } },
-            { .key = "Left", .mods = { .meta = true }, .action = SetDirection { .to = "left" } },
-            { .key = "Right", .mods = { .meta = true }, .action = SetDirection { .to = "right" } },
+            .{ .key = "l", .mods = .{ .meta = true }, .action = .resize_primary_directional(16) },
+            .{ .key = "h", .mods = .{ .meta = true }, .action = .resize_primary_directional(-16) },
+            .{ .key = "Up", .mods = .{ .meta = true }, .action = .set_direction(.up) },
+            .{ .key = "Down", .mods = .{ .meta = true }, .action = .set_direction(.down) },
+            .{ .key = "Left", .mods = .{ .meta = true }, .action = .set_direction(.left) },
+            .{ .key = "Right", .mods = .{ .meta = true }, .action = .set_direction(.right) },
         ],
     },
 }
