@@ -43,7 +43,10 @@ let
     html-tidy
     nix-update # nix-update.nvim
     nurl # nix-update.nvim
+
+    # arborist.nvim
     tree-sitter
+    gcc
   ];
 in
 {

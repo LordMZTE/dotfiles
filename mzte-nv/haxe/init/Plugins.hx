@@ -20,7 +20,7 @@ class Plugins {
             new PCatppuccin(), // avoid flicker of default theme
             new LuaPlugin("inlay-hint"), // same reason as lspconf
             new LuaPlugin("lspconf"), // loaded on startup for LSP in files opened in command
-            new LuaPlugin("treesitter"), // enable TS in files opened in command
+            new LuaPlugin("arborist"), // enable TS in files opened in command
         ];
         this.deferredPlugins = [cast(new PNu(), IPlugin)].concat([
             "cmp",
