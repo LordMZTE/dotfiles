@@ -1,6 +1,10 @@
 $env.config = {
     show_banner: false
 
+    filesize: {
+        unit: binary
+    }
+
     table: {
         mode: compact_double
         padding: { left: 0, right: 0 }
