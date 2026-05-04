@@ -61,6 +61,7 @@ function M.moduleConfig()
         conf["cffi/mzterwm-title"] = {
             module_path = module_path,
             mode = "title",
+            max_len = max_length,
         }
     elseif cg.opt.wayland_compositor == "river-classic" then
         conf["river/tags"] = {
