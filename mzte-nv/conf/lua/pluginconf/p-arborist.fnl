@@ -8,4 +8,5 @@
                  ;; good idea?  People...
                  :prefer_wasm false
                  :install_popular false
+                 :compiler [:zig :cc]
                  : overrides})
