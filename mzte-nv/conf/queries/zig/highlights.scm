@@ -1,7 +1,6 @@
 ; extends
 
 ;; Keywords
-(("async" @keyword) (#set! conceal "󰜨"))
 (("const" @keyword) (#set! conceal ""))
 (("else" @keyword) (#set! conceal ""))
 (("enum" @keyword) (#set! conceal ""))
