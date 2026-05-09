@@ -15,3 +15,11 @@ setup-nvim-config:
 .PHONY: run-confgen
 run-confgen:
 	confgen confgen.lua cgout
+
+.PHONY: full-update
+full-update:
+	$(MAKE) setup-nix
+	systemctl --user restart confgenfs
+	sleep 2
+	$(MAKE) run-confgen
+	$(MAKE) install-scripts setup-nvim-config
