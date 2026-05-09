@@ -28,10 +28,7 @@ let
     #  url = "https://git.mzte.de/nvim-plugins/nvim-treesitter.git";
     #  ref = "main";
     #};
-    "30-arborist" = fetchGit {
-      url = "https://git.mzte.de/nvim-plugins/arborist.nvim.git";
-      ref = "dev";
-    };
+    "30-arborist" = plugin "arborist.nvim";
     "30-ts-textobjects" = fetchGit {
       url = "https://git.mzte.de/nvim-plugins/nvim-treesitter-textobjects.git";
       ref = "main";

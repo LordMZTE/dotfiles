@@ -45,7 +45,15 @@ let
     nurl # nix-update.nvim
 
     # arborist.nvim
-    tree-sitter
+    (symlinkJoin {
+      name = "tree-sitter-wrapped";
+      paths = [ tree-sitter ];
+      nativeBuildInputs = [ makeBinaryWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/tree-sitter \
+          --set CC "zig cc"
+      '';
+    })
   ];
 in
 {
