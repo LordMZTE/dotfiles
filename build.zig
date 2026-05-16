@@ -20,7 +20,7 @@ pub fn build(b: *std.Build) !void {
     inst.addScript(b, opts, "pluto.jl", "pluto");
     inst.addScript(b, opts, "videos-duration.sh", "videos-duration");
 
-    // Scripts
+    // Zig build Scripts
     inst.addZBuild(b, opts, zargs, "brightness");
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");
@@ -29,6 +29,9 @@ pub fn build(b: *std.Build) !void {
     inst.addZBuild(b, opts, zargs, "prompt");
     inst.addZBuild(b, opts, zargs, "vinput");
     inst.addZBuild(b, opts, zargs, "wlbg");
+
+    // Other scripts
+    inst.addHaskellScript(b, opts, optimize, "mzte-xdptf-xplr-wrapper");
 
     // Plugins
     inst.addZBuild(b, opts, zargs, "mzte-mpv");
