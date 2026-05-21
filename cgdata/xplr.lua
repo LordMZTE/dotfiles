@@ -6,7 +6,6 @@ return {
   -- most recent version and inserting that into the config file.
   version = cg.lib.lazy(function()
     local ver_raw = cg.opt.system "xplr --version"
-    print(ver_raw)
     local _, _, ver = string.find(ver_raw, ".* (.*)")
     return ver
   end)
