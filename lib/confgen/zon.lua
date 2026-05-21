@@ -10,9 +10,11 @@ function M.serialize(val)
     elseif typ == "number" or typ == "boolean" then
         return tostring(val)
     elseif typ == "string" then
-        return [["]] .. val .. [["]]
+        return [["]] .. string.gsub(val, "\"", "\\\"") .. [["]]
     elseif typ == "table" then
-        if #val ~= 0 then
+        if val.zonSerialize then
+            return val:zonSerialize()
+        elseif #val ~= 0 then
             local ret = ".{"
             for _, v in ipairs(val) do
                 local serialized = M.serialize(v)

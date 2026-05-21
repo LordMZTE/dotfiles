@@ -1,7 +1,7 @@
 <! local wm = require "cgdata.wm" !>
 
 <! local function ziggyEscape(str)
-    return str:gsub('\"', '\\"')
+    return "\"" .. str:gsub('\"', '\\"') .. "\""
 end !>
 
 <! local function modspec(mods) !>
@@ -25,8 +25,9 @@ end !>
 },
 
 .keybinds = [
-    <! for keydat, cmd in pairs(wm.launch_keys) do !>
-    .{ .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = .spawn(["sh", "-c", "<% ziggyEscape(cmd) %>"]) },<! end !>
+    <! for keydat, cmd in pairs(wm.launch_keys) do
+       local cmd_str = table.concat(cg.lib.map(cmd:toArgv(), ziggyEscape), ", ") !>
+    .{ .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = .spawn([<% cmd_str %>]) },<! end !>
 
     <! ctrlKey(wm.control_keys.quit, ".quit") !>,
     <! ctrlKey(wm.control_keys.close_window, ".close_window") !>,

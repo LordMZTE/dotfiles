@@ -188,8 +188,8 @@ function M.moduleConfig()
         format = "{bandwidthDownBytes}  {bandwidthUpBytes}  ",
         ["tooltip-format-ethernet"] = "{ifname} {ipaddr}",
         ["tooltip-format-wifi"] = "{essid} {ipaddr}",
-        ["on-click"] = cg.opt.term.exec .. " nmtui",
-        ["on-click-right"] = cg.opt.term.exec .. " nmtui",
+        ["on-click"] = cg.opt.term.exec:toSh() .. " nmtui",
+        ["on-click-right"] = cg.opt.term.exec:toSh() .. " nmtui",
     }
 
     return conf

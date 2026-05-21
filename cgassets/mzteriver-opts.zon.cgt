@@ -26,9 +26,9 @@ end
         <! for k, cmd in pairs(wm.launch_keys) do !>
         .{
             <% key(k) %>,
-            \\<% cmd %>
+            <% zon.serialize(cmd:toSh()) %>,
         },<! end !>
     },
 
-    .startup_commands = <% zon.serialize(wm.startupCommands "river") %>,
+    .startup_commands = <% zon.serialize(cg.lib.map(wm.startupCommands "river", function(c) return c:toArgv() end)) %>,
 }

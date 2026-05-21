@@ -4,6 +4,8 @@
 -- - River (via MZTERiver)
 -- - Niri
 
+local cmd = require "lib.confgen.cmd"
+
 local mod_shorthands = {
     m = "meta",
     s = "shift",
@@ -59,34 +61,34 @@ M.launch_keys = {
     [{ {}, "XF86AudioStop" }] = cmds.media.stop,
     [{ {}, "XF86AudioNext" }] = cmds.media.next,
     [{ {}, "XF86AudioPrev" }] = cmds.media.prev,
-    [{ {}, "XF86Eject" }] = "eject -T",
+    [{ {}, "XF86Eject" }] = cmd.argv { "eject", "-T" },
 
     -- Backlight Keys
     [{ {}, "XF86MonBrightnessUp" }] = cmds.backlight_up,
     [{ {}, "XF86MonBrightnessDown" }] = cmds.backlight_down,
 
     -- Screenshot
-    [{ {}, "Print" }] = [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
+    [{ {}, "Print" }] = cmd.sh [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
 
     -- Background controls
-    [{ kmods "m", "w" }] = "pkill -USR1 wlbg",  -- Randomize background
-    [{ kmods "ms", "w" }] = "pkill -USR2 wlbg", -- Toggle solid background
+    [{ kmods "m", "w" }] = cmd.argv { "pkill", "-USR1", "wlbg" },   -- Randomize background
+    [{ kmods "ms", "w" }] = cmd.argv { "pkill", " -USR2", "wlbg" }, -- Toggle solid background
 
     -- Safe mode
-    [{ kmods "m", "s" }] = [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
+    [{ kmods "m", "s" }] = cmd.sh [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
 
     -- Fnott control
     -- TODO: only add these on wayland
-    [{ kmods "mc", "Space" }] = "fnottctl actions || fnottctl dismiss",
+    [{ kmods "mc", "Space" }] = cmd.sh "fnottctl actions || fnottctl dismiss",
 
     -- Application Launchers
     [{ kmods "m", "Return" }] = cg.opt.term.command,
-    [{ kmods "a", "Space" }] = "rofi -show combi",
-    [{ kmods "ma", "Space" }] = "rofi -show emoji",
-    [{ kmods "mc", "c" }] = "rofi -show qalc",
+    [{ kmods "a", "Space" }] = cmd.argv { "rofi", "-show", "combi" },
+    [{ kmods "ma", "Space" }] = cmd.argv { "rofi", "-show", "emoji" },
+    [{ kmods "mc", "c" }] = cmd.argv { "rofi", "-show", "qalc" },
     [{ kmods "mc", "e" }] = cmds.file_manager,
     [{ kmods "mc", "b" }] = cmds.browser,
-    [{ kmods "mc", "v" }] = "vinput md",
+    [{ kmods "mc", "v" }] = cmd.argv { "vinput", "md" },
 }
 
 -- Wayland compositors that we know about
@@ -101,23 +103,23 @@ function M.startupCommands(wm)
     local startup = {}
 
     if is_wayland then
-        table.insert(startup, { "kanshi" }) -- output configuration daemon
-        table.insert(startup, { "wlbg" })   -- custom wallpaper
-        table.insert(startup, { "waybar" })
-        table.insert(startup, { "fnott" })  -- notification daemon for WL
+        table.insert(startup, cmd.argv { "kanshi" }) -- output configuration daemon
+        table.insert(startup, cmd.argv { "wlbg" })   -- custom wallpaper
+        table.insert(startup, cmd.argv { "waybar" })
+        table.insert(startup, cmd.argv { "fnott" })  -- notification daemon for WL
     else
-        table.insert(startup, { "wired" })  -- notification daemon for X
+        table.insert(startup, cmd.argv { "wired" })  -- notification daemon for X
     end
 
     if wm == "river" then
-        table.insert(startup, { "mzterwm" })
-        table.insert(startup, { "channel" })
+        table.insert(startup, cmd.argv { "mzterwm" })
+        table.insert(startup, cmd.argv { "channel" })
     elseif wm == "river-classic" then
-        table.insert(startup, { "rivertile" })
+        table.insert(startup, cmd.argv { "rivertile" })
     end
 
-    if cg.opt.startupCommandFilter then
-        startup = cg.opt.startupCommandFilter(wm, is_wayland, startup)
+    if dev_conf.modifyStartupCommands then
+        startup = dev_conf.modifyStartupCommands(M, wm, is_wayland, startup)
     end
 
     return startup

@@ -1,3 +1,5 @@
+local cmd = require "lib.confgen.cmd"
+
 cg.opt.mzteinit_entries = {
     -- TODO: the `which` invocations here are a workaround in case the relevant binaries
     -- are installed in a directory that mzteinit adds to $PATH, which it currently doesn't handle.
@@ -29,23 +31,23 @@ cg.opt.mulFontSize = function(siz) return math.floor(siz * cg.opt.font_size_mul)
 cg.opt.terminal_configurations = {
     foot = {
         name = "foot",
-        command = "foot",
-        exec = "foot",
-        workdir_command = "foot --working-directory=",
+        command = cmd.argv { "foot" },
+        exec = cmd.argv { "foot" },
+        workdir_command = cmd.argv { "foot", "--working-directory=" },
         icon_name = "foot",
     },
     ghostty = {
         name = "Ghostty",
-        command = "ghostty",
-        exec = "ghostty -e",
-        workdir_command = "ghostty --working-directory=",
+        command = cmd.argv { "ghostty" },
+        exec = cmd.argv { "ghostty", "-e" },
+        workdir_command = cmd.argv { "ghostty", "--working-directory=" },
         icon_name = "com.mitchellh.ghostty",
     },
     kitty = {
         name = "Kitty",
-        command = "kitty",
-        exec = "kitty",
-        workdir_command = "kitty --working-directory=",
+        command = cmd.argv { "kitty" },
+        exec = cmd.argv { "kitty" },
+        workdir_command = cmd.argv { "kitty", "--working-directory=" },
         icon_name = "kitty",
     },
 }
@@ -62,34 +64,30 @@ cg.opt.gtk_theme = "Catppuccin-GTK-Red-Dark-Compact"
 cg.opt.icon_theme = "candy-icons"
 
 cg.opt.commands = {
-    browser = "openbrowser",
-    email = "claws-mail",
-    calculator = "qalculate-gtk",
-    file_manager = "thunar",
+    browser = cmd.argv { "openbrowser" },
+    email = cmd.argv { "claws-mail" },
+    calculator = cmd.argv { "qalculate-gtk" },
+    file_manager = cmd.argv { "thunar" },
     -- zenity-compatible dialoger
-    zenity = "yad",
-    screen_lock = string.format(
-        "i3lock -ti %s/.local/share/backgrounds/mzte.png",
-        os.getenv "HOME"
-    ),
+    zenity = cmd.argv { "yad" },
     media = {
-        volume_up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
-        volume_down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-        mute_sink = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-        mute_source = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
+        volume_up = cmd.argv { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+" },
+        volume_down = cmd.argv { "wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%-" },
+        mute_sink = cmd.argv { "wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle" },
+        mute_source = cmd.argv { "wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle" },
 
-        play_pause = "playerctl play-pause",
-        stop = "playerctl stop",
-        next = "playerctl next",
-        prev = "playerctl previous",
+        play_pause = cmd.argv { "playerctl", "play-pause" },
+        stop = cmd.argv { "playerctl", "stop" },
+        next = cmd.argv { "playerctl", "next" },
+        prev = cmd.argv { "playerctl", "previous" },
     },
-    backlight_up = "brightnessctl s 15%+",
-    backlight_down = "brightnessctl s 15%-",
+    backlight_up = cmd.argv { "brightnessctl", "s", "15%+" },
+    backlight_down = cmd.argv { "brightnessctl", "s", "15%-" },
 }
 
 cg.opt.gamemode = {
-    on_start = "notify-send -a 'Gamemode' 'Gamemode Active'",
-    on_stop = "notify-send -a 'Gamemode' 'Gamemode Inactive'",
+    on_start = cmd.argv { "notify-send", "-a", "Gamemode", "Gamemode Active" },
+    on_stop = cmd.argv { "notify-send", "-a", "Gamemode", "Gamemode Inactive" },
 }
 
 cg.opt.dev_dir = os.getenv "HOME" .. "/dev"
@@ -114,7 +112,9 @@ cg.opt.keyboard = {
 local ctp_rgb = {}
 setmetatable(ctp_rgb, {
     __index = function(_, key)
-        local rs, gs, bs = string.match(cg.opt.catppuccin[key], "^(%x%x)(%x%x)(%x%x)$")
+        local hex = cg.opt.catppuccin[key]
+        if not hex then return nil end
+        local rs, gs, bs = string.match(hex, "^(%x%x)(%x%x)(%x%x)$")
         return {
             r = tonumber(rs, 16),
             g = tonumber(gs, 16),
