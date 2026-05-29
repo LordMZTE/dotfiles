@@ -38,6 +38,7 @@ end !>
     .{ .key = "k", .mods = .{ .meta = true }, .action = .focus_window(.prev) },
     .{ .key = "j", .mods = .{ .meta = true, .shift = true }, .action = .move_window(.next) },
     .{ .key = "k", .mods = .{ .meta = true, .shift = true }, .action = .move_window(.prev) },
+    .{ .key = "n", .mods = .{ .meta = true }, .action = .rotate_layout(.next) },
     .{ .key = "Return", .mods = .{ .meta = true, .shift = true }, .action = .swap_top },
     .{ .key = "period", .mods = .{ .meta = true }, .action = .focus_output(.next) },
     .{ .key = "comma", .mods = .{ .meta = true }, .action = .focus_output(.prev) },
@@ -59,6 +60,20 @@ end !>
             .{ .key = "Down", .mods = .{ .meta = true }, .action = .set_direction(.down) },
             .{ .key = "Left", .mods = .{ .meta = true }, .action = .set_direction(.left) },
             .{ .key = "Right", .mods = .{ .meta = true }, .action = .set_direction(.right) },
+        ],
+    },
+    .scroll = .{
+        .keybinds = [
+            .{ .key = "Up", .mods = .{ .meta = true }, .action = .set_direction(.up) },
+            .{ .key = "Down", .mods = .{ .meta = true }, .action = .set_direction(.down) },
+            .{ .key = "Left", .mods = .{ .meta = true }, .action = .set_direction(.left) },
+            .{ .key = "Right", .mods = .{ .meta = true }, .action = .set_direction(.right) },
+            .{ .key = "l", .mods = .{ .meta = true }, .action = .resize_col(64) },
+            .{ .key = "h", .mods = .{ .meta = true }, .action = .resize_col(-64) },
+            .{ .key = "l", .mods = .{ .meta = true, .ctrl = true }, .action = .scroll_directional(64) },
+            .{ .key = "h", .mods = .{ .meta = true, .ctrl = true }, .action = .scroll_directional(-64) },
+            .{ .key = "k", .mods = .{ .meta = true, .ctrl = true }, .action = .adjust_nwins(1) },
+            .{ .key = "j", .mods = .{ .meta = true, .ctrl = true }, .action = .adjust_nwins(-1) },
         ],
     },
 }
