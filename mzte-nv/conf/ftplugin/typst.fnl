@@ -6,10 +6,8 @@
            (let [Terminal (. (require :toggleterm.terminal) :Terminal)
                  lspc-util (require :lspconfig.util)
                  file (vim.api.nvim_buf_get_name 0)
-                 outfile-base (.. :typstwatch_
-                                  (string.gsub (vim.fs.basename file) "%.typ$"
-                                               :.pdf))
-                 outfile (.. :/tmp/ outfile-base)
+                 outfile-base (vim.fn.tempname)
+                 outfile (.. outfile-base :.pdf)
                  root ((lspc-util.root_pattern :.typstroot) file)
                  term (Terminal:new {:direction :horizontal
                                      :cmd (if root
@@ -19,7 +17,8 @@
                                                   outfile))})
                  fsev (vim.uv.new_fs_event)
                  on-file-appear (fn [err file events]
-                                  (when (and (not err) (= file outfile-base))
+                                  (when (and (not err)
+                                             (= file (vim.fs.basename outfile)))
                                     (fsev:stop)
                                     (vim.uv.spawn :zathura {:args [outfile]}
                                                   (fn [code signal]
@@ -28,7 +27,7 @@
                                                                            (error "Deleting output: "
                                                                                   $1)))
                                                     (vim.schedule #(term:shutdown))))))]
-             (fsev:start :/tmp {} on-file-appear)
+             (fsev:start (vim.fs.dirname outfile) {} on-file-appear)
              (term:open)))]
   (vim.api.nvim_create_user_command :TypstWatch cb {:nargs 0}))
 
