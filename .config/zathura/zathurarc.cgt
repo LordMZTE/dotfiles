@@ -30,7 +30,7 @@ set inputbar-bg               "#<% opt.catppuccin.surface0 %>"
 local recolor = true
 if fsctx then
     local cmdline = fsctx:getCallerCmd()
-    recolor = not cg.lib.contains(cmdline, function(arg) return arg:match("^/tmp/typstwatch_") end)
+    recolor = not cg.lib.contains(cmdline, function(arg) return arg:match("_typstwatch.pdf$") end)
 end
 !>
 set recolor                   "<% recolor %>"

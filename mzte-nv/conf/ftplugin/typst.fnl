@@ -7,7 +7,7 @@
                  lspc-util (require :lspconfig.util)
                  file (vim.api.nvim_buf_get_name 0)
                  outfile-base (vim.fn.tempname)
-                 outfile (.. outfile-base :.pdf)
+                 outfile (.. outfile-base :_typstwatch.pdf)
                  root ((lspc-util.root_pattern :.typstroot) file)
                  term (Terminal:new {:direction :horizontal
                                      :cmd (if root
