@@ -10,12 +10,12 @@ let
     stdenv.cc.cc.lib
     udev # OSHI
   ];
-  xorg-libs = with pkgs.xorg; [
-    libX11
-    libXext
-    libXcursor
-    libXrandr
-    libXxf86vm
+  xorg-libs = with pkgs; [
+    libx11
+    libxext
+    libxcursor
+    libxrandr
+    libxxf86vm
   ];
 in
 {
@@ -33,5 +33,6 @@ in
     {
       mcdev = [ pkgs.jdk8 ];
       mcdev-new = [ pkgs.jdk17 ];
+      mcdev-new-new = [ pkgs.jdk21 ];
     };
 }
