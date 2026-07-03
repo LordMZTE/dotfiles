@@ -43,6 +43,7 @@ class Plugins {
             "overseer",
             "ufo",
             "mini",
+            "codecompanion",
         ].map(n -> (new LuaPlugin(n) : IPlugin)));
     }
 

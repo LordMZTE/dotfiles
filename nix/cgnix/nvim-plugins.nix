@@ -61,6 +61,7 @@ let
     "50-recorder" = plugin "nvim-recorder";
     "50-lsp-progress" = plugin "lsp-progress.nvim";
     "50-mini" = plugin "mini.nvim";
+    "50-codecompanion" = plugin "codecompanion.nvim";
 
     # Libraries
     "10-plenary" = plugin "plenary.nvim";
