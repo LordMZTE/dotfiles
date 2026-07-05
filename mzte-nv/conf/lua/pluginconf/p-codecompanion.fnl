@@ -18,4 +18,11 @@
                                                       llama-cpp-conf)}}
            :interactions {:chat {:adapter :llama.cpp}
                           :inline {:adapter :llama.cpp}
-                          :cmd {:adapter :llama.cpp}}})
+                          :cmd {:adapter :llama.cpp}}
+           :mcp {:servers {:fetch {:cmd [:podman :run :-i :--rm :mcp/fetch]}
+                           :ddg-search {:cmd [:podman
+                                              :run
+                                              :-i
+                                              :--rm
+                                              :mcp/duckduckgo]}
+                           :nu {:cmd [:nu :--mcp]}}}})
