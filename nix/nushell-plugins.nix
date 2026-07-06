@@ -10,13 +10,13 @@
       name = "nu_plugin_dbus";
 
       src = pkgs.fetchFromGitHub {
-        owner = "dtomvan";
+        owner = "LordMZTE";
         repo = "nu_plugin_dbus";
-        rev = "3c9a9b7f0ee5655afefb663b0e74956690f8213e";
-        hash = "sha256-pU445alEz7iTXqHkmF8hwLFEaI/pr/fvqMmr61paPCI=";
+        rev = "1edb15f1740c411d9c24cae57f8cc4f295d762c8";
+        hash = "sha256-IZBmpqfxQ53prvr5lecFJtjn0fVY4L00NJpV0nx1bP0=";
       };
 
-      cargoHash = "sha256-C/fuxQgxiuySGvYOPRSKyXvJP6RCFTPG8seqWjjT8fs=";
+      cargoHash = "sha256-WMS4zVX9LKXN7mS3aINkW5uhNKZ4bcDAAM+90+OqmcM=";
 
       nativeBuildInputs = with pkgs; [ pkg-config ];
       buildInputs = with pkgs; [ dbus ];
