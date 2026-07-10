@@ -9,7 +9,7 @@
     , nixpkgs
     , utils
     , ...
-    }@inputs: utils.lib.eachDefaultSystem
+    }@inputs: utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ]
       (system:
       let
         base-pkgs = (import nixpkgs {
