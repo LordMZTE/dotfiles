@@ -9,6 +9,11 @@ username_display = "displayname"
 user_gutter_width = 16
 normal_after_send = true
 
+# This isn't for a slow server, this is for when the client has bad internet, in which case it often
+# can't get the sync done in the standard two minute timeout.  Still think this protocol is any
+# good?
+request_timeout = <% 4 * 60 * 60 %>
+
 <! if not opt.safe_mode then !>
 <! local img_proto = (fsctx and opt.termSupportsKittyImages(fsctx:getCallerEnv().TERM)) and "kitty" or "sixel" !>
 image_preview = { protocol = { type = "<% img_proto %>" } }
