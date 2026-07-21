@@ -1,0 +1,43 @@
+;<! tmpl:setPostProcessor(opt.fennelCompile) !>
+; vim: filetype=fennel
+
+(swayimg.viewer.enable_loop false)
+(swayimg.viewer.set_window_background :extend)
+
+;; ===== Viewer keybinds =====
+(swayimg.viewer.on_key :Shift+j #(swayimg.viewer.switch_image :next))
+(swayimg.viewer.on_key :Shift+k #(swayimg.viewer.switch_image :prev))
+
+(swayimg.viewer.on_key :Ctrl+n #(swayimg.viewer.switch_image :next))
+(swayimg.viewer.on_key :Ctrl+p #(swayimg.viewer.switch_image :prev))
+
+;; Panning
+(let [step-size 25]
+  (each [k [dx dy] (pairs {:h [step-size 0]
+                           :j [0 (- step-size)]
+                           :k [0 step-size]
+                           :l [(- step-size) 0]})]
+    (swayimg.viewer.on_key k
+                           #(let [{: x : y} (swayimg.viewer.get_position)]
+                              (swayimg.viewer.set_abs_position (+ x dx)
+                                                               (+ y dy))))))
+
+;; There's a default keymap for zooming out with '-', but apparently not one for zooming in with
+;; '+'.
+(swayimg.viewer.on_key :plus
+                       #(let [scale (swayimg.viewer.get_scale)]
+                          (swayimg.viewer.set_abs_scale (+ scale (/ scale 10)))))
+
+;; Move to top/bottom like Vi (well, we can't map "gg" since we don't have chorded keybinds, but
+;; close enough)
+(swayimg.viewer.on_key :g #(swayimg.viewer.set_fix_position :topcenter))
+(swayimg.viewer.on_key :Shift+g
+                       #(swayimg.viewer.set_fix_position :bottomcenter))
+
+;; ===== Gallery keybinds =====
+(each [k d (pairs {:h :left :j :down :k :up :l :right})]
+  (swayimg.gallery.on_key k #(swayimg.gallery.select d)))
+
+;; ===== Universal keybinds =====
+(each [_ mode (ipairs [swayimg.viewer swayimg.slideshow swayimg.gallery])]
+  (mode.on_key :q #(swayimg.exit 0)))
