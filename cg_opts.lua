@@ -59,8 +59,8 @@ cg.opt.cursor = {
     size = 24,
 }
 
--- https://github.com/Fausto-Korpsvart/catppuccin-gtk-theme
-cg.opt.gtk_theme = "Catppuccin-GTK-Red-Dark-Compact"
+-- https://github.com/Fausto-Korpsvart/catppuccin-gtk-theme built with --tweaks border
+cg.opt.gtk_theme = "Catppuccin-GTK-Red-Dark-Compact-B"
 cg.opt.icon_theme = "candy-icons"
 
 cg.opt.commands = {
