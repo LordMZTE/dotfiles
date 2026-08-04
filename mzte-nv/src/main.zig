@@ -113,6 +113,11 @@ fn lOnInit(l: *c.lua_State) !c_int {
         }
     }
 
+    if (@hasField(@TypeOf(opts), "openrouter_key")) {
+        ffi.luaPushString(l, opts.openrouter_key);
+        c.lua_setfield(l, -2, "openrouter_key");
+    }
+
     ffi.ser.luaPushAny(l, [_][]const u8{ "⬖", "⬘", "⬗", "⬙" });
     c.lua_setfield(l, -2, "spinner");
 

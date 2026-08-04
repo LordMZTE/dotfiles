@@ -1,4 +1,6 @@
+(local mztenv (require :mzte_nv))
 (local cc (require :codecompanion))
+(local adapters (require :codecompanion.adapters))
 (local oai (require :codecompanion.adapters.http.openai))
 
 (local llama-cpp-conf
@@ -37,9 +39,13 @@
          {:env {:chat_url :/v1/chat/completions : url}
           :handlers {: parse_message_meta : form_messages}}))
 
-(cc.setup {:adapters {:http {:llama.cpp #((. (require :codecompanion.adapters)
-                                             :extend) :openai_compatible
-                                                      llama-cpp-conf)}}
+(cc.setup {:adapters {:http {:llama.cpp #(adapters.extend :openai_compatible
+                                                          llama-cpp-conf)
+                             :openrouter #(if mztenv.reg.openrouter_key
+                                              (adapters.extend :openrouter
+                                                               {:headers {:Authorization (.. "Bearer "
+                                                                                             mztenv.reg.openrouter_key)}})
+                                              nil)}}
            :interactions {:chat {:adapter :llama.cpp}
                           :inline {:adapter :llama.cpp}
                           :cmd {:adapter :llama.cpp}}
