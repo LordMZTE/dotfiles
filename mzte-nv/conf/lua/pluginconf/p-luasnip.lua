@@ -84,3 +84,16 @@ local racket_snippets = {
 
 ls.add_snippets("scheme", racket_snippets)
 ls.add_snippets("racket", racket_snippets)
+
+ls.add_snippets("confgen", {
+    s("<!", {
+        t "<! ",
+        i(1, "stmt"),
+        t " !>"
+    }),
+    s("<%", {
+        t "<% ",
+        i(1, "expr"),
+        t " %>"
+    }),
+})
