@@ -26,7 +26,8 @@ pub fn main(init: std.process.Init) !void {
     );
     defer init.gpa.free(filename);
 
-    var cp = try ClipboardConnection.init();
+    var cp: ClipboardConnection = undefined;
+    try cp.init(init.gpa, init.io);
     defer cp.deinit();
 
     {

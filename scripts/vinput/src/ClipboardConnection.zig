@@ -1,89 +1,36 @@
+//! This structure is self-referential and must not be moved before `deinit` is called.
+
 const std = @import("std");
 const wayland = @import("wayland");
 const wl = wayland.client.wl;
-const xdg = wayland.client.xdg;
+const ext = wayland.client.ext;
 
 const log = std.log.scoped(.wayland_clipboard);
 
+alloc: std.mem.Allocator,
+io: std.Io,
 display: *wl.Display,
-shm: *wl.Shm,
 seat: *wl.Seat,
-compositor: *wl.Compositor,
-data_device_manager: *wl.DataDeviceManager,
-xdg_wm_base: *xdg.WmBase,
+dcm: *ext.DataControlManagerV1,
+datadev: *ext.DataControlDeviceV1,
+offers: std.DoublyLinkedList,
+current_selection: ?*DataOffer,
 
 const ClipboardConnection = @This();
 
 const GlobalCollector = struct {
     seat: ?*wl.Seat,
-    shm: ?*wl.Shm,
-    compositor: ?*wl.Compositor,
-    data_device_manager: ?*wl.DataDeviceManager,
-    xdg_wm_base: ?*xdg.WmBase,
+    dcm: ?*ext.DataControlManagerV1,
 };
 
-const PopupWindow = struct {
-    surface: *wl.Surface,
-    xdg_surface: *xdg.Surface,
-    xdg_toplevel: *xdg.Toplevel,
-    shm_pool: *wl.ShmPool,
-    shm_buf: *wl.Buffer,
-
-    fn show(cc: *ClipboardConnection) !PopupWindow {
-        const surf = try cc.compositor.createSurface();
-        errdefer surf.destroy();
-
-        const xdg_surface = try cc.xdg_wm_base.getXdgSurface(surf);
-        errdefer xdg_surface.destroy();
-        xdg_surface.setListener(*const void, xdgSurfaceConfigureListener, &{});
-
-        const xdg_toplevel = try xdg_surface.getToplevel();
-        errdefer xdg_toplevel.destroy();
-        xdg_toplevel.setTitle("vinput");
-
-        surf.commit();
-
-        try cc.roundtrip();
-
-        const width = 1;
-        const height = 1;
-        const stride = width * 4;
-        const size = stride * height; // 1x1x4 bytes
-
-        const memfd = try std.posix.memfd_create("surface_shm", 0);
-        defer _ = std.posix.system.close(memfd);
-        if (std.posix.system.ftruncate(memfd, size) != 0) return error.OutOfMemory;
-
-        const shm_pool = try cc.shm.createPool(memfd, size);
-        errdefer shm_pool.destroy();
-        const shm_buf = try shm_pool.createBuffer(0, width, height, stride, .argb8888);
-        errdefer shm_buf.destroy();
-
-        surf.attach(shm_buf, 0, 0);
-        surf.damage(0, 0, width, height);
-        surf.commit();
-
-        try cc.roundtrip();
-
-        return .{
-            .surface = surf,
-            .xdg_surface = xdg_surface,
-            .xdg_toplevel = xdg_toplevel,
-            .shm_pool = shm_pool,
-            .shm_buf = shm_buf,
-        };
-    }
-
-    fn deinit(self: PopupWindow) void {
-        self.shm_buf.destroy();
-        self.shm_pool.destroy();
-        self.xdg_toplevel.destroy();
-        self.xdg_surface.destroy();
-        self.surface.destroy();
-    }
+const DataOffer = struct {
+    node: std.DoublyLinkedList.Node,
+    wl: *ext.DataControlOfferV1,
+    format_buf: [512]u8,
+    format: ?[:0]const u8, // points into format_buf
 };
 
-pub fn init() !ClipboardConnection {
+pub fn init(self: *ClipboardConnection, alloc: std.mem.Allocator, io: std.Io) !void {
     const dpy = try wl.Display.connect(null);
     errdefer dpy.disconnect();
 
@@ -91,11 +38,8 @@ pub fn init() !ClipboardConnection {
     defer registry.destroy();
 
     var globals = GlobalCollector{
-        .shm = null,
         .seat = null,
-        .compositor = null,
-        .data_device_manager = null,
-        .xdg_wm_base = null,
+        .dcm = null,
     };
 
     registry.setListener(*GlobalCollector, registryListener, &globals);
@@ -103,188 +47,96 @@ pub fn init() !ClipboardConnection {
     log.info("beginning initial display roundtrip", .{});
     if (dpy.roundtrip() != .SUCCESS) return error.RoundtripFail;
 
-    return .{
+    const seat = globals.seat orelse return error.MissingGlobal;
+    errdefer seat.destroy();
+    const dcm = globals.dcm orelse return error.MissingGlobal;
+    errdefer dcm.destroy();
+
+    const datadev = try dcm.getDataDevice(seat);
+    errdefer datadev.destroy();
+
+    self.* = .{
+        .alloc = alloc,
+        .io = io,
         .display = dpy,
-        .shm = globals.shm orelse return error.MissingGlobal,
-        .seat = globals.seat orelse return error.MissingGlobal,
-        .compositor = globals.compositor orelse return error.MissingGlobal,
-        .data_device_manager = globals.data_device_manager orelse return error.MissingGlobal,
-        .xdg_wm_base = globals.xdg_wm_base orelse return error.MissingGlobal,
+        .seat = seat,
+        .dcm = dcm,
+        .datadev = datadev,
+        .offers = .{},
+        .current_selection = null,
     };
+
+    datadev.setListener(*ClipboardConnection, datadevListener, self);
 }
 
 pub fn deinit(self: *ClipboardConnection) void {
-    self.shm.destroy();
     self.seat.destroy();
-    self.compositor.destroy();
-    self.data_device_manager.destroy();
-    self.xdg_wm_base.destroy();
+    self.dcm.destroy();
+    self.datadev.destroy();
+
+    // no need to check self.current_selection which always points into self.offers, which we've
+    // freed.
+    var maybe_node = self.offers.first;
+    while (maybe_node) |node| {
+        maybe_node = node.next;
+        const offer: *DataOffer = @fieldParentPtr("node", node);
+
+        offer.wl.destroy();
+        self.alloc.destroy(offer);
+    }
+
     self.display.disconnect();
     self.* = undefined;
 }
 
 pub fn getContent(self: *ClipboardConnection, out_fd: std.posix.fd_t) !void {
-    const DataDeviceListener = struct {
-        out_fd: std.posix.fd_t,
-        display: *wl.Display,
+    // roundtrip to receive most recent offers
+    if (self.display.roundtrip() != .SUCCESS) return error.RoundtripFail;
 
-        fn onEvent(_: *wl.DataDevice, ev: wl.DataDevice.Event, ddl: *@This()) void {
-            switch (ev) {
-                .data_offer => |offer| {
-                    defer offer.id.destroy();
-                    const MimeType = struct {
-                        buf: [1024]u8 = undefined,
-                        t: ?[:0]const u8 = null,
+    const sel = self.current_selection orelse
+        // no offer, no need to write anything
+        return;
 
-                        fn offerListener(_: *wl.DataOffer, event: wl.DataOffer.Event, mt: *@This()) void {
-                            const text_types = std.StaticStringMap(void).initComptime(.{
-                                .{ "TEXT", {} },
-                                .{ "STRING", {} },
-                                .{ "UTF8_STRING", {} },
-                            });
-
-                            switch (event) {
-                                .offer => |o| {
-                                    if (mt.t) |current_type| {
-                                        var buf: [512]u8 = undefined;
-                                        const lower_type = std.ascii.lowerString(&buf, current_type);
-
-                                        if (std.mem.containsAtLeast(u8, lower_type, 1, "utf8") or
-                                            std.mem.containsAtLeast(u8, lower_type, 1, "utf-8"))
-                                        {
-                                            // GTK likes to mangle text when a MIME type without UTF-8
-                                            // is requested, thus we prefer it.
-                                            return;
-                                        }
-                                    }
-
-                                    const mimetype = std.mem.span(o.mime_type);
-                                    if (text_types.has(mimetype) or
-                                        std.mem.startsWith(u8, mimetype, "text/"))
-                                    {
-                                        if (mimetype.len > mt.buf.len - 1) {
-                                            log.err("got humungous MIME type, skipping", .{});
-                                            return;
-                                        }
-
-                                        @memcpy(mt.buf[0..mimetype.len], mimetype);
-                                        mt.buf[mimetype.len] = 0;
-                                        mt.t = mt.buf[0..mimetype.len :0];
-                                    }
-                                },
-
-                                else => {},
-                            }
-                        }
-                    };
-
-                    var mime = MimeType{};
-
-                    offer.id.setListener(*MimeType, MimeType.offerListener, &mime);
-                    if (ddl.display.dispatch() != .SUCCESS)
-                        log.err("dispatch in data offer receive failed", .{});
-
-                    if (mime.t) |mimetype| {
-                        log.info("receiving data offer with MIME type {s}", .{mimetype});
-                        offer.id.receive(mimetype, ddl.out_fd);
-                    } else {
-                        log.warn("got data offer with no text MIME type", .{});
-                    }
-                },
-
-                else => {},
-            }
-        }
-    };
-    var ddl = DataDeviceListener{
-        .display = self.display,
-        .out_fd = out_fd,
+    const mime = sel.format orelse {
+        log.warn("got offer without text mime type", .{});
+        return;
     };
 
-    const data_device = try self.data_device_manager.getDataDevice(self.seat);
-    defer data_device.release();
-    data_device.setListener(*DataDeviceListener, DataDeviceListener.onEvent, &ddl);
-
-    const popup = try PopupWindow.show(self);
-    popup.deinit();
-    try self.roundtrip();
+    sel.wl.receive(mime, out_fd);
+    if (self.display.roundtrip() != .SUCCESS) return error.RoundtripFail;
 }
 
+const SourceState = struct {
+    io: std.Io,
+    /// Data to send to a client
+    data: []const u8,
+    /// Set to true once this source has been replaced
+    closed: bool,
+};
+
 pub fn serveContent(self: *ClipboardConnection, data: []const u8) !void {
-    const DataSender = struct {
-        data: []const u8,
-        data_source: *wl.DataSource,
-        device: *wl.DataDevice,
-        kb: *wl.Keyboard,
-        done: bool = false,
+    const src = try self.dcm.createDataSource();
+    errdefer src.destroy();
 
-        fn onEvent(_: *wl.DataSource, ev: wl.DataSource.Event, ds: *@This()) void {
-            switch (ev) {
-                .send => |send| {
-                    log.info("sending data", .{});
-                    var file = std.Io.File{ .handle = send.fd, .flags = .{ .nonblocking = false } };
-                    defer file.close(std.Options.debug_io);
-                    var writer = file.writerStreaming(std.Options.debug_io, &.{});
-                    writer.interface.writeAll(ds.data) catch |e| {
-                        log.err("unable to send clipboard content: {}", .{e});
-                    };
-                },
-                .cancelled => {
-                    ds.done = true;
-                    log.info("done serving data source", .{});
-                },
-                else => {},
-            }
-        }
+    src.offer("text/plain");
+    src.offer("text/plain;charset=utf-8");
+    src.offer("TEXT");
+    src.offer("STRING");
+    src.offer("UTF8_STRING");
+    self.datadev.setSelection(src);
 
-        fn keyboardListener(_: *wl.Keyboard, ev: wl.Keyboard.Event, ds: *@This()) void {
-            switch (ev) {
-                .enter => |enter| {
-                    log.info("got keyboard enter event", .{});
-                    ds.device.setSelection(ds.data_source, enter.serial);
-                },
-                else => {},
-            }
-        }
-    };
-    const device = try self.data_device_manager.getDataDevice(self.seat);
-    defer device.release();
-
-    const data_source = try self.data_device_manager.createDataSource();
-    defer data_source.destroy();
-    data_source.offer("text/plain");
-    data_source.offer("text/plain;charset=utf-8");
-    data_source.offer("TEXT");
-    data_source.offer("STRING");
-    data_source.offer("UTF8_STRING");
-
-    const kb = try self.seat.getKeyboard();
-    defer kb.destroy();
-
-    var data_sender = DataSender{
+    var state: SourceState = .{
+        .io = self.io,
         .data = data,
-        .data_source = data_source,
-        .device = device,
-        .kb = kb,
+        .closed = false,
     };
+    src.setListener(*SourceState, sourceListener, &state);
 
-    data_source.setListener(*DataSender, DataSender.onEvent, &data_sender);
-    kb.setListener(*DataSender, DataSender.keyboardListener, &data_sender);
-
-    // This generates a keyboard enter event, the serial of which we can use to set the selection.
-    const popup = try PopupWindow.show(self);
-    popup.deinit();
-
-    while (!data_sender.done) {
-        if (self.display.dispatch() != .SUCCESS) return error.DispatchFail;
+    while (!state.closed) {
+        if (self.display.dispatch() != .SUCCESS) return error.RoundtripFail;
     }
 }
 
-fn xdgSurfaceConfigureListener(xdg_surface: *xdg.Surface, ev: xdg.Surface.Event, _: *const void) void {
-    xdg_surface.ackConfigure(ev.configure.serial);
-}
-
-// TODO: completely restructure this crap
 fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *GlobalCollector) void {
     switch (event) {
         .global => |glob| {
@@ -301,6 +153,126 @@ fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *Globa
             }
         },
         .global_remove => {},
+    }
+}
+
+fn datadevListener(
+    _: *ext.DataControlDeviceV1,
+    event: ext.DataControlDeviceV1.Event,
+    self: *ClipboardConnection,
+) void {
+    switch (event) {
+        .data_offer => |ev| {
+            const offer = self.alloc.create(DataOffer) catch @panic("OOM");
+            offer.* = .{
+                .node = .{},
+                .wl = ev.id,
+                .format_buf = undefined,
+                .format = null,
+            };
+            self.offers.append(&offer.node);
+            offer.wl.setListener(*DataOffer, offerListener, offer);
+        },
+        .selection => |ev| {
+            if (self.current_selection) |prev| {
+                self.offers.remove(&prev.node);
+                prev.wl.destroy();
+                self.alloc.destroy(prev);
+                self.current_selection = null;
+            }
+
+            if (ev.id == null) return; // only remove old selection
+
+            var maybe_node = self.offers.first;
+            while (maybe_node) |node| : (maybe_node = node.next) {
+                const offer: *DataOffer = @fieldParentPtr("node", node);
+
+                if (offer.wl == ev.id) {
+                    self.current_selection = offer;
+                    break;
+                }
+            }
+        },
+        .primary_selection => |ev| {
+            // since we don't care about the primary selection, we simply remove any offers
+            // immediately as they won't be relevant.
+            if (ev.id == null) return;
+
+            var maybe_node = self.offers.first;
+            while (maybe_node) |node| : (maybe_node = node.next) {
+                const offer: *DataOffer = @fieldParentPtr("node", node);
+
+                if (offer.wl == ev.id) {
+                    self.offers.remove(node);
+                    offer.wl.destroy();
+                    self.alloc.destroy(offer);
+                    break;
+                }
+            }
+        },
+        else => {},
+    }
+}
+
+fn offerListener(
+    _: *ext.DataControlOfferV1,
+    event: ext.DataControlOfferV1.Event,
+    self: *DataOffer,
+) void {
+    const text_types = std.StaticStringMap(void).initComptime(.{
+        .{ "TEXT", {} },
+        .{ "STRING", {} },
+        .{ "UTF8_STRING", {} },
+    });
+
+    switch (event) {
+        .offer => |o| {
+            if (self.format) |current_type| {
+                var buf: [512]u8 = undefined;
+                const lower_type = std.ascii.lowerString(&buf, current_type);
+
+                if (std.mem.containsAtLeast(u8, lower_type, 1, "utf8") or
+                    std.mem.containsAtLeast(u8, lower_type, 1, "utf-8"))
+                {
+                    // GTK likes to mangle text when a MIME type without UTF-8
+                    // is requested, thus we prefer it.
+                    return;
+                }
+            }
+
+            const mimetype = std.mem.span(o.mime_type);
+            if (text_types.has(mimetype) or
+                std.mem.startsWith(u8, mimetype, "text/"))
+            {
+                if (mimetype.len > self.format_buf.len - 1) {
+                    log.err("got humungous MIME type, skipping", .{});
+                    return;
+                }
+
+                @memcpy(self.format_buf[0..mimetype.len], mimetype);
+                self.format_buf[mimetype.len] = 0;
+                self.format = self.format_buf[0..mimetype.len :0];
+            }
+        },
+    }
+}
+
+fn sourceListener(
+    _: *ext.DataControlSourceV1,
+    event: ext.DataControlSourceV1.Event,
+    state: *SourceState,
+) void {
+    switch (event) {
+        .send => |ev| {
+            log.info("sending data", .{});
+            var file = std.Io.File{ .handle = ev.fd, .flags = .{ .nonblocking = false } };
+            defer file.close(state.io);
+            var writer = file.writerStreaming(state.io, &.{});
+            writer.interface.writeAll(state.data) catch |e| {
+                log.err("unable to send clipboard content: {}", .{e});
+            };
+        },
+        .cancelled => state.closed = true,
     }
 }
 
