@@ -57,3 +57,6 @@ display-tags-clr
 # buffering with bad internet.
 cache-pause-wait=10
 <! end !>
+
+# When dropping a URL onto MPV, append to playlist instead of replacing
+drag-and-drop=append
