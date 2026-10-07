@@ -1,4 +1,5 @@
 (local mztenv (require :mzte_nv))
+(local kmopts (. (require :mzte_nv) :utils :map_opt))
 (local cc (require :codecompanion))
 (local adapters (require :codecompanion.adapters))
 (local oai (require :codecompanion.adapters.http.openai))
@@ -56,3 +57,5 @@
                                               :--rm
                                               :mcp/duckduckgo]}
                            :nu {:cmd [:nu :--mcp]}}}})
+
+(vim.keymap.set :n :TC cc.chat kmopts)
