@@ -161,3 +161,12 @@ cg.opt.textwidth = 100
 
 -- The size to use when downloading or streaming videos. Typically, only the height is checked here.
 cg.opt.videosize = { 1920, 1080 }
+
+-- A list of OpenAI-compatible endpoints used for software that needs them.  First is preferred.
+cg.opt.openai_endpoints = {
+    {
+        name = "llama.cpp",
+        base_url = "http://127.0.0.1:11434",
+        -- headers = { Authorization = "..." }
+    }
+}

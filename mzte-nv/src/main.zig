@@ -118,6 +118,13 @@ fn lOnInit(l: *c.lua_State) !c_int {
         c.lua_setfield(l, -2, "openrouter_key");
     }
 
+    c.lua_createtable(l, opts.openai_endpoints.len, 0);
+    inline for (opts.openai_endpoints, 1..) |ep, i| {
+        ffi.ser.luaPushAny(l, ep);
+        c.lua_rawseti(l, -2, i);
+    }
+    c.lua_setfield(l, -2, "openai_endpoints");
+
     ffi.ser.luaPushAny(l, [_][]const u8{ "⬖", "⬘", "⬗", "⬙" });
     c.lua_setfield(l, -2, "spinner");
 

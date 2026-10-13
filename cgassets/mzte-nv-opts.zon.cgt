@@ -16,4 +16,9 @@
     // OpenRouter API key, will be used for codecompanion if set
     .openrouter_key = "<% opt.openrouter_key %>",
     <! end !>
+    .openai_endpoints = .{
+        <! for _, remote in ipairs(opt.openai_endpoints) do !>
+        <% zon.serialize(remote) %>,
+        <! end !>
+    },
 }

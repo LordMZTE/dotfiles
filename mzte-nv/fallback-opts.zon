@@ -1,4 +1,5 @@
 .{
     .textwidth = 0,
     .font = "monospace",
+    .openai_endpoints = .{},
 }
