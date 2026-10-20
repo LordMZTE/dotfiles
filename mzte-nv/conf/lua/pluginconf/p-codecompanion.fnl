@@ -2,7 +2,7 @@
 (local kmopts (. (require :mzte_nv) :utils :map_opt))
 (local cc (require :codecompanion))
 (local adapters (require :codecompanion.adapters))
-(local oai (require :codecompanion.adapters.http.openai))
+(local oai (require :codecompanion.adapters.http.openai_compatible))
 
 (fn llama-cpp-conf [url]
   (let [parse_message_meta (fn [self data]
@@ -13,7 +13,7 @@
                                (when (= data.output.content "")
                                  (set data.output.content nil)))
                              data)
-        ;; This  fixes an issue with Qwen models that only support one single system
+        ;; This fixes an issue with Qwen models that only support one single system
         ;; prompt. Adapted from:
         ;; https://github.com/olimorris/codecompanion.nvim/issues/2925#issuecomment-4175428086
         form_messages (fn [self messages]
@@ -69,3 +69,4 @@
                            :nu {:cmd [:nu :--mcp]}}}})
 
 (vim.keymap.set :n :TC cc.chat kmopts)
+(vim.keymap.set :n :TP #(cc.inline {}) kmopts)
