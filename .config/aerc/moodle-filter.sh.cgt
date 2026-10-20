@@ -5,9 +5,16 @@
 <!
   tmpl:setMode "755"
   local class_map = {
-      [36469] = "Technische Informatik",
-      [19059] = "Compilerbau",
-      [19019] = "Einführung in die Wahrscheinlichkeitstheorie",
+    [19035] = "Systemsoftware",
+    [19018] = "VL Einführung in die Wahrscheinlichkeitstheorie",
+    [19019] = "ÜB Einführung in die Wahrscheinlichkeitstheorie",
+    [19051] = "Berechenbarkeit und Komplexität",
+    [17859] = "Computational Physics I",
+    [15540] = "VL Elektronik",
+    [180750] = "ÜB Elektronik",
+    [206788] = "Information Retrieval",
+    [154240] = "Berechenbarkeit und Komplexität",
+    [76735] = "[Work] Grundlagen informatischer Problemlösung",
   }
 
   local ansi_yellow = "\x1b[0;33m"
