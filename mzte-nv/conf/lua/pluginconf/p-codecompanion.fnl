@@ -69,4 +69,4 @@
                            :nu {:cmd [:nu :--mcp]}}}})
 
 (vim.keymap.set :n :TC cc.chat kmopts)
-(vim.keymap.set :n :TP #(cc.inline {}) kmopts)
+(vim.keymap.set [:n :v] :TP #(cc.inline {}) kmopts)
