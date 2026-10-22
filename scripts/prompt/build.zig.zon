@@ -7,8 +7,8 @@
     .dependencies = .{
         .common = .{ .path = "../../lib/common-zig" },
         .ansi_term = .{
-            .url = "git+https://github.com/ziglibs/ansi_term.git#c0e6ad093d4f6a9ed4e65d962d1e53b97888f989",
-            .hash = "ansi_term-0.1.0-_baAywpoAABEqsPmS5Jz_CddDCrG8qdIyRIESH8D2fzd",
+            .url = "git+https://github.com/kristoff-it/ansi_term.git#c4679e859bd61259754bd312e59b54dd03957e90",
+            .hash = "ansi_term-0.3.0-_baAyzFoAACjFHF9VpZSo71Q7QUclZQlpYqZZShaNwYg",
         },
     },
 }

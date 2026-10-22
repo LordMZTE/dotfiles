@@ -140,10 +140,11 @@ pub fn serveContent(self: *ClipboardConnection, data: []const u8) !void {
 fn registryListener(reg: *wl.Registry, event: wl.Registry.Event, globals: *GlobalCollector) void {
     switch (event) {
         .global => |glob| {
-            inline for (std.meta.fields(GlobalCollector)) |f| {
-                const Interface = @typeInfo(@typeInfo(f.type).optional.child).pointer.child;
+            const str_info = @typeInfo(GlobalCollector).@"struct";
+            inline for (str_info.field_names, str_info.field_types) |name, FieldType| {
+                const Interface = @typeInfo(@typeInfo(FieldType).optional.child).pointer.child;
                 if (std.mem.orderZ(u8, glob.interface, Interface.interface.name) == .eq) {
-                    @field(globals, f.name) = reg.bind(
+                    @field(globals, name) = reg.bind(
                         glob.name,
                         Interface,
                         Interface.generated_version,

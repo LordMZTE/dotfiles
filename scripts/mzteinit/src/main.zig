@@ -96,10 +96,11 @@ fn tryMain(init: std.process.Init) !void {
     var srv_future: ?std.Io.Future(Server.RunError!void) = null;
     if (env_map.data.get("XDG_RUNTIME_DIR")) |xrd| {
         var sockaddr_buf: [std.fs.max_path_bytes]u8 = undefined;
-        const sockaddr = try std.fmt.bufPrintZ(
+        const sockaddr = try std.mem.printSentinel(
             &sockaddr_buf,
             "{s}/mzteinit-{}-{}.sock",
             .{ xrd, std.os.linux.getuid(), std.os.linux.getpid() },
+            0,
         );
 
         try msg("starting socket server @ {s}...", .{sockaddr});
@@ -253,10 +254,11 @@ fn ui(io: std.Io, w: *std.Io.Writer, entries: []command.Command) !command.Comman
 
 fn createLogFile(io: std.Io) !std.Io.File {
     var fname_buf: [128]u8 = undefined;
-    const fname = try std.fmt.bufPrintZ(
+    const fname = try std.mem.printSentinel(
         &fname_buf,
         "/tmp/mzteinit-{}-{}.log",
         .{ std.os.linux.getuid(), std.os.linux.getpid() },
+        0,
     );
     return try std.Io.Dir.createFileAbsolute(io, fname, .{});
 }

@@ -7,8 +7,8 @@
     .dependencies = .{
         // Setup Deps
         .ziggy = .{
-            .url = "git+https://github.com/kristoff-it/ziggy.git?ref=new#1d09a051b66360af0abb17ca9c1450ab9402c641",
-            .hash = "ziggy-0.1.0-kTg8v0NUBgDw02WjSWvj82KR1RRawVs0P3_6Xubfa9Os",
+            .url = "git+https://github.com/kristoff-it/ziggy.git?ref=new#4454e2a751650acce0c09b162dcb427bae4128d1",
+            .hash = "ziggy-0.2.0-kTg8vw0TCAD0V2iN_jUvyeDrT61Cu7I5Bidxh0Me84-d",
         },
 
         // Scripts

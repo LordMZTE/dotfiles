@@ -56,7 +56,7 @@ pub fn onEvent(self: *LiveChat, mpv: *c.mpv_handle, io: std.Io, state: *State, e
 
                 // no need to flush, there's no buffer.
 
-                const sub_addr = try std.fmt.bufPrintZ(&buf, "fdclose://{}", .{pipe[0]});
+                const sub_addr = try std.mem.printSentinel(&buf, "fdclose://{}", .{pipe[0]}, 0);
                 try ffi.checkMpvError(c.mpv_command_async(
                     mpv,
                     0,

@@ -30,10 +30,11 @@ pub fn main(init: std.process.Init) !void {
 
         const logfd = logf: {
             var logf_pathbuf: [std.fs.max_path_bytes]u8 = undefined;
-            const logf_path = try std.fmt.bufPrintZ(
+            const logf_path = try std.mem.printSentinel(
                 &logf_pathbuf,
                 "/tmp/mzteriver-{}-{}.log",
                 .{ std.os.linux.getuid(), std.os.linux.getpid() },
+                0,
             );
 
             std.log.info("river log file: {s}", .{logf_path});

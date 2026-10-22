@@ -177,7 +177,7 @@ pub fn doCompile(
             }
 
             const compiled = ffi.luaToString(l, -1);
-            const luafile_z = try build_alloc.dupeZ(u8, luafile);
+            const luafile_z = try build_alloc.dupeSentinel(u8, luafile, 0);
 
             if (c.luaL_loadbuffer(l, compiled.ptr, compiled.len, luafile_z) != 0) {
                 log.warn(
@@ -190,7 +190,7 @@ pub fn doCompile(
             // remove compiled lua code string
             c.lua_remove(l, -2);
         } else {
-            const luafile_z = try alloc.dupeZ(u8, luafile);
+            const luafile_z = try alloc.dupeSentinel(u8, luafile, 0);
             defer alloc.free(luafile_z);
 
             if (c.luaL_loadfile(l, luafile_z) != 0) {

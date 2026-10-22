@@ -78,7 +78,7 @@ pub fn OptionalPayload(comptime T: type) type {
 
 fn EnumIntRoundUp(comptime T: type) type {
     const int_info = @typeInfo(@typeInfo(T).@"enum".tag_type).int;
-    return std.meta.Int(int_info.signedness, std.mem.alignForward(u16, int_info.bits, 8));
+    return @Int(int_info.signedness, std.mem.alignForward(u16, int_info.bits, 8));
 }
 
 pub fn readMessage(comptime T: type, reader: *std.Io.Reader, alloc: std.mem.Allocator) !T {
@@ -98,7 +98,7 @@ pub fn readMessage(comptime T: type, reader: *std.Io.Reader, alloc: std.mem.Allo
 pub fn writeMessage(comptime T: type, msg: T, writer: *std.Io.Writer) !void {
     const Tag = std.meta.Tag(T);
 
-    try writer.writeInt(EnumIntRoundUp(Tag), @intFromEnum(msg), native_endian);
+    try writer.writeInt(EnumIntRoundUp(Tag), @backingInt(msg), native_endian);
     switch (msg) {
         inline else => |*t| try t.write(writer),
     }

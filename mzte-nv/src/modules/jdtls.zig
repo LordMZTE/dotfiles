@@ -73,7 +73,7 @@ fn lFindRuntimes(l: *c.lua_State) !c_int {
             // and a path field (path to the runtime's home)
             ffi.ser.luaPushAny(l, .{
                 .name = rt.name,
-                .path = try std.fmt.bufPrintZ(&buf, jvmpath ++ "/{s}/", .{jvm.name}),
+                .path = try std.mem.printSentinel(&buf, jvmpath ++ "/{s}/", .{jvm.name}, 0),
             });
 
             // append table to list

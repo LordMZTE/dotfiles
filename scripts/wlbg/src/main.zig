@@ -16,10 +16,11 @@ pub fn main(init: std.process.Init) !void {
     const xdgrtdir = init.environ_map.get("XDG_RUNTIME_DIR") orelse return error.NoRuntimeDir;
 
     var sockpath_buf: [std.fs.max_path_bytes]u8 = undefined;
-    const sockpath = try std.fmt.bufPrintZ(
+    const sockpath = try std.mem.printSentinel(
         &sockpath_buf,
         "{s}/{s}-awww-daemon.sock",
         .{ xdgrtdir, wl_dpy_name },
+        0,
     );
 
     var walker = @import("Walker.zig").init(init.gpa);
@@ -87,10 +88,10 @@ pub fn main(init: std.process.Init) !void {
                 var siginf: std.os.linux.signalfd_siginfo = undefined;
                 std.debug.assert(try std.posix.read(sigfd, std.mem.asBytes(&siginf)) == @sizeOf(std.os.linux.signalfd_siginfo));
 
-                if (siginf.signo == @intFromEnum(std.os.linux.SIG.USR1)) {
+                if (siginf.signo == @backingInt(std.os.linux.SIG.USR1)) {
                     if (mode == .random)
                         try proto.randomizeWallpapers(init.io, &state, .random);
-                } else if (siginf.signo == @intFromEnum(std.os.linux.SIG.USR2)) {
+                } else if (siginf.signo == @backingInt(std.os.linux.SIG.USR2)) {
                     mode = switch (mode) {
                         .random => .dark,
                         .dark => .random,

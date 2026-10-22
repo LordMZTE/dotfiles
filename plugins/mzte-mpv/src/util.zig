@@ -12,7 +12,12 @@ pub fn msg(
     std.log.scoped(scope).info(fmt, args);
 
     var buf: [1024 * 4]u8 = undefined;
-    const osd_msg = try std.fmt.bufPrintZ(&buf, "[mzte-mpv " ++ @tagName(scope) ++ "] " ++ fmt, args);
+    const osd_msg = try std.mem.printSentinel(
+        &buf,
+        "[mzte-mpv " ++ @tagName(scope) ++ "] " ++ fmt,
+        args,
+        0,
+    );
     try ffi.checkMpvError(c.mpv_command(
         mpv,
         @constCast(&[_:null]?[*]const u8{ "show-text", osd_msg.ptr, "4000" }),

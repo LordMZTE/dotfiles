@@ -123,9 +123,9 @@ pub fn init(
     {
         var pbuf: [64]u8 = undefined;
         const scratchpad_tag: u32 = 1 << 9;
-        try con.runCommand(&.{ "spawn-tagmask", try std.fmt.bufPrintZ(&pbuf, "{}", .{~scratchpad_tag}) });
+        try con.runCommand(&.{ "spawn-tagmask", try std.mem.printSentinel(&pbuf, "{}", .{~scratchpad_tag}, 0) });
 
-        const tag_s = try std.fmt.bufPrintZ(&pbuf, "{}", .{scratchpad_tag});
+        const tag_s = try std.mem.printSentinel(&pbuf, "{}", .{scratchpad_tag}, 0);
         try con.runCommand(&.{ "map", "normal", "Super", "P", "toggle-focused-tags", tag_s });
         try con.runCommand(&.{ "map", "normal", "Super+Shift", "P", "set-view-tags", tag_s });
     }
@@ -134,8 +134,8 @@ pub fn init(
     for (0..9) |i| {
         var key_buf: [16]u8 = undefined;
         var tags_buf: [16]u8 = undefined;
-        const key = try std.fmt.bufPrintZ(&key_buf, "{}", .{i + 1});
-        const tags = try std.fmt.bufPrintZ(&tags_buf, "{}", .{@as(u32, 1) << @intCast(i)});
+        const key = try std.mem.printSentinel(&key_buf, "{}", .{i + 1}, 0);
+        const tags = try std.mem.printSentinel(&tags_buf, "{}", .{@as(u32, 1) << @intCast(i)}, 0);
 
         try con.runCommand(&.{ "map", "normal", "Super", key, "set-focused-tags", tags });
         try con.runCommand(&.{ "map", "normal", "Super+Shift", key, "set-view-tags", tags });

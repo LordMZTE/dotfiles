@@ -31,13 +31,14 @@ pub const std_options = std.Options{
             args: anytype,
         ) void {
             var msg_buf: [512]u8 = undefined;
-            const msg = std.fmt.bufPrintZ(&msg_buf, format, args) catch return;
+            const msg = std.mem.printSentinel(&msg_buf, format, args, 0) catch return;
 
             var title_buf: [512]u8 = undefined;
-            const title = std.fmt.bufPrintZ(
+            const title = std.mem.printSentinel(
                 &title_buf,
                 "MZTE-NV ({s})",
                 .{@tagName(scope)},
+                0,
             ) catch return;
 
             const lvl = switch (level) {

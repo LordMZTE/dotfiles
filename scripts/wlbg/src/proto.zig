@@ -152,7 +152,7 @@ pub fn query(io: std.Io, state: *State) !QueryAnswer {
 
     // send request
     {
-        var iov_data = [_]u8{0} ** 16;
+        var iov_data: [16]u8 = @splat(0);
         std.mem.bytesAsValue(u64, iov_data[0..8]).* = 1; // "code", 1 for query
         std.debug.assert(try posix.sendmsg(sock, &.{
             .name = null,
@@ -274,7 +274,7 @@ pub fn randomizeWallpapers(io: std.Io, state: *State, how: WallpaperMode) !void 
     // no padding needed on x86_64
     std.mem.bytesAsValue(std.posix.fd_t, ancillary_buf[@sizeOf(cmsghdr)..]).* = memfd;
 
-    var iov_data = [_]u8{0} ** 16;
+    var iov_data: [16]u8 = @splat(0);
     std.mem.bytesAsValue(u64, iov_data[0..8]).* = 3; // "code", 3 for img command
 
     {

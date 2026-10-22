@@ -88,7 +88,7 @@ pub fn onEvent(self: *LocalVids, mpv: *c.mpv_handle, io: std.Io, state: *State, 
                 );
 
                 if (self.last_stream_open_filename) |l| std.heap.c_allocator.free(l);
-                self.last_stream_open_filename = try std.heap.c_allocator.dupeZ(u8, path);
+                self.last_stream_open_filename = try std.heap.c_allocator.dupeSentinel(u8, path, 0);
             }
         },
         else => {},
@@ -115,7 +115,7 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
         var name_buf: [128]u8 = undefined;
         try ffi.checkMpvError(c.mpv_get_property(
             mpv,
-            try std.fmt.bufPrintZ(&name_buf, "playlist/{}/filename", .{pos}),
+            try std.mem.printSentinel(&name_buf, "playlist/{}/filename", .{pos}, 0),
             c.MPV_FORMAT_STRING,
             @ptrCast(&raw_filename_cstr),
         ));
@@ -135,7 +135,7 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
         std.debug.assert(self.set_path_to == null);
 
         // Save it so we can set it in on_load.
-        self.set_path_to = try std.heap.c_allocator.dupeZ(u8, filename);
+        self.set_path_to = try std.heap.c_allocator.dupeSentinel(u8, filename, 0);
     }
 
     // Only handle regular files.
@@ -157,10 +157,10 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
 
     // find vids dir
     while (true) {
-        const guess = try std.fmt.bufPrintZ(&subpath_buf, "{s}/" ++ vids_dirname, .{dir});
+        const guess = try std.mem.printSentinel(&subpath_buf, "{s}/" ++ vids_dirname, .{dir}, 0);
         if (std.Io.Dir.cwd().statFile(self.io, guess, .{})) |_| {
             if (self.vids_dir) |v| std.heap.c_allocator.free(v);
-            self.vids_dir = try std.heap.c_allocator.dupeZ(u8, guess);
+            self.vids_dir = try std.heap.c_allocator.dupeSentinel(u8, guess, 0);
             break;
         } else |e| {
             switch (e) {
@@ -178,7 +178,7 @@ fn onBeforeStartFile(self: *LocalVids, mpv: *c.mpv_handle) !void {
     }
 
     if (self.vids_dir) |v| {
-        const d = try std.fmt.bufPrintZ(&path_buf, "{s}/watch_later", .{v});
+        const d = try std.mem.printSentinel(&path_buf, "{s}/watch_later", .{v}, 0);
         log.info("using local watch-later-dir @ {s}", .{d});
 
         if (self.old_watch_later) |o| c.mpv_free(o);
@@ -228,10 +228,11 @@ fn handleDeletionOnExit(self: *LocalVids, io: std.Io) !void {
         // Also delete the live_chat file from yt-dlp if present
         if (std.mem.lastIndexOfScalar(u8, self.last_stream_open_filename.?, '.')) |dot_idx| {
             var fname_buf: [std.fs.max_path_bytes]u8 = undefined;
-            const livechat_fname = try std.fmt.bufPrintZ(
+            const livechat_fname = try std.mem.printSentinel(
                 &fname_buf,
                 "{s}.live_chat.json",
                 .{self.last_stream_open_filename.?[0..dot_idx]},
+                0,
             );
 
             std.Io.Dir.cwd().deleteFile(io, livechat_fname) catch |e| switch (e) {

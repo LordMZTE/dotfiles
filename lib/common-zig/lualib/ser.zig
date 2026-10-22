@@ -56,18 +56,18 @@ pub fn luaPushAny(l: *c.lua_State, x: anytype) void {
             }
 
             if (S.is_tuple) {
-                c.lua_createtable(l, S.fields.len, 0);
+                c.lua_createtable(l, S.field_names.len, 0);
 
-                inline for (S.fields, 1..) |Field, i| {
-                    luaPushAny(l, @field(x, Field.name));
+                inline for (S.field_names, 1..) |name, i| {
+                    luaPushAny(l, @field(x, name));
                     c.lua_rawseti(l, -2, i);
                 }
             } else {
-                c.lua_createtable(l, 0, S.fields.len);
+                c.lua_createtable(l, 0, S.field_names.len);
 
-                inline for (S.fields) |Field| {
-                    luaPushAny(l, @field(x, Field.name));
-                    c.lua_setfield(l, -2, (Field.name ++ &[_]u8{0}).ptr);
+                inline for (S.field_names) |name| {
+                    luaPushAny(l, @field(x, name));
+                    c.lua_setfield(l, -2, (name ++ &[_]u8{0}).ptr);
                 }
             }
         },

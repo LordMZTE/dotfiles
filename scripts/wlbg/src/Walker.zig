@@ -25,9 +25,10 @@ pub fn walk(self: *Self, io: std.Io, dir: std.Io.Dir) anyerror!void {
         switch (e.kind) {
             .file => {
                 var rpath_buf: [std.fs.max_path_bytes]u8 = undefined;
-                const path = try self.filename_arena.allocator().dupeZ(
+                const path = try self.filename_arena.allocator().dupeSentinel(
                     u8,
                     rpath_buf[0..try dir.realPathFile(io, e.name, &rpath_buf)],
+                    0,
                 );
                 try self.files.append(self.alloc, path);
             },
@@ -42,7 +43,8 @@ pub fn walk(self: *Self, io: std.Io, dir: std.Io.Dir) anyerror!void {
                 var subdir = dir.openDir(io, p, .{ .iterate = true }) catch |err| {
                     switch (err) {
                         error.NotDir => {
-                            const fpath = try self.filename_arena.allocator().dupeZ(u8, p);
+                            const fpath = try self.filename_arena.allocator()
+                                .dupeSentinel(u8, p, 0);
                             try self.files.append(self.alloc, fpath);
                             continue;
                         },

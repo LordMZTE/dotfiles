@@ -12,7 +12,7 @@ let
     preferLocalBuild = true;
 
     nativeBuildInputs = with pkgs; [
-      zig_0_16
+      zig_0_17
     ];
 
     dontConfigure = true;
@@ -35,7 +35,7 @@ in
     dontConfigure = true;
 
     nativeBuildInputs = with pkgs; [
-      zig_0_16.hook
+      zig_0_17.hook
 
       pkg-config
       wayland-protocols

@@ -76,7 +76,7 @@
                 wayland-scanner
                 haxe
                 mpv-unwrapped
-                zig_0_16
+                zig_0_17
               ] ++ (with pkgs.haskellPackages; [ ghc haskell-language-server ]);
           };
 

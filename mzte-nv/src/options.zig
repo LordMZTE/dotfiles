@@ -66,7 +66,7 @@ pub fn initOptions() !void {
         "perl",
         "node",
     }) |garbage| {
-        const var_name = try std.fmt.bufPrintZ(&buf, "g:loaded_{s}_provider", .{garbage});
+        const var_name = try std.mem.printSentinel(&buf, "g:loaded_{s}_provider", .{garbage}, 0);
         setVar(var_name, .{ .bool = false });
     }
 
