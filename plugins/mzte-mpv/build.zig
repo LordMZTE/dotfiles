@@ -1,21 +1,26 @@
 const std = @import("std");
 const common = @import("common");
 
+const Translator = @import("translate_c").Translator;
+
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("c.h"),
+    // For each tag here, we'll build the library once and pass the given mode as an option.
+    const translate_c = b.dependency("translate_c", .{});
+    const translator: Translator = .init(translate_c, .{
+        .c_source_file = b.path("c.h"),
         .target = target,
         .optimize = optimize,
+        .link_system_libs = &.{
+            // Linking MPV for a plugin is usually undesirable, but it seems to work anyways.
+            // This is here because Zig will otherwise not find the necessary header files on NixOS,
+            // and there appears to be no way to obtain an include path using pkg-config without
+            // also linking.
+            .{ .name = "mpv" },
+        },
     });
-
-    // Linking MPV for a plugin is usually undesirable, but it seems to work anyways.
-    // This is here because Zig will otherwise not find the necessary header files on NixOS,
-    // and there appears to be no way to obtain an include path using pkg-config without
-    // also linking.
-    translate_c.linkSystemLibrary("mpv", .{});
 
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
@@ -23,7 +28,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .imports = &.{
-            .{ .name = "c", .module = translate_c.createModule() },
+            .{ .name = "c", .module = translator.mod },
         },
     });
 

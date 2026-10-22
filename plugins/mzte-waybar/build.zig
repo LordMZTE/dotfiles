@@ -1,4 +1,5 @@
 const std = @import("std");
+const Translator = @import("translate_c").Translator;
 
 // For each tag here, we'll build the library once and pass the given mode as an option.
 const Mode = enum {
@@ -9,15 +10,15 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("c.h"),
+    const translate_c = b.dependency("translate_c", .{});
+    const translator: Translator = .init(translate_c, .{
+        .c_source_file = b.path("c.h"),
         .target = target,
         .optimize = optimize,
+        .link_system_libs = &.{
+            .{.name = "gtk+-3.0"},
+        },
     });
-
-    translate_c.linkSystemLibrary("gtk+-3.0", .{});
-
-    const translate_c_mod = translate_c.createModule();
 
     const lib_mod = b.createModule(.{
         .root_source_file = b.path("lib/main.zig"),
@@ -25,7 +26,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
         .imports = &.{
-            .{ .name = "c", .module = translate_c_mod },
+            .{ .name = "c", .module = translator.mod },
         },
     });
 
@@ -42,7 +43,7 @@ pub fn build(b: *std.Build) void {
             .imports = &.{
                 .{ .name = "lib", .module = lib_mod },
                 .{ .name = "common", .module = common_mod },
-                .{ .name = "c", .module = translate_c_mod },
+                .{ .name = "c", .module = translator.mod },
             },
         });
 

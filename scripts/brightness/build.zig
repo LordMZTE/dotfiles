@@ -1,16 +1,19 @@
 const std = @import("std");
+const Translator = @import("translate_c").Translator;
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("c.h"),
+    const translate_c = b.dependency("translate_c", .{});
+    const translator: Translator = .init(translate_c, .{
+        .c_source_file = b.path("c.h"),
         .target = target,
         .optimize = optimize,
+        .link_system_libs = &.{
+            .{.name = "ddcutil"},
+        },
     });
-
-    translate_c.linkSystemLibrary("ddcutil", .{});
 
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
@@ -30,7 +33,7 @@ pub fn build(b: *std.Build) void {
             }).module("args"),
         }, .{
             .name = "c",
-            .module = translate_c.createModule(),
+            .module = translator.mod,
         } },
         .link_libc = true,
     });

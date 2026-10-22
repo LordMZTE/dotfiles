@@ -1,4 +1,5 @@
 const std = @import("std");
+const Translator = @import("translate_c").Translator;
 
 pub const confgen_json_opt = std.json.ParseOptions{ .ignore_unknown_fields = true };
 
@@ -12,20 +13,19 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const lua_translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("lua.h"),
+    const translate_c = b.dependency("translate_c", .{});
+    const translator: Translator = .init(translate_c, .{
+        .c_source_file = b.path("lua.h"),
         .target = target,
         .optimize = optimize,
     });
-
-    lua_translate_c.linkSystemLibrary("luajit", .{});
 
     _ = b.addModule("lualib", .{
         .root_source_file = b.path("lualib/main.zig"),
         .target = target,
         .optimize = optimize,
         .imports = &.{
-            .{ .name = "c", .module = lua_translate_c.createModule() },
+            .{ .name = "c", .module = translator.mod },
         },
     });
 }

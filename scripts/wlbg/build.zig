@@ -1,5 +1,6 @@
 const std = @import("std");
 const common = @import("common");
+const Translator = @import("translate_c").Translator;
 
 const CgOpt = struct {
     catppuccin: struct { base: [:0]const u8 },
@@ -9,13 +10,15 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("c.h"),
+    const translate_c = b.dependency("translate_c", .{});
+    const translator: Translator = .init(translate_c, .{
+        .c_source_file = b.path("c.h"),
         .target = target,
         .optimize = optimize,
+        .link_system_libs = &.{
+            .{ .name = "gdk-pixbuf-2.0" },
+        },
     });
-
-    translate_c.linkSystemLibrary("gdk-pixbuf-2.0", .{});
 
     const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
@@ -23,7 +26,11 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .link_libc = true,
         .imports = &.{
-            .{ .name = "c", .module = translate_c.createModule() },
+            .{ .name = "c", .module = translator.mod },
+            .{ .name = "common", .module = b.dependency("common", .{
+                .target = target,
+                .optimize = optimize,
+            }).module("common") },
         },
     });
 
@@ -31,11 +38,6 @@ pub fn build(b: *std.Build) !void {
         .name = "wlbg",
         .root_module = mod,
     });
-
-    mod.addImport("common", b.dependency("common", .{
-        .target = target,
-        .optimize = optimize,
-    }).module("common"));
 
     mod.addAnonymousImport("cg", .{
         .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
