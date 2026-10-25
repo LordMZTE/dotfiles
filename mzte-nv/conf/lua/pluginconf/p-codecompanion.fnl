@@ -50,7 +50,7 @@
                                                                                mztenv.reg.openrouter_key)}})
                                 nil))
 
-(local def-adapter (. mztenv.reg.openai_endpoints 1 name))
+(local def-adapter (. mztenv.reg.openai_endpoints 1 :name))
 
 (cc.setup {:adapters {:http adapters}
            :interactions {:chat {:adapter def-adapter}
