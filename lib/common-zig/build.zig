@@ -18,6 +18,9 @@ pub fn build(b: *std.Build) void {
         .c_source_file = b.path("lua.h"),
         .target = target,
         .optimize = optimize,
+        .link_system_libs = &.{
+            .{ .name = "luajit" },
+        },
     });
 
     _ = b.addModule("lualib", .{
