@@ -71,30 +71,52 @@ let
     "10-nui" = plugin "nui.nvim";
   };
 
-  mzte-nv-compiler = stdenv.mkDerivation {
-    name = "mzte-nv-compiler";
-    src = lib.fileset.toSource {
-      root = ../..;
-      fileset = lib.fileset.unions [
-        ../../lib/common-zig
-        ../../mzte-nv/build.zig
-        ../../mzte-nv/build.zig.zon
-        ../../mzte-nv/fallback-opts.zon
-        ../../mzte-nv/src
-      ];
+  mzte-nv-compiler =
+    let
+      name = "mzte-nv-compiler";
+      src = lib.fileset.toSource {
+        root = ../..;
+        fileset = lib.fileset.unions [
+          ../../lib/common-zig
+          ../../mzte-nv/build.zig
+          ../../mzte-nv/build.zig.zon
+          ../../mzte-nv/fallback-opts.zon
+          ../../mzte-nv/src
+        ];
+      };
+      deps = pkgs.runCommand "${name}-zig-deps"
+        {
+          inherit src;
+
+          outputHashMode = "recursive";
+          outputHash = "sha256-uaroib301jKg7VygugAL4ny6ODk4ULw4JwKLSPT59a4=";
+          nativeBuildInputs = [ pkgs.zig_0_17 ];
+        } ''
+        runHook unpackPhase
+        cd $sourceRoot/mzte-nv
+        export ZIG_GLOBAL_CACHE_DIR=$(mktemp -d)
+        zig build --fetch
+        mv zig-pkg $out
+      '';
+    in
+    stdenv.mkDerivation {
+      inherit src name;
+      patchPhase = "cd mzte-nv";
+
+      nativeBuildInputs = with pkgs; [ zig_0_17.hook makeBinaryWrapper ];
+      buildInputs = with pkgs; [ pkg-config luajit ];
+
+      zigBuildFlags = [ "-Dcompiler-only" ];
+
+      preBuild = ''
+        ln -sf "${deps}" "zig-pkg"
+      '';
+
+      postInstall = ''
+        wrapProgram $out/bin/mzte-nv-compile \
+          --set MZTE_NV_FENNEL "${pkgs.luajitPackages.fennel}/share/lua/5.1/fennel.lua"
+      '';
     };
-    patchPhase = "cd mzte-nv";
-
-    nativeBuildInputs = with pkgs; [ zig_0_17.hook makeBinaryWrapper ];
-    buildInputs = with pkgs; [ pkg-config luajit ];
-
-    zigBuildFlags = [ "-Dcompiler-only" ];
-
-    postInstall = ''
-      wrapProgram $out/bin/mzte-nv-compile \
-        --set MZTE_NV_FENNEL "${pkgs.luajitPackages.fennel}/share/lua/5.1/fennel.lua"
-    '';
-  };
 in
 {
   options.cgnix.nvim-plugins = lib.mkOption { };
