@@ -4,7 +4,7 @@
 (local adapters (require :codecompanion.adapters))
 (local oai (require :codecompanion.adapters.http.openai_compatible))
 
-(fn llama-cpp-conf [url]
+(fn llama-cpp-conf [url headers]
   (let [parse_message_meta (fn [self data]
                              (local extra data.extra)
                              (when (and extra extra.reasoning_content)
@@ -36,19 +36,16 @@
                           ;; Delegate to underlying handler
                           (oai.handlers.form_messages self final)))]
     {:env {:chat_url :/v1/chat/completions : url}
-     :handlers {: parse_message_meta : form_messages}}))
+     :handlers {: parse_message_meta : form_messages}
+     : headers}))
 
 (local adapters
        (collect [_ ep (ipairs mztenv.reg.openai_endpoints)]
          (values ep.name
-                 #(adapters.extend :openai_compatible
-                                   (llama-cpp-conf ep.base_url)))))
-
-(tset adapters :openrouter #(if mztenv.reg.openrouter_key
-                                (adapters.extend :openrouter
-                                                 {:headers {:Authorization (.. "Bearer "
-                                                                               mztenv.reg.openrouter_key)}})
-                                nil))
+                 (if (= ep.name :openrouter)
+                     #(adapters.extend :openrouter {:headers ep.headers})
+                     #(adapters.extend :openai_compatible
+                                       (llama-cpp-conf ep.base_url ep.headers))))))
 
 (local def-adapter (. mztenv.reg.openai_endpoints 1 :name))
 

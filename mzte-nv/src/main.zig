@@ -114,11 +114,6 @@ fn lOnInit(l: *c.lua_State) !c_int {
         }
     }
 
-    if (@hasField(@TypeOf(opts), "openrouter_key")) {
-        ffi.luaPushString(l, opts.openrouter_key);
-        c.lua_setfield(l, -2, "openrouter_key");
-    }
-
     c.lua_createtable(l, opts.openai_endpoints.len, 0);
     inline for (opts.openai_endpoints, 1..) |ep, i| {
         ffi.ser.luaPushAny(l, ep);
