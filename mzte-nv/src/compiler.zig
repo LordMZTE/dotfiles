@@ -38,13 +38,14 @@ pub fn main(init: std.process.Init) !void {
         return error.InvalidArgs;
     };
 
-    try doCompile(input_arg, init.io, init.gpa, init.environ_map.get(fnl_env_var));
+    try doCompile(input_arg, init.io, init.gpa, init.arena.allocator(), init.environ_map.get(fnl_env_var));
 }
 
 pub fn doCompile(
-    path: []const u8,
+    path: [:0]const u8,
     io: std.Io,
-    alloc: std.mem.Allocator,
+    gpa: std.mem.Allocator,
+    arena: std.mem.Allocator,
     fnl_path: ?[]const u8,
 ) !void {
     const l = c.luaL_newstate();
@@ -86,38 +87,33 @@ pub fn doCompile(
     }
     c.lua_getfield(l, c.LUA_GLOBALSINDEX, "string");
 
-    // an arena allocator to hold data to be used during the build
-    var build_arena = std.heap.ArenaAllocator.init(alloc);
-    defer build_arena.deinit();
-    const build_alloc = build_arena.allocator();
-
     // a list of lua files to compile
-    var files: std.ArrayListUnmanaged([]const u8) = .empty;
-    defer files.deinit(alloc);
+    var files: std.ArrayListUnmanaged([:0]const u8) = .empty;
+    defer files.deinit(gpa);
 
     if ((try std.Io.Dir.cwd().statFile(io, path, .{})).kind == .directory) {
         var dir = try std.Io.Dir.cwd().openDir(io, path, .{ .iterate = true });
         defer dir.close(io);
 
-        var walker = try dir.walk(alloc);
+        var walker = try dir.walk(gpa);
         defer walker.deinit();
 
         while (try walker.next(io)) |entry| {
-            const entry_path = try std.fs.path.join(build_alloc, &.{ path, entry.path });
 
             switch (entry.kind) {
                 .file => {
                     if (std.mem.endsWith(u8, entry.path, ".lua") or
                         std.mem.endsWith(u8, entry.path, ".fnl"))
                     {
-                        try files.append(alloc, entry_path);
+                        const entry_path = try std.fs.path.joinZ(arena, &.{ path, entry.path });
+                        try files.append(gpa, entry_path);
                     }
                 },
                 else => {},
             }
         }
     } else {
-        try files.append(alloc, path);
+        try files.append(gpa, path);
     }
 
     var n_fnl: usize = 0;
@@ -129,8 +125,7 @@ pub fn doCompile(
         // reset lua stack
         defer c.lua_settop(l, stacktop);
 
-        var outname = try alloc.dupe(u8, luafile);
-        defer alloc.free(outname);
+        var outname = try arena.dupe(u8, luafile);
 
         c.lua_getfield(l, -1, "dump");
 
@@ -155,9 +150,10 @@ pub fn doCompile(
 
             // 16 MB better be enough
             const data = try reader.interface.allocRemaining(
-                build_alloc,
+                gpa,
                 .limited(1024 * 1024 * 16),
             );
+            defer gpa.free(data);
 
             // fennel.compile-string
             c.lua_getfield(l, -3, "compile-string");
@@ -177,9 +173,8 @@ pub fn doCompile(
             }
 
             const compiled = ffi.luaToString(l, -1);
-            const luafile_z = try build_alloc.dupeSentinel(u8, luafile, 0);
 
-            if (c.luaL_loadbuffer(l, compiled.ptr, compiled.len, luafile_z) != 0) {
+            if (c.luaL_loadbuffer(l, compiled.ptr, compiled.len, luafile) != 0) {
                 log.warn(
                     "error compiling fennel lua object {s}: {s}",
                     .{ luafile, ffi.luaToString(l, -1) },
@@ -190,10 +185,7 @@ pub fn doCompile(
             // remove compiled lua code string
             c.lua_remove(l, -2);
         } else {
-            const luafile_z = try alloc.dupeSentinel(u8, luafile, 0);
-            defer alloc.free(luafile_z);
-
-            if (c.luaL_loadfile(l, luafile_z) != 0) {
+            if (c.luaL_loadfile(l, luafile) != 0) {
                 log.warn(
                     "error compiling lua object {s}: {s}",
                     .{ luafile, ffi.luaToString(l, -1) },

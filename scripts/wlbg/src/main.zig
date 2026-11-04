@@ -23,9 +23,9 @@ pub fn main(init: std.process.Init) !void {
         0,
     );
 
-    var walker = @import("Walker.zig").init(init.gpa);
-    defer walker.deinit();
-    try walker.findWallpapers(init.io, init.environ_map);
+    var walker: @import("Walker.zig") = .init;
+    defer walker.deinit(init.gpa);
+    try walker.findWallpapers(init.io, init.gpa, init.arena.allocator(), init.environ_map);
 
     std.log.info("found {} wallpapers", .{walker.files.items.len});
     if (walker.files.items.len == 0) return error.NoWallpapers;
