@@ -83,7 +83,7 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle, io: std.Io) !void {
 
     if (title == null) {
         // fall back to getting title from `media-title`
-        var media_title_cstr: [*:0]const u8 = undefined;
+        var media_title_cstr: ?[*:0]const u8 = null;
         try ffi.checkMpvError(c.mpv_get_property(
             mpv,
             "media-title",
@@ -91,7 +91,9 @@ fn onMetaChange(self: *BetterTags, mpv: *c.mpv_handle, io: std.Io) !void {
             @ptrCast(&media_title_cstr),
         ));
 
-        title = std.mem.span(media_title_cstr);
+        // This shouldn't happen according to the docs of mpv_get_property, but it does sometimes,
+        // randomly.
+        if (media_title_cstr) |t| title = std.mem.span(t);
     }
 
     var out_buf: [1024]u8 = undefined;
