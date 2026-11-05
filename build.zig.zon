@@ -15,7 +15,6 @@
         .brightness = .{ .path = "scripts/brightness" },
         .mzteinit = .{ .path = "scripts/mzteinit" },
         .mzteriver = .{ .path = "scripts/mzteriver" },
-        .mzteriver_classic = .{ .path = "scripts/mzteriver_classic" },
         .openbrowser = .{ .path = "scripts/openbrowser" },
         .playvid = .{ .path = "scripts/playvid" },
         .prompt = .{ .path = "scripts/prompt" },

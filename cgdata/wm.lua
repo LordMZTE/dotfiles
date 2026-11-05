@@ -93,7 +93,7 @@ M.launch_keys = {
 
 -- Wayland compositors that we know about
 M.known_wayland_compositors = {
-    "river", "river-classic", "hyprland", "niri"
+    "river", "hyprland", "niri"
 }
 
 -- Startup commands to run for the given WM
@@ -114,8 +114,6 @@ function M.startupCommands(wm)
     if wm == "river" then
         table.insert(startup, cmd.argv { "mzterwm" })
         table.insert(startup, cmd.argv { "channel" })
-    elseif wm == "river-classic" then
-        table.insert(startup, cmd.argv { "rivertile" })
     end
 
     if dev_conf.modifyStartupCommands then

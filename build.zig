@@ -24,7 +24,6 @@ pub fn build(b: *std.Build) !void {
     inst.addZBuild(b, opts, zargs, "brightness");
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");
-    inst.addZBuild(b, opts, zargs, "mzteriver_classic");
     inst.addZBuild(b, opts, zargs, "openbrowser");
     inst.addZBuild(b, opts, zargs, "prompt");
     inst.addZBuild(b, opts, zargs, "vinput");

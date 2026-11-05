@@ -80,7 +80,7 @@ window#waybar.hidden {
 /* ==== Left Modules ==== */
 
 /* Workspaces/Tags */
-<! if opt.wayland_compositor == "river" or opt.wayland_compositor == "river-classic" then
+<! if opt.wayland_compositor == "river" then
     modcolorconf(
         "tags",
         opt.catppuccin.text,

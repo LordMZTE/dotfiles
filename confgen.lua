@@ -116,7 +116,7 @@ end
 -- Set the currently active wayland compositor. Updates options for templates as well as gsettings.
 cg.opt.setCurrentWaylandCompositor = function(comp)
     cg.opt.wayland_compositor = comp
-    if comp == "river" or comp == "river-classic" then
+    if comp == "river" then
         cg.opt.system 'gsettings set org.gnome.desktop.wm.preferences button-layout ""'
     else
         cg.opt.system "gsettings reset org.gnome.desktop.wm.preferences button-layout"

@@ -7,9 +7,7 @@ local bar_icons = { " ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" 
 
 -- This is a function so we can re-execute it when the compositor changes.
 function M.modulesLeft()
-    if cg.opt.wayland_compositor == "river-classic" then
-        return { "river/tags", "river/window" }
-    elseif cg.opt.wayland_compositor == "river" then
+    if cg.opt.wayland_compositor == "river" then
         return { "cffi/mzterwm-tags", "cffi/mzterwm-title" }
     elseif cg.opt.wayland_compositor == "hyprland" then
         return { "hyprland/workspaces", "hyprland/window" }
@@ -62,16 +60,6 @@ function M.moduleConfig()
             module_path = module_path,
             mode = "title",
             max_len = max_length,
-        }
-    elseif cg.opt.wayland_compositor == "river-classic" then
-        conf["river/tags"] = {
-            ["num-tags"] = #river_labels,
-            ["tag-labels"] = river_labels,
-            ["hide-vacant"] = true,
-        }
-
-        conf["river/window"] = {
-            ["max-length"] = max_length,
         }
     end
 
