@@ -107,6 +107,7 @@ function M.startupCommands(wm)
         table.insert(startup, cmd.argv { "wlbg" })   -- custom wallpaper
         table.insert(startup, cmd.argv { "waybar" })
         table.insert(startup, cmd.argv { "fnott" })  -- notification daemon for WL
+        table.insert(startup, cmd.argv { "foot", "--server" }) -- terminal server
     else
         table.insert(startup, cmd.argv { "wired" })  -- notification daemon for X
     end

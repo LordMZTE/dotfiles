@@ -29,10 +29,10 @@ cg.opt.mulFontSize = function(siz) return math.floor(siz * cg.opt.font_size_mul)
 -- Configurations for all terminals I tend to use. To activate one, set cg.opt.term to it.
 cg.opt.terminal_configurations = {
     foot = {
-        name = "foot",
-        command = cmd.argv { "foot" },
-        exec = cmd.argv { "foot" },
-        workdir_command = cmd.argv { "foot", "--working-directory=" },
+        name = "footclient",
+        command = cmd.argv { "footclient" },
+        exec = cmd.argv { "footclient" },
+        workdir_command = cmd.argv { "footclient", "--working-directory=" },
         icon_name = "foot",
     },
     ghostty = {
