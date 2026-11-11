@@ -47,7 +47,7 @@ pub fn main(init: std.process.Init) !void {
     //};
 
     const editor_argv = [_][]const u8{
-        "foot",
+        "footclient",
         "--app-id",
         "vinput-editor",
         "--",

@@ -39,7 +39,8 @@ runXplr :: String -> String -> String -> Bool -> IO ()
 runXplr title path outfile directory =
   void $
     ( spawnProcess
-        "foot"
+        -- TODO: Confgenify
+        "footclient"
         [ "--title",
           title,
           "--",
