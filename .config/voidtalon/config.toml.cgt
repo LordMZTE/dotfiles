@@ -1,0 +1,11 @@
+deferMarkdown = true
+
+<! for _, ep in ipairs(opt.openai_endpoints) do !>
+[[connections]]
+name = "<% ep.name %>"
+base_url = "<% ep.base_url %>/v1"
+headers = {
+<! for k, v in pairs(ep.headers or {}) do !>    "<% k %>" = "<% v %>",
+<! end !>}
+<! if ep.default_model then !>default_model = "<% ep.default_model %>"<! end !>
+<! end !>

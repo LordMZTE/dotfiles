@@ -166,6 +166,7 @@ cg.opt.openai_endpoints = {
     {
         name = "llama.cpp",
         base_url = "http://127.0.0.1:11434",
-        -- headers = { Authorization = "..." }
+        -- headers = { Authorization = "..." },
+        -- default_model = "...",
     }
 }
