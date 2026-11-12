@@ -1,0 +1,10 @@
+.{
+    .name = .mzte_xdptf_xplr_wrapper,
+    .version = "0.0.0",
+    .paths = .{""},
+    .fingerprint = 0x71e042c2a3142618,
+
+    .dependencies = .{
+        .common = .{ .path = "../../lib/common-zig" },
+    },
+}

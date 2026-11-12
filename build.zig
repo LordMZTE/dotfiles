@@ -22,15 +22,13 @@ pub fn build(b: *std.Build) !void {
 
     // Zig build Scripts
     inst.addZBuild(b, opts, zargs, "brightness");
+    inst.addZBuild(b, opts, zargs, "mzte_xdptf_xplr_wrapper");
     inst.addZBuild(b, opts, zargs, "mzteinit");
     inst.addZBuild(b, opts, zargs, "mzteriver");
     inst.addZBuild(b, opts, zargs, "openbrowser");
     inst.addZBuild(b, opts, zargs, "prompt");
     inst.addZBuild(b, opts, zargs, "vinput");
     inst.addZBuild(b, opts, zargs, "wlbg");
-
-    // Other scripts
-    inst.addHaskellScript(b, opts, optimize, "mzte-xdptf-xplr-wrapper");
 
     // Plugins
     inst.addZBuild(b, opts, zargs, "mzte-mpv");

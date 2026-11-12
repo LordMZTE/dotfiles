@@ -13,6 +13,7 @@
 
         // Scripts
         .brightness = .{ .path = "scripts/brightness" },
+        .mzte_xdptf_xplr_wrapper = .{ .path = "scripts/mzte-xdptf-xplr-wrapper" },
         .mzteinit = .{ .path = "scripts/mzteinit" },
         .mzteriver = .{ .path = "scripts/mzteriver" },
         .openbrowser = .{ .path = "scripts/openbrowser" },

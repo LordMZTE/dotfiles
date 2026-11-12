@@ -1,0 +1,41 @@
+const std = @import("std");
+const common = @import("common");
+
+pub fn build(b: *std.Build) !void {
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
+
+    const common_mod = b.dependency("common", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("common");
+
+    const mod = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{.name = "common", .module = common_mod},
+        },
+    });
+
+    const exe = b.addExecutable(.{
+        .name = "mzte-xdptf-xplr-wrapper",
+        .root_module = mod,
+    });
+
+    mod.addAnonymousImport("cg", .{
+        .root_source_file = common.confgenPath(b, "cgassets/constsiz_opts.zon"),
+    });
+
+    b.installArtifact(exe);
+
+    const run_cmd = b.addRunArtifact(exe);
+    run_cmd.step.dependOn(b.getInstallStep());
+
+    run_cmd.addPassthruArgs();
+
+    const run_step = b.step("run", "Run the app");
+    run_step.dependOn(&run_cmd.step);
+}
+
