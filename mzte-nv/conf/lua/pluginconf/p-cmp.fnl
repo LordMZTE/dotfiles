@@ -8,7 +8,7 @@
                      :nvim_lsp " "
                      :path " "
                      :treesitter " "
-                     :llamacpp " 󰫢"})
+                     :cmp_ai " 󰫢"})
 
 (cmp.setup {:snippet {:expand #(luasnip.lsp_expand (. $1 :body))}
             :mapping {:<C-b> (cmp.mapping (cmp.mapping.scroll_docs -4) [:i :c])
