@@ -2,12 +2,13 @@
        (values (require :cmp) (require :luasnip) (require :colorful-menu)
                (require :mzte_nv)))
 
-(local sources {:buffer " "
-                :luasnip " "
-                :nvim_lsp " "
-                :path " "
-                :treesitter " "
-                :lua-latex-symbols " "})
+(local sources [:buffer :luasnip :nvim_lsp :path :treesitter])
+(local source-icons {:buffer " "
+                     :luasnip " "
+                     :nvim_lsp " "
+                     :path " "
+                     :treesitter " "
+                     :llamacpp " 󰫢"})
 
 (cmp.setup {:snippet {:expand #(luasnip.lsp_expand (. $1 :body))}
             :mapping {:<C-b> (cmp.mapping (cmp.mapping.scroll_docs -4) [:i :c])
@@ -19,12 +20,14 @@
                                                  (luasnip.expand_or_jump)
                                                  ($1))
                                             [:i :s])
+                      :<C-v> (cmp.mapping (cmp.mapping.complete {:config {:sources (cmp.config.sources [{:name :cmp_ai}])}})
+                                          [:i :c])
                       :<CR> (cmp.mapping.confirm {:select true})}
-            :sources (cmp.config.sources (icollect [n _ (pairs sources)]
-                                           {:name n}))
+            :sources (cmp.config.sources (icollect [_ name (ipairs sources)]
+                                           {: name}))
             :formatting {:format (fn [entry vim-item]
                                    (tset vim-item :menu
-                                         (. sources entry.source.name))
+                                         (. source-icons entry.source.name))
                                    (let [hlinf (colorful-menu.cmp_highlights entry)]
                                      (when (not= hlinf nil)
                                        (tset vim-item :abbr_hl_group

@@ -12,6 +12,11 @@ let
 
     # CMP
     "45-cmp" = plugin "nvim-cmp";
+    "50-cmp-ai" = fetchGit {
+      # TODO: when this is in upstream, mirror to mztegit.
+      url = "https://github.com/LordMZTE/cmp-ai";
+      ref = "llamacpp";
+    };
     "50-cmp-nvim-lsp" = plugin "cmp-nvim-lsp";
     "50-cmp-buffer" = plugin "cmp-buffer";
     "50-cmp-path" = plugin "cmp-path";

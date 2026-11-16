@@ -44,6 +44,7 @@ class Plugins {
             "ufo",
             "mini",
             "codecompanion",
+            "cmp-ai",
         ].map(n -> (new LuaPlugin(n) : IPlugin)));
     }
 
