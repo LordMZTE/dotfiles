@@ -6,11 +6,7 @@
     .nix = <% zon.serialize(opt.nix) %>,
     .textwidth = <% opt.textwidth %>,
 
-    // The reason we're not getting this from confgen is that nvim-qt (which I want to replace, but
-    // every other GUI is broken in some way) does not use fontconfig like a normal person but
-    // instead some dumb Qt font naming where the font has a completely different name for whatever
-    // reason.
-    .font = "<% opt.font %> Mono SemCond:h<% opt.mulFontSize(12) %>",
+    .font = "<% opt.term_font %>:h<% opt.mulFontSize(12) %>",
 
     .openai_endpoints = .{
         <! for _, remote in ipairs(opt.openai_endpoints) do !>
