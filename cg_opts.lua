@@ -19,8 +19,8 @@ cg.opt.good_internet = true
 -- Enable if stuck on garbage hardware. Enables wayland-related workarounds.
 cg.opt.nvidia = false
 
-cg.opt.font = "3270 Nerd Font"
-cg.opt.term_font = "3270 Nerd Font Mono"
+cg.opt.font = "Lilex Nerd Font"
+cg.opt.term_font = "Lilex Nerd Font Mono"
 -- Font size multiplier. Useful for high-res displays.
 cg.opt.font_size_mul = 1
 
