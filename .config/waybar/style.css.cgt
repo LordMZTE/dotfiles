@@ -4,7 +4,7 @@
     border: none;
     border-radius: 0;
     font-family: "<% opt.font %>";
-    <! local fontsiz = opt.mulFontSize(15) !>
+    <! local fontsiz = opt.mulFontSize(12) !>
     font-size: <% fontsiz %>px;
     min-height: 0;
     padding: 0;
