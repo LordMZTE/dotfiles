@@ -46,7 +46,7 @@ const AwwwTransition = packed struct {
 
     fn makeRandom(rand: std.Random) AwwwTransition {
         // We don't want simple or none.
-        const typ: AwwwTransitionType = @enumFromInt(rand.uintLessThan(u8, 5) + 1);
+        const typ: AwwwTransitionType = @fromBackingInt(rand.uintLessThan(u8, 5) + 1);
 
         return .{
             .transition_type = typ,
@@ -471,7 +471,7 @@ pub fn randomizeWallpapers(io: std.Io, state: *State, how: WallpaperMode) !void 
 
             // Pixel format. This NEEDS to be the format advertised by the daemon for the output,
             // otherwise, it segfaults (genious API design, right?)
-            try wr.writeByte(@intFromEnum(outp.pixfmt));
+            try wr.writeByte(@backingInt(outp.pixfmt));
 
             // Number of outputs to set this image for. Since we're using different images for each,
             // this is always 1.

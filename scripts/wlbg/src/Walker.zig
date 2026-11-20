@@ -10,7 +10,13 @@ pub fn deinit(self: *Self, gpa: std.mem.Allocator) void {
     self.files.deinit(gpa);
 }
 
-pub fn walk(self: *Self, io: std.Io, gpa: std.mem.Allocator, arena: std.mem.Allocator, dir: std.Io.Dir,) anyerror!void {
+pub fn walk(
+    self: *Self,
+    io: std.Io,
+    gpa: std.mem.Allocator,
+    arena: std.mem.Allocator,
+    dir: std.Io.Dir,
+) anyerror!void {
     var iter = dir.iterate();
     while (try iter.next(io)) |e| {
         switch (e.kind) {
@@ -50,7 +56,13 @@ pub fn walk(self: *Self, io: std.Io, gpa: std.mem.Allocator, arena: std.mem.Allo
     }
 }
 
-pub fn findWallpapers(self: *Self, io: std.Io, gpa: std.mem.Allocator, arena: std.mem.Allocator, env: *std.process.Environ.Map,) !void {
+pub fn findWallpapers(
+    self: *Self,
+    io: std.Io,
+    gpa: std.mem.Allocator,
+    arena: std.mem.Allocator,
+    env: *std.process.Environ.Map,
+) !void {
     var datadirs_iter = std.mem.splitScalar(
         u8,
         env.get("XDG_DATA_DIRS") orelse "",

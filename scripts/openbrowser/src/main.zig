@@ -41,7 +41,12 @@ pub fn main(init: std.process.Init) !void {
     try start(alloc, init.io, init.minimal.args.vector, browsers[0]);
 }
 
-fn start(alloc: std.mem.Allocator, io: std.Io, this_argv: []const [*:0]const u8, browser: []const u8,) !void {
+fn start(
+    alloc: std.mem.Allocator,
+    io: std.Io,
+    this_argv: []const [*:0]const u8,
+    browser: []const u8,
+) !void {
     // args to browser will be same length as argv
     const argv = try alloc.alloc([]const u8, this_argv.len);
     defer alloc.free(argv);

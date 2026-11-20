@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
         .link_system_libs = &.{
-            .{.name = "gtk+-3.0"},
+            .{ .name = "gtk+-3.0" },
         },
     });
 

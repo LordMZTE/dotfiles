@@ -40,7 +40,7 @@ fn lFormatHints(l: *c.lua_State) !c_int {
 
             // parts label
             var label_buf: std.Io.Writer.Allocating = .init(alloc);
-            
+
             c.lua_pushnil(l);
             while (c.lua_next(l, -2) != 0) {
                 c.lua_getfield(l, -1, "value");
