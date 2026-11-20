@@ -49,7 +49,6 @@ pub fn deinit(self: *BackgroundColor) void {
 pub fn onEvent(self: *BackgroundColor, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {
     _ = io;
     _ = state;
-    // TODO: dedupe this
     switch (ev.event_id) {
         c.MPV_EVENT_CLIENT_MESSAGE => {
             const cmsg: *c.mpv_event_client_message = @ptrCast(@alignCast(ev.data));

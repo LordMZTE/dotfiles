@@ -99,7 +99,6 @@ pub fn doCompile(
         defer walker.deinit();
 
         while (try walker.next(io)) |entry| {
-
             switch (entry.kind) {
                 .file => {
                     if (std.mem.endsWith(u8, entry.path, ".lua") or
@@ -134,7 +133,6 @@ pub fn doCompile(
         if (is_fennel) {
             // this check is to prevent fennel code in aniseed plugins being unecessarily compiled.
             if (std.mem.containsAtLeast(u8, luafile, 1, "/fnl/") or
-                // TODO: wonk
                 std.mem.endsWith(u8, luafile, "macros.fnl"))
             {
                 continue;

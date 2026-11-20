@@ -264,7 +264,7 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
 
         if (files.items.len == 0) {
             log.err("Random file was requested but directory is empty!", .{});
-            return raw_filename; // TODO: better way to handle this
+            return raw_filename;
         }
 
         // 2. Pick a random one
@@ -292,7 +292,7 @@ fn mapSpecialFile(self: *LocalVids, raw_filename: [:0]const u8, ret_buf: []u8) !
 
         const file = std.sort.min([]const u8, files.items, {}, fnameLessThanByIdx) orelse {
             log.err("Next file was requested but directory is empty!", .{});
-            return raw_filename; // TODO: better way to handle this
+            return raw_filename;
         };
 
         log.info("chose next file '{s}'", .{file});
