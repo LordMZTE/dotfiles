@@ -25,7 +25,7 @@ end !>
 },
 
 .keybinds = [
-    <! for keydat, cmd in pairs(wm.launch_keys) do
+    <! for keydat, cmd in pairs(wm.launchKeys "river") do
        local cmd_str = table.concat(cg.lib.map(cmd:toArgv(), ziggyEscape), ", ") !>
     .{ .key = "<% keydat[2] %>", .mods = <! modspec(keydat[1]) !>, .action = .spawn([<% cmd_str %>]) },<! end !>
 

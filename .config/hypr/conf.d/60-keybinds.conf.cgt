@@ -16,7 +16,7 @@ end
 !>
 
 # CG Launch Keys
-<! for k, cmd in pairs(wm.launch_keys) do !>
+<! for k, cmd in pairs(wm.launchKeys "hyprland") do !>
 bind = <% key(k) %>, execr, <% cmd %><! end !>
 # Control keys
 bind = <% key(wm.control_keys.quit) %>, exit,

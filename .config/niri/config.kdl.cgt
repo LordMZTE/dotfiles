@@ -67,7 +67,7 @@ binds {
     <% key(wm.control_keys.fullscreen) %> { fullscreen-window; }
 
     // Confgen Keys
-    <! for k, cmd in pairs(wm.launch_keys) do if cmd.sh then !>
+    <! for k, cmd in pairs(wm.launchKeys "niri") do if cmd.sh then !>
     <% key(k) %> { spawn-sh "<% string.gsub(cmd.sh, [["]], [[\"]]) %>"; }
     <! else local cmd_str = table.concat(cg.lib.map(cmd.argv, function(arg)
         return [["]] .. string.gsub(arg, [["]], [[\"]]) .. [["]]

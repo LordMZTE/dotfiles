@@ -51,45 +51,55 @@ local cmds = cg.opt.commands
 local dev_conf = cg.opt.getLuaDeviceConf("wm") or {}
 
 -- Keys that start some command expressed in shell notation.
-M.launch_keys = {
-    -- Media Keys
-    [{ {}, "XF86AudioRaiseVolume" }] = cmds.media.volume_up,
-    [{ {}, "XF86AudioLowerVolume" }] = cmds.media.volume_down,
-    [{ {}, "XF86AudioMute" }] = cmds.media.mute_sink,
-    [{ {}, "XF86AudioMicMute" }] = cmds.media.mute_source,
-    [{ {}, "XF86AudioPlay" }] = cmds.media.play_pause,
-    [{ {}, "XF86AudioStop" }] = cmds.media.stop,
-    [{ {}, "XF86AudioNext" }] = cmds.media.next,
-    [{ {}, "XF86AudioPrev" }] = cmds.media.prev,
-    [{ {}, "XF86Eject" }] = cmd.argv { "eject", "-T" },
+function M.launchKeys(wm)
+  local is_wayland = cg.lib.containsEq(M.known_wayland_compositors, wm)
+  local keys = {
+      -- Media Keys
+      [{ {}, "XF86AudioRaiseVolume" }] = cmds.media.volume_up,
+      [{ {}, "XF86AudioLowerVolume" }] = cmds.media.volume_down,
+      [{ {}, "XF86AudioMute" }] = cmds.media.mute_sink,
+      [{ {}, "XF86AudioMicMute" }] = cmds.media.mute_source,
+      [{ {}, "XF86AudioPlay" }] = cmds.media.play_pause,
+      [{ {}, "XF86AudioStop" }] = cmds.media.stop,
+      [{ {}, "XF86AudioNext" }] = cmds.media.next,
+      [{ {}, "XF86AudioPrev" }] = cmds.media.prev,
+      [{ {}, "XF86Eject" }] = cmd.argv { "eject", "-T" },
 
-    -- Backlight Keys
-    [{ {}, "XF86MonBrightnessUp" }] = cmds.backlight_up,
-    [{ {}, "XF86MonBrightnessDown" }] = cmds.backlight_down,
+      -- Backlight Keys
+      [{ {}, "XF86MonBrightnessUp" }] = cmds.backlight_up,
+      [{ {}, "XF86MonBrightnessDown" }] = cmds.backlight_down,
 
-    -- Screenshot
-    [{ {}, "Print" }] = cmd.sh [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
+      -- Screenshot
+      [{ {}, "Print" }] = cmd.sh [[grim -g "$(slurp; sleep 1)" - | satty --filename -]],
 
-    -- Background controls
-    [{ kmods "m", "w" }] = cmd.argv { "pkill", "-USR1", "wlbg" },   -- Randomize background
-    [{ kmods "ms", "w" }] = cmd.argv { "pkill", " -USR2", "wlbg" }, -- Toggle solid background
+      -- Background controls
+      [{ kmods "m", "w" }] = cmd.argv { "pkill", "-USR1", "wlbg" },   -- Randomize background
+      [{ kmods "ms", "w" }] = cmd.argv { "pkill", " -USR2", "wlbg" }, -- Toggle solid background
 
-    -- Safe mode
-    [{ kmods "m", "s" }] = cmd.sh [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
+      -- Safe mode
+      [{ kmods "m", "s" }] = cmd.sh [[echo "cg.opt.toggleSafeMode()" > ~/confgenfs/_cgfs/eval]],
 
-    -- Fnott control
-    -- TODO: only add these on wayland
-    [{ kmods "mc", "Space" }] = cmd.sh "fnottctl actions || fnottctl dismiss",
+      -- Application Launchers
+      [{ kmods "m", "Return" }] = cg.opt.term.command,
+      [{ kmods "a", "Space" }] = cmd.argv { "rofi", "-show", "combi" },
+      [{ kmods "ma", "Space" }] = cmd.argv { "rofi", "-show", "emoji" },
+      [{ kmods "mc", "c" }] = cmd.argv { "rofi", "-show", "qalc" },
+      [{ kmods "mc", "e" }] = cmds.file_manager,
+      [{ kmods "mc", "b" }] = cmds.browser,
+      [{ kmods "mc", "v" }] = cmd.argv { "vinput", "md" },
+  }
 
-    -- Application Launchers
-    [{ kmods "m", "Return" }] = cg.opt.term.command,
-    [{ kmods "a", "Space" }] = cmd.argv { "rofi", "-show", "combi" },
-    [{ kmods "ma", "Space" }] = cmd.argv { "rofi", "-show", "emoji" },
-    [{ kmods "mc", "c" }] = cmd.argv { "rofi", "-show", "qalc" },
-    [{ kmods "mc", "e" }] = cmds.file_manager,
-    [{ kmods "mc", "b" }] = cmds.browser,
-    [{ kmods "mc", "v" }] = cmd.argv { "vinput", "md" },
-}
+  if is_wayland then
+      -- Fnott control
+      keys[{ kmods "mc", "Space" }] = cmd.sh "fnottctl actions || fnottctl dismiss"
+  end
+
+  if dev_conf.modifyLaunchKeys then
+      keys = dev_conf.modifyLaunchKeys(M, wm, is_wayland, keys)
+  end
+
+  return keys
+end
 
 -- Wayland compositors that we know about
 M.known_wayland_compositors = {
@@ -122,10 +132,6 @@ function M.startupCommands(wm)
     end
 
     return startup
-end
-
-if dev_conf.modifyLaunchKeys then
-    M.launch_keys = dev_conf.modifyLaunchKeys(M, M.launch_keys)
 end
 
 return M
