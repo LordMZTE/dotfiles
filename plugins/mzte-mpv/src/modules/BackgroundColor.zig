@@ -16,7 +16,7 @@ const Background = enum(u8) {
     black,
 
     fn next(self: Background) Background {
-        return @enumFromInt((@intFromEnum(self) + 1) % 4);
+        return @fromBackingInt((@backingInt(self) + 1) % 4);
     }
 
     fn color(self: Background) [:0]const u8 {
