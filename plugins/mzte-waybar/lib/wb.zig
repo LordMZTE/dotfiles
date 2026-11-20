@@ -24,16 +24,12 @@ pub const InitInfo = extern struct {
 
     /// Returns the waybar widget allocated for this module
     get_root_widget: *const fn (
-        // TODO: remove this comment when it's no longer needed for `zig fmt` to not destroy this
-        // code: https://github.com/ziglang/zig/issues/14654
         /// Waybar CFFI object pointer
         obj: *Module,
     ) callconv(.c) *c.GtkContainer,
 
     /// Queues a request for calling wbcffi_update() on the next GTK main event loop iteration
     queue_update: *const fn (
-        // TODO: remove this comment when it's no longer needed for `zig fmt` to not destroy this
-        // code: https://github.com/ziglang/zig/issues/14654
         /// Waybar CFFI object pointer
         obj: *Module,
     ) callconv(.c) void,
