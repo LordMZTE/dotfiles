@@ -51,8 +51,6 @@ pub fn build(b: *std.Build) void {
             .name = b.fmt("mzte-waybar-{t}", .{mode}),
             .root_module = mod,
             .linkage = .dynamic,
-            // TODO: https://github.com/ziglang/zig/issues/25026
-            .use_llvm = true,
         });
 
         const install = b.addInstallArtifact(lib, .{

@@ -50,10 +50,6 @@ pub fn build(b: *std.Build) !void {
             .name = "mzte-nv",
             .linkage = .dynamic,
             .root_module = lib_mod,
-
-            // Compiler segfaults without this
-            // TODO: investigate
-            .use_llvm = true,
         });
 
         if (b.lazyDependency(
