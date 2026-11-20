@@ -21,12 +21,7 @@ pub fn create(io: std.Io) BetterTags {
 
 pub fn setup(self: *BetterTags, mpv: *c.mpv_handle) !void {
     _ = self;
-    try ffi.checkMpvError(c.mpv_observe_property(
-        mpv,
-        0,
-        "metadata",
-        c.MPV_FORMAT_NODE,
-    ));
+    _ = mpv;
 }
 
 pub fn onEvent(self: *BetterTags, mpv: *c.mpv_handle, io: std.Io, state: *State, ev: *c.mpv_event) !void {

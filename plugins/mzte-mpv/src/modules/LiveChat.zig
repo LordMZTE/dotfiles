@@ -208,12 +208,7 @@ pub fn create(io: std.Io) LiveChat {
 
 pub fn setup(self: *LiveChat, mpv: *c.mpv_handle) !void {
     _ = self;
-    try ffi.checkMpvError(c.mpv_observe_property(
-        mpv,
-        0,
-        "stream-open-filename",
-        c.MPV_FORMAT_STRING,
-    ));
+    _ = mpv;
 }
 
 pub fn deinit(self: *LiveChat) void {

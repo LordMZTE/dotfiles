@@ -3,6 +3,7 @@ const common = @import("common");
 const c = @import("c");
 
 const ffi = @import("ffi.zig");
+const hooks = @import("hooks.zig");
 const util = @import("util.zig");
 
 const State = @import("State.zig");
@@ -53,8 +54,13 @@ fn tryMain(mpv: *c.mpv_handle) !void {
     defer inline for (comptime std.meta.fieldNames(@TypeOf(modules))) |f|
         @field(modules, f).deinit();
 
-    try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, "on_before_start_file", 0));
-    try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, "on_load", 0));
+    for (hooks.observed_properties) |op| {
+        try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, op.@"0", op.@"1"));
+    }
+
+    for (hooks.hooks) |hook| {
+        try ffi.checkMpvError(c.mpv_hook_add(mpv, 0, hook, 0));
+    }
 
     std.log.info("loaded with client name '{s}'", .{c.mpv_client_name(mpv)});
 

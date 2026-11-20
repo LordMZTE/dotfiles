@@ -145,7 +145,7 @@ const Chapter = struct {
 
 pub fn setup(self: *SBSkip, mpv: *c.mpv_handle) !void {
     _ = self;
-    try ffi.checkMpvError(c.mpv_observe_property(mpv, 0, "chapter", c.MPV_FORMAT_INT64));
+    _ = mpv;
 }
 
 pub fn create(io: std.Io) SBSkip {

@@ -46,13 +46,6 @@ pub fn create(io: std.Io) LocalVids {
 pub fn setup(self: *LocalVids, mpv: *c.mpv_handle) !void {
     _ = self;
     _ = mpv;
-    // FIXME: The property is already observed by LiveChat, avoid this jank
-    //try ffi.checkMpvError(c.mpv_observe_property(
-    //    mpv,
-    //    0,
-    //    "stream-open-filename",
-    //    c.MPV_FORMAT_STRING,
-    //));
 }
 
 pub fn deinit(self: *LocalVids) void {
